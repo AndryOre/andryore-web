@@ -3,6 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
     "brand:export": "bun docs/brand/tools/export.mjs",
     "test": "bun test",
     "lint:commits": "bun scripts/lint-commits.ts",
@@ -44,5 +48,8 @@
   "packageManager": "bun@1.4.2",
   "engines": {
     "bun": "1.4.2"
+  },
+  "dependencies": {
+    "astro": "^7.4.0"
   }
 }
