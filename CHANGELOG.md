@@ -13,3 +13,4 @@ and this project adheres to
 - Repository tooling: Prettier, commitlint, husky, lint-staged and editorconfig.
 - Community files: LICENSE (MIT code, brand and content reserved), Code of
   Conduct, governance, roadmap, changelog, security policy and code owners.
+- Smoke test of the public CI.
