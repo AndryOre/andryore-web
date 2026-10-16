@@ -1,0 +1,48 @@
+{
+  "name": "andryore-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "brand:export": "bun docs/brand/tools/export.mjs",
+    "test": "bun test",
+    "lint:commits": "bun scripts/lint-commits.ts",
+    "ci:local": "bun install --frozen-lockfile && bun run lint:commits && bun run check && bun run test",
+    "format:check": "bunx --bun prettier --check \"**/*.{ts,tsx,js,jsx,mjs,astro,json,json5,md,css,yml,yaml}\" --cache",
+    "format:write": "bunx --bun prettier --write \"**/*.{ts,tsx,js,jsx,mjs,astro,json,json5,md,css,yml,yaml}\" --cache",
+    "lint": "eslint . --max-warnings=0 --cache --cache-strategy content",
+    "lint:fix": "eslint . --fix --cache --cache-strategy content",
+    "typecheck": "tsc --noEmit",
+    "knip": "knip",
+    "lint:docs": "bun scripts/lint-docs.ts",
+    "check": "bun run format:check && bun run lint && bun run typecheck && bun run knip",
+    "fix": "bun run format:write",
+    "prepare": "bunx --bun husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
+    "@eslint-community/eslint-plugin-eslint-comments": "^4.8.1",
+    "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
+    "@types/bun": "latest",
+    "@types/node": "^26.6.5",
+    "eslint": "^10",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsdoc": "^65.3.8",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-unicorn": "^77",
+    "husky": "^9.1.7",
+    "knip": "^6.41.0",
+    "lint-staged": "^17.6.0",
+    "playwright": "^1.63.0",
+    "prettier": "^3.9.10",
+    "prettier-plugin-astro": "^1.1.1",
+    "sharp": "^0.35.5",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.0",
+    "yaml": "^2.9.1"
+  },
+  "packageManager": "bun@1.4.2",
+  "engines": {
+    "bun": "1.4.2"
+  }
+}

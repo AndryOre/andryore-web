@@ -1,0 +1,83 @@
+{
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:best-practices',
+    ':semanticCommits',
+    ':semanticCommitTypeAll(chore)',
+  ],
+
+  timezone: 'UTC',
+  schedule: ['before 12pm on monday'],
+
+  prConcurrentLimit: 3,
+  prHourlyLimit: 2,
+  branchConcurrentLimit: 5,
+
+  rangeStrategy: 'bump',
+
+  minimumReleaseAge: '3 days',
+
+  labels: ['dependencies'],
+
+  osvVulnerabilityAlerts: true,
+  vulnerabilityAlerts: {
+    enabled: true,
+    labels: ['Priority: Critical', 'Type: Security'],
+    assignees: ['AndryOre'],
+  },
+
+  lockFileMaintenance: {
+    enabled: true,
+    schedule: ['before 12pm on monday'],
+    automerge: true,
+  },
+
+  packageRules: [
+    {
+      matchDepTypes: ['devDependencies'],
+      semanticCommitScope: 'deps-dev',
+    },
+    {
+      matchDepTypes: ['dependencies'],
+      semanticCommitScope: 'deps',
+    },
+
+    {
+      groupName: 'astro',
+      matchPackageNames: ['astro', '@astrojs/**'],
+    },
+    {
+      groupName: 'eslint',
+      matchPackageNames: [
+        'eslint',
+        '@eslint/**',
+        'typescript-eslint',
+        'eslint-plugin-*',
+        'eslint-config-*',
+      ],
+    },
+    {
+      groupName: 'type definitions',
+      matchPackageNames: ['@types/**'],
+    },
+    {
+      groupName: 'github-actions',
+      matchManagers: ['github-actions'],
+    },
+
+    {
+      matchDepTypes: ['devDependencies'],
+      matchUpdateTypes: ['patch', 'minor'],
+      automerge: true,
+      automergeType: 'pr',
+      minimumReleaseAge: '7 days',
+    },
+    {
+      matchManagers: ['github-actions'],
+      matchUpdateTypes: ['patch', 'minor', 'digest', 'pin', 'pinDigest'],
+      automerge: true,
+      automergeType: 'pr',
+      minimumReleaseAge: '7 days',
+    },
+  ],
+}

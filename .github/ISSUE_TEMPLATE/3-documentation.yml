@@ -1,0 +1,44 @@
+name: Documentation
+description: Report missing, unclear, or incorrect documentation
+title: 'docs: '
+labels: ['Type: Docs', 'Status: Needs Info']
+
+body:
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Pre-flight checklist
+      options:
+        - label:
+            I have searched the existing issues and confirmed this hasn't been
+            reported.
+          required: true
+
+  - type: input
+    id: location
+    attributes:
+      label: Location
+      description: Link to the page, file, or section that needs attention.
+      placeholder: https://
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong or missing?
+      description: Describe what is incorrect, unclear, or absent.
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested improvement
+      description: If you have a proposed wording or fix, share it here.
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Anything else that would help.

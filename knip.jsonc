@@ -1,0 +1,6 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": ["eslint-rules/index.mjs"],
+  "project": ["**/*.{ts,tsx,mjs}"],
+  "ignore": [".claude/skills/**"],
+}

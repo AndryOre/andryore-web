@@ -1,0 +1,21 @@
+node_modules/
+.forge/
+.claude/worktrees/
+.eslintcache
+
+# Private docs: kept on disk, never tracked (ADR 0008)
+docs/web/
+docs/design/
+docs/brand/CONTEXT.md
+docs/brand/research.md
+docs/brand/research-notes/
+docs/brand/process.md
+docs/brand/brief.md
+docs/brand/competitors.md
+docs/brand/copy.md
+docs/brand/voice.md
+docs/brand/naming.md
+docs/brand/apply-spec.md
+docs/brand/explorations/
+docs/brand/social/
+docs/brand/brandbook/index.html
