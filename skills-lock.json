@@ -95,12 +95,26 @@
       "skillPath": "playwright-best-practices/SKILL.md",
       "computedHash": "7eb144f734450fee649dc1d209114775ddda07cbf45be84fe969d3d4f3971dce"
     },
+    "playwright-component-testing": {
+      "source": "microsoft/playwright",
+      "ref": "6bbe2475ba79174c3df5f28a435958ef0351d515",
+      "sourceType": "github",
+      "skillPath": "packages/playwright-core/src/tools/skills/playwright-component-testing/SKILL.md",
+      "computedHash": "c037028e70931cc5dd5b41a2046dd05cb45baf23d9cd3957d178655def4a20b6"
+    },
     "playwright-trace": {
       "source": "microsoft/playwright",
       "ref": "1f23052b77538cf385aeefbca9208c5a1ff68338",
       "sourceType": "github",
       "skillPath": "packages/playwright-core/src/tools/skills/playwright-trace/SKILL.md",
       "computedHash": "d9ee5c7252de14bb30256a845653e738fd92c577c54238ca0b31c5f198096c8f"
+    },
+    "product-marketing": {
+      "source": "coreyhaines31/marketingskills",
+      "ref": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "sourceType": "github",
+      "skillPath": "skills/product-marketing/SKILL.md",
+      "computedHash": "b8a9cd747705923a7a29cda12e478594e3a5062d8f7c7bfbf19d7fc0b24cee76"
     },
     "review-animations": {
       "source": "emilkowalski/skills",
@@ -134,6 +148,13 @@
       "sourceType": "github",
       "skillPath": "plugins/tailwind-v4-shadcn/skills/tailwind-v4-shadcn/SKILL.md",
       "computedHash": "f671120a57119a94f8a6447a760629878b8ead36750297697006136dbaac4355"
+    },
+    "typescript-advanced-types": {
+      "source": "wshobson/agents",
+      "ref": "044b4b21f083948e69ec878a7b07c8d0951a6ffa",
+      "sourceType": "github",
+      "skillPath": "plugins/javascript-typescript/skills/typescript-advanced-types/SKILL.md",
+      "computedHash": "8cbf2bf600f392d7260e476e3202932a876e2281cda3b15a8b6a5a43f383252d"
     },
     "web-design-guidelines": {
       "source": "vercel-labs/agent-skills",
