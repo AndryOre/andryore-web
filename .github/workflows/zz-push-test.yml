@@ -1,0 +1,9 @@
+name: zz push test
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo hello
