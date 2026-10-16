@@ -1,4 +1,5 @@
 {
+  "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
     "target": "ES2023",
     "lib": ["ES2025"],
@@ -17,11 +18,13 @@
     "erasableSyntaxOnly": true
   },
   "include": [
+    "src",
+    ".astro/types.d.ts",
     "eslint-rules",
     "docs/adr",
     "docs/brand/tools",
     "scripts",
     ".github/**/*.ts"
   ],
-  "exclude": ["node_modules", ".claude", ".forge"]
+  "exclude": ["node_modules", "dist", ".claude", ".forge"]
 }

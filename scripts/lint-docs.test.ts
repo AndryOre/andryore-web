@@ -174,7 +174,9 @@ describe('ensureLycheeBinary', () => {
 
   test('downloads, extracts and caches an executable binary', async () => {
     const archive = createArchive(root, { 'nested/lychee': 'binary' })
-    const fetchArchive = mock().mockResolvedValue(new Response(archive))
+    const fetchArchive = mock().mockResolvedValue(
+      new Response(new Uint8Array(archive)),
+    )
     const binaryPath = await ensureLycheeBinary(
       'v1',
       createDependencies(fetchArchive),
@@ -199,7 +201,9 @@ describe('ensureLycheeBinary', () => {
 
   test('throws when the archive has no lychee binary', async () => {
     const archive = createArchive(root, { 'readme.txt': 'hello' })
-    const fetchArchive = mock().mockResolvedValue(new Response(archive))
+    const fetchArchive = mock().mockResolvedValue(
+      new Response(new Uint8Array(archive)),
+    )
     const message = await rejectionMessage(
       ensureLycheeBinary('v1', createDependencies(fetchArchive)),
     )
