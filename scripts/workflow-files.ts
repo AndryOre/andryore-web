@@ -8,7 +8,7 @@ const WORKFLOWS_DIRECTORY = path.join(
   '../.github/workflows',
 )
 
-interface WorkflowStep {
+export interface WorkflowStep {
   readonly id?: string
   readonly name?: string
   readonly if?: string
