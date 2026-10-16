@@ -118,6 +118,11 @@ export default defineConfig([
     },
   },
   {
+    files: ['**/*.astro/*.{ts,js}'],
+    extends: [tseslint.configs.disableTypeChecked],
+    languageOptions: { parserOptions: { projectService: false } },
+  },
+  {
     files: ['**/*.test.ts'],
     rules: {
       'no-restricted-syntax': ['error', ...UNAWAITED_ASYNC_MATCHER_SELECTORS],
