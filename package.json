@@ -15,7 +15,7 @@
     "format:write": "bunx --bun prettier --write \"**/*.{ts,tsx,js,jsx,mjs,astro,json,json5,md,css,yml,yaml}\" --cache",
     "lint": "eslint . --max-warnings=0 --cache --cache-strategy content",
     "lint:fix": "eslint . --fix --cache --cache-strategy content",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "astro check && tsc --noEmit",
     "knip": "knip",
     "lint:docs": "bun scripts/lint-docs.ts",
     "check": "bun run format:check && bun run lint && bun run typecheck && bun run knip",
@@ -23,6 +23,7 @@
     "prepare": "bunx --bun husky"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.10",
     "@commitlint/cli": "^21.2.3",
     "@commitlint/config-conventional": "^21.2.3",
     "@eslint-community/eslint-plugin-eslint-comments": "^4.8.1",
@@ -31,6 +32,7 @@
     "@types/node": "^26.6.5",
     "eslint": "^10",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-astro": "^3.2.1",
     "eslint-plugin-jsdoc": "^65.3.8",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-unicorn": "^77",
