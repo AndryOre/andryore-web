@@ -27,14 +27,44 @@ never use another package manager (this repo uses `bun.lock`). Read
 `package.json`'s `scripts` before inventing a command.
 
 - `bun run check` — format check, lint, typecheck and knip. Run this after any
-  change.
-- `bun run test` — the `bun test` suite. Run this after any change to tested
-  code.
+  change. `typecheck` runs `astro check && tsc --noEmit`, so `.astro` files are
+  type-checked too.
+- `bun run test` — the `bun test` suite, with coverage on. `bunfig.toml` sets a
+  `coverageThreshold` (lines 0.55, functions 0.4); a run below it fails, so add
+  tests with new code instead of lowering the threshold.
 - `bun run lint:docs` — offline link and anchor check of the Markdown. Run this
   after any docs change.
 - `bun run fix` — formats the repository with Prettier. Prose wraps always.
 - `bun run build` — **do not run unless explicitly asked.** It is slow and not
   needed to verify most changes.
+
+## Site rules
+
+Rules for any change to the Site. Each one is backed by an ADR:
+
+- **No third-party requests.** The Site loads nothing from another origin: no
+  CDNs, hosted fonts, analytics or embeds.
+  [ADR 0009](docs/adr/0009-no-third-party-requests.md).
+- **Hash-based CSP.** An inline script needs its computed hash in the policy;
+  never use `unsafe-inline` or `unsafe-eval`.
+  [ADR 0010](docs/adr/0010-hash-based-csp-and-security-headers.md).
+- **Islands only for real interactivity.** Pages are static Astro; use a React
+  island only where the UI needs client behaviour.
+  [ADR 0006](docs/adr/0006-tailwind-and-shadcn-islands.md).
+- **Copy stays in content files.** Never hardcode user-facing text in
+  components; every page and Log entry exists in English and Spanish.
+  [ADR 0002](docs/adr/0002-bilingual-parity.md).
+
+## Astro docs
+
+The `astro-docs` MCP server is declared in `.mcp.json`. Use its
+`search_astro_docs` tool before guessing an Astro API or config option.
+
+## Architecture decision records
+
+A new ADR must add its row to [`docs/adr/README.md`](docs/adr/README.md);
+`docs/adr/adr-invariants.test.ts` fails when an ADR is missing from the index.
+Never rewrite an accepted ADR: supersede or amend it with a new one.
 
 ## Branch and commit conventions
 

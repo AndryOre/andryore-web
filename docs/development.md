@@ -20,13 +20,20 @@ the git hooks on `bun install` through the `prepare` script. `bunfig.toml` sets
 | `bun run format:write` | Formats the repository with Prettier.                                                       |
 | `bun run lint`         | ESLint with zero warnings allowed, using `--cache --cache-strategy content`.                |
 | `bun run lint:fix`     | ESLint with autofix.                                                                        |
-| `bun run typecheck`    | `tsc --noEmit`.                                                                             |
+| `bun run typecheck`    | `astro check && tsc --noEmit`.                                                              |
 | `bun run knip`         | Finds unused files, exports and dependencies.                                               |
-| `bun run test`         | Runs `bun test`.                                                                            |
+| `bun run test`         | Runs `bun test` with coverage and the `bunfig.toml` threshold.                              |
 | `bun run lint:docs`    | Offline link and anchor check of the Markdown with lychee.                                  |
 | `bun run lint:commits` | Runs commitlint over the commits of the current branch.                                     |
 | `bun run ci:local`     | Frozen install, `lint:commits`, `check` and `test`: the CI pipeline locally.                |
 | `bun run brand:export` | Regenerates the brand rasters from the logo SVGs. Never edit the generated rasters by hand. |
+
+## Coverage
+
+`bunfig.toml` turns coverage on for `bun test` and sets
+`coverageThreshold = { lines = 0.55, functions = 0.4 }`. A run under either
+value fails, locally and in CI. Test files are skipped from the report
+(`coverageSkipTestFiles`).
 
 `eslint` and `tsc` run without `--bun`. Agents do not run a `build` script
 unless explicitly asked.
@@ -75,13 +82,28 @@ existing variant, then a new variant, then a contract, and only then a one-line
 `eslint-disable-next-line -- <reason>`. Record the decision in an ADR when the
 contract is new. See [ADR 0006](adr/0006-tailwind-and-shadcn-islands.md).
 
+`shadcnNoRestyleContracts` does not exist yet: it arrives with AO-1965, the
+Astro site scaffold. Until then `eslint.config.mjs` has no contracts to edit.
+
 ## Skills install and update
 
-Third-party skills live in `.claude/skills` and are installed with
+`.claude/skills` holds 22 third-party skills. They are installed with
 `bunx skills add <owner>/<repo>#<commit> -s <skill> -a claude-code`, always
 pinned to a commit so `skills-lock.json` records the exact `ref`. Read each
 `SKILL.md` and any bundled script before committing it. `bunx skills update`
 moves the pins, so review the diff the same way.
+
+## MCP servers
+
+`.mcp.json` declares two HTTP servers: `linear-server` (the issue tracker) and
+`astro-docs` (the Astro documentation search; use it before guessing an Astro
+API).
+
+## ADR index
+
+`docs/adr/README.md` indexes every ADR. A new ADR adds its row there, and
+`docs/adr/adr-invariants.test.ts` enforces the header format, unique sequential
+numbers, an allowed status and that the index lists every file.
 
 ## CI
 
@@ -98,7 +120,12 @@ anchor check with lychee), `lint-workflows.yml` (workflow linting), `codeql.yml`
 (CodeQL analysis, skipped while the repository is private because code scanning
 is unavailable on GitHub Free), `scorecard.yml` (OpenSSF Scorecard) and
 `labels.yml` (label sync). All third-party actions are pinned to a commit SHA,
-and `scripts/workflows-invariants.test.ts` asserts the workflow invariants.
+and `scripts/workflows-invariants.test.ts` asserts the workflow invariants:
+every `uses:` pinned to a 40-character SHA, explicit permissions (top-level
+`contents: read` or stricter), `timeout-minutes` on every job,
+`persist-credentials: false` on every checkout, no `pull_request_target`, and no
+expression interpolated inside a `run` script. `scripts/workflow-files.ts`
+parses the workflow files for those tests.
 
 ## Renovate
 
