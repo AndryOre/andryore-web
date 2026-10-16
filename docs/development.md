@@ -28,15 +28,15 @@ the git hooks on `bun install` through the `prepare` script. `bunfig.toml` sets
 | `bun run ci:local`     | Frozen install, `lint:commits`, `check` and `test`: the CI pipeline locally.                |
 | `bun run brand:export` | Regenerates the brand rasters from the logo SVGs. Never edit the generated rasters by hand. |
 
+`eslint` and `tsc` run without `--bun`. Agents do not run a `build` script
+unless explicitly asked.
+
 ## Coverage
 
 `bunfig.toml` turns coverage on for `bun test` and sets
 `coverageThreshold = { lines = 0.55, functions = 0.4 }`. A run under either
 value fails, locally and in CI. Test files are skipped from the report
 (`coverageSkipTestFiles`).
-
-`eslint` and `tsc` run without `--bun`. Agents do not run a `build` script
-unless explicitly asked.
 
 ## Git hooks
 
@@ -123,9 +123,10 @@ is unavailable on GitHub Free), `scorecard.yml` (OpenSSF Scorecard) and
 and `scripts/workflows-invariants.test.ts` asserts the workflow invariants:
 every `uses:` pinned to a 40-character SHA, explicit permissions (top-level
 `contents: read` or stricter), `timeout-minutes` on every job,
-`persist-credentials: false` on every checkout, no `pull_request_target`, and no
-expression interpolated inside a `run` script. `scripts/workflow-files.ts`
-parses the workflow files for those tests.
+`persist-credentials: false` on every checkout (a job with `contents: write` may
+opt in with `true`), no `pull_request_target`, and no expression interpolated
+inside a `run` script. `scripts/workflow-files.ts` parses the workflow files for
+those tests.
 
 ## Renovate
 
