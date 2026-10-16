@@ -1,5 +1,5 @@
 const config = {
-  '*.{ts,tsx,mjs}': [
+  '*.{ts,tsx,mjs,astro}': [
     'eslint --fix --max-warnings=0 --cache --cache-strategy content',
     'bunx --bun prettier --write --cache',
   ],

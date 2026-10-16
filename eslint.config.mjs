@@ -1,5 +1,6 @@
 import eslintComments from '@eslint-community/eslint-plugin-eslint-comments'
 import prettierConfig from 'eslint-config-prettier'
+import astro from 'eslint-plugin-astro'
 import jsdoc from 'eslint-plugin-jsdoc'
 import jsxA11y from 'eslint-plugin-jsx-a11y'
 import unicorn from 'eslint-plugin-unicorn'
@@ -28,6 +29,20 @@ const eslintCommentsRules = {
   ...eslintComments.configs.recommended.rules,
   '@eslint-community/eslint-comments/require-description': 'error',
 }
+
+/**
+ * Flags an un-awaited `.rejects`/`.resolves` matcher statement. bun-types types
+ * them as synchronous, so `no-floating-promises` cannot see the missing
+ * `await` and a failing assertion would never be reported.
+ */
+export const UNAWAITED_ASYNC_MATCHER_SELECTORS = [
+  `ExpressionStatement > CallExpression[callee.object.property.name=/^(rejects|resolves)$/]`,
+  `ExpressionStatement > CallExpression[callee.object.object.property.name=/^(rejects|resolves)$/]`,
+].map((selector) => ({
+  selector,
+  message:
+    "bun-types types `.rejects`/`.resolves` as synchronous matchers, so `@typescript-eslint/no-floating-promises` can't see an un-awaited one and a failing assertion is never reported. Prefix the statement with `await` or return it.",
+}))
 
 export default defineConfig([
   {
@@ -84,6 +99,30 @@ export default defineConfig([
     files: ['**/*.config.{ts,mjs}'],
     rules: { 'unicorn/no-top-level-side-effects': 'off' },
   },
+  ...astro.configs.recommended,
+  {
+    files: ['**/*.astro'],
+    languageOptions: {
+      parserOptions: {
+        project: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    plugins: {
+      local: localPlugin,
+      '@eslint-community/eslint-comments': eslintComments,
+    },
+    rules: {
+      ...eslintCommentsRules,
+      'local/no-non-doc-comments': 'error',
+    },
+  },
+  {
+    files: ['**/*.test.ts'],
+    rules: {
+      'no-restricted-syntax': ['error', ...UNAWAITED_ASYNC_MATCHER_SELECTORS],
+    },
+  },
   {
     files: ['**/*.{ts,tsx,mjs}'],
     plugins: {
@@ -100,6 +139,22 @@ export default defineConfig([
   {
     files: ['**/*.{js,mjs,cjs}'],
     extends: [tseslint.configs.disableTypeChecked],
+  },
+  {
+    files: ['src/pages/**/*.astro'],
+    rules: {
+      'unicorn/filename-case': [
+        'error',
+        {
+          cases: { kebabCase: true, pascalCase: true },
+          ignore: [
+            String.raw`^\[\.{3}[a-z][a-zA-Z0-9]*\]\.astro$`,
+            String.raw`^\[[a-z][a-zA-Z0-9]*\]\.astro$`,
+            String.raw`^\([a-z][a-z0-9-]*\)$`,
+          ],
+        },
+      ],
+    },
   },
   {
     files: ['.github/ISSUE_TEMPLATE/**'],
