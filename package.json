@@ -10,7 +10,7 @@
     "brand:export": "bun docs/brand/tools/export.mjs",
     "test": "bun test",
     "lint:commits": "bun scripts/lint-commits.ts",
-    "ci:local": "bun install --frozen-lockfile && bun run lint:commits && bun run check && bun run test",
+    "ci:local": "bun install --frozen-lockfile && bun run lint:commits && bun run check && bun run lint:docs && bun run test",
     "format:check": "bunx --bun prettier --check \"**/*.{ts,tsx,js,jsx,mjs,astro,json,json5,md,css,yml,yaml}\" --cache",
     "format:write": "bunx --bun prettier --write \"**/*.{ts,tsx,js,jsx,mjs,astro,json,json5,md,css,yml,yaml}\" --cache",
     "lint": "eslint . --max-warnings=0 --cache --cache-strategy content",
@@ -19,7 +19,8 @@
     "knip": "knip",
     "lint:docs": "bun scripts/lint-docs.ts",
     "check": "bun run format:check && bun run lint && bun run typecheck && bun run knip",
-    "fix": "bun run format:write",
+    "fix": "bun run format:write && bun run lint:fix",
+    "cache:clear": "rm -rf /tmp/node-compile-cache .eslintcache node_modules/.cache",
     "prepare": "bunx --bun husky"
   },
   "devDependencies": {

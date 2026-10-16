@@ -11,9 +11,10 @@ jobs:
   release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     permissions:
       contents: write
+      checks: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -27,6 +28,36 @@ jobs:
             echo "Tagged commit ${GITHUB_SHA} is not on main"
             exit 1
           fi
+
+      - name: Require green CI on the tagged commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          deadline=$((SECONDS + 1200))
+          while true; do
+            run_json=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/check-runs?per_page=100" \
+              --jq '[.check_runs[] | select(.name == "CI passed")] | sort_by(.id) | last // empty')
+            status=$(jq -r '.status // empty' <<< "${run_json}")
+            conclusion=$(jq -r '.conclusion // empty' <<< "${run_json}")
+            if [[ "${status}" == "completed" ]]; then
+              if [[ "${conclusion}" == "success" ]]; then
+                echo "CI passed concluded success for ${GITHUB_SHA}"
+                exit 0
+              fi
+              echo "CI passed concluded ${conclusion} for ${GITHUB_SHA}. Re-run the failed CI job on main, then re-run this workflow."
+              exit 1
+            fi
+            if (( SECONDS >= deadline )); then
+              if [[ -z "${status}" ]]; then
+                echo "No CI passed check run found for ${GITHUB_SHA} after 20 minutes"
+              else
+                echo "CI passed is still ${status} for ${GITHUB_SHA} after 20 minutes"
+              fi
+              exit 1
+            fi
+            echo "CI passed is ${status:-missing}, checking again in 30s"
+            sleep 30
+          done
 
       - name: Extract changelog section
         run: |

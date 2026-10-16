@@ -4,6 +4,9 @@ dist/
 .forge/
 .claude/worktrees/
 .eslintcache
+playwright-report/
+test-results/
+coverage/
 
 # Local agent context built from the private brand docs (ADR 0008)
 PRODUCT.md

@@ -20,6 +20,7 @@ export interface WorkflowStep {
 }
 
 interface WorkflowJob {
+  readonly name?: string
   readonly if?: string
   readonly 'continue-on-error'?: boolean
   readonly needs?: unknown

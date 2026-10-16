@@ -23,6 +23,7 @@
     "eslint-rules",
     "docs/adr",
     "docs/brand/tools",
+    "docs/brand/tokens-contrast.test.ts",
     "scripts",
     ".github/**/*.ts"
   ],
