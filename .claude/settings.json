@@ -1,6 +1,8 @@
 {
   "permissions": {
-    "allow": ["mcp__linear-server"],
+    "allow": [
+      "mcp__linear-server"
+    ],
     "deny": [
       "mcp__linear-server__delete_attachment",
       "mcp__linear-server__delete_comment",
@@ -9,5 +11,9 @@
       "mcp__linear-server__delete_diff_comment",
       "mcp__linear-server__delete_status_update"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "linear-server",
+    "astro-docs"
+  ]
 }
