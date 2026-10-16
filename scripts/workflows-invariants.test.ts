@@ -1,9 +1,11 @@
 import { describe, expect, test } from 'bun:test'
+import { readFileSync } from 'node:fs'
 
 import {
   listWorkflowFiles,
   parseWorkflow,
   readWorkflow,
+  readWorkflowText,
   type Workflow,
   type WorkflowStep,
 } from './workflow-files'
@@ -131,6 +133,88 @@ function hasReadOnlyTopLevelPermissions(workflow: Workflow): boolean {
       entries[0]?.[0] === 'contents' &&
       entries[0][1] === 'read')
   )
+}
+
+/**
+ * Finds the release gate step that requires a green `CI passed` check run.
+ * @param workflow The parsed release workflow.
+ * @returns The gate step, when present.
+ */
+function findReleaseGate(workflow: Workflow): WorkflowStep | undefined {
+  return collectSteps(workflow).find(
+    (step) =>
+      step.name === 'Require green CI on the tagged commit' &&
+      (step.run ?? '').includes('"CI passed"') &&
+      (step.run ?? '').includes('check-runs') &&
+      (step.run ?? '').includes('"success"'),
+  )
+}
+
+const RELEASE_KEPT_FRAGMENTS = [
+  'merge-base --is-ancestor',
+  'release-notes.md',
+  'gh release view',
+  'gh release create',
+  '--prerelease --latest=false',
+] as const
+
+/**
+ * Finds release behaviour that the release script no longer contains.
+ * @param workflow The parsed release workflow.
+ * @returns The missing script fragments.
+ */
+function findMissingReleaseBehaviour(workflow: Workflow): string[] {
+  const script = collectSteps(workflow)
+    .map((step) => step.run ?? '')
+    .join('\n')
+  return RELEASE_KEPT_FRAGMENTS.filter((fragment) => !script.includes(fragment))
+}
+
+/**
+ * Whether the ESLint cache step keys on the local ESLint rules.
+ * @param workflow The parsed CI workflow.
+ * @returns True when the cache key hashes `eslint-rules/**`.
+ */
+function eslintCacheKeysOnLocalRules(workflow: Workflow): boolean {
+  const cacheStep = collectSteps(workflow).find(
+    (step) =>
+      typeof step.with?.path === 'string' &&
+      step.with.path.includes('.eslintcache'),
+  )
+  const key = cacheStep?.with?.key
+  return typeof key === 'string' && key.includes('eslint-rules/**')
+}
+
+/**
+ * Lists the job `name:` values of a workflow.
+ * @param workflow The parsed workflow.
+ * @returns The display names of the jobs.
+ */
+function collectJobNames(workflow: Workflow): string[] {
+  return Object.values(workflow.jobs ?? {}).flatMap((job) => job.name ?? [])
+}
+
+/**
+ * Finds required status check contexts that no job name provides.
+ * @param rulesetText The ruleset JSON text.
+ * @param jobNames Every job name across the workflows.
+ * @returns The contexts without a matching job.
+ */
+function findUnmatchedRequiredContexts(
+  rulesetText: string,
+  jobNames: readonly string[],
+): string[] {
+  const ruleset = JSON.parse(rulesetText) as {
+    rules: {
+      type: string
+      parameters?: { required_status_checks?: { context: string }[] }
+    }[]
+  }
+  return ruleset.rules
+    .filter((rule) => rule.type === 'required_status_checks')
+    .flatMap((rule) => rule.parameters?.required_status_checks ?? [])
+    .map((check) => check.context)
+    .filter((context) => !jobNames.includes(context))
 }
 
 const PINNED_SHA = 'a'.repeat(40)
@@ -327,6 +411,129 @@ ${steps}`)
       hasReadOnlyTopLevelPermissions(parseWorkflow('on: push\njobs: {}\n')),
     ).toBe(false)
   })
+})
+
+/**
+ * Builds a release workflow whose only step runs the given script.
+ * @param run The script body.
+ * @returns The parsed workflow.
+ */
+function releaseWithRun(run: string): Workflow {
+  return { jobs: { release: { steps: [{ run }] } } }
+}
+
+/**
+ * Builds a CI workflow with an ESLint cache step using the given key.
+ * @param key The cache key expression.
+ * @returns The parsed workflow.
+ */
+function ciWithCacheKey(key: string): Workflow {
+  return parseWorkflow(
+    `on: push\njobs:\n  quality:\n    steps:\n      - uses: a/b@${PINNED_SHA}\n        with:\n          path: .eslintcache\n          key: ${key}\n`,
+  )
+}
+
+describe('release and ci detectors', () => {
+  const gate = `
+on: push
+jobs:
+  release:
+    steps:
+      - name: Require green CI on the tagged commit
+        run: gh api repos/x/commits/y/check-runs | grep "CI passed" "success"
+`
+
+  test('flags a release without the green-CI gate', () => {
+    expect(findReleaseGate(parseWorkflow(gate))).toBeDefined()
+    expect(
+      findReleaseGate(
+        parseWorkflow(
+          'on: push\njobs:\n  release:\n    steps:\n      - run: echo hi\n',
+        ),
+      ),
+    ).toBeUndefined()
+  })
+
+  test('flags a release that dropped a kept behaviour', () => {
+    const complete = RELEASE_KEPT_FRAGMENTS.join('\n')
+    expect(findMissingReleaseBehaviour(releaseWithRun(complete))).toEqual([])
+    const withoutFlags = complete.replace('--prerelease --latest=false', '')
+    expect(findMissingReleaseBehaviour(releaseWithRun(withoutFlags))).toEqual([
+      '--prerelease --latest=false',
+    ])
+    expect(findMissingReleaseBehaviour(releaseWithRun(''))).toHaveLength(
+      RELEASE_KEPT_FRAGMENTS.length,
+    )
+  })
+
+  test('flags an eslint cache key without the local rules', () => {
+    expect(
+      eslintCacheKeysOnLocalRules(
+        ciWithCacheKey("${{ hashFiles('bun.lock') }}"),
+      ),
+    ).toBe(false)
+    expect(
+      eslintCacheKeysOnLocalRules(
+        ciWithCacheKey("${{ hashFiles('eslint-rules/**') }}"),
+      ),
+    ).toBe(true)
+  })
+
+  test('flags a required context that no job name provides', () => {
+    const ruleset = JSON.stringify({
+      rules: [
+        {
+          type: 'required_status_checks',
+          parameters: {
+            required_status_checks: [{ context: 'A' }, { context: 'B' }],
+          },
+        },
+        { type: 'deletion' },
+      ],
+    })
+    expect(findUnmatchedRequiredContexts(ruleset, ['A', 'B'])).toEqual([])
+    expect(findUnmatchedRequiredContexts(ruleset, ['A'])).toEqual(['B'])
+  })
+})
+
+describe('release.yml gates', () => {
+  const release = readWorkflow('release.yml')
+
+  test('requires a green CI passed check run before the Release', () => {
+    expect(findReleaseGate(release)).toBeDefined()
+    const names = collectSteps(release).map((step) => step.name)
+    expect(names.indexOf('Require green CI on the tagged commit')).toBeLessThan(
+      names.indexOf('Create GitHub Release'),
+    )
+  })
+
+  test('keeps main ancestry, notes, idempotent create and prerelease flags', () => {
+    expect(findMissingReleaseBehaviour(release)).toEqual([])
+  })
+})
+
+describe('ci.yml gates', () => {
+  const ci = readWorkflow('ci.yml')
+
+  test('keys the eslint cache on eslint-rules/**', () => {
+    expect(eslintCacheKeysOnLocalRules(ci)).toBe(true)
+  })
+
+  test('the CI passed aggregate needs the build job', () => {
+    expect(ci.jobs?.['ci-passed']?.needs).toContain('build')
+    expect(ci.jobs?.build?.name).toBe('Build')
+  })
+})
+
+test('every required ruleset context matches a workflow job name', () => {
+  const rulesetText = readFileSync(
+    new URL('../.github/rulesets/main.json', import.meta.url),
+    'utf8',
+  )
+  const jobNames = listWorkflowFiles().flatMap((fileName) =>
+    collectJobNames(parseWorkflow(readWorkflowText(fileName))),
+  )
+  expect(findUnmatchedRequiredContexts(rulesetText, jobNames)).toEqual([])
 })
 
 test('there is at least one workflow to check', () => {
