@@ -18,7 +18,15 @@ and the documentation:
   tests.
 
 The domain vocabulary is in [`CONTEXT.md`](CONTEXT.md). Skills live in
-`.claude/skills` and are pinned in `skills-lock.json`.
+`.claude/skills` (25 of them, including `playwright-component-testing`,
+`product-marketing` and `typescript-advanced-types`) and are pinned in
+`skills-lock.json`. A map of the docs tree is in
+[`docs/README.md`](docs/README.md).
+
+[`DESIGN.md`](DESIGN.md) is the public design context that design skills read.
+`PRODUCT.md` and `.agents/` are local-only and gitignored; they are built from
+the private brand docs and must never be committed or quoted in public docs
+([ADR 0008](docs/adr/0008-private-docs-stay-local.md)).
 
 ## Running scripts
 
@@ -32,9 +40,16 @@ never use another package manager (this repo uses `bun.lock`). Read
 - `bun run test` — the `bun test` suite, with coverage on. `bunfig.toml` sets a
   `coverageThreshold` (lines 0.55, functions 0.4); a run below it fails, so add
   tests with new code instead of lowering the threshold.
+- `bun run cache:clear` — removes the Node compile cache and the ESLint cache.
+  Run it when a command crashes inside `typescript.js`; more failures by symptom
+  in [`docs/troubleshooting.md`](docs/troubleshooting.md).
+- `bun run ci:local` mirrors the PR gates that do not need a build: frozen
+  install, `lint:commits`, `check`, `lint:docs` and `test`. CI also runs
+  `build`; you do not.
 - `bun run lint:docs` — offline link and anchor check of the Markdown. Run this
   after any docs change.
-- `bun run fix` — formats the repository with Prettier. Prose wraps always.
+- `bun run fix` — formats the repository with Prettier, then autofixes ESLint.
+  Prose wraps always.
 - `bun run build` — **do not run unless explicitly asked.** It is slow and not
   needed to verify most changes.
 
@@ -48,12 +63,30 @@ Rules for any change to the Site. Each one is backed by an ADR:
 - **Hash-based CSP.** An inline script needs its computed hash in the policy;
   never use `unsafe-inline` or `unsafe-eval`.
   [ADR 0010](docs/adr/0010-hash-based-csp-and-security-headers.md).
+- **The CSP is an nginx header.** It is delivered as a header with hashes
+  computed at build time, not as a `<meta>` tag; Astro's meta policy is only a
+  fallback for `astro preview`.
+  [ADR 0012](docs/adr/0012-csp-delivered-as-an-nginx-header.md).
+- **AI crawler policy.** `robots.txt` allows search and answer crawlers and does
+  not allow training crawlers; change it only through a new ADR.
+  [ADR 0013](docs/adr/0013-ai-crawler-policy.md).
+- **One analytics script.** The only allowed third-party script is the
+  cookieless Umami Cloud tracker, with attribute-only events; every other
+  third-party request stays forbidden.
+  [ADR 0014](docs/adr/0014-umami-cloud-cookieless-analytics.md).
 - **Islands only for real interactivity.** Pages are static Astro; use a React
   island only where the UI needs client behaviour.
   [ADR 0006](docs/adr/0006-tailwind-and-shadcn-islands.md).
 - **Copy stays in content files.** Never hardcode user-facing text in
   components; every page and Log entry exists in English and Spanish.
   [ADR 0002](docs/adr/0002-bilingual-parity.md).
+
+## Coverage manifest
+
+Every source module under `scripts`, `eslint-rules`, `docs/brand/tools` and
+`src` needs a colocated test, or an entry with a written reason in `EXEMPTIONS`
+of `scripts/coverage-manifest.test.ts`. Add the test with the module; exempt
+only what cannot be tested in isolation.
 
 ## Astro docs
 
