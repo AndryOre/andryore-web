@@ -5,6 +5,12 @@ import path from 'node:path'
 const ADR_DIRECTORY = import.meta.dir
 const ADR_FILE_PATTERN = /^(\d{4})-[\da-z-]+\.md$/
 const ALLOWED_STATUSES = /^(Accepted|Proposed|Deprecated|Superseded)\b/
+const NOT_YET_IMPLEMENTED_STATUS = /^Accepted — not yet implemented\b/
+const DATE_LINE_PATTERN = /^Date: \d{4}-\d{2}-\d{2}$/m
+const RELATION_PHRASE_PATTERN =
+  /\b(?:Amended|Partly superseded|Superseded) by\b/g
+const RELATION_WITH_LINK_PATTERN =
+  /\b(?:Amended|Partly superseded|Superseded) by\s+\[\d{4}\]\(\d{4}-[^)]+\.md\)/g
 
 interface AdrFile {
   readonly fileName: string
@@ -38,9 +44,27 @@ function findAdrViolations(
     if (!new RegExp(String.raw`^# ${adr.number}: \S.*$`).test(firstLine)) {
       violations.push(`${adr.fileName}: bad header`)
     }
-    const status = /^## Status\n\n(.+)/m.exec(adr.content)?.[1] ?? ''
-    if (!ALLOWED_STATUSES.test(status)) {
+    const statusSection =
+      /(?:^|\n)## Status\n\n([\s\S]*?)(?=\n## |$)/.exec(adr.content)?.[1] ?? ''
+    const status = statusSection.split('\n', 1)[0] ?? ''
+    const hasDash = status.startsWith('Accepted —')
+    if (
+      !ALLOWED_STATUSES.test(status) ||
+      (hasDash && !NOT_YET_IMPLEMENTED_STATUS.test(status))
+    ) {
       violations.push(`${adr.fileName}: unknown status "${status}"`)
+    }
+    if (!DATE_LINE_PATTERN.test(statusSection)) {
+      violations.push(`${adr.fileName}: missing Date line in Status`)
+    }
+    const phraseCount =
+      statusSection.match(RELATION_PHRASE_PATTERN)?.length ?? 0
+    const linkedCount =
+      statusSection.match(RELATION_WITH_LINK_PATTERN)?.length ?? 0
+    if (phraseCount !== linkedCount) {
+      violations.push(
+        `${adr.fileName}: relation wording must link the ADR number`,
+      )
     }
     if (!indexContent.includes(`](${adr.fileName})`)) {
       violations.push(`${adr.fileName}: not listed in README`)
@@ -76,7 +100,7 @@ function fixtureAdr(number: string, status = 'Accepted'): AdrFile {
   return {
     fileName: `${number}-fixture.md`,
     number,
-    content: `# ${number}: Fixture\n\n## Status\n\n${status}\n`,
+    content: `# ${number}: Fixture\n\n## Status\n\n${status}\n\nDate: 2026-10-17\n\n## Context\n`,
   }
 }
 
@@ -112,6 +136,57 @@ describe('findAdrViolations', () => {
   it('flags an unknown status', () => {
     const violations = findAdrViolations([fixtureAdr('0001', 'Maybe')], index)
     expect(violations).toContain('0001-fixture.md: unknown status "Maybe"')
+  })
+
+  it('accepts the not-yet-implemented status', () => {
+    expect(
+      findAdrViolations(
+        [fixtureAdr('0001', 'Accepted — not yet implemented')],
+        '[a](0001-fixture.md)',
+      ),
+    ).toEqual([])
+  })
+
+  it('flags a malformed dashed status', () => {
+    const violations = findAdrViolations(
+      [fixtureAdr('0001', 'Accepted — someday')],
+      index,
+    )
+    expect(violations).toContain(
+      '0001-fixture.md: unknown status "Accepted — someday"',
+    )
+  })
+
+  it('flags a missing or malformed Date line', () => {
+    const missing: AdrFile = {
+      ...fixtureAdr('0001'),
+      content: '# 0001: Fixture\n\n## Status\n\nAccepted\n\n## Context\n',
+    }
+    const malformed: AdrFile = {
+      ...fixtureAdr('0002'),
+      content: fixtureAdr('0002').content.replace('2026-10-17', 'today'),
+    }
+    const violations = findAdrViolations([missing, malformed], index)
+    expect(violations).toContain('0001-fixture.md: missing Date line in Status')
+    expect(violations).toContain('0002-fixture.md: missing Date line in Status')
+  })
+
+  it('accepts linked relation wording, wrapped across lines', () => {
+    const status =
+      'Accepted. Amended by\n[0002](0002-fixture.md): reason. Partly superseded by [0003](0003-fixture.md).'
+    expect(
+      findAdrViolations([fixtureAdr('0001', status)], '[a](0001-fixture.md)'),
+    ).toEqual([])
+  })
+
+  it('flags relation wording without a linked ADR number', () => {
+    const violations = findAdrViolations(
+      [fixtureAdr('0001', 'Accepted. Amended by a later decision.')],
+      index,
+    )
+    expect(violations).toContain(
+      '0001-fixture.md: relation wording must link the ADR number',
+    )
   })
 
   it('flags an unlisted ADR', () => {
