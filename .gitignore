@@ -5,6 +5,10 @@ dist/
 .claude/worktrees/
 .eslintcache
 
+# Local agent context built from the private brand docs (ADR 0008)
+PRODUCT.md
+.agents/
+
 # Private docs: kept on disk, never tracked (ADR 0008)
 docs/web/
 docs/design/

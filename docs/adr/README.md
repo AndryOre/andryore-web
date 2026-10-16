@@ -21,5 +21,9 @@ column.
 | 0006   | [Tailwind v4 and shadcn/ui, as islands](0006-tailwind-and-shadcn-islands.md)       | Accepted | -                        |
 | 0007   | [MIT for code, brand and content reserved](0007-split-license.md)                  | Accepted | -                        |
 | 0008   | [Private docs stay local](0008-private-docs-stay-local.md)                         | Accepted | -                        |
-| 0009   | [No third-party requests from the Site](0009-no-third-party-requests.md)           | Accepted | -                        |
-| 0010   | [Hash-based CSP and security headers](0010-hash-based-csp-and-security-headers.md) | Accepted | -                        |
+| 0009   | [No third-party requests from the Site](0009-no-third-party-requests.md)           | Accepted | 0014 (partly)            |
+| 0010   | [Hash-based CSP and security headers](0010-hash-based-csp-and-security-headers.md) | Accepted | 0012                     |
+| 0011   | [Public repo security posture](0011-public-repo-security-posture.md)               | Accepted | -                        |
+| 0012   | [CSP delivered as an nginx header](0012-csp-delivered-as-an-nginx-header.md)       | Accepted | -                        |
+| 0013   | [AI crawler policy](0013-ai-crawler-policy.md)                                     | Accepted | -                        |
+| 0014   | [Umami Cloud cookieless analytics](0014-umami-cloud-cookieless-analytics.md)       | Accepted | -                        |

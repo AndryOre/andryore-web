@@ -3,7 +3,9 @@
 ## Status
 
 Accepted. Extends [0003](0003-static-astro-on-coolify.md) and
-[0009](0009-no-third-party-requests.md).
+[0009](0009-no-third-party-requests.md). Amended by
+[0012](0012-csp-delivered-as-an-nginx-header.md): the policy is delivered as an
+nginx header, not only a meta tag.
 
 Date: 2026-10-17
 

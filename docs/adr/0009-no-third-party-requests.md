@@ -2,7 +2,9 @@
 
 ## Status
 
-Accepted. Extends [0003](0003-static-astro-on-coolify.md).
+Accepted. Extends [0003](0003-static-astro-on-coolify.md). Partly superseded by
+[0014](0014-umami-cloud-cookieless-analytics.md): one cookieless analytics
+script is allowed.
 
 Date: 2026-10-17
 
