@@ -24,7 +24,7 @@
           {
             "type": "command",
             "if": "Bash(rm *)",
-            "command": "jq -n '{hookSpecificOutput:{hookEventName:\"PreToolUse\",permissionDecision:\"allow\",permissionDecisionReason:\"auto-approved by project settings: rm is safe in this project \u2014 forge waves, workers, and E2E cleanup all shell out to it unattended\"}}'"
+            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/allow-simple-rm.ts\""
           }
         ]
       }
