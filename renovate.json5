@@ -13,6 +13,7 @@
   prHourlyLimit: 2,
   branchConcurrentLimit: 5,
 
+  rebaseWhen: 'conflicted',
   rangeStrategy: 'bump',
 
   minimumReleaseAge: '3 days',

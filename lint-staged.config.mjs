@@ -1,6 +1,6 @@
 const config = {
   '*.{ts,tsx,mjs,astro}': [
-    'eslint --fix --max-warnings=0 --cache --cache-strategy content',
+    'eslint --fix --max-warnings=0 --no-warn-ignored --cache --cache-strategy content',
     'bunx --bun prettier --write --cache',
   ],
   '*.{js,jsx,astro,json,json5,md,mdx,css,scss,yml,yaml}': [
