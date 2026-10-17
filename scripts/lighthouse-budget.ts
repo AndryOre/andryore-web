@@ -240,8 +240,10 @@ export function resolveStaticFile(
   pathname: string,
 ): string | null {
   const relative = decodeURIComponent(pathname).replace(/^\/+/, '')
-  const candidate = path.resolve(distributionDirectory, relative)
-  if (!candidate.startsWith(path.resolve(distributionDirectory))) return null
+  const root = path.resolve(distributionDirectory)
+  const candidate = path.resolve(root, relative)
+  const fromRoot = path.relative(root, candidate)
+  if (fromRoot.startsWith('..') || path.isAbsolute(fromRoot)) return null
   const file = pathname.endsWith('/')
     ? path.join(candidate, 'index.html')
     : candidate
@@ -255,6 +257,7 @@ export function resolveStaticFile(
  */
 function serveDistribution(distributionDirectory: string) {
   return Bun.serve({
+    hostname: '127.0.0.1',
     port: 0,
     fetch(request) {
       const file = resolveStaticFile(

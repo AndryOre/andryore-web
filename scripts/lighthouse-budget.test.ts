@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 import {
   chmodSync,
+  mkdirSync,
   mkdtempSync,
   readFileSync,
   rmSync,
@@ -208,5 +209,17 @@ describe('resolveStaticFile', () => {
     )
     expect(resolveStaticFile(directory, '/missing/')).toBeNull()
     expect(resolveStaticFile(directory, '/../etc/passwd')).toBeNull()
+  })
+
+  test('blocks a sibling directory that shares the dist prefix', () => {
+    const parent = makeTemporaryDirectory()
+    const distribution = path.join(parent, 'dist')
+    const sibling = path.join(parent, 'dist-other')
+    mkdirSync(distribution)
+    mkdirSync(sibling)
+    writeFileSync(path.join(sibling, 'secret.txt'), 'secret')
+    expect(
+      resolveStaticFile(distribution, '/..%2Fdist-other/secret.txt'),
+    ).toBeNull()
   })
 })
