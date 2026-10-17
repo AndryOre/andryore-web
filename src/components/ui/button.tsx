@@ -10,8 +10,8 @@ const VARIANT_CLASSES = {
 } as const
 
 const SIZE_CLASSES = {
-  default: 'h-9 px-4 py-2',
-  icon: 'size-8',
+  default: 'min-h-11 px-4 py-2',
+  icon: 'size-11',
   dock: 'size-11',
 } as const
 
