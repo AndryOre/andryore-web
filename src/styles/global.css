@@ -66,6 +66,20 @@
   animation-delay: calc(--value(integer) * 60ms);
 }
 
+@utility tile-reveal {
+  animation: reveal var(--duration-slow) var(--ease-out) backwards;
+}
+
+@utility annotation-in {
+  animation: annotation-in var(--duration-slow) var(--ease-out) 700ms backwards;
+}
+
+@keyframes annotation-in {
+  from {
+    opacity: 0;
+  }
+}
+
 @keyframes reveal {
   from {
     opacity: 0;

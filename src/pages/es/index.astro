@@ -1,11 +1,11 @@
 ---
-import Placeholder from '../../components/Placeholder.astro'
-import placeholder from '../../content/placeholder.json'
+import HomeBento from '../../components/HomeBento.astro'
+import home from '../../content/home.json'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 
-const { title } = placeholder.es
+const { title, description } = home.es.meta
 ---
 
-<BaseLayout title={title} locale="es" dark noindex>
-  <Placeholder locale="es" />
+<BaseLayout title={title} description={description} locale="es" wide>
+  <HomeBento locale="es" />
 </BaseLayout>

@@ -21,6 +21,7 @@ interface Props {
   description?: string
   noindex?: boolean
   dark?: boolean
+  wide?: boolean
 }
 
 const {
@@ -29,6 +30,7 @@ const {
   description,
   noindex = false,
   dark = false,
+  wide = false,
 } = Astro.props
 
 const copy = chrome[locale]
@@ -109,7 +111,10 @@ const switchTo = otherLocale(locale)
     <main
       id="main"
       tabindex="-1"
-      class="mx-auto w-full max-w-reading flex-1 px-4 py-8 focus:outline-none sm:px-6"
+      class:list={[
+        'mx-auto w-full flex-1 px-4 py-8 focus:outline-none sm:px-6',
+        wide ? 'max-w-[75rem]' : 'max-w-reading',
+      ]}
     >
       <slot />
     </main>
