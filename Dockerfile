@@ -6,6 +6,7 @@ RUN bun install --frozen-lockfile --ignore-scripts
 
 COPY astro.config.mjs tsconfig.json ./
 COPY docs/brand/tokens.css docs/brand/tokens.css
+COPY docs/brand/avatar/memoji.webp docs/brand/avatar/memoji.webp
 COPY public public
 COPY src src
 RUN bun run build
