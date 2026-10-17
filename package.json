@@ -11,6 +11,7 @@
     "test": "bun test",
     "test:e2e": "playwright test",
     "test:visual": "bash scripts/visual.sh",
+    "test:browsers": "bash scripts/browsers.sh",
     "test:smoke": "bash scripts/smoke.sh",
     "audit:dist": "bun scripts/audit-distribution.ts",
     "lint:commits": "bun scripts/lint-commits.ts",
