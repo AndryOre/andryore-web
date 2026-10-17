@@ -5,6 +5,7 @@ import {
   findMissingEntryPairs,
   findMissingPagePairs,
   findUnusedKeys,
+  flattenMessages,
   lintCopy,
   messageProblems,
   pageRoutesFromFiles,
@@ -156,5 +157,20 @@ describe('lintCopy', () => {
 
   test('passes clean copy', () => {
     expect(lintCopy('f.json', { en: { title: 'andryore.dev' } })).toEqual([])
+  })
+})
+
+describe('flattenMessages', () => {
+  test('flattens nested objects into dotted keys', () => {
+    expect(
+      flattenMessages({ title: 'A', theme: { auto: 'Auto', dark: 'Dark' } }),
+    ).toEqual({ title: 'A', 'theme.auto': 'Auto', 'theme.dark': 'Dark' })
+  })
+
+  test('skips non-string leaves', () => {
+    expect(flattenMessages({ count: 3, list: ['a'], ok: 'x' })).toEqual({
+      'list.0': 'a',
+      ok: 'x',
+    })
   })
 })

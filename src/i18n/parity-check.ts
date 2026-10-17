@@ -7,6 +7,7 @@ import {
   findMissingEntryPairs,
   findMissingPagePairs,
   findUnusedKeys,
+  flattenMessages,
   lintCopy,
   messageProblems,
   type ContentEntry,
@@ -72,10 +73,14 @@ function jsonProblems(
   const unused = findUnusedKeys(Object.keys(parsed.en ?? {}), sources).map(
     (key) => `${name}: key "${key}" is not used by any source file.`,
   )
+  const flat = {
+    en: flattenMessages(parsed.en),
+    es: flattenMessages(parsed.es),
+  }
   return [
     ...problems,
-    ...messageProblems(name, parsed),
-    ...lintCopy(name, parsed),
+    ...messageProblems(name, flat),
+    ...lintCopy(name, flat),
     ...unused,
   ]
 }

@@ -93,6 +93,29 @@ export function findMissingEntryPairs(
   )
 }
 
+/**
+ * Flattens nested string objects into dot-separated keys, so grouped copy
+ * such as `theme.auto` takes part in key and placeholder parity.
+ * @param value A parsed JSON object whose leaves are strings.
+ * @param prefix Key path of `value`, empty at the root.
+ * @returns Every string leaf by its dotted key; non-string leaves are skipped.
+ */
+export function flattenMessages(
+  value: unknown,
+  prefix = '',
+): Record<string, string> {
+  if (typeof value === 'string') return { [prefix]: value }
+  return typeof value !== 'object' || value === null
+    ? {}
+    : Object.fromEntries(
+        Object.entries(value).flatMap(([key, child]) =>
+          Object.entries(
+            flattenMessages(child, prefix ? `${prefix}.${key}` : key),
+          ),
+        ),
+      )
+}
+
 function placeholdersOf(message: string): string {
   return (message.match(PLACEHOLDER) ?? []).toSorted(compareText).join(' ')
 }
