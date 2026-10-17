@@ -1,5 +1,6 @@
 ---
 import HomeBento from '../../components/HomeBento.astro'
+import StreamTile from '../../components/StreamTile.astro'
 import home from '../../content/home.json'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 
@@ -7,5 +8,7 @@ const { title, description } = home.es.meta
 ---
 
 <BaseLayout title={title} description={description} locale="es" wide>
-  <HomeBento locale="es" />
+  <HomeBento locale="es">
+    <StreamTile slot="stream" locale="es" />
+  </HomeBento>
 </BaseLayout>

@@ -81,6 +81,16 @@
       "empty": "Nothing here yet. The first entry lands soon.",
       "entryPath": "/log/"
     },
+    "stream": {
+      "label": "Stream",
+      "live": "Live now",
+      "offline": "Offline",
+      "schedule": "Tuesdays and Thursdays, 19:00 UTC",
+      "unavailable": "Status unavailable right now",
+      "open": "Open Twitch",
+      "href": "https://www.twitch.tv/andryoredev",
+      "sample": true
+    },
     "links": {
       "label": "Find me",
       "items": [
@@ -173,6 +183,16 @@
       "allPath": "/log/",
       "empty": "Aún no hay nada. La primera entrada llega pronto.",
       "entryPath": "/log/"
+    },
+    "stream": {
+      "label": "Stream",
+      "live": "En vivo ahora",
+      "offline": "Sin conexión",
+      "schedule": "Martes y jueves, 19:00 UTC",
+      "unavailable": "Estado no disponible por ahora",
+      "open": "Abrir Twitch",
+      "href": "https://www.twitch.tv/andryoredev",
+      "sample": true
     },
     "links": {
       "label": "Encuéntrame",
