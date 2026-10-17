@@ -1,0 +1,28 @@
+{
+  "en": {
+    "tryCta": "Try {name}",
+    "state": {
+      "live": "Live",
+      "beta": "Beta"
+    },
+    "proofHeading": "Proof",
+    "proofAsOf": "as of {date}",
+    "whyHeading": "Why I built it",
+    "stackHeading": "Stack",
+    "changelogLink": "Read the changelog",
+    "placeholderNote": "Placeholder image"
+  },
+  "es": {
+    "tryCta": "Probar {name}",
+    "state": {
+      "live": "Activo",
+      "beta": "Beta"
+    },
+    "proofHeading": "Pruebas",
+    "proofAsOf": "a {date}",
+    "whyHeading": "Por qué lo construí",
+    "stackHeading": "Stack",
+    "changelogLink": "Leer el registro de cambios",
+    "placeholderNote": "Imagen provisional"
+  }
+}

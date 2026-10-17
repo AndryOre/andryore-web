@@ -1,0 +1,151 @@
+---
+import { Picture } from 'astro:assets'
+import { getCollection, render } from 'astro:content'
+
+import productUi from '../content/product-ui.json'
+import type { Locale } from '../i18n/locales'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { revealClass } from '../lib/motion'
+import {
+  fillPlaceholder,
+  formatProofDate,
+  visibleProof,
+  type ProductEntry,
+} from '../lib/products'
+
+interface Props {
+  locale: Locale
+  productKey: string
+}
+
+const { locale, productKey } = Astro.props
+const ui = productUi[locale]
+
+const entries: ProductEntry[] = await getCollection('products')
+const entry = entries.find(
+  (candidate) =>
+    candidate.data.lang === locale && candidate.data.key === productKey,
+)
+if (!entry) {
+  throw new Error(`No "${locale}" product entry for "${productKey}".`)
+}
+const { data } = entry
+const { Content } = await render(entry)
+const proof = visibleProof(data.proof)
+
+const rowClass =
+  'border-border grid gap-1 border-t py-4 min-[700px]:grid-cols-[9rem_minmax(0,1fr)] min-[700px]:gap-6'
+const labelClass =
+  'text-muted-foreground font-mono text-xs tracking-widest uppercase'
+const valueClass = 'm-0 min-w-0 [overflow-wrap:anywhere]'
+---
+
+<BaseLayout
+  title={`${data.name} · AndryOre`}
+  locale={locale}
+  description={data.description}
+>
+  <article class="flex flex-col gap-8">
+    <header class:list={['reveal', revealClass(0), 'flex flex-col gap-4']}>
+      <div class="flex flex-wrap items-center gap-3">
+        <h1 class="m-0 min-w-0 text-4xl font-bold tracking-tight [overflow-wrap:anywhere]">
+          {data.name}
+        </h1>
+        <span
+          class="border-border text-muted-foreground rounded-pill shrink-0 border px-3 py-1 font-mono text-xs whitespace-nowrap"
+          data-product-state={data.state}
+        >
+          {ui.state[data.state]}
+        </span>
+      </div>
+      <p class="text-muted-foreground m-0 text-lg [overflow-wrap:anywhere]">
+        {data.value}
+      </p>
+      <p class="m-0">
+        <a
+          href={data.url}
+          rel="noopener"
+          class="bg-primary text-primary-foreground rounded-pill inline-flex min-h-11 items-center px-5 py-2 text-sm font-medium no-underline hover:opacity-90"
+        >
+          {fillPlaceholder(ui.tryCta, 'name', data.name)}
+        </a>
+      </p>
+    </header>
+
+    <figure
+      class:list={['reveal', revealClass(1), 'm-0 flex flex-col gap-2']}
+      data-product-image={data.key}
+      data-placeholder={data.image.placeholder ? '' : undefined}
+    >
+      <Picture
+        src={data.image.src}
+        alt={data.image.alt}
+        formats={['avif', 'webp']}
+        widths={[480, 720, 1200]}
+        sizes="(min-width: 768px) 720px, 100vw"
+        loading="lazy"
+        class="min-h-[260px] w-full rounded-[20px] object-cover"
+      />
+      {data.image.placeholder && (
+        <figcaption class={labelClass}>{ui.placeholderNote}</figcaption>
+      )}
+    </figure>
+
+    <dl class:list={['reveal', revealClass(2), 'm-0 flex flex-col']}>
+      {proof.length > 0 && (
+        <>
+          <div class={rowClass}>
+            <dt class={labelClass}>{ui.proofHeading}</dt>
+            <dd class={valueClass}>
+              <ul class="m-0 flex list-none flex-col gap-3 p-0">
+                {proof.map((row) => (
+                  <li class="flex flex-col gap-0.5">
+                    <span class="text-muted-foreground text-sm">
+                      {row.label}
+                    </span>
+                    <span class="font-mono text-xl tabular-nums">
+                      {row.value}
+                    </span>
+                    <time
+                      class="text-muted-foreground font-mono text-xs"
+                      datetime={row.date}
+                    >
+                      {fillPlaceholder(
+                        ui.proofAsOf,
+                        'date',
+                        formatProofDate(row.date, locale),
+                      )}
+                    </time>
+                  </li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+        </>
+      )}
+      <div class={rowClass}>
+        <dt class={labelClass}>{ui.whyHeading}</dt>
+        <dd class={valueClass}>
+          <Content />
+        </dd>
+      </div>
+      <div class={rowClass}>
+        <dt class={labelClass}>{ui.stackHeading}</dt>
+        <dd class={valueClass}>
+          <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
+            {data.stack.map((item) => (
+              <li class="bg-muted rounded-pill px-3 py-1 font-mono text-xs">
+                {item}
+              </li>
+            ))}
+          </ul>
+        </dd>
+      </div>
+    </dl>
+    <p class="border-border m-0 border-t pt-4">
+      <a href={data.changelog} rel="noopener" class="text-primary">
+        {ui.changelogLink}
+      </a>
+    </p>
+  </article>
+</BaseLayout>

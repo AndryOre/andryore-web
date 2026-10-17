@@ -14,6 +14,8 @@ const SOURCE_ROOTS = [
 const EXEMPTIONS: Readonly<Record<string, string>> = {
   'scripts/workflow-files.ts':
     'Workflow loader used by workflows-invariants.test.ts, which exercises it against the real workflows.',
+  'src/content.config.ts':
+    'Astro collection config that needs astro:content; its schema lives in lib/products.ts, which is tested.',
   'src/pages/sitemap.xml.ts':
     'Astro endpoint that needs import.meta.glob; its logic lives in seo/sitemap.ts and i18n/parity.ts, both tested.',
   'src/pages/robots.txt.ts':
