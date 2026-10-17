@@ -3,12 +3,16 @@
     "wordmark": "AndryOre",
     "homeLabel": "AndryOre, home",
     "skipLink": "Skip to content",
-    "footerNote": "AndryOre"
+    "footerNote": "AndryOre",
+    "switchLabel": "Español",
+    "switchAria": "Leer en español"
   },
   "es": {
     "wordmark": "AndryOre",
     "homeLabel": "AndryOre, inicio",
     "skipLink": "Saltar al contenido",
-    "footerNote": "AndryOre"
+    "footerNote": "AndryOre",
+    "switchLabel": "English",
+    "switchAria": "Read in English"
   }
 }
