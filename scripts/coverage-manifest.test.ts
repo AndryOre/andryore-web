@@ -20,6 +20,8 @@ const EXEMPTIONS: Readonly<Record<string, string>> = {
     'Astro endpoint that needs import.meta.glob; its logic lives in seo/sitemap.ts and i18n/parity.ts, both tested.',
   'src/pages/robots.txt.ts':
     'Astro endpoint that only wraps seo/robots.ts, which is tested.',
+  'src/server/stream-status-server.ts':
+    'Bun.serve entry that binds a port at import time; its logic lives in lib/twitch-status.ts, which is tested.',
   'scripts/i18n-status.ts':
     'CLI that prints findStaleTranslations over the real content; the logic is tested in src/i18n/translations.test.ts.',
   'src/log/collection.ts':
