@@ -6,4 +6,7 @@
 node_modules
 dist
 coverage
-docs
+docs/*
+!docs/brand
+docs/brand/*
+!docs/brand/tokens.css
