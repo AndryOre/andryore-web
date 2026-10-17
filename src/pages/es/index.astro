@@ -1,0 +1,11 @@
+---
+import Placeholder from '../../components/Placeholder.astro'
+import placeholder from '../../content/placeholder.json'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+
+const { title } = placeholder.es
+---
+
+<BaseLayout title={title} locale="es" dark noindex>
+  <Placeholder locale="es" />
+</BaseLayout>

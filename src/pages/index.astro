@@ -1,95 +1,11 @@
 ---
+import Placeholder from '../components/Placeholder.astro'
 import placeholder from '../content/placeholder.json'
 import BaseLayout from '../layouts/BaseLayout.astro'
-import { revealClass } from '../lib/motion'
 
-const { title, domain, loading } = placeholder.en
+const { title } = placeholder.en
 ---
 
-<BaseLayout title={title} dark noindex>
-  <section class="flex min-h-[60dvh] flex-col items-center justify-center gap-5 font-mono">
-    <svg
-      class:list={[
-        'reveal',
-        revealClass(0),
-        'h-auto w-[clamp(7rem,22vw,10rem)]',
-      ]}
-      viewBox="100 150 310 200"
-      role="img"
-      aria-label="Ao"
-    >
-      <path
-        class="fill-foreground"
-        d="M122.88 333.26 164.33 175.59H216.13L257.58 333.26H226.94L218.38 298.57H162.07L153.51 333.26H122.88ZM169.06 271.09H211.4L192.26 194.28H188.2L169.06 271.09Z"
-      ></path>
-      <path
-        class="fill-primary"
-        d="M330.56 336.41Q313.89 336.41 300.6 329.66Q287.31 322.9 279.65 310.06Q271.99 297.22 271.99 279.2V275.6Q271.99 257.58 279.65 244.74Q287.31 231.9 300.6 225.14Q313.89 218.38 330.56 218.38Q347.22 218.38 360.51 225.14Q373.8 231.9 381.46 244.74Q389.12 257.58 389.12 275.6V279.2Q389.12 297.22 381.46 310.06Q373.8 322.9 360.51 329.66Q347.22 336.41 330.56 336.41ZM330.56 311.19Q343.62 311.19 352.18 302.74Q360.74 294.29 360.74 278.52V276.27Q360.74 260.5 352.29 252.06Q343.85 243.61 330.56 243.61Q317.49 243.61 308.93 252.06Q300.37 260.5 300.37 276.27V278.52Q300.37 294.29 308.93 302.74Q317.49 311.19 330.56 311.19Z"
-      ></path>
-    </svg>
-
-    <p
-      class:list={[
-        'reveal',
-        revealClass(2),
-        'text-muted-foreground m-0 flex items-center gap-2 text-[0.8125rem] tracking-widest uppercase',
-      ]}
-      role="status"
-    >
-      <span>{loading}</span>
-      <span class="cursor bg-primary h-[0.9em] w-2" aria-hidden="true"></span>
-    </p>
-
-    <span
-      class:list={[
-        'reveal',
-        revealClass(3),
-        'bg-border block h-px w-30 overflow-hidden',
-      ]}
-      aria-hidden="true"
-    >
-      <span class="sweep bg-primary block h-full w-2/5"></span>
-    </span>
-
-    <p
-      class:list={[
-        'reveal',
-        revealClass(5),
-        'text-muted-foreground m-0 text-xs tracking-wide',
-      ]}
-    >
-      {domain}
-    </p>
-  </section>
+<BaseLayout title={title} locale="en" dark noindex>
+  <Placeholder locale="en" />
 </BaseLayout>
-
-<style>
-  .cursor {
-    animation: blink 1.1s steps(1, end) infinite;
-  }
-
-  .sweep {
-    animation: sweep 1.6s cubic-bezier(0.65, 0, 0.35, 1) infinite;
-  }
-
-  @keyframes blink {
-    50% {
-      opacity: 0;
-    }
-  }
-
-  @keyframes sweep {
-    from {
-      transform: translateX(-100%);
-    }
-    to {
-      transform: translateX(250%);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .sweep {
-      width: 100%;
-    }
-  }
-</style>
