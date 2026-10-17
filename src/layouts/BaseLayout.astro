@@ -4,6 +4,7 @@ import '../styles/global.css'
 import ContactBlock from '../components/ContactBlock.astro'
 import Dock from '../components/Dock'
 import chrome from '../content/chrome.json'
+import home from '../content/home.json'
 import {
   absoluteUrl,
   alternatesFor,
@@ -14,6 +15,12 @@ import {
   type Locale,
 } from '../i18n/locales'
 import { THEME_INIT_SCRIPT } from '../scripts/theme-init'
+import {
+  documentTitle,
+  imageMetaTags,
+  pageOpenGraphTags,
+} from '../seo/metadata'
+import { siteGraphJsonLd } from '../seo/structured-data'
 
 interface Props {
   title: string
@@ -38,6 +45,19 @@ const year = new Date().getFullYear()
 const { path } = splitLocalePath(Astro.url.pathname)
 const alternates = alternatesFor(path)
 const canonical = absoluteUrl(localePath(locale, path))
+const fullTitle = documentTitle(title, copy.wordmark)
+const pageDescription = description ?? home[locale].meta.description
+const socialTags = [
+  ...(Astro.slots.has('head')
+    ? []
+    : pageOpenGraphTags({
+        locale,
+        title: fullTitle,
+        description: pageDescription,
+        url: canonical,
+      })),
+  ...imageMetaTags(locale, copy.ogImageAlt),
+]
 ---
 
 <html lang={locale} class:list={{ dark }}>
@@ -58,24 +78,38 @@ const canonical = absoluteUrl(localePath(locale, path))
       data-theme-color="dark"
     />
     <script is:inline set:html={THEME_INIT_SCRIPT}></script>
-    {description && <meta name="description" content={description} />}
+    <meta name="description" content={pageDescription} />
     {noindex && <meta name="robots" content="noindex" />}
-    <link rel="canonical" href={canonical} />
-    {alternates.map((alternate) => (
+    {!noindex && <link rel="canonical" href={canonical} />}
+    {!noindex &&
+      alternates.map((alternate) => (
+        <link
+          rel="alternate"
+          hreflang={alternate.hreflang}
+          href={absoluteUrl(alternate.path)}
+        />
+      ))}
+    {!noindex && (
       <link
         rel="alternate"
-        hreflang={alternate.hreflang}
-        href={absoluteUrl(alternate.path)}
+        hreflang="x-default"
+        href={absoluteUrl(localePath(DEFAULT_LOCALE, path))}
       />
-    ))}
-    <link
-      rel="alternate"
-      hreflang="x-default"
-      href={absoluteUrl(localePath(DEFAULT_LOCALE, path))}
-    />
+    )}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
-    <title>{title}</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    {socialTags.map((tag) => (
+      <meta property={tag.property} content={tag.content} />
+    ))}
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={siteGraphJsonLd(locale, home[locale].meta.description)}
+    ></script>
+    <title>{fullTitle}</title>
     <slot name="head" />
   </head>
   <body class="flex min-h-dvh flex-col">
@@ -105,16 +139,16 @@ const canonical = absoluteUrl(localePath(locale, path))
       <div class="mb-6">
         <ContactBlock locale={locale} idSuffix="footer" />
       </div>
-      <nav aria-label={copy.footerNavLabel} class="mb-4 flex gap-4">
+      <nav aria-label={copy.footerNavLabel} class="mb-4 flex flex-wrap gap-x-4">
         <a
           href={localePath(locale, '/uses/')}
-          class="underline underline-offset-4"
+          class="inline-flex min-h-11 items-center underline underline-offset-4"
         >
           {copy.usesLabel}
         </a>
         <a
           href={localePath(locale, '/colophon/')}
-          class="underline underline-offset-4"
+          class="inline-flex min-h-11 items-center underline underline-offset-4"
         >
           {copy.colophonLabel}
         </a>
@@ -124,7 +158,7 @@ const canonical = absoluteUrl(localePath(locale, path))
           hreflang={otherLocale(locale)}
           aria-label={copy.switchAria}
           data-locale-switch={otherLocale(locale)}
-          class="underline underline-offset-4"
+          class="inline-flex min-h-11 items-center underline underline-offset-4"
         >
           {copy.switchLabel}
         </a>
