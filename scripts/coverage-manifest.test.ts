@@ -18,6 +18,12 @@ const EXEMPTIONS: Readonly<Record<string, string>> = {
     'Astro endpoint that needs import.meta.glob; its logic lives in seo/sitemap.ts and i18n/parity.ts, both tested.',
   'src/pages/robots.txt.ts':
     'Astro endpoint that only wraps seo/robots.ts, which is tested.',
+  'scripts/i18n-status.ts':
+    'CLI that prints findStaleTranslations over the real content; the logic is tested in src/i18n/translations.test.ts.',
+  'src/log/collection.ts':
+    'Thin wrapper over astro:content getCollection, which only resolves inside Astro; the logic lives in src/log/entries.ts, which is tested.',
+  'src/content.config.ts':
+    'Astro content collection definition that needs the astro:content runtime; the build validates it.',
   'docs/brand/tools/export.mjs':
     'Brand raster export CLI that needs a real browser and writes the committed rasters; its pure logic lives in brand-export-spec.mjs.',
 }

@@ -13,6 +13,7 @@ import {
   type ContentEntry,
   type MessagesByLocale,
 } from './parity'
+import { translationProblems } from './translated-entries'
 
 const SOURCE_FILE = /\.(?:astro|tsx?|mjs)$/
 const TEST_FILE = /\.test\.(?:tsx?|mjs)$/
@@ -109,6 +110,7 @@ export function runParityCheck(root: string): string[] {
   return [
     ...findMissingPagePairs(pageFiles),
     ...findMissingEntryPairs(entries),
+    ...translationProblems(root),
     ...stringFiles.flatMap((file) => jsonProblems(root, file, sources)),
   ]
 }
