@@ -1,0 +1,61 @@
+---
+import logUi from '../content/log-ui.json'
+import type { Locale } from '../i18n/locales'
+import {
+  formatLogDate,
+  logEntryPath,
+  readTimeLabel,
+  type LogEntrySummary,
+} from '../log/entries'
+
+interface Props {
+  lang: Locale
+  entries: (LogEntrySummary & { readMinutes: number })[]
+}
+
+const { lang, entries } = Astro.props
+const copy = logUi[lang]
+---
+
+<section class="flex flex-col gap-8">
+  <header class="flex flex-col gap-2">
+    <h1 class="m-0 text-4xl font-bold tracking-tight break-words">
+      {copy.heading}
+    </h1>
+    <p class="text-muted-foreground m-0 max-w-[65ch]">{copy.intro}</p>
+  </header>
+
+  {entries.length === 0 ? (
+    <div
+      class="border-border flex flex-col gap-2 rounded-card border border-dashed px-6 py-12 text-center"
+      role="status"
+    >
+      <p class="m-0 text-lg font-bold">{copy.emptyHeading}</p>
+      <p class="text-muted-foreground m-0">{copy.emptyBody}</p>
+    </div>
+  ) : (
+    <ul class="m-0 flex list-none flex-col p-0" aria-label={copy.listLabel}>
+      {entries.map((entry) => (
+        <li class="border-border border-b first:border-t">
+          <a
+            href={logEntryPath(lang, entry.key)}
+            class="hover:bg-muted flex flex-col gap-1 py-4 no-underline sm:flex-row sm:items-baseline sm:gap-6"
+          >
+            <time
+              class="text-muted-foreground shrink-0 font-mono text-xs sm:w-32"
+              datetime={entry.date.toISOString().slice(0, 10)}
+            >
+              {formatLogDate(entry.date, lang)}
+            </time>
+            <span class="min-w-0 flex-1 font-bold break-words">
+              {entry.title}
+            </span>
+            <span class="text-muted-foreground shrink-0 font-mono text-xs">
+              {readTimeLabel(copy.readTime, entry.readMinutes)}
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+</section>

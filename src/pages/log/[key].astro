@@ -1,0 +1,16 @@
+---
+import LogEntryRoute from '../../components/LogEntryRoute.astro'
+import { getLogEntriesIn } from '../../log/collection'
+
+export async function getStaticPaths() {
+  const entries = await getLogEntriesIn('en')
+  return entries.map((entry) => ({
+    params: { key: entry.key },
+    props: { entry },
+  }))
+}
+
+const { entry } = Astro.props
+---
+
+<LogEntryRoute lang="en" entry={entry} />

@@ -1,0 +1,303 @@
+---
+import { Image } from 'astro:assets'
+
+import memoji from '../../docs/brand/avatar/memoji.webp'
+import chrome from '../content/chrome.json'
+import home from '../content/home.json'
+import { localePath, type Locale } from '../i18n/locales'
+import { revealClass } from '../lib/motion'
+import { getLatestLogEntries } from '../log/collection'
+import ThemeToggle from './ThemeToggle'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const copy = home[locale]
+const themeCopy = chrome[locale].theme
+
+const RECENT_LOG_LIMIT = 3
+const latest = await getLatestLogEntries(locale, RECENT_LOG_LIMIT)
+const recent = latest.map((entry) => ({
+  key: entry.key,
+  title: entry.title,
+  date: entry.date.toISOString().slice(0, 10),
+}))
+
+const hasClock = Astro.slots.has('clock')
+const hasLive = Astro.slots.has('github') || Astro.slots.has('stream')
+
+const tileBase =
+  'tile-reveal bg-card border-border relative flex min-w-0 flex-col gap-3 overflow-hidden rounded-[1.25rem] border p-5 shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)] transition-[transform,border-color] duration-[160ms] ease-out hover:-translate-y-0.5 hover:border-foreground/40'
+
+const place = {
+  hero: 'sm:col-span-2 lg:col-span-8 lg:row-span-4 lg:p-8',
+  about: hasClock
+    ? 'lg:col-span-4 lg:row-span-3'
+    : 'lg:col-span-4 lg:row-span-4',
+  snug: 'lg:col-span-6 lg:row-span-4',
+  afe: 'lg:col-span-6 lg:row-span-4',
+  status: 'lg:col-span-4 lg:row-span-3',
+  recent: 'sm:col-span-2 lg:col-span-8 lg:row-span-3',
+  links: hasLive
+    ? 'lg:col-span-4 lg:row-span-2'
+    : 'sm:col-span-2 lg:col-span-8 lg:row-span-1',
+  theme: hasLive
+    ? 'lg:col-span-4 lg:row-span-1'
+    : 'sm:col-span-2 lg:col-span-4 lg:row-span-1',
+}
+
+const labelClass =
+  'text-muted-foreground flex items-center justify-between gap-3 font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase'
+const bodyClass = 'text-muted-foreground m-0 text-sm [overflow-wrap:anywhere]'
+const pillClass =
+  'bg-secondary border-border inline-flex shrink-0 items-center gap-2 rounded-pill border px-2.5 py-0.5 font-mono text-[0.6875rem] font-medium tracking-[0.06em] whitespace-nowrap uppercase'
+const sampleClass =
+  'border-border rounded-pill border px-2 font-mono text-[0.6875rem] tracking-[0.06em] whitespace-nowrap'
+const dateClass =
+  'text-muted-foreground font-mono text-xs tabular-nums whitespace-nowrap'
+
+const productsPlacement = [place.snug, place.afe]
+const hero = copy.hero
+---
+
+<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-12 lg:auto-rows-[minmax(5.25rem,auto)]">
+  <article
+    class:list={[tileBase, revealClass(0), place.hero, 'justify-between gap-7']}
+  >
+    <p class={labelClass}>{hero.kicker}</p>
+    <h1 class="relative m-0 text-4xl leading-[1.04] font-bold tracking-[-0.035em] text-balance [overflow-wrap:anywhere] sm:text-5xl lg:text-[3.75rem]">
+      {hero.lead}
+      <span class="relative inline-block">
+        {hero.emphasis}
+        <span
+          class="annotation-in outline-primary pointer-events-none absolute -inset-1 rounded-sm outline outline-1 motion-reduce:hidden"
+          aria-hidden="true"
+        >
+          <i class="bg-background border-primary absolute -top-[5px] -left-[5px] size-[7px] rounded-[1px] border"></i>
+          <i class="bg-background border-primary absolute -top-[5px] -right-[5px] size-[7px] rounded-[1px] border"></i>
+          <i class="bg-background border-primary absolute -bottom-[5px] -left-[5px] size-[7px] rounded-[1px] border"></i>
+          <i class="bg-background border-primary absolute -right-[5px] -bottom-[5px] size-[7px] rounded-[1px] border"></i>
+        </span>
+      </span>
+      {hero.tail}
+    </h1>
+    <div class="grid gap-5">
+      <p class="text-muted-foreground m-0 max-w-[56ch] text-base">
+        {hero.body}
+      </p>
+      <div class="flex flex-wrap gap-2.5">
+        <a
+          href={localePath(locale, hero.primary.path)}
+          class="bg-foreground text-background rounded-pill inline-flex min-h-11 items-center px-5 text-sm font-medium no-underline transition-transform duration-[160ms] ease-out hover:-translate-y-px"
+        >
+          {hero.primary.label}
+        </a>
+        <a
+          href={localePath(locale, hero.secondary.path)}
+          class="border-border bg-secondary text-foreground rounded-pill inline-flex min-h-11 items-center border px-5 text-sm font-medium no-underline transition-transform duration-[160ms] ease-out hover:-translate-y-px"
+        >
+          {hero.secondary.label}
+        </a>
+      </div>
+    </div>
+    <span
+      class="annotation-in text-muted-foreground/70 border-border bg-secondary/60 pointer-events-none absolute top-6 right-6 hidden rounded-md border px-2 py-0.5 font-mono text-[0.6875rem] whitespace-nowrap motion-reduce:hidden lg:block"
+      aria-hidden="true"
+    >
+      {hero.annotation}
+    </span>
+  </article>
+
+  <article class:list={[tileBase, revealClass(1), place.about]}>
+    <p class={labelClass}>{copy.about.label}</p>
+    <div class="grid flex-1 place-items-center">
+      <Image
+        src={memoji}
+        alt=""
+        width={132}
+        height={132}
+        class="border-border bg-secondary size-[8.25rem] rounded-[1.75rem] border"
+      />
+    </div>
+    <p class={bodyClass}>{copy.about.body}</p>
+  </article>
+
+  {hasClock && (
+    <div class:list={[revealClass(2), 'tile-reveal lg:col-span-4']}>
+      <slot name="clock" />
+    </div>
+  )}
+
+  {copy.products.items.map((product, index) => (
+    <article
+      class:list={[
+        tileBase,
+        revealClass(3 + index),
+        productsPlacement[index],
+        'sm:col-span-1',
+      ]}
+    >
+      <div class={labelClass}>
+        <span class="flex items-center gap-2">
+          {copy.products.label}
+          {product.sample && <span class={sampleClass}>{copy.sample}</span>}
+        </span>
+        <span class={pillClass}>
+          <span
+            class:list={[
+              'size-[7px] rounded-full',
+              product.stateKind === 'beta' ? 'bg-primary' : 'bg-success',
+            ]}
+            aria-hidden="true"
+          />
+          {product.state}
+        </span>
+      </div>
+      <a
+        href={localePath(locale, product.path)}
+        class="border-border bg-secondary relative grid min-h-48 flex-1 place-items-center overflow-hidden rounded-[0.875rem] border no-underline"
+        aria-label={product.name}
+        tabindex="-1"
+      >
+        {product.key === 'snug' ? (
+          <span
+            class="bg-card border-border grid w-64 max-w-[80%] gap-2 rounded-[0.875rem] border p-3"
+            aria-hidden="true"
+          >
+            <i class="bg-muted block h-7 rounded-lg" />
+            <i class="bg-muted block h-7 w-[82%] rounded-lg" />
+            <i class="bg-muted block h-7 w-[66%] rounded-lg" />
+          </span>
+        ) : (
+          <span class="grid grid-cols-4 gap-3 text-3xl" aria-hidden="true">
+            <span>🚀</span>
+            <span>🎉</span>
+            <span>✨</span>
+            <span>🔥</span>
+            <span>💡</span>
+            <span>🎨</span>
+            <span>🧩</span>
+            <span>☕</span>
+          </span>
+        )}
+        <span class="text-muted-foreground absolute right-2.5 bottom-2 font-mono text-[0.625rem] tracking-[0.06em] uppercase">
+          {copy.products.imagePlaceholder}
+        </span>
+      </a>
+      <div class="flex items-baseline justify-between gap-3">
+        <h2 class="m-0 min-w-0 text-xl tracking-[-0.02em] [overflow-wrap:anywhere]">
+          <a
+            href={localePath(locale, product.path)}
+            class="text-foreground no-underline"
+          >
+            {product.name}
+          </a>
+        </h2>
+        {product.year && <span class={dateClass}>{product.year}</span>}
+      </div>
+      <p class={bodyClass}>{product.description}</p>
+    </article>
+  ))}
+
+  <article class:list={[tileBase, revealClass(5), place.status]}>
+    <p class={labelClass}>
+      <span class="flex items-center gap-2">
+        {copy.status.label}
+        {copy.status.rows.some((row) => row.sample) && (
+          <span class={sampleClass}>{copy.sample}</span>
+        )}
+      </span>
+    </p>
+    <ul class="m-0 grid list-none p-0">
+      {copy.status.rows.map((row) => (
+        <li class="border-border grid grid-cols-[1fr_auto] items-baseline gap-x-3 border-b py-2.5 last:border-b-0">
+          <span class="font-medium [overflow-wrap:anywhere]">{row.label}</span>
+          <time class={dateClass} datetime={row.date}>
+            {row.date}
+          </time>
+          <span class="text-muted-foreground col-span-2 text-sm [overflow-wrap:anywhere]">
+            {row.value}
+          </span>
+        </li>
+      ))}
+    </ul>
+  </article>
+
+  {hasLive && (
+    <>
+      <div class:list={[revealClass(6), 'tile-reveal lg:col-span-5']}>
+        <slot name="github" />
+      </div>
+      <div class:list={[revealClass(7), 'tile-reveal lg:col-span-3']}>
+        <slot name="stream" />
+      </div>
+    </>
+  )}
+
+  <article class:list={[tileBase, revealClass(8), place.recent]}>
+    <p class:list={[labelClass]}>
+      <span>{copy.recent.label}</span>
+      <a
+        href={localePath(locale, copy.recent.allPath)}
+        class="text-muted-foreground hover:text-foreground normal-case"
+      >
+        {copy.recent.all}
+      </a>
+    </p>
+    {recent.length === 0 ? (
+      <p
+        class="border-border text-muted-foreground m-0 rounded-2xl border border-dashed p-5 text-sm"
+        data-recent-empty
+      >
+        {copy.recent.empty}
+      </p>
+    ) : (
+      <ul class="m-0 grid list-none p-0" data-recent-list>
+        {recent.map((entry) => (
+          <li class="border-border grid grid-cols-[auto_1fr] items-baseline gap-x-3 border-b py-2.5 last:border-b-0 sm:grid-cols-[auto_1fr_auto]">
+            <time class={dateClass} datetime={entry.date}>
+              {entry.date}
+            </time>
+            <a
+              href={localePath(locale, `${copy.recent.entryPath}${entry.key}/`)}
+              class="text-foreground min-w-0 font-medium [overflow-wrap:anywhere]"
+            >
+              {entry.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </article>
+
+  <article class:list={[tileBase, revealClass(9), place.links]}>
+    <p class={labelClass}>{copy.links.label}</p>
+    <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
+      {copy.links.items.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            rel={link.href.startsWith('http') ? 'noopener' : undefined}
+            class="border-border bg-secondary text-foreground rounded-pill inline-flex min-h-8 items-center border px-3 font-mono text-[0.6875rem] font-medium tracking-[0.06em] uppercase no-underline"
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </article>
+
+  <article
+    class:list={[
+      tileBase,
+      revealClass(10),
+      place.theme,
+      'flex-row items-center justify-between',
+    ]}
+  >
+    <p class={labelClass}>{copy.theme.label}</p>
+    <ThemeToggle client:interaction copy={themeCopy} />
+  </article>
+</div>

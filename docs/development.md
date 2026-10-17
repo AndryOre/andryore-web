@@ -99,6 +99,16 @@ contract is new. See [ADR 0006](adr/0006-tailwind-and-shadcn-islands.md).
 first shadcn/ui component lands; the `@shadcn/lint` rules run on the React
 island files (`src/**/*.tsx`), not on `.astro` files.
 
+## Adding a Log entry
+
+Add two Markdown files under `src/content/log/`, one in `en/` and one in `es/`.
+Both carry the same `key` (it is also the URL slug), their own `lang`, `title`,
+`description`, `date` and `readMinutes`. The Spanish file also sets `sourceHash`
+to the hash of the English body, which `bun run i18n:status` prints when it is
+missing or stale. Code blocks must stay byte-identical between the two files.
+The build fails on a missing pair, a repeated title or a changed code block
+([ADR 0002](adr/0002-bilingual-parity.md)).
+
 ## Skills install and update
 
 `.claude/skills` holds 25 third-party skills. They are installed with

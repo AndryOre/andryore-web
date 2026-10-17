@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css'
 
+import ContactBlock from '../components/ContactBlock.astro'
 import ThemeToggle from '../components/ThemeToggle'
 import chrome from '../content/chrome.json'
 import {
@@ -21,6 +22,7 @@ interface Props {
   description?: string
   noindex?: boolean
   dark?: boolean
+  wide?: boolean
 }
 
 const {
@@ -29,6 +31,7 @@ const {
   description,
   noindex = false,
   dark = false,
+  wide = false,
 } = Astro.props
 
 const copy = chrome[locale]
@@ -75,6 +78,7 @@ const switchTo = otherLocale(locale)
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <title>{title}</title>
+    <slot name="head" />
   </head>
   <body class="flex min-h-dvh flex-col">
     <a
@@ -108,12 +112,18 @@ const switchTo = otherLocale(locale)
     <main
       id="main"
       tabindex="-1"
-      class="mx-auto w-full max-w-reading flex-1 px-4 py-8 focus:outline-none sm:px-6"
+      class:list={[
+        'mx-auto w-full flex-1 px-4 py-8 focus:outline-none sm:px-6',
+        wide ? 'max-w-[75rem]' : 'max-w-reading',
+      ]}
     >
       <slot />
     </main>
 
     <footer class="border-border text-muted-foreground mx-auto w-full max-w-reading border-t px-4 py-6 pb-32 font-mono text-xs sm:px-6">
+      <div class="mb-6">
+        <ContactBlock locale={locale} idSuffix="footer" />
+      </div>
       <small>
         © {year} {copy.footerNote}
       </small>

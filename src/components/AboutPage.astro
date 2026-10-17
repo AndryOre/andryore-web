@@ -1,0 +1,76 @@
+---
+import about from '../content/about.json'
+import type { Locale } from '../i18n/locales'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { CV_PATHS } from '../lib/contact'
+import { personJsonLd } from '../seo/person'
+import ContactBlock from './ContactBlock.astro'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const copy = about[locale]
+const downloads = [
+  {
+    href: CV_PATHS.en,
+    file: copy.cvEnglishFile,
+    label: copy.cvEnglishLabel,
+    lang: 'en',
+  },
+  {
+    href: CV_PATHS.es,
+    file: copy.cvSpanishFile,
+    label: copy.cvSpanishLabel,
+    lang: 'es',
+  },
+]
+---
+
+<BaseLayout
+  title={copy.pageTitle}
+  description={copy.pageDescription}
+  locale={locale}
+>
+  <div class="flex flex-col gap-10">
+    <section aria-labelledby="about-heading" class="flex flex-col gap-3">
+      <h1 id="about-heading" class="m-0 text-3xl font-bold tracking-tight">
+        {copy.aboutHeading}
+      </h1>
+      <p class="m-0 text-lg font-medium">{copy.introLead}</p>
+      <p class="text-muted-foreground m-0">{copy.introBody}</p>
+    </section>
+
+    <ContactBlock locale={locale} idSuffix="about" showOpenTo />
+
+    <section aria-labelledby="cv-heading" class="flex flex-col gap-3">
+      <h2 id="cv-heading" class="m-0 text-base font-semibold">
+        {copy.cvHeading}
+      </h2>
+      <p class="text-muted-foreground m-0 text-sm">{copy.cvIntro}</p>
+      <ul class="m-0 flex list-none flex-col gap-2 p-0">
+        {downloads.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              download={item.file}
+              hreflang={item.lang}
+              lang={item.lang}
+              type="application/pdf"
+              class="underline underline-offset-4"
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </div>
+
+  <script
+    is:inline
+    type="application/ld+json"
+    set:html={personJsonLd(locale, copy.introLead)}
+  />
+</BaseLayout>
