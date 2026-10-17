@@ -15,7 +15,8 @@ const copy = contact[locale]
 const emailId = `contact-email-${idSuffix}`
 ---
 
-<section
+<div
+  role="group"
   aria-labelledby={`contact-heading-${idSuffix}`}
   class="flex flex-col gap-3"
 >
@@ -44,4 +45,4 @@ const emailId = `contact-email-${idSuffix}`
     }}
   />
   {showOpenTo && <p class="m-0 text-sm">{copy.openTo}</p>}
-</section>
+</div>

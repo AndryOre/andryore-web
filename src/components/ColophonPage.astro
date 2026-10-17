@@ -2,6 +2,7 @@
 import colophon from '../content/colophon.json'
 import type { Locale } from '../i18n/locales'
 import BaseLayout from '../layouts/BaseLayout.astro'
+import { tokensForHref } from '../lib/external-link'
 
 interface Props {
   locale: Locale
@@ -38,7 +39,11 @@ const copy = colophon[locale]
     </ul>
 
     <p class="m-0">
-      <a href={copy.sourceUrl} class="underline underline-offset-4">
+      <a
+        href={copy.sourceUrl}
+        rel={tokensForHref(copy.sourceUrl)}
+        class="underline underline-offset-4"
+      >
         {copy.sourceLinkLabel}
       </a>
     </p>

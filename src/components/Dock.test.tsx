@@ -25,7 +25,7 @@ describe('Dock', () => {
       'Log',
       'About',
       'Uses',
-      'Language',
+      'EN Language',
       'Theme',
     ]) {
       expect(html).toContain(`aria-label="${name}"`)
@@ -36,7 +36,7 @@ describe('Dock', () => {
   test('localises names and links in Spanish', () => {
     const html = render('es', '/log/')
     expect(html).toContain('aria-label="Inicio"')
-    expect(html).toContain('aria-label="Idioma"')
+    expect(html).toContain('aria-label="ES Idioma"')
     expect(html).toContain('href="/es/log/"')
     expect(html).toContain('href="/es/#products"')
   })
