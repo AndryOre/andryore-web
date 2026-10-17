@@ -1,16 +1,164 @@
 ---
+import placeholder from '../content/placeholder.json'
+
+const { title, loading } = placeholder.en
+const letters = [...loading]
 ---
 
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width" />
+    <link
+      rel="preload"
+      href="/fonts/SpaceGrotesk-var.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="robots" content="noindex" />
     <meta name="generator" content={Astro.generator} />
-    <title>Astro</title>
+    <title>{title}</title>
   </head>
   <body>
-    <h1>Astro</h1>
+    <main>
+      <p class="loading" role="status" aria-label={loading}>
+        <span class="word" aria-hidden="true">
+          {letters.map((letter, index) => (
+            <span class="letter" style={`--i: ${index}`}>
+              {letter}
+            </span>
+          ))}
+        </span>
+        <span class="dots" aria-hidden="true">
+          <span class="dot" style="--i: 0"></span>
+          <span class="dot" style="--i: 1"></span>
+          <span class="dot" style="--i: 2"></span>
+        </span>
+      </p>
+    </main>
   </body>
 </html>
+
+<style is:global>
+  @font-face {
+    font-family: 'Space Grotesk Variable';
+    src: url('/fonts/SpaceGrotesk-var.woff2') format('woff2');
+    font-weight: 300 700;
+    font-display: swap;
+  }
+
+  :root {
+    color-scheme: dark;
+    --background: oklch(0.176 0.014 258.4);
+    --foreground: oklch(0.942 0.009 258.3);
+    --muted-foreground: oklch(0.715 0.023 256.8);
+    --primary: oklch(0.661 0.179 265.2);
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --duration-slow: 560ms;
+    --letter-stagger: 60ms;
+    --intro: calc(var(--duration-slow) + 7 * var(--letter-stagger));
+  }
+
+  html,
+  body {
+    height: 100%;
+    margin: 0;
+    background: var(--background);
+    color: var(--foreground);
+  }
+
+  main {
+    display: grid;
+    min-height: 100dvh;
+    place-items: center;
+    background: radial-gradient(
+      60rem 40rem at 50% 45%,
+      color-mix(in oklch, var(--primary) 9%, transparent),
+      transparent 70%
+    );
+  }
+
+  .loading {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin: 0;
+    font-family:
+      'Space Grotesk Variable', 'Space Grotesk', ui-sans-serif, system-ui,
+      sans-serif;
+    font-size: clamp(2rem, 7vw, 3.5rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  .letter {
+    display: inline-block;
+    color: var(--foreground);
+    animation:
+      reveal var(--duration-slow) var(--ease-out) both
+        calc(var(--i) * var(--letter-stagger)),
+      wave 2.4s ease-in-out infinite calc(var(--intro) + var(--i) * 110ms);
+  }
+
+  .dots {
+    display: inline-flex;
+    gap: 0.28em;
+  }
+
+  .dot {
+    width: 0.16em;
+    height: 0.16em;
+    border-radius: 999px;
+    background: var(--primary);
+    animation:
+      reveal var(--duration-slow) var(--ease-out) both
+        calc(var(--intro) + var(--i) * var(--letter-stagger)),
+      breathe 1.6s ease-in-out infinite calc(var(--intro) + var(--i) * 160ms);
+  }
+
+  @keyframes reveal {
+    from {
+      opacity: 0;
+      filter: blur(8px);
+      transform: translateY(0.4em);
+    }
+    to {
+      opacity: 1;
+      filter: blur(0);
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes wave {
+    0%,
+    100% {
+      color: var(--foreground);
+    }
+    35% {
+      color: var(--muted-foreground);
+    }
+  }
+
+  @keyframes breathe {
+    0%,
+    100% {
+      opacity: 0.35;
+      transform: scale(0.8);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.25);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .letter,
+    .dot {
+      animation: none;
+    }
+  }
+</style>
