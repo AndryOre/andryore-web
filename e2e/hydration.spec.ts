@@ -8,21 +8,12 @@ const ALLOWED_ORIGINS = new Set([
   'https://gateway.umami.is',
 ])
 
-const SHIKI_INLINE_STYLE_ROUTES = new Set([
-  '/log/every-entry-in-two-languages/',
-  '/es/log/every-entry-in-two-languages/',
-])
-
 for (const reducedMotion of ['no-preference', 'reduce'] as const) {
   for (const route of ROUTES) {
     test(`${route} hydrates cleanly (${reducedMotion})`, async ({
       page,
       baseURL,
     }) => {
-      test.fixme(
-        SHIKI_INLINE_STYLE_ROUTES.has(route),
-        'BUG: Shiki writes inline style attributes that the style-src CSP blocks, so code blocks lose their colours; move highlighting to CSS variables.',
-      )
       const problems: string[] = []
       page.on('console', (message) => {
         if (message.type() === 'error') {

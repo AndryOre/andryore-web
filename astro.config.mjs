@@ -14,6 +14,7 @@ export default defineConfig({
   security: {
     csp: { scriptDirective: { hashes: [THEME_INIT_SCRIPT_HASH] } },
   },
+  markdown: { syntaxHighlight: false },
   build: { inlineStylesheets: 'never' },
-  vite: { plugins: [tailwindcss()] },
+  vite: { plugins: [tailwindcss()], build: { assetsInlineLimit: 0 } },
 })
