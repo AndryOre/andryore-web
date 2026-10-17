@@ -8,6 +8,8 @@ import { fileURLToPath } from 'node:url'
  */
 export const LIGHTHOUSE_VERSION = '13.5.0'
 
+const STREAM_STATUS_PATH = '/api/stream-status'
+
 /** Lighthouse categories the gate scores, in report order. */
 export const CATEGORIES = [
   'performance',
@@ -260,10 +262,11 @@ function serveDistribution(distributionDirectory: string) {
     hostname: '127.0.0.1',
     port: 0,
     fetch(request) {
-      const file = resolveStaticFile(
-        distributionDirectory,
-        new URL(request.url).pathname,
-      )
+      const { pathname } = new URL(request.url)
+      if (pathname === STREAM_STATUS_PATH) {
+        return Response.json({ state: 'offline' })
+      }
+      const file = resolveStaticFile(distributionDirectory, pathname)
       return file
         ? new Response(Bun.file(file))
         : new Response('Not found', { status: 404 })
@@ -288,7 +291,7 @@ export async function main(): Promise<number> {
   const server = serveDistribution(distributionDirectory)
   try {
     const results = await auditPages(
-      `http://localhost:${String(server.port)}`,
+      `http://127.0.0.1:${String(server.port)}`,
       AUDITED_PATHS,
       { chromePath: process.env.CHROME_PATH },
     )
