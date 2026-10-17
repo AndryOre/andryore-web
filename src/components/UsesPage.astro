@@ -1,0 +1,95 @@
+---
+import uses from '../content/uses.json'
+import type { Locale } from '../i18n/locales'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { hasAffiliateRows, type UsesCategory } from '../lib/uses'
+import UsesIconField from './UsesIconField.astro'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const copy = uses[locale]
+const categories: readonly UsesCategory[] = copy.categories
+const showAffiliateNote = hasAffiliateRows(categories)
+const showSampleNote = categories.some((category) =>
+  category.rows.some((row) => row.sample),
+)
+---
+
+<BaseLayout
+  title={copy.meta.title}
+  description={copy.meta.description}
+  locale={locale}
+>
+  <div class="flex flex-col gap-10">
+    <section
+      aria-labelledby="uses-heading"
+      class="relative isolate flex min-h-64 flex-col justify-center gap-3 py-10 sm:min-h-80"
+    >
+      <UsesIconField />
+      <h1
+        id="uses-heading"
+        class="m-0 text-5xl font-bold tracking-tight sm:text-7xl"
+      >
+        {copy.heading}
+      </h1>
+      <p class="text-muted-foreground m-0 text-lg">{copy.intro}</p>
+    </section>
+
+    {showSampleNote && (
+      <p class="text-muted-foreground m-0 font-mono text-xs">
+        {copy.sampleNote}
+      </p>
+    )}
+    {showAffiliateNote && (
+      <p class="text-muted-foreground m-0 font-mono text-xs">
+        {copy.affiliateNote}
+      </p>
+    )}
+
+    {categories.map((category, index) => (
+      <section
+        aria-labelledby={`uses-category-${index}`}
+        class="flex flex-col gap-3"
+      >
+        <h2 id={`uses-category-${index}`} class="m-0 text-base font-semibold">
+          {category.name}
+        </h2>
+        <ul class="m-0 flex list-none flex-col gap-2 p-0">
+          {category.rows.map((row) => (
+            <li class="flex items-baseline gap-2">
+              <span class="shrink-0">{row.label}</span>
+              <span
+                aria-hidden="true"
+                class="border-border min-w-4 flex-1 border-b border-dotted"
+              />
+              <span class="text-muted-foreground text-right">
+                {row.url ? (
+                  <a
+                    href={row.url}
+                    rel={row.affiliate ? 'sponsored noopener' : 'noopener'}
+                    class="underline underline-offset-4"
+                  >
+                    {row.value}
+                  </a>
+                ) : (
+                  row.value
+                )}
+                {row.affiliate && (
+                  <span class="ml-2 font-mono text-xs">
+                    ({copy.affiliateTag})
+                  </span>
+                )}
+                {row.sample && (
+                  <span class="ml-2 font-mono text-xs">({copy.sampleTag})</span>
+                )}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</BaseLayout>
