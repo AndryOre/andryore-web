@@ -6,8 +6,8 @@ const SCRIPT_PLACEHOLDER = '__SCRIPT_HASHES__'
 const STYLE_PLACEHOLDER = '__STYLE_HASHES__'
 const META_POLICY =
   /<meta\s+http-equiv="content-security-policy"\s+content="([^"]*)"/i
-const INLINE_SCRIPT = /<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi
-const INLINE_STYLE = /<style\b([^>]*)>([\s\S]*?)<\/style\s*>/gi
+const INLINE_SCRIPT = /<script\b([^>]*)>([\s\S]*?)<\/script[^>]*>/gi
+const INLINE_STYLE = /<style\b([^>]*)>([\s\S]*?)<\/style[^>]*>/gi
 const EXECUTABLE_SCRIPT_TYPES = new Set(['', 'module', 'text/javascript'])
 
 /** The `sha256` sources of a page or a built site. */
