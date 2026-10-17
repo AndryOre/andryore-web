@@ -18,6 +18,7 @@
     "typecheck": "astro check && tsc --noEmit",
     "knip": "knip",
     "lint:docs": "bun scripts/lint-docs.ts",
+    "lint:lighthouse": "bun scripts/lighthouse-budget.ts",
     "i18n:status": "bun scripts/i18n-status.ts",
     "check": "bun run format:check && bun run lint && bun run typecheck && bun run knip",
     "fix": "bun run format:write && bun run lint:fix",
