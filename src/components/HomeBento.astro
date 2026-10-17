@@ -6,7 +6,7 @@ import chrome from '../content/chrome.json'
 import home from '../content/home.json'
 import { localePath, type Locale } from '../i18n/locales'
 import { revealClass } from '../lib/motion'
-import { logEntryFromModule, recentLogEntries } from '../lib/recent-log'
+import { getLatestLogEntries } from '../log/collection'
 import ThemeToggle from './ThemeToggle'
 
 interface Props {
@@ -17,11 +17,13 @@ const { locale } = Astro.props
 const copy = home[locale]
 const themeCopy = chrome[locale].theme
 
-const logModules = import.meta.glob('../content/log/**/*.md', { eager: true })
-const recent = recentLogEntries(
-  Object.values(logModules).map((module) => logEntryFromModule(module)),
-  locale,
-)
+const RECENT_LOG_LIMIT = 3
+const latest = await getLatestLogEntries(locale, RECENT_LOG_LIMIT)
+const recent = latest.map((entry) => ({
+  key: entry.key,
+  title: entry.title,
+  date: entry.date.toISOString().slice(0, 10),
+}))
 
 const hasClock = Astro.slots.has('clock')
 const hasLive = Astro.slots.has('github') || Astro.slots.has('stream')
@@ -264,11 +266,6 @@ const hero = copy.hero
             >
               {entry.title}
             </a>
-            {entry.readTime && (
-              <span class:list={[dateClass, 'col-span-2 sm:col-span-1']}>
-                {entry.readTime}
-              </span>
-            )}
           </li>
         ))}
       </ul>
