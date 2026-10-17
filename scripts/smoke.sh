@@ -3,19 +3,23 @@
 # the /es/ routes, both 404 pages, the security headers, gzip and the sitemap.
 # Not part of `bun run check`: run it with `bun run test:smoke` or from CI.
 # Set SMOKE_COPY_DIST=<dir> to copy the image's static output out for the dist
-# audit. Set SMOKE_REQUIRE_CSP_HASHES=1 to turn the missing-hash warning into
-# a failure.
+# audit. Set SMOKE_BASE_URL=<url> to run the checks against a server that is
+# already up, without Docker.
 set -euo pipefail
 
 root="$(git rev-parse --show-toplevel)"
 image="andryore-site-smoke"
 name="andryore-site-smoke-$$"
 
-docker build --build-arg SITE_LASTMOD="$(date -u +%F)" -t "$image" "$root"
-docker run -d --rm --name "$name" -p 127.0.0.1:0:80 "$image" >/dev/null
-trap 'docker rm -f "$name" >/dev/null 2>&1 || true' EXIT
-port="$(docker port "$name" 80/tcp | head -n1 | sed 's/.*://')"
-base="http://127.0.0.1:$port"
+if [ -n "${SMOKE_BASE_URL:-}" ]; then
+  base="$SMOKE_BASE_URL"
+else
+  docker build --build-arg SITE_LASTMOD="$(date -u +%F)" -t "$image" "$root"
+  docker run -d --rm --name "$name" -p 127.0.0.1:0:80 "$image" >/dev/null
+  trap 'docker rm -f "$name" >/dev/null 2>&1 || true' EXIT
+  port="$(docker port "$name" 80/tcp | head -n1 | sed 's/.*://')"
+  base="http://127.0.0.1:$port"
+fi
 
 for _ in $(seq 1 30); do
   curl -fs -o /dev/null "$base/" && break
@@ -53,11 +57,12 @@ if grep -Eq 'https?://' <<<"$csp"; then
   fail "CSP names a third-party origin"
 fi
 case "$csp" in *"'unsafe-inline'"* | *"'unsafe-eval'"*) fail "CSP allows unsafe-inline or unsafe-eval" ;; esac
-if ! grep -q "'sha256-" <<<"$csp"; then
-  message="CSP has no sha256 hashes: inline scripts are blocked (ADR 0012)"
-  if [ "${SMOKE_REQUIRE_CSP_HASHES:-0}" = 1 ]; then fail "$message"; fi
-  echo "WARN: $message" >&2
-fi
+grep -q "script-src 'self' 'sha256-" <<<"$csp" ||
+  fail "CSP script-src has no sha256 hashes: inline scripts are blocked (ADR 0012)"
+for directive in "default-src 'none'" "base-uri 'none'" "form-action 'none'" \
+  "frame-ancestors 'none'" "require-trusted-types-for 'script'"; do
+  grep -qF "$directive" <<<"$csp" || fail "CSP is missing $directive"
+done
 
 sitemap="$(curl -s "$base/sitemap.xml")"
 urls="$(grep -c '<url>' <<<"$sitemap" || true)"
@@ -65,7 +70,7 @@ lastmods="$(grep -c '<lastmod>' <<<"$sitemap" || true)"
 [ "$urls" -gt 0 ] || fail "sitemap has no urls"
 [ "$urls" = "$lastmods" ] || fail "sitemap: $lastmods lastmod for $urls urls"
 
-if [ -n "${SMOKE_COPY_DIST:-}" ]; then
+if [ -n "${SMOKE_COPY_DIST:-}" ] && [ -z "${SMOKE_BASE_URL:-}" ]; then
   rm -rf "$SMOKE_COPY_DIST"
   mkdir -p "$SMOKE_COPY_DIST"
   docker cp "$name:/usr/share/nginx/html/." "$SMOKE_COPY_DIST"
