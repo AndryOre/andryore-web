@@ -124,6 +124,20 @@ const switchTo = otherLocale(locale)
       <div class="mb-6">
         <ContactBlock locale={locale} idSuffix="footer" />
       </div>
+      <nav aria-label={copy.footerNavLabel} class="mb-4 flex gap-4">
+        <a
+          href={localePath(locale, '/uses/')}
+          class="underline underline-offset-4"
+        >
+          {copy.usesLabel}
+        </a>
+        <a
+          href={localePath(locale, '/colophon/')}
+          class="underline underline-offset-4"
+        >
+          {copy.colophonLabel}
+        </a>
+      </nav>
       <small>
         © {year} {copy.footerNote}
       </small>

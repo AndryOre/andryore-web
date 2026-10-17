@@ -1,0 +1,64 @@
+{
+  "en": {
+    "meta": {
+      "title": "Colophon",
+      "description": "How andryore.dev is made: framework, type, colors, hosting and source."
+    },
+    "heading": "Colophon",
+    "intro": "How this site is made.",
+    "sourceLinkLabel": "View the source on GitHub",
+    "sourceUrl": "https://github.com/AndryOre/andryore-web",
+    "rows": [
+      {
+        "label": "Framework",
+        "value": "Astro, static output, with a few React islands"
+      },
+      { "label": "Styling", "value": "Tailwind CSS v4 and shadcn/ui" },
+      { "label": "Headings and body", "value": "Space Grotesk, self-hosted" },
+      { "label": "Code and labels", "value": "JetBrains Mono, self-hosted" },
+      {
+        "label": "Colors",
+        "value": "A cool gray background with a blue accent, light and dark"
+      },
+      {
+        "label": "Hosting",
+        "value": "Docker image with nginx, deployed through Coolify"
+      },
+      { "label": "Source", "value": "Public on GitHub" }
+    ]
+  },
+  "es": {
+    "meta": {
+      "title": "Colofón",
+      "description": "Cómo está hecho andryore.dev: framework, tipografía, colores, alojamiento y código fuente."
+    },
+    "heading": "Colofón",
+    "intro": "Cómo está hecho este sitio.",
+    "sourceLinkLabel": "Ver el código fuente en GitHub",
+    "sourceUrl": "https://github.com/AndryOre/andryore-web",
+    "rows": [
+      {
+        "label": "Framework",
+        "value": "Astro, salida estática, con unas pocas islas de React"
+      },
+      { "label": "Estilos", "value": "Tailwind CSS v4 y shadcn/ui" },
+      {
+        "label": "Títulos y texto",
+        "value": "Space Grotesk, alojada en el propio sitio"
+      },
+      {
+        "label": "Código y etiquetas",
+        "value": "JetBrains Mono, alojada en el propio sitio"
+      },
+      {
+        "label": "Colores",
+        "value": "Un fondo gris frío con un acento azul, claro y oscuro"
+      },
+      {
+        "label": "Alojamiento",
+        "value": "Imagen de Docker con nginx, desplegada con Coolify"
+      },
+      { "label": "Código fuente", "value": "Público en GitHub" }
+    ]
+  }
+}
