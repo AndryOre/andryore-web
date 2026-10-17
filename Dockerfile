@@ -20,7 +20,6 @@ COPY docker/site.conf /etc/nginx/conf.d/site.conf
 COPY --from=build /repo/dist /usr/share/nginx/html
 COPY --from=build /repo/stream-status-server /usr/local/bin/stream-status-server
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-ENV PORT=3000
 EXPOSE 80
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 HEALTHCHECK --interval=30s --timeout=3s CMD wget -qO /dev/null http://127.0.0.1/ || exit 1
