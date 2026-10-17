@@ -158,13 +158,13 @@ Releases are tag-driven and have no npm step. The notes come from
 4. Tag the merge commit with a signed tag and push it:
    `git tag -s vX.Y.Z <merge-sha> && git push origin vX.Y.Z`.
 
-Pushing a `v*` tag triggers `.github/workflows/release.yml`. A gate job runs
-first: it polls the check runs of the tagged commit and requires a green
-`CI passed`, waiting up to 20 minutes for a pending one. A failed or missing
-`CI passed` stops the release; re-run the failed CI job on `main`, then re-run
-the release workflow. After the gate, the workflow extracts the matching section
-of `CHANGELOG.md` as the release notes and creates the GitHub Release. Nothing
-is published to npm.
+Pushing a `v*` tag triggers `.github/workflows/release.yml`. After the
+main-ancestry check, a gate step polls the check runs of the tagged commit and
+requires a green `CI passed`, waiting up to 20 minutes for a pending one. A
+failed or missing `CI passed` stops the release; re-run the failed CI job on
+`main`, then re-run the release workflow. After the gate, the workflow extracts
+the matching section of `CHANGELOG.md` as the release notes and creates the
+GitHub Release. Nothing is published to npm.
 
 ## Merging
 

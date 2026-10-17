@@ -58,8 +58,8 @@ never use another package manager (this repo uses `bun.lock`). Read
 Rules for any change to the Site. Each one is backed by an ADR:
 
 - **No third-party requests.** The Site loads nothing from another origin: no
-  CDNs, hosted fonts, analytics or embeds.
-  [ADR 0009](docs/adr/0009-no-third-party-requests.md).
+  CDNs, hosted fonts or embeds, and no analytics beyond the one script ADR 0014
+  allows. [ADR 0009](docs/adr/0009-no-third-party-requests.md).
 - **Hash-based CSP.** An inline script needs its computed hash in the policy;
   never use `unsafe-inline` or `unsafe-eval`.
   [ADR 0010](docs/adr/0010-hash-based-csp-and-security-headers.md).
