@@ -1,36 +1,60 @@
 {
   "en": {
     "wordmark": "AndryOre",
-    "homeLabel": "AndryOre, home",
     "skipLink": "Skip to content",
     "footerNote": "AndryOre",
     "footerNavLabel": "More about this site",
     "usesLabel": "Uses",
     "colophonLabel": "Colophon",
-    "switchLabel": "Español",
-    "switchAria": "Leer en español",
     "theme": {
       "label": "Theme",
       "auto": "Auto",
       "light": "Light",
       "dark": "Dark"
+    },
+    "dock": {
+      "label": "Main",
+      "pages": {
+        "home": "Home",
+        "products": "Products",
+        "log": "Log",
+        "about": "About",
+        "uses": "Uses"
+      },
+      "language": {
+        "label": "Language",
+        "en": "English",
+        "es": "Español"
+      }
     }
   },
   "es": {
     "wordmark": "AndryOre",
-    "homeLabel": "AndryOre, inicio",
     "skipLink": "Saltar al contenido",
     "footerNote": "AndryOre",
     "footerNavLabel": "Más sobre este sitio",
     "usesLabel": "Uso",
     "colophonLabel": "Colofón",
-    "switchLabel": "English",
-    "switchAria": "Read in English",
     "theme": {
       "label": "Tema",
       "auto": "Automático",
       "light": "Claro",
       "dark": "Oscuro"
+    },
+    "dock": {
+      "label": "Principal",
+      "pages": {
+        "home": "Inicio",
+        "products": "Productos",
+        "log": "Log",
+        "about": "Sobre mí",
+        "uses": "Setup"
+      },
+      "language": {
+        "label": "Idioma",
+        "en": "English",
+        "es": "Español"
+      }
     }
   }
 }

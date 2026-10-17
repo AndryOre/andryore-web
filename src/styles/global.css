@@ -141,6 +141,14 @@
     view-transition-name: main;
   }
 
+  [data-dock-pill] {
+    view-transition-name: dock-pill;
+  }
+
+  ::view-transition-group(dock-pill) {
+    animation-duration: var(--duration-fast);
+  }
+
   [data-product-image='snug'] {
     view-transition-name: product-snug;
   }
