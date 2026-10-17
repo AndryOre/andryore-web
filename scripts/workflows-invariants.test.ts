@@ -525,16 +525,19 @@ describe('ci.yml gates', () => {
   })
 })
 
-test('every required ruleset context matches a workflow job name', () => {
-  const rulesetText = readFileSync(
-    new URL('../.github/rulesets/main.json', import.meta.url),
-    'utf8',
-  )
-  const jobNames = listWorkflowFiles().flatMap((fileName) =>
-    collectJobNames(parseWorkflow(readWorkflowText(fileName))),
-  )
-  expect(findUnmatchedRequiredContexts(rulesetText, jobNames)).toEqual([])
-})
+test.each(['main', 'develop'])(
+  'every required %s ruleset context matches a workflow job name',
+  (branch) => {
+    const rulesetText = readFileSync(
+      new URL(`../.github/rulesets/${branch}.json`, import.meta.url),
+      'utf8',
+    )
+    const jobNames = listWorkflowFiles().flatMap((fileName) =>
+      collectJobNames(parseWorkflow(readWorkflowText(fileName))),
+    )
+    expect(findUnmatchedRequiredContexts(rulesetText, jobNames)).toEqual([])
+  },
+)
 
 test('there is at least one workflow to check', () => {
   expect(listWorkflowFiles().length).toBeGreaterThan(0)

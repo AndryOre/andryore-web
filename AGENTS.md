@@ -101,10 +101,11 @@ Never rewrite an accepted ADR: supersede or amend it with a new one.
 
 ## Branch and commit conventions
 
-Branches are `<type>/<slug>`. Commits and PR titles are
-`type: emoji lowercase subject`, for example `feat: ✨ add log page`, in English
-with a bulleted body when it helps. The emoji is a convention, not lint
-enforced. Detail:
+Branches are `<type>/<slug>`; `main` and `develop` are the long-lived ones
+([ADR 0015](docs/adr/0015-develop-as-integration-branch.md)). Commits and PR
+titles are `type: emoji lowercase subject`, for example `feat: ✨ add log page`,
+in English with a bulleted body when it helps. The emoji is a convention, not
+lint enforced. Detail:
 [`docs/development.md#branch-naming`](docs/development.md#branch-naming),
 [`docs/development.md#commit-format`](docs/development.md#commit-format).
 

@@ -56,13 +56,18 @@ Hooks live in `.husky/`:
 - **`commit-msg`** runs `commitlint` with `@commitlint/config-conventional`. It
   enforces the Conventional Commits shape and type list, not the emoji.
 - **`pre-push`** rejects a push whose branch name does not match `<type>/<slug>`
-  (or `main`, `renovate/*`).
+  (or `main`, `develop`, `renovate/*`).
 
 ## Branch naming
 
 `<type>/<slug>`, where type is one of `feat`, `fix`, `docs`, `style`,
 `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert` and the slug is
 lowercase kebab-case, for example `feat/add-log-page`.
+
+`main` and `develop` are the two long-lived branches. After the first spec
+(AO-1964), feature branches open PRs against `develop`, and a promotion PR from
+`develop` to `main` ships a finished spec
+([ADR 0015](adr/0015-develop-as-integration-branch.md)).
 
 ## Commit format
 
@@ -115,7 +120,8 @@ numbers, an allowed status and that the index lists every file.
 
 ## CI
 
-Every PR runs `.github/workflows/ci.yml`. Job names:
+Every PR runs `.github/workflows/ci.yml`, and pushes to `main` and `develop` run
+it too. Job names:
 
 - **Quality**: format check, lint, typecheck, knip.
 - **Test**: `bun test`.
@@ -172,8 +178,8 @@ This repository merges pull requests via squash merge only, keeping a linear
 history on `main`. Individual commits in a PR need not follow the commit format,
 but the PR title does, since it becomes the squashed commit message. The
 `CI passed` check must be green. The branch and tag rulesets are committed in
-[`.github/rulesets`](../.github/rulesets) (`main.json`, `tags.json`) and applied
-with `gh api`, not by code in the repository.
+[`.github/rulesets`](../.github/rulesets) (`main.json`, `develop.json`,
+`tags.json`) and applied with `gh api`, not by code in the repository.
 
 Apply when the repository is public: on GitHub Free, the API rejects rulesets on
 a private repository with
@@ -182,6 +188,7 @@ Once the repository is public, apply each file:
 
 ```sh
 gh api -X POST repos/AndryOre/andryore-web/rulesets --input .github/rulesets/main.json
+gh api -X POST repos/AndryOre/andryore-web/rulesets --input .github/rulesets/develop.json
 gh api -X POST repos/AndryOre/andryore-web/rulesets --input .github/rulesets/tags.json
 ```
 
