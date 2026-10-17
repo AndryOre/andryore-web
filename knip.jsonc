@@ -5,6 +5,7 @@
     "src/pages/**/*.astro",
     "src/scripts/hydrate-on-interaction.ts",
     "src/server/stream-status-server.ts",
+    "playwright.visual.config.ts",
   ],
   "project": ["**/*.{ts,tsx,mjs,astro,css}"],
   "ignore": [".claude/skills/**", "docs/brand/brandbook/fonts.css"],
