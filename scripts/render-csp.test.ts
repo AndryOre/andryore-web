@@ -53,6 +53,15 @@ describe('pageHashes', () => {
     })
   })
 
+  test('hashes a block whose end tag has trailing whitespace', () => {
+    const html = page({
+      script: hashSource(SCRIPT),
+      style: hashSource(STYLE),
+      scripts: `<script>${SCRIPT}</script >`,
+    })
+    expect(pageHashes(html, 'index.html').script).toEqual([hashSource(SCRIPT)])
+  })
+
   test('fails when an inline script has no hash in its policy', () => {
     expect(() =>
       pageHashes(page({ style: hashSource(STYLE) }), 'index.html'),
