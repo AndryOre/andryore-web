@@ -6,11 +6,13 @@ const VARIANT_CLASSES = {
   default: 'bg-primary text-primary-foreground hover:bg-primary/90',
   secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
   ghost: 'hover:bg-accent hover:text-accent-foreground',
+  dock: 'text-muted-foreground hover:text-foreground',
 } as const
 
 const SIZE_CLASSES = {
   default: 'h-9 px-4 py-2',
   icon: 'size-8',
+  dock: 'size-11',
 } as const
 
 type ButtonProps = ComponentProps<'button'> & {

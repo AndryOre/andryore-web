@@ -132,9 +132,11 @@ const hero = copy.hero
 
   {copy.products.items.map((product, index) => (
     <article
+      id={index === 0 ? 'products' : undefined}
       class:list={[
         tileBase,
         revealClass(3 + index),
+        'scroll-mt-4',
         productsPlacement[index],
         'sm:col-span-1',
       ]}
