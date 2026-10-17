@@ -28,7 +28,8 @@
       }
     },
     "switchLabel": "Español",
-    "switchAria": "Leer en español"
+    "switchAria": "Leer en español",
+    "ogImageAlt": "AndryOre: Building, exploring, telling."
   },
   "es": {
     "wordmark": "AndryOre",
@@ -59,6 +60,7 @@
       }
     },
     "switchLabel": "English",
-    "switchAria": "Read in English"
+    "switchAria": "Read in English",
+    "ogImageAlt": "AndryOre: Construyendo, explorando, contando."
   }
 }

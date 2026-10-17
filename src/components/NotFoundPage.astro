@@ -1,0 +1,32 @@
+---
+import notFound from '../content/not-found.json'
+import { homePath, type Locale } from '../i18n/locales'
+import BaseLayout from '../layouts/BaseLayout.astro'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const copy = notFound[locale]
+---
+
+<BaseLayout
+  title={copy.meta.title}
+  description={copy.meta.description}
+  locale={locale}
+  noindex
+>
+  <section class="flex flex-col items-start gap-4 py-10">
+    <h1 class="text-muted-foreground m-0 font-mono text-5xl font-bold tracking-tight">
+      {copy.heading}
+    </h1>
+    <p class="m-0 text-lg">{copy.message}</p>
+    <a
+      href={homePath(locale)}
+      class="bg-primary text-primary-foreground rounded-pill inline-flex min-h-11 items-center px-5 py-2 text-sm font-medium no-underline hover:opacity-90"
+    >
+      {copy.action}
+    </a>
+  </section>
+</BaseLayout>

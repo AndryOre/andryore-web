@@ -3,7 +3,6 @@ import about from '../content/about.json'
 import type { Locale } from '../i18n/locales'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import { CV_PATHS } from '../lib/contact'
-import { personJsonLd } from '../seo/person'
 import ContactBlock from './ContactBlock.astro'
 
 interface Props {
@@ -67,10 +66,4 @@ const downloads = [
       </ul>
     </section>
   </div>
-
-  <script
-    is:inline
-    type="application/ld+json"
-    set:html={personJsonLd(locale, copy.introLead)}
-  />
 </BaseLayout>

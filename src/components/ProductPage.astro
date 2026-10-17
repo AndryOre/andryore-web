@@ -5,6 +5,7 @@ import { getCollection, render } from 'astro:content'
 import productUi from '../content/product-ui.json'
 import type { Locale } from '../i18n/locales'
 import BaseLayout from '../layouts/BaseLayout.astro'
+import { externalLinkTokens } from '../lib/external-link'
 import { revealClass } from '../lib/motion'
 import {
   fillPlaceholder,
@@ -64,7 +65,7 @@ const valueClass = 'm-0 min-w-0 [overflow-wrap:anywhere]'
       <p class="m-0">
         <a
           href={data.url}
-          rel="noopener"
+          rel={externalLinkTokens()}
           class="bg-primary text-primary-foreground rounded-pill inline-flex min-h-11 items-center px-5 py-2 text-sm font-medium no-underline hover:opacity-90"
         >
           {fillPlaceholder(ui.tryCta, 'name', data.name)}
@@ -143,7 +144,7 @@ const valueClass = 'm-0 min-w-0 [overflow-wrap:anywhere]'
       </div>
     </dl>
     <p class="border-border m-0 border-t pt-4">
-      <a href={data.changelog} rel="noopener" class="text-primary">
+      <a href={data.changelog} rel={externalLinkTokens()} class="text-primary">
         {ui.changelogLink}
       </a>
     </p>
