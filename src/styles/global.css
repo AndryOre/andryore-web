@@ -109,6 +109,14 @@
     view-transition-name: main;
   }
 
+  [data-product-image='snug'] {
+    view-transition-name: product-snug;
+  }
+
+  [data-product-image='animated-fluent-emojis'] {
+    view-transition-name: product-animated-fluent-emojis;
+  }
+
   ::view-transition-group(root) {
     animation-duration: var(--duration-base);
   }
