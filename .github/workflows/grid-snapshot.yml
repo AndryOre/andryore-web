@@ -1,0 +1,54 @@
+name: Refresh GitHub grid
+
+on:
+  schedule:
+    - cron: '17 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    name: Refresh the contribution grid snapshot
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: develop
+          persist-credentials: true
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Fetch the snapshot
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: bun run grid:update
+
+      - name: Open a pull request when the snapshot changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- src/content/github-grid.json; then
+            echo "Snapshot unchanged"
+            exit 0
+          fi
+          branch="chore/refresh-github-grid-$(date -u +%Y%m%d)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "${branch}"
+          git add src/content/github-grid.json
+          git commit -m "chore: 📊 refresh the github contribution grid"
+          git push origin "${branch}"
+          gh pr create --base develop --head "${branch}" \
+            --title "chore: 📊 refresh the github contribution grid" \
+            --body "Weekly refresh of the committed contribution grid snapshot."

@@ -146,9 +146,11 @@ Other workflows: `lint-pr.yml` (PR title), `lint-docs.yml` (offline link and
 anchor check with lychee), `lint-workflows.yml` (workflow linting), `codeql.yml`
 (CodeQL analysis, skipped while the repository is private because code scanning
 is unavailable on GitHub Free), `scorecard.yml` (OpenSSF Scorecard) and
-`labels.yml` (label sync). All third-party actions are pinned to a commit SHA,
-and `scripts/workflows-invariants.test.ts` asserts the workflow invariants:
-every `uses:` pinned to a 40-character SHA, explicit permissions (top-level
+`labels.yml` (label sync) and `grid-snapshot.yml` (weekly refresh of
+`src/content/github-grid.json`, opened as a PR against `develop`). All
+third-party actions are pinned to a commit SHA, and
+`scripts/workflows-invariants.test.ts` asserts the workflow invariants: every
+`uses:` pinned to a 40-character SHA, explicit permissions (top-level
 `contents: read` or stricter), `timeout-minutes` on every job,
 `persist-credentials: false` on every checkout (a job with `contents: write` may
 opt in with `true`), no `pull_request_target`, and no expression interpolated
