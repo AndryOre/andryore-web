@@ -77,6 +77,19 @@
   }
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  html.theme-fade,
+  html.theme-fade *,
+  html.theme-fade ::before,
+  html.theme-fade ::after {
+    transition:
+      background-color var(--duration-base) var(--ease-out),
+      border-color var(--duration-base) var(--ease-out),
+      color var(--duration-base) var(--ease-out),
+      fill var(--duration-base) var(--ease-out) !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   ::before,

@@ -5,7 +5,13 @@
     "skipLink": "Skip to content",
     "footerNote": "AndryOre",
     "switchLabel": "Español",
-    "switchAria": "Leer en español"
+    "switchAria": "Leer en español",
+    "theme": {
+      "label": "Theme",
+      "auto": "Auto",
+      "light": "Light",
+      "dark": "Dark"
+    }
   },
   "es": {
     "wordmark": "AndryOre",
@@ -13,6 +19,12 @@
     "skipLink": "Saltar al contenido",
     "footerNote": "AndryOre",
     "switchLabel": "English",
-    "switchAria": "Read in English"
+    "switchAria": "Read in English",
+    "theme": {
+      "label": "Tema",
+      "auto": "Automático",
+      "light": "Claro",
+      "dark": "Oscuro"
+    }
   }
 }
