@@ -1,0 +1,28 @@
+{
+  "en": {
+    "pageTitle": "About",
+    "pageDescription": "I build stuff and tell you how it went. What worked, what didn't, and what I'd change.",
+    "aboutHeading": "About",
+    "introLead": "I build stuff and tell you how it went.",
+    "introBody": "What worked, what didn't, and what I'd change. I'm Andry Orellana, from Venezuela and living in Colombia. I publish in Spanish, with English subtitles.",
+    "cvHeading": "CV",
+    "cvIntro": "The same CV, as a PDF, in either language.",
+    "cvEnglishLabel": "Download the CV in English (PDF)",
+    "cvSpanishLabel": "Descargar el CV en español (PDF)",
+    "cvEnglishFile": "Andry-Orellana-CV-EN.pdf",
+    "cvSpanishFile": "Andry-Orellana-CV-ES.pdf"
+  },
+  "es": {
+    "pageTitle": "Acerca de",
+    "pageDescription": "Construyo cosas y te cuento cómo me fue. Qué funcionó, qué no y qué cambiaría.",
+    "aboutHeading": "Acerca de",
+    "introLead": "Construyo cosas y te cuento cómo me fue.",
+    "introBody": "Qué funcionó, qué no y qué cambiaría. Soy Andry Orellana, de Venezuela y vivo en Colombia. Publico en español, con subtítulos en inglés.",
+    "cvHeading": "CV",
+    "cvIntro": "El mismo CV, en PDF, en cualquiera de los dos idiomas.",
+    "cvEnglishLabel": "Download the CV in English (PDF)",
+    "cvSpanishLabel": "Descargar el CV en español (PDF)",
+    "cvEnglishFile": "Andry-Orellana-CV-EN.pdf",
+    "cvSpanishFile": "Andry-Orellana-CV-ES.pdf"
+  }
+}

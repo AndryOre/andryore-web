@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css'
 
+import ContactBlock from '../components/ContactBlock.astro'
 import ThemeToggle from '../components/ThemeToggle'
 import chrome from '../content/chrome.json'
 import {
@@ -114,6 +115,9 @@ const switchTo = otherLocale(locale)
     </main>
 
     <footer class="border-border text-muted-foreground mx-auto w-full max-w-reading border-t px-4 py-6 pb-32 font-mono text-xs sm:px-6">
+      <div class="mb-6">
+        <ContactBlock locale={locale} idSuffix="footer" />
+      </div>
       <small>
         © {year} {copy.footerNote}
       </small>
