@@ -1,0 +1,87 @@
+---
+import '../styles/global.css'
+
+import chrome from '../content/chrome.json'
+import { homePath, type Locale } from '../lib/locale'
+
+interface Props {
+  title: string
+  locale?: Locale
+  description?: string
+  noindex?: boolean
+  dark?: boolean
+}
+
+const {
+  title,
+  locale = 'en',
+  description,
+  noindex = false,
+  dark = false,
+} = Astro.props
+
+const copy = chrome[locale]
+const year = new Date().getFullYear()
+---
+
+<html lang={locale} class:list={{ dark }}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta
+      name="theme-color"
+      content="#f1f3f6"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#0d1117"
+      media="(prefers-color-scheme: dark)"
+    />
+    {description && <meta name="description" content={description} />}
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <title>{title}</title>
+  </head>
+  <body class="flex min-h-dvh flex-col">
+    <a
+      href="#main"
+      class="bg-primary text-primary-foreground rounded-pill fixed top-3 left-3 z-50 -translate-y-20 px-4 py-2 font-mono text-xs font-medium focus:translate-y-0"
+    >
+      {copy.skipLink}
+    </a>
+
+    <header class="flex items-center justify-between px-4 py-4 sm:px-10 sm:py-6">
+      <a
+        href={homePath(locale)}
+        aria-label={copy.homeLabel}
+        class="text-xl font-bold tracking-tight no-underline"
+      >
+        {copy.wordmark}
+      </a>
+    </header>
+
+    <main
+      id="main"
+      tabindex="-1"
+      class="mx-auto w-full max-w-reading flex-1 px-4 py-8 focus:outline-none sm:px-6"
+    >
+      <slot />
+    </main>
+
+    <footer class="border-border text-muted-foreground mx-auto w-full max-w-reading border-t px-4 py-6 pb-32 font-mono text-xs sm:px-6">
+      <small>
+        © {year} {copy.footerNote}
+      </small>
+    </footer>
+
+    <div
+      data-dock-slot
+      class="pointer-events-none fixed inset-x-0 bottom-4 z-40 flex justify-center"
+    >
+      <slot name="dock" />
+    </div>
+  </body>
+</html>

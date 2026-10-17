@@ -1,216 +1,75 @@
 ---
 import placeholder from '../content/placeholder.json'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { revealClass } from '../lib/motion'
 
 const { title, domain, loading } = placeholder.en
 ---
 
-<html lang="en" class="dark">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
-    <link
-      rel="preload"
-      href="/fonts/JetBrainsMono-var.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="dark" />
-    <meta name="robots" content="noindex" />
-    <meta name="generator" content={Astro.generator} />
-    <title>{title}</title>
-  </head>
-  <body>
-    <main>
-      <span class="corner tl" aria-hidden="true"></span>
-      <span class="corner tr" aria-hidden="true"></span>
-      <span class="corner bl" aria-hidden="true"></span>
-      <span class="corner br" aria-hidden="true"></span>
+<BaseLayout title={title} dark noindex>
+  <section class="flex min-h-[60dvh] flex-col items-center justify-center gap-5 font-mono">
+    <svg
+      class:list={[
+        'reveal',
+        revealClass(0),
+        'h-auto w-[clamp(7rem,22vw,10rem)]',
+      ]}
+      viewBox="100 150 310 200"
+      role="img"
+      aria-label="Ao"
+    >
+      <path
+        class="fill-foreground"
+        d="M122.88 333.26 164.33 175.59H216.13L257.58 333.26H226.94L218.38 298.57H162.07L153.51 333.26H122.88ZM169.06 271.09H211.4L192.26 194.28H188.2L169.06 271.09Z"
+      ></path>
+      <path
+        class="fill-primary"
+        d="M330.56 336.41Q313.89 336.41 300.6 329.66Q287.31 322.9 279.65 310.06Q271.99 297.22 271.99 279.2V275.6Q271.99 257.58 279.65 244.74Q287.31 231.9 300.6 225.14Q313.89 218.38 330.56 218.38Q347.22 218.38 360.51 225.14Q373.8 231.9 381.46 244.74Q389.12 257.58 389.12 275.6V279.2Q389.12 297.22 381.46 310.06Q373.8 322.9 360.51 329.66Q347.22 336.41 330.56 336.41ZM330.56 311.19Q343.62 311.19 352.18 302.74Q360.74 294.29 360.74 278.52V276.27Q360.74 260.5 352.29 252.06Q343.85 243.61 330.56 243.61Q317.49 243.61 308.93 252.06Q300.37 260.5 300.37 276.27V278.52Q300.37 294.29 308.93 302.74Q317.49 311.19 330.56 311.19Z"
+      ></path>
+    </svg>
 
-      <svg class="mark" viewBox="100 150 310 200" role="img" aria-label="Ao">
-        <path
-          class="mark-a"
-          d="M122.88 333.26 164.33 175.59H216.13L257.58 333.26H226.94L218.38 298.57H162.07L153.51 333.26H122.88ZM169.06 271.09H211.4L192.26 194.28H188.2L169.06 271.09Z"
-        ></path>
-        <path
-          class="mark-o"
-          d="M330.56 336.41Q313.89 336.41 300.6 329.66Q287.31 322.9 279.65 310.06Q271.99 297.22 271.99 279.2V275.6Q271.99 257.58 279.65 244.74Q287.31 231.9 300.6 225.14Q313.89 218.38 330.56 218.38Q347.22 218.38 360.51 225.14Q373.8 231.9 381.46 244.74Q389.12 257.58 389.12 275.6V279.2Q389.12 297.22 381.46 310.06Q373.8 322.9 360.51 329.66Q347.22 336.41 330.56 336.41ZM330.56 311.19Q343.62 311.19 352.18 302.74Q360.74 294.29 360.74 278.52V276.27Q360.74 260.5 352.29 252.06Q343.85 243.61 330.56 243.61Q317.49 243.61 308.93 252.06Q300.37 260.5 300.37 276.27V278.52Q300.37 294.29 308.93 302.74Q317.49 311.19 330.56 311.19Z"
-        ></path>
-      </svg>
+    <p
+      class:list={[
+        'reveal',
+        revealClass(2),
+        'text-muted-foreground m-0 flex items-center gap-2 text-[0.8125rem] tracking-widest uppercase',
+      ]}
+      role="status"
+    >
+      <span>{loading}</span>
+      <span class="cursor bg-primary h-[0.9em] w-2" aria-hidden="true"></span>
+    </p>
 
-      <p class="status" role="status">
-        <span class="label">{loading}</span>
-        <span class="cursor" aria-hidden="true"></span>
-      </p>
-      <span class="track" aria-hidden="true">
-        <span class="bar"></span>
-      </span>
+    <span
+      class:list={[
+        'reveal',
+        revealClass(3),
+        'bg-border block h-px w-30 overflow-hidden',
+      ]}
+      aria-hidden="true"
+    >
+      <span class="sweep bg-primary block h-full w-2/5"></span>
+    </span>
 
-      <p class="domain">{domain}</p>
-    </main>
-  </body>
-</html>
+    <p
+      class:list={[
+        'reveal',
+        revealClass(5),
+        'text-muted-foreground m-0 text-xs tracking-wide',
+      ]}
+    >
+      {domain}
+    </p>
+  </section>
+</BaseLayout>
 
-<style is:global>
-  @font-face {
-    font-family: 'JetBrains Mono Variable';
-    src: url('/fonts/JetBrainsMono-var.woff2') format('woff2');
-    font-weight: 100 800;
-    font-display: swap;
-  }
-
-  :root {
-    color-scheme: dark;
-    --background: oklch(0.176 0.014 258.4);
-    --foreground: oklch(0.942 0.009 258.3);
-    --muted-foreground: oklch(0.715 0.023 256.8);
-    --primary: oklch(0.661 0.179 265.2);
-    --border: oklch(0.314 0.023 256.4);
-    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-    --duration-base: 320ms;
-    --duration-slow: 560ms;
-    --font-mono:
-      'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular,
-      monospace;
-  }
-
-  html,
-  body {
-    height: 100%;
-    margin: 0;
-    background: var(--background);
-    color: var(--foreground);
-  }
-
-  main {
-    position: relative;
-    display: flex;
-    min-height: 100dvh;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1.25rem;
-    overflow: hidden;
-    background-image: url('/grid.svg');
-    background-position: center;
-    font-family: var(--font-mono);
-  }
-
-  .mark {
-    width: clamp(7rem, 22vw, 10rem);
-    height: auto;
-    animation: enter var(--duration-slow) var(--ease-out) both;
-  }
-
-  .mark-a {
-    fill: var(--foreground);
-  }
-
-  .mark-o {
-    fill: var(--primary);
-  }
-
-  .status {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 0;
-    color: var(--muted-foreground);
-    font-size: 0.8125rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    animation: enter var(--duration-slow) var(--ease-out) 120ms both;
-  }
-
+<style>
   .cursor {
-    width: 0.5rem;
-    height: 0.9em;
-    background: var(--primary);
     animation: blink 1.1s steps(1, end) infinite;
   }
 
-  .track {
-    width: 7.5rem;
-    height: 1px;
-    overflow: hidden;
-    background: var(--border);
-    animation: enter var(--duration-slow) var(--ease-out) 200ms both;
-  }
-
-  .bar {
-    display: block;
-    width: 40%;
-    height: 100%;
-    background: var(--primary);
+  .sweep {
     animation: sweep 1.6s cubic-bezier(0.65, 0, 0.35, 1) infinite;
-  }
-
-  .domain {
-    position: absolute;
-    bottom: 2.5rem;
-    margin: 0;
-    color: var(--muted-foreground);
-    font-size: 0.75rem;
-    letter-spacing: 0.04em;
-    animation: enter var(--duration-slow) var(--ease-out) 320ms both;
-  }
-
-  .corner {
-    position: absolute;
-    width: 1.75rem;
-    height: 1.75rem;
-    border: 0 solid var(--primary);
-    opacity: 0.6;
-    animation: fade var(--duration-slow) var(--ease-out) both;
-  }
-
-  .tl {
-    top: 1.5rem;
-    left: 1.5rem;
-    border-width: 2px 0 0 2px;
-  }
-
-  .tr {
-    top: 1.5rem;
-    right: 1.5rem;
-    border-width: 2px 2px 0 0;
-    animation-delay: 60ms;
-  }
-
-  .bl {
-    bottom: 1.5rem;
-    left: 1.5rem;
-    border-width: 0 0 2px 2px;
-    animation-delay: 120ms;
-  }
-
-  .br {
-    right: 1.5rem;
-    bottom: 1.5rem;
-    border-width: 0 2px 2px 0;
-    animation-delay: 180ms;
-  }
-
-  @keyframes enter {
-    from {
-      opacity: 0;
-      transform: translateY(0.5rem);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes fade {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 0.6;
-    }
   }
 
   @keyframes blink {
@@ -229,17 +88,7 @@ const { title, domain, loading } = placeholder.en
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .mark,
-    .status,
-    .track,
-    .domain,
-    .corner,
-    .cursor,
-    .bar {
-      animation: none;
-    }
-
-    .bar {
+    .sweep {
       width: 100%;
     }
   }
