@@ -1,8 +1,19 @@
 ---
 import '../styles/global.css'
 
+import ThemeToggle from '../components/ThemeToggle'
 import chrome from '../content/chrome.json'
-import { homePath, type Locale } from '../lib/locale'
+import {
+  absoluteUrl,
+  alternatesFor,
+  DEFAULT_LOCALE,
+  homePath,
+  localePath,
+  otherLocale,
+  splitLocalePath,
+  type Locale,
+} from '../i18n/locales'
+import { THEME_INIT_SCRIPT } from '../scripts/theme-init'
 
 interface Props {
   title: string
@@ -22,6 +33,10 @@ const {
 
 const copy = chrome[locale]
 const year = new Date().getFullYear()
+const { path } = splitLocalePath(Astro.url.pathname)
+const alternates = alternatesFor(path)
+const canonical = absoluteUrl(localePath(locale, path))
+const switchTo = otherLocale(locale)
 ---
 
 <html lang={locale} class:list={{ dark }}>
@@ -33,14 +48,30 @@ const year = new Date().getFullYear()
       name="theme-color"
       content="#f1f3f6"
       media="(prefers-color-scheme: light)"
+      data-theme-color="light"
     />
     <meta
       name="theme-color"
       content="#0d1117"
       media="(prefers-color-scheme: dark)"
+      data-theme-color="dark"
     />
+    <script is:inline set:html={THEME_INIT_SCRIPT}></script>
     {description && <meta name="description" content={description} />}
     {noindex && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonical} />
+    {alternates.map((alternate) => (
+      <link
+        rel="alternate"
+        hreflang={alternate.hreflang}
+        href={absoluteUrl(alternate.path)}
+      />
+    ))}
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={absoluteUrl(localePath(DEFAULT_LOCALE, path))}
+    />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <title>{title}</title>
@@ -61,6 +92,17 @@ const year = new Date().getFullYear()
       >
         {copy.wordmark}
       </a>
+      <a
+        href={localePath(switchTo, path)}
+        hreflang={switchTo}
+        lang={switchTo}
+        aria-label={copy.switchAria}
+        data-locale-switch={switchTo}
+        class="text-muted-foreground hover:text-foreground font-mono text-xs no-underline"
+      >
+        {copy.switchLabel}
+      </a>
+      <ThemeToggle client:load copy={copy.theme} />
     </header>
 
     <main
@@ -85,3 +127,17 @@ const year = new Date().getFullYear()
     </div>
   </body>
 </html>
+
+<script>
+  import { rememberLocale } from '../i18n/preference'
+
+  document.addEventListener('click', (event) => {
+    const target = event.target
+    if (!(target instanceof Element)) return
+    const link = target.closest<HTMLElement>('[data-locale-switch]')
+    const locale = link?.dataset.localeSwitch
+    if (locale === 'en' || locale === 'es') {
+      rememberLocale(localStorage, locale)
+    }
+  })
+</script>
