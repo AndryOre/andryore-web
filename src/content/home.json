@@ -85,8 +85,7 @@
       "label": "Find me",
       "items": [
         { "label": "GitHub", "href": "https://github.com/AndryOre" },
-        { "label": "Twitch", "href": "https://www.twitch.tv/andryoredev" },
-        { "label": "Email", "href": "mailto:hello@andryore.dev" }
+        { "label": "Twitch", "href": "https://www.twitch.tv/andryoredev" }
       ]
     },
     "theme": {
@@ -179,8 +178,7 @@
       "label": "Encuéntrame",
       "items": [
         { "label": "GitHub", "href": "https://github.com/AndryOre" },
-        { "label": "Twitch", "href": "https://www.twitch.tv/andryoredev" },
-        { "label": "Correo", "href": "mailto:hello@andryore.dev" }
+        { "label": "Twitch", "href": "https://www.twitch.tv/andryoredev" }
       ]
     },
     "theme": {
