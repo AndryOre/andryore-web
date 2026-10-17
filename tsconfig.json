@@ -27,6 +27,9 @@
     "docs/brand/tools",
     "docs/brand/tokens-contrast.test.ts",
     "scripts",
+    "e2e",
+    "playwright.config.ts",
+    "playwright.visual.config.ts",
     ".github/**/*.ts"
   ],
   "exclude": ["node_modules", "dist", ".claude", ".forge"]

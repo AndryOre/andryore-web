@@ -3,5 +3,6 @@ linker = "isolated"
 
 [test]
 coverage = true
+pathIgnorePatterns = ["e2e/**", ".claude/**"]
 coverageSkipTestFiles = true
 coverageThreshold = { lines = 0.55, functions = 0.4 }
