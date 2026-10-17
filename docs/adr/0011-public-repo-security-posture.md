@@ -36,16 +36,16 @@ reference is AFE's ADR 0001, which follows the OpenSSF SCM best-practices guide.
 - **Private vulnerability reporting** enabled.
 - **Read-only default `GITHUB_TOKEN`**, and Actions cannot approve pull
   requests.
-- **Fork-PR workflows need approval** from first-time contributors.
+- **Fork-PR workflows need approval** from every outside contributor, not only
+  first-timers (applied 2026-10-17).
+- **`sha_pinning_required`** in the Actions settings, so an unpinned `uses:` is
+  rejected by GitHub itself. The workflow invariants test enforces the same in
+  CI (applied 2026-10-17).
+- **Immutable releases**, so a published Release and its assets cannot be edited
+  or replaced (applied 2026-10-17).
 
 ### Still open (owner action, applied through the GitHub API)
 
-- **`sha_pinning_required`** in the Actions settings, so an unpinned `uses:` is
-  rejected by GitHub itself. The workflow invariants test already enforces it in
-  CI.
-- **Immutable releases**, so a published Release and its assets cannot be edited
-  or replaced.
-- **Fork-PR approval for all outside contributors**, not only first-timers.
 - **CodeQL default setup.** `codeql.yml` is an advanced setup today. Default
   setup would drop a workflow file; keep the workflow until a decision to
   switch.

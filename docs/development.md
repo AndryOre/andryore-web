@@ -200,6 +200,5 @@ are not: secret scanning, push protection, private vulnerability reporting, the
 read-only default `GITHUB_TOKEN` and fork-PR approval are applied through the
 GitHub API or the settings UI.
 [ADR 0011](adr/0011-public-repo-security-posture.md) records which of them are
-in place and which are still open (`sha_pinning_required`, immutable releases,
-fork-PR approval for all outside contributors and the CodeQL default setup).
-Settings are owner actions; an agent never changes them.
+in place and which are still open (only the CodeQL default setup). Settings are
+owner actions; an agent changes one only when the owner asks for it.
