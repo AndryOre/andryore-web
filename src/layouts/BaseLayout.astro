@@ -2,13 +2,12 @@
 import '../styles/global.css'
 
 import ContactBlock from '../components/ContactBlock.astro'
-import ThemeToggle from '../components/ThemeToggle'
+import Dock from '../components/Dock'
 import chrome from '../content/chrome.json'
 import {
   absoluteUrl,
   alternatesFor,
   DEFAULT_LOCALE,
-  homePath,
   localePath,
   otherLocale,
   splitLocalePath,
@@ -39,7 +38,6 @@ const year = new Date().getFullYear()
 const { path } = splitLocalePath(Astro.url.pathname)
 const alternates = alternatesFor(path)
 const canonical = absoluteUrl(localePath(locale, path))
-const switchTo = otherLocale(locale)
 ---
 
 <html lang={locale} class:list={{ dark }}>
@@ -88,25 +86,8 @@ const switchTo = otherLocale(locale)
       {copy.skipLink}
     </a>
 
-    <header class="flex items-center justify-between px-4 py-4 sm:px-10 sm:py-6">
-      <a
-        href={homePath(locale)}
-        aria-label={copy.homeLabel}
-        class="text-xl font-bold tracking-tight no-underline"
-      >
-        {copy.wordmark}
-      </a>
-      <a
-        href={localePath(switchTo, path)}
-        hreflang={switchTo}
-        lang={switchTo}
-        aria-label={copy.switchAria}
-        data-locale-switch={switchTo}
-        class="text-muted-foreground hover:text-foreground font-mono text-xs no-underline"
-      >
-        {copy.switchLabel}
-      </a>
-      <ThemeToggle client:load copy={copy.theme} />
+    <header class="px-4 py-4 sm:px-10 sm:py-6">
+      <span class="text-xl font-bold tracking-tight">{copy.wordmark}</span>
     </header>
 
     <main
@@ -124,6 +105,30 @@ const switchTo = otherLocale(locale)
       <div class="mb-6">
         <ContactBlock locale={locale} idSuffix="footer" />
       </div>
+      <nav aria-label={copy.footerNavLabel} class="mb-4 flex gap-4">
+        <a
+          href={localePath(locale, '/uses/')}
+          class="underline underline-offset-4"
+        >
+          {copy.usesLabel}
+        </a>
+        <a
+          href={localePath(locale, '/colophon/')}
+          class="underline underline-offset-4"
+        >
+          {copy.colophonLabel}
+        </a>
+        <a
+          href={localePath(otherLocale(locale), path)}
+          lang={otherLocale(locale)}
+          hreflang={otherLocale(locale)}
+          aria-label={copy.switchAria}
+          data-locale-switch={otherLocale(locale)}
+          class="underline underline-offset-4"
+        >
+          {copy.switchLabel}
+        </a>
+      </nav>
       <small>
         © {year} {copy.footerNote}
       </small>
@@ -131,9 +136,15 @@ const switchTo = otherLocale(locale)
 
     <div
       data-dock-slot
-      class="pointer-events-none fixed inset-x-0 bottom-4 z-40 flex justify-center"
+      class="pointer-events-none fixed inset-x-0 bottom-4 z-40 flex justify-center px-4"
     >
-      <slot name="dock" />
+      <Dock
+        client:interaction
+        copy={copy.dock}
+        themeCopy={copy.theme}
+        locale={locale}
+        path={path}
+      />
     </div>
   </body>
 </html>

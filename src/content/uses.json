@@ -1,0 +1,144 @@
+{
+  "en": {
+    "meta": {
+      "title": "Uses",
+      "description": "The hardware, software and services behind what I build and stream, by category."
+    },
+    "heading": "Uses",
+    "intro": "What I build and stream with, grouped by category.",
+    "sampleTag": "Sample",
+    "sampleNote": "These rows are samples and will be replaced with the real list.",
+    "affiliateTag": "Affiliate link",
+    "affiliateNote": "Rows marked as affiliate links may earn me a commission at no cost to you.",
+    "categories": [
+      {
+        "name": "Hardware",
+        "rows": [
+          {
+            "label": "Computer",
+            "value": "Sample laptop",
+            "affiliate": false,
+            "sample": true
+          },
+          {
+            "label": "Keyboard",
+            "value": "Sample keyboard",
+            "affiliate": false,
+            "sample": true
+          },
+          {
+            "label": "Microphone",
+            "value": "Sample microphone",
+            "affiliate": false,
+            "sample": true
+          }
+        ]
+      },
+      {
+        "name": "Software",
+        "rows": [
+          {
+            "label": "Editor",
+            "value": "Sample editor",
+            "affiliate": false,
+            "sample": true
+          },
+          {
+            "label": "Terminal",
+            "value": "Sample terminal",
+            "affiliate": false,
+            "sample": true
+          }
+        ]
+      },
+      {
+        "name": "Streaming",
+        "rows": [
+          {
+            "label": "Broadcast",
+            "value": "Sample broadcast software",
+            "affiliate": false,
+            "sample": true
+          },
+          {
+            "label": "Camera",
+            "value": "Sample camera",
+            "affiliate": false,
+            "sample": true
+          }
+        ]
+      }
+    ]
+  },
+  "es": {
+    "meta": {
+      "title": "Uso",
+      "description": "El hardware, el software y los servicios detrás de lo que construyo y transmito, por categoría."
+    },
+    "heading": "Uso",
+    "intro": "Con qué construyo y transmito, agrupado por categoría.",
+    "sampleTag": "Ejemplo",
+    "sampleNote": "Estas filas son de ejemplo y se reemplazarán con la lista real.",
+    "affiliateTag": "Enlace de afiliado",
+    "affiliateNote": "Las filas marcadas como enlaces de afiliado pueden darme una comisión sin costo para ti.",
+    "categories": [
+      {
+        "name": "Hardware",
+        "rows": [
+          {
+            "label": "Computador",
+            "value": "Portátil de ejemplo",
+            "affiliate": false,
+            "sample": true
+          },
+          {
+            "label": "Teclado",
+            "value": "Teclado de ejemplo",
+            "affiliate": false,
+            "sample": true
+          },
+          {
+            "label": "Micrófono",
+            "value": "Micrófono de ejemplo",
+            "affiliate": false,
+            "sample": true
+          }
+        ]
+      },
+      {
+        "name": "Software",
+        "rows": [
+          {
+            "label": "Editor",
+            "value": "Editor de ejemplo",
+            "affiliate": false,
+            "sample": true
+          },
+          {
+            "label": "Terminal",
+            "value": "Terminal de ejemplo",
+            "affiliate": false,
+            "sample": true
+          }
+        ]
+      },
+      {
+        "name": "Transmisión",
+        "rows": [
+          {
+            "label": "Emisión",
+            "value": "Software de emisión de ejemplo",
+            "affiliate": false,
+            "sample": true
+          },
+          {
+            "label": "Cámara",
+            "value": "Cámara de ejemplo",
+            "affiliate": false,
+            "sample": true
+          }
+        ]
+      }
+    ]
+  }
+}

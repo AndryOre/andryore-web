@@ -1,0 +1,81 @@
+---
+import home from '../content/home.json'
+import type { Locale } from '../i18n/locales'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const copy = home[locale]
+const stream = copy.stream
+
+const labelClass =
+  'text-muted-foreground flex items-center justify-between gap-3 font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase'
+const sampleClass =
+  'border-border rounded-pill border px-2 font-mono text-[0.6875rem] tracking-[0.06em] whitespace-nowrap'
+const dotClass = 'inline-block size-2 shrink-0 rounded-full'
+---
+
+<article
+  data-stream-tile
+  data-state="offline"
+  class="bg-card border-border relative flex h-full min-w-0 flex-col gap-3 overflow-hidden rounded-[1.25rem] border p-5 shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)]"
+>
+  <p class={labelClass}>
+    <span>{stream.label}</span>
+    {stream.sample && <span class={sampleClass}>{copy.sample}</span>}
+  </p>
+
+  <p
+    data-stream-panel="live"
+    hidden
+    class="m-0 flex flex-col gap-1 [overflow-wrap:anywhere]"
+  >
+    <span class="flex items-center gap-2 font-medium">
+      <span class:list={[dotClass, 'bg-primary']} aria-hidden="true"></span>
+      {stream.live}
+    </span>
+    <span data-stream-title class="text-muted-foreground text-sm"></span>
+  </p>
+
+  <p
+    data-stream-panel="offline"
+    class="m-0 flex flex-col gap-1 [overflow-wrap:anywhere]"
+  >
+    <span class="flex items-center gap-2 font-medium">
+      <span
+        class:list={[dotClass, 'bg-muted-foreground']}
+        aria-hidden="true"
+      ></span>
+      {stream.offline}
+    </span>
+    <span class="text-muted-foreground text-sm">{stream.schedule}</span>
+  </p>
+
+  <p
+    data-stream-panel="unavailable"
+    hidden
+    class="text-muted-foreground m-0 text-sm [overflow-wrap:anywhere]"
+  >
+    {stream.unavailable}
+  </p>
+
+  <a
+    href={stream.href}
+    rel="noopener"
+    class="text-foreground mt-auto text-sm font-medium underline-offset-4 hover:underline"
+  >
+    {stream.open}
+  </a>
+</article>
+
+<script>
+  import { mountStreamTile } from '../scripts/stream-tile'
+
+  for (const tile of document.querySelectorAll<HTMLElement>(
+    '[data-stream-tile]',
+  )) {
+    void mountStreamTile(tile)
+  }
+</script>

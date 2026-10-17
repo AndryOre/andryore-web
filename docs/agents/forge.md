@@ -33,6 +33,13 @@ the reason the coordinator generated for it (`forge lock-reason`) — that's bui
 into `/forge` itself, identical in every repo, and nothing below needs to
 restate it.
 
+**Base commit.** The harness creates `isolation: "worktree"` checkouts at the
+old `main` commit, not at `develop`, and the permission system denies
+`git reset --hard` there. A worker therefore creates its branch straight from
+the trunk: `git checkout -b <branch> develop`, then verifies that
+`git rev-parse HEAD` equals `git rev-parse develop` before installing anything.
+The dispatch prompt must say so; without it workers stop at bootstrap.
+
 A fresh worktree only needs `bun install --frozen-lockfile --silent`
 (`worktree.bootstrap` in `forge.config.json`). No codegen and no env files to
 copy from the main checkout.

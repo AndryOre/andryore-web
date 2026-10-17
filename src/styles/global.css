@@ -91,6 +91,24 @@
   }
 }
 
+@utility uses-float-6 {
+  animation: uses-float 6s ease-in-out infinite;
+}
+
+@utility uses-float-7 {
+  animation: uses-float 7s ease-in-out -2s infinite;
+}
+
+@utility uses-float-8 {
+  animation: uses-float 8s ease-in-out -4s infinite;
+}
+
+@keyframes uses-float {
+  50% {
+    transform: translateY(-0.75rem);
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   html.theme-fade,
   html.theme-fade *,
@@ -121,6 +139,14 @@
 
   main {
     view-transition-name: main;
+  }
+
+  [data-dock-pill] {
+    view-transition-name: dock-pill;
+  }
+
+  ::view-transition-group(dock-pill) {
+    animation-duration: var(--duration-fast);
   }
 
   [data-product-image='snug'] {

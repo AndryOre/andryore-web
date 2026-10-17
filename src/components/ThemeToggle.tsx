@@ -1,15 +1,17 @@
 import { useEffect, useSyncExternalStore, type ReactElement } from 'react'
 
 import {
-  applyResolvedTheme,
   DARK_SCHEME_QUERY,
-  getThemeStorage,
-  readThemePreference,
-  resolveTheme,
   THEME_PREFERENCES,
-  writeThemePreference,
   type ThemePreference,
 } from '@/lib/theme'
+import {
+  chooseTheme,
+  getServerThemeSnapshot,
+  getThemeSnapshot,
+  paintTheme,
+  subscribeToTheme,
+} from '@/lib/theme-store'
 
 import { Button } from './ui/button'
 
@@ -18,45 +20,6 @@ export interface ThemeToggleCopy {
   auto: string
   light: string
   dark: string
-}
-
-const FADE_CLASS = 'theme-fade'
-const FADE_DURATION_MS = 400
-
-const listeners = new Set<() => void>()
-const memory: { preference: ThemePreference | null } = { preference: null }
-
-const subscribe = (onChange: () => void): (() => void) => {
-  listeners.add(onChange)
-  globalThis.addEventListener('storage', onChange)
-  return () => {
-    listeners.delete(onChange)
-    globalThis.removeEventListener('storage', onChange)
-  }
-}
-
-const getSnapshot = (): ThemePreference =>
-  memory.preference ?? readThemePreference(getThemeStorage())
-
-const getServerSnapshot = (): ThemePreference => 'auto'
-
-const paint = (preference: ThemePreference): void => {
-  applyResolvedTheme(
-    document,
-    resolveTheme(preference, matchMedia(DARK_SCHEME_QUERY).matches),
-  )
-}
-
-const choose = (preference: ThemePreference): void => {
-  const root = document.documentElement
-  root.classList.add(FADE_CLASS)
-  paint(preference)
-  setTimeout(() => {
-    root.classList.remove(FADE_CLASS)
-  }, FADE_DURATION_MS)
-  const stored = writeThemePreference(getThemeStorage(), preference)
-  memory.preference = stored ? null : preference
-  for (const listener of listeners) listener()
 }
 
 const ICON_PATHS: Record<ThemePreference, ReactElement> = {
@@ -75,7 +38,13 @@ const ICON_PATHS: Record<ThemePreference, ReactElement> = {
   dark: <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" />,
 }
 
-function ThemeIcon({ preference }: { preference: ThemePreference }) {
+/**
+ * Decorative icon of a theme preference.
+ * @param props Component props.
+ * @param props.preference The preference to draw.
+ * @returns The SVG.
+ */
+export function ThemeIcon({ preference }: { preference: ThemePreference }) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -92,6 +61,32 @@ function ThemeIcon({ preference }: { preference: ThemePreference }) {
 }
 
 /**
+ * The stored theme preference, kept in sync across islands, which also
+ * repaints when the system scheme changes while the preference is `auto`.
+ * @returns The current preference.
+ */
+export function useThemePreference(): ThemePreference {
+  const preference = useSyncExternalStore(
+    subscribeToTheme,
+    getThemeSnapshot,
+    getServerThemeSnapshot,
+  )
+
+  useEffect(() => {
+    const query = matchMedia(DARK_SCHEME_QUERY)
+    const repaint = (): void => {
+      paintTheme(getThemeSnapshot())
+    }
+    query.addEventListener('change', repaint)
+    return () => {
+      query.removeEventListener('change', repaint)
+    }
+  }, [])
+
+  return preference
+}
+
+/**
  * Three-state theme control: Auto, Light and Dark. Each option is a toggle
  * button inside a labelled group, so assistive tech hears the current state
  * and every option is a tab stop.
@@ -100,22 +95,7 @@ function ThemeIcon({ preference }: { preference: ThemePreference }) {
  * @returns The control.
  */
 export default function ThemeToggle({ copy }: { copy: ThemeToggleCopy }) {
-  const preference = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot,
-  )
-
-  useEffect(() => {
-    const query = matchMedia(DARK_SCHEME_QUERY)
-    const repaint = (): void => {
-      paint(getSnapshot())
-    }
-    query.addEventListener('change', repaint)
-    return () => {
-      query.removeEventListener('change', repaint)
-    }
-  }, [])
+  const preference = useThemePreference()
 
   return (
     <div
@@ -132,7 +112,7 @@ export default function ThemeToggle({ copy }: { copy: ThemeToggleCopy }) {
           aria-label={copy[option]}
           title={copy[option]}
           onClick={() => {
-            choose(option)
+            chooseTheme(option)
           }}
         >
           <ThemeIcon preference={option} />

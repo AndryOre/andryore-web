@@ -1,0 +1,46 @@
+---
+import colophon from '../content/colophon.json'
+import type { Locale } from '../i18n/locales'
+import BaseLayout from '../layouts/BaseLayout.astro'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const copy = colophon[locale]
+---
+
+<BaseLayout
+  title={copy.meta.title}
+  description={copy.meta.description}
+  locale={locale}
+>
+  <div class="flex flex-col gap-10">
+    <section aria-labelledby="colophon-heading" class="flex flex-col gap-3">
+      <h1 id="colophon-heading" class="m-0 text-3xl font-bold tracking-tight">
+        {copy.heading}
+      </h1>
+      <p class="text-muted-foreground m-0 text-lg">{copy.intro}</p>
+    </section>
+
+    <ul class="m-0 flex list-none flex-col gap-2 p-0">
+      {copy.rows.map((row) => (
+        <li class="flex items-baseline gap-2">
+          <span class="shrink-0">{row.label}</span>
+          <span
+            aria-hidden="true"
+            class="border-border min-w-4 flex-1 border-b border-dotted"
+          />
+          <span class="text-muted-foreground text-right">{row.value}</span>
+        </li>
+      ))}
+    </ul>
+
+    <p class="m-0">
+      <a href={copy.sourceUrl} class="underline underline-offset-4">
+        {copy.sourceLinkLabel}
+      </a>
+    </p>
+  </div>
+</BaseLayout>

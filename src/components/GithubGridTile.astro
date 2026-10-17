@@ -1,0 +1,88 @@
+---
+import tiles from '../content/live-tiles.json'
+import type { Locale } from '../i18n/locales'
+import type { GridLevel, GridSnapshot } from '../lib/github-grid'
+
+interface Props {
+  locale: Locale
+  snapshot: GridSnapshot
+}
+
+const { locale, snapshot } = Astro.props
+const copy = tiles[locale].github
+const total = new Intl.NumberFormat(locale).format(snapshot.total)
+
+const levelClass: Readonly<Record<GridLevel, string>> = {
+  0: 'bg-muted',
+  1: 'bg-primary/25',
+  2: 'bg-primary/50',
+  3: 'bg-primary/75',
+  4: 'bg-primary',
+}
+const legend: readonly GridLevel[] = [0, 1, 2, 3, 4]
+const cell = 'block aspect-square rounded-[2px]'
+---
+
+<article
+  data-github-grid
+  class="bg-card border-border flex h-full min-w-0 flex-col gap-3 overflow-hidden rounded-[1.25rem] border p-5 shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)]"
+>
+  <p class="text-muted-foreground m-0 flex items-center justify-between gap-3 font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase">
+    <span>{copy.label}</span>
+    <span class="normal-case tabular-nums">
+      {copy.capturedLabel}
+      <time datetime={snapshot.capturedAt}>{snapshot.capturedAt}</time>
+    </span>
+  </p>
+  <p class="m-0 flex flex-wrap items-baseline gap-x-2">
+    <span
+      class="text-4xl font-bold tracking-[-0.03em] tabular-nums"
+      data-count-total={snapshot.total}
+      data-count-locale={locale}
+    >
+      {total}
+    </span>
+    <span class="text-muted-foreground text-sm">{copy.totalLabel}</span>
+  </p>
+  <div
+    role="img"
+    aria-label={`${copy.gridLabel}: ${total}`}
+    class="grid grid-flow-col grid-rows-7 auto-cols-fr gap-[2px]"
+  >
+    {snapshot.weeks.flatMap((week) =>
+      week.map((day) => (
+        <i
+          class:list={[cell, levelClass[day.level]]}
+          title={`${day.date}: ${day.count}`}
+        />
+      )),
+    )}
+  </div>
+  <div
+    class="text-muted-foreground flex items-center justify-end gap-1.5 font-mono text-[0.625rem] uppercase"
+    aria-hidden="true"
+  >
+    <span>{copy.less}</span>
+    {legend.map((level) => (
+      <i class:list={['size-2.5', cell, levelClass[level]]} />
+    ))}
+    <span>{copy.more}</span>
+  </div>
+</article>
+
+<script>
+  import { prefersReducedMotion } from '../lib/motion'
+  import { startCountUp } from '../scripts/count-up'
+
+  for (const target of document.querySelectorAll<HTMLElement>(
+    '[data-count-total]',
+  )) {
+    const total = Number(target.dataset.countTotal)
+    if (!Number.isFinite(total)) continue
+    startCountUp(target, total, {
+      reducedMotion: prefersReducedMotion(globalThis),
+      locale: target.dataset.countLocale ?? 'en',
+      requestFrame: (callback) => requestAnimationFrame(callback),
+    })
+  }
+</script>
