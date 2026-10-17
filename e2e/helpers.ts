@@ -87,3 +87,57 @@ export async function assertNoHorizontalOverflow(page: Page): Promise<void> {
   )
   expect(overflow).toBeLessThanOrEqual(0)
 }
+
+const MINIMUM_TOUCH_TARGET = 43.5
+
+/**
+ * Lists the standalone controls smaller than the touch target minimum. Links
+ * inside running text are exempt, as in WCAG 2.5.8.
+ * @param page The page to measure.
+ * @returns A description of each control that is too small.
+ */
+export async function findSmallTouchTargets(page: Page): Promise<string[]> {
+  return page.evaluate((minimum) => {
+    const small: string[] = []
+    const controls = globalThis.document.querySelectorAll<HTMLElement>(
+      'a[href], button, [role="button"], summary',
+    )
+    for (const control of controls) {
+      const inline = control.closest('p, li, dd, blockquote')
+      const bounds = control.getBoundingClientRect()
+      if (bounds.width === 0 || bounds.height === 0) continue
+      if (inline && !control.closest('nav, footer')) continue
+      if (control.closest('.sr-only, [hidden], [aria-hidden="true"]')) continue
+      if (bounds.width < minimum || bounds.height < minimum) {
+        small.push(
+          `${control.tagName.toLowerCase()} "${control.textContent.trim().slice(0, 30)}" ${String(Math.round(bounds.width))}x${String(Math.round(bounds.height))}`,
+        )
+      }
+    }
+    return small
+  }, MINIMUM_TOUCH_TARGET)
+}
+
+/**
+ * Lists the elements whose text is cut off by their own box.
+ * @param page The page to measure.
+ * @returns A description of each element that clips its content.
+ */
+export async function findClippedText(page: Page): Promise<string[]> {
+  return page.evaluate(() => {
+    const clipped: string[] = []
+    const candidates = globalThis.document.querySelectorAll<HTMLElement>(
+      'h1, h2, h3, p, a, button, li, span, dt, dd',
+    )
+    for (const element of candidates) {
+      const style = globalThis.getComputedStyle(element)
+      const hides = style.overflowX === 'hidden' || style.overflowX === 'clip'
+      if (hides && element.scrollWidth > element.clientWidth + 1) {
+        clipped.push(
+          `${element.tagName.toLowerCase()} "${element.textContent.trim().slice(0, 30)}"`,
+        )
+      }
+    }
+    return clipped
+  })
+}
