@@ -2,12 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
 
-import {
-  CONTACT_EMAIL,
-  CONTACT_EMAIL_IS_PLACEHOLDER,
-  copyWithFallback,
-  CV_PATHS,
-} from './contact'
+import { CONTACT_EMAIL, copyWithFallback, CV_PATHS } from './contact'
 
 describe('copyWithFallback', () => {
   test('reports copied when the clipboard accepts the text', async () => {
@@ -53,7 +48,7 @@ describe('contact constants', () => {
   test('the email is a plain address and never a mailto link', () => {
     expect(CONTACT_EMAIL).toMatch(/^[^@\s]+@[^@\s]+$/)
     expect(CONTACT_EMAIL.startsWith('mailto:')).toBe(false)
-    expect(typeof CONTACT_EMAIL_IS_PLACEHOLDER).toBe('boolean')
+    expect(CONTACT_EMAIL).toBe('hello@andryore.dev')
   })
 
   test('each CV path is a language-named pdf under /cv/', () => {
@@ -62,11 +57,8 @@ describe('contact constants', () => {
   })
 
   const publicDirectory = path.join(import.meta.dir, '../../public')
-  const pdfsBuilt = Object.values(CV_PATHS).every((cvPath) =>
-    existsSync(path.join(publicDirectory, cvPath)),
-  )
 
-  test.skipIf(!pdfsBuilt)('both CV PDFs exist as committed assets', () => {
+  test('both CV PDFs exist as committed assets', () => {
     for (const cvPath of Object.values(CV_PATHS)) {
       expect(existsSync(path.join(publicDirectory, cvPath))).toBe(true)
     }

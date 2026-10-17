@@ -1,11 +1,5 @@
-/**
- * Contact email shown on the About page and in the footer. PLACEHOLDER: the
- * real address is not confirmed yet and must be replaced by Andry before merge.
- */
-export const CONTACT_EMAIL = 'email-pending@example.invalid'
-
-/** True while {@link CONTACT_EMAIL} is still the unconfirmed placeholder. */
-export const CONTACT_EMAIL_IS_PLACEHOLDER = CONTACT_EMAIL.endsWith('.invalid')
+/** Contact email shown on the About page and in the footer. */
+export const CONTACT_EMAIL = 'hello@andryore.dev'
 
 /** Public paths of the committed CV PDFs, one per language. */
 export const CV_PATHS = {
