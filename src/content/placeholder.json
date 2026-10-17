@@ -1,4 +1,12 @@
 {
-  "en": { "title": "andryore.dev", "loading": "Loading" },
-  "es": { "title": "andryore.dev", "loading": "Cargando" }
+  "en": {
+    "title": "andryore.dev",
+    "domain": "andryore.dev",
+    "loading": "Loading"
+  },
+  "es": {
+    "title": "andryore.dev",
+    "domain": "andryore.dev",
+    "loading": "Cargando"
+  }
 }
