@@ -21,7 +21,8 @@ import {
 /**
  * Regenerates the derived raster assets of the brand kit from the SVG sources in
  * `docs/brand/logo`: the PNG marks, the Open Graph image (`docs/brand/og/`),
- * the social banners and the fallback avatars (`docs/brand/social/`). Run with
+ * the per-language Open Graph images and the site icons in `public/`, the
+ * social banners and the fallback avatars (`docs/brand/social/`). Run with
  * `bun run brand:export`.
  *
  * Fonts are embedded from `docs/brand/brandbook/fonts`, so output does not
@@ -34,6 +35,13 @@ const brandRoot = path.resolve(
 )
 const repositoryRoot = path.resolve(brandRoot, '../..')
 const fontsRoot = path.join(brandRoot, 'brandbook/fonts')
+
+const SITE_ICONS = [
+  ['favicon-32.png', 32],
+  ['apple-touch-icon.png', 180],
+  ['icon-192.png', 192],
+  ['icon-512.png', 512],
+]
 
 const browser = await chromium.launch()
 
@@ -77,7 +85,7 @@ async function renderSvg(svg, size, outPath) {
   await assertSpec(outPath, { width: size, height: size, maxBytes: 200 * KB })
 }
 
-async function renderBanner(format, outPath) {
+async function renderBanner(format, outPath, locale = 'en') {
   const theme = 'dark'
   const { width, height, maxBytes } = FORMATS[format]
   const page = await browser.newPage({ viewport: { width, height } })
@@ -87,6 +95,7 @@ async function renderBanner(format, outPath) {
       theme,
       wordmarkSvg: wordmarkSvgs[theme],
       fontFaces,
+      locale,
     }),
   )
   await page.waitForFunction('document.fonts.status === "loaded"')
@@ -127,6 +136,20 @@ try {
     )
   }
   await renderBanner('og', path.join(brandRoot, 'og/og.png'))
+  for (const locale of ['en', 'es']) {
+    await renderBanner(
+      'og',
+      path.join(brandRoot, 'og', `og-${locale}.png`),
+      locale,
+    )
+  }
+  for (const [fileName, size] of SITE_ICONS) {
+    await renderSvg(
+      markGridSvg,
+      size,
+      path.join(repositoryRoot, 'public', fileName),
+    )
+  }
   for (const format of [
     'x-header',
     'linkedin-banner',

@@ -37,8 +37,18 @@ export const PANEL_LABELS = [
   'commands',
 ]
 
-const HEADLINE_LINES = ['Building, exploring, ']
-const HEADLINE_ACCENT = 'telling'
+const HEADLINES = {
+  en: {
+    defaultLines: ['Building, exploring, '],
+    specLines: ['Building, exploring,', ''],
+    accent: 'telling',
+  },
+  es: {
+    defaultLines: ['Construyendo, explorando, '],
+    specLines: ['Construyendo, explorando,', ''],
+    accent: 'contando',
+  },
+}
 const HANDLE = '@andryore &middot; andryore.dev'
 const GHOST_WORD = 'TRY'
 const DESIGN_WIDTH = 1500
@@ -164,11 +174,21 @@ export function headlineOnScreen(format) {
  * @param options.theme Colour theme, `dark` or `light`.
  * @param options.wordmarkSvg Inline SVG of the wordmark.
  * @param options.fontFaces CSS `@font-face` rules with embedded fonts.
+ * @param [options.locale] Headline language, `en` (default) or `es`.
  * @returns The banner document HTML.
  */
-export function bannerHtml({ format, theme, wordmarkSvg, fontFaces }) {
+export function bannerHtml({
+  format,
+  theme,
+  wordmarkSvg,
+  fontFaces,
+  locale = 'en',
+}) {
   const spec = FORMATS[format]
   if (!spec) throw new Error(`Unknown banner format: ${format}`)
+  const headline = HEADLINES[locale]
+  if (!headline) throw new Error(`Unknown banner locale: ${locale}`)
+  const lines = spec.lines ? headline.specLines : headline.defaultLines
   const { ground, text, muted, faint, accent, accentRgb } = THEMES[theme]
   const { width, height, headlineSize, handleSize, wordmarkWidth, devices } =
     spec
@@ -200,7 +220,7 @@ export function bannerHtml({ format, theme, wordmarkSvg, fontFaces }) {
   const wordmark = wordmarkWidth
     ? `<div style="width:${wordmarkWidth}px;margin-bottom:${Math.round(headlineSize * 0.5)}px">${wordmarkSvg}</div>`
     : ''
-  return `<html lang="en"><style>${fontFaces}svg{display:block;width:100%;height:auto}</style>
+  return `<html lang="${locale}"><style>${fontFaces}svg{display:block;width:100%;height:auto}</style>
     <body style="margin:0;width:${width}px;height:${height}px;position:relative;overflow:hidden;font-family:'Space Grotesk',system-ui,sans-serif;color:${text};background-color:${ground};background-image:linear-gradient(rgba(${accentRgb},0.08) ${stroke}px,transparent ${stroke}px),linear-gradient(90deg,rgba(${accentRgb},0.08) ${stroke}px,transparent ${stroke}px);background-size:${cell}px ${cell}px">
       ${ghost}
       ${bracket('top', 'left')}${bracket('top', 'right')}${bracket('bottom', 'left')}${bracket('bottom', 'right')}
@@ -208,7 +228,7 @@ export function bannerHtml({ format, theme, wordmarkSvg, fontFaces }) {
       <div style="position:absolute;right:${margin}px;top:${Math.round(margin * 0.5)}px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:${decoSize}px;letter-spacing:0.14em;color:${faint}">${width} &times; ${height}</div>
       <div style="position:absolute;left:${safe.left}px;top:${safe.top}px;width:${safe.width}px;height:${safe.height}px;display:flex;flex-direction:column;align-items:${wordmarkWidth ? 'flex-start' : 'center'};justify-content:center">
         ${wordmark}
-        <div style="font-weight:700;font-size:${headlineSize}px;letter-spacing:-0.035em;line-height:1.05;text-align:${wordmarkWidth ? 'left' : 'center'}">${(spec.lines ?? HEADLINE_LINES).join('<br>')}<span style="color:${accent}">${HEADLINE_ACCENT}</span>.</div>
+        <div style="font-weight:700;font-size:${headlineSize}px;letter-spacing:-0.035em;line-height:1.05;text-align:${wordmarkWidth ? 'left' : 'center'}">${lines.join('<br>')}<span style="color:${accent}">${headline.accent}</span>.</div>
         <div style="display:flex;align-items:center;gap:${Math.round(handleSize * 0.5)}px;margin-top:${Math.round(headlineSize * 0.35)}px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:${handleSize}px;letter-spacing:0.1em;color:${muted}">
           <span style="display:inline-block;width:${Math.round(handleSize * 0.4)}px;height:${Math.round(handleSize * 0.4)}px;background:${accent}"></span><span>${spec.handle ?? HANDLE}</span>
         </div>
