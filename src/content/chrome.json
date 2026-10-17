@@ -3,12 +3,24 @@
     "wordmark": "AndryOre",
     "homeLabel": "AndryOre, home",
     "skipLink": "Skip to content",
-    "footerNote": "AndryOre"
+    "footerNote": "AndryOre",
+    "theme": {
+      "label": "Theme",
+      "auto": "Auto",
+      "light": "Light",
+      "dark": "Dark"
+    }
   },
   "es": {
     "wordmark": "AndryOre",
     "homeLabel": "AndryOre, inicio",
     "skipLink": "Saltar al contenido",
-    "footerNote": "AndryOre"
+    "footerNote": "AndryOre",
+    "theme": {
+      "label": "Tema",
+      "auto": "Automático",
+      "light": "Claro",
+      "dark": "Oscuro"
+    }
   }
 }
