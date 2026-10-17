@@ -95,8 +95,9 @@ existing variant, then a new variant, then a contract, and only then a one-line
 `eslint-disable-next-line -- <reason>`. Record the decision in an ADR when the
 contract is new. See [ADR 0006](adr/0006-tailwind-and-shadcn-islands.md).
 
-`shadcnNoRestyleContracts` does not exist yet: it arrives with AO-1965, the
-Astro site scaffold. Until then `eslint.config.mjs` has no contracts to edit.
+`shadcnNoRestyleContracts` lives in `eslint.config.mjs`. It is empty until the
+first shadcn/ui component lands; the `@shadcn/lint` rules run on the React
+island files (`src/**/*.tsx`), not on `.astro` files.
 
 ## Skills install and update
 

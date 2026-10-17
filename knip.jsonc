@@ -1,6 +1,10 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "entry": ["eslint-rules/index.mjs", "src/pages/**/*.astro"],
-  "project": ["**/*.{ts,tsx,mjs,astro}"],
-  "ignore": [".claude/skills/**"],
+  "entry": [
+    "eslint-rules/index.mjs",
+    "src/pages/**/*.astro",
+    "src/scripts/hydrate-on-interaction.ts",
+  ],
+  "project": ["**/*.{ts,tsx,mjs,astro,css}"],
+  "ignore": [".claude/skills/**", "docs/brand/brandbook/fonts.css"],
 }

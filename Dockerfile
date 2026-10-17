@@ -5,6 +5,7 @@ COPY package.json bun.lock bunfig.toml ./
 RUN bun install --frozen-lockfile --ignore-scripts
 
 COPY astro.config.mjs tsconfig.json ./
+COPY docs/brand/tokens.css docs/brand/tokens.css
 COPY public public
 COPY src src
 RUN bun run build
