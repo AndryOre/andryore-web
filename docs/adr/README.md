@@ -27,4 +27,5 @@ column.
 | 0012   | [CSP delivered as an nginx header](0012-csp-delivered-as-an-nginx-header.md)       | Accepted | -                        |
 | 0013   | [AI crawler policy](0013-ai-crawler-policy.md)                                     | Accepted | -                        |
 | 0014   | [Umami Cloud cookieless analytics](0014-umami-cloud-cookieless-analytics.md)       | Accepted | -                        |
-| 0015   | [develop as the integration branch](0015-develop-as-integration-branch.md)         | Accepted | -                        |
+| 0015   | [develop as the integration branch](0015-develop-as-integration-branch.md)         | Accepted | 0016 (amended)           |
+| 0016   | [forge trunk moves to develop](0016-forge-trunk-moves-to-develop.md)               | Accepted | -                        |

@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted.
+Accepted. Amended by [0016](0016-forge-trunk-moves-to-develop.md).
 
 Date: 2026-10-17
 
