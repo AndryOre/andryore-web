@@ -9,6 +9,8 @@ COPY docs/brand/tokens.css docs/brand/tokens.css
 COPY docs/brand/avatar/memoji.webp docs/brand/avatar/memoji.webp
 COPY public public
 COPY src src
+ARG SITE_LASTMOD
+ENV SITE_LASTMOD=$SITE_LASTMOD
 RUN bun run build
 RUN bun build --compile src/server/stream-status-server.ts --outfile /repo/stream-status-server
 

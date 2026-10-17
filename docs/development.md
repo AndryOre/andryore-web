@@ -29,6 +29,10 @@ the git hooks on `bun install` through the `prepare` script. `bunfig.toml` sets
 | `bun run lint:commits`    | Runs commitlint over the commits of the current branch.                                            |
 | `bun run ci:local`        | Frozen install, `lint:commits`, `check`, `lint:docs` and `test`: the PR gates that need no build.  |
 | `bun run brand:export`    | Regenerates the brand rasters from the logo SVGs. Never edit the generated rasters by hand.        |
+| `bun run test:e2e`        | Playwright axe, layout and hydration specs against `astro preview` of a built `dist/`.             |
+| `bun run test:visual`     | Visual snapshots inside the pinned Playwright image; `-- --update` regenerates them.               |
+| `bun run test:smoke`      | Builds the nginx image and checks status codes, `/es/`, both 404s, headers and the sitemap.        |
+| `bun run audit:dist`      | Scans a build directory (default `dist`) for third-party requests and unsafe external links.       |
 
 When a command crashes inside `typescript.js`, see
 [Troubleshooting](troubleshooting.md). `eslint` and `tsc` run without `--bun`.
@@ -46,6 +50,46 @@ module under `scripts`, `eslint-rules`, `docs/brand/tools` and `src` needs a
 colocated `.test.ts` or `.test.mjs`, or an entry in its `EXEMPTIONS` map with a
 written reason. The test also fails on a stale exemption: the module is gone,
 now has a test, or the reason is empty.
+
+## Browser checks
+
+`bun test` is the unit runner and never picks up `e2e/` (`bunfig.toml` ignores
+it). Playwright (`@playwright/test`) owns `e2e/`; keep specs there, never under
+`src/pages`. Unit tests cover logic; e2e specs cover what only a browser shows:
+accessibility, layout, hydration and rendered pixels.
+
+Run `bun run build` first; the checks read `dist/`, and `build` stays opt-in for
+agents.
+
+- **E2E**: `bun run test:e2e` runs axe (tags `wcag2a`, `wcag2aa`, `wcag21a`,
+  `wcag21aa`, `wcag22aa`, `best-practice`) over every route in English and
+  Spanish, light and dark, plus the hydration spec (no console errors, failed or
+  4xx/5xx requests, nor requests outside the Umami allowlist) and the layout
+  sweep at 1280, 768, 375 and 320 px. `webkit` and `firefox` projects run only
+  the layout spec; install them with `bunx playwright install webkit firefox`.
+  Use `--project=chromium` for the default run.
+- **Visual**: `bun run test:visual` compares full-page snapshots at 1280, 768,
+  375 and 320 px, light and dark, with `maxDiffPixelRatio` 0.002 and reduced
+  motion forced. It runs in `mcr.microsoft.com/playwright`, tagged with the
+  Playwright version read from `bun.lock`, so pixels match everywhere. The
+  snapshots in `e2e/__snapshots__` regenerate only through
+  `bun run test:visual -- --update` (Docker required); never commit snapshots
+  captured outside the container.
+- **Smoke**: `bun run test:smoke` builds the `Dockerfile`, runs it and fails on
+  a missing `/es/` route, a missing 404 status, a missing security header, a CSP
+  with a third-party origin or `unsafe-inline`, a non-gzipped page, or a sitemap
+  URL without `lastmod`. A CSP without `sha256` hashes only warns until
+  `SMOKE_REQUIRE_CSP_HASHES=1` is set.
+- **Dist audit**: `bun run audit:dist [dir]` fails on a third-party request in
+  HTML or CSS, and on an external link without `rel="noopener noreferrer"` (ADR
+  0009). The only allowed origins are the two Umami hosts (ADR 0014).
+
+`.github/workflows/site-quality.yml` runs the same commands on PRs that touch
+the Site. The visual job skips fork PRs because it mounts the repository into a
+container. The flaky-test summary (`scripts/flaky-summary.ts`) writes to the job
+summary and never fails the build. Conventions for specs: use `test.fixme` with
+a `BUG:` note instead of deleting a failing test, assert something meaningful,
+and never call `waitForTimeout`.
 
 ## Git hooks
 
