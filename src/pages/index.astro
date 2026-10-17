@@ -27,16 +27,14 @@ const letters = [...loading]
     <main>
       <p class="loading" role="status" aria-label={loading}>
         <span class="word" aria-hidden="true">
-          {letters.map((letter, index) => (
-            <span class="letter" style={`--i: ${index}`}>
-              {letter}
-            </span>
+          {letters.map((letter) => (
+            <span class="letter">{letter}</span>
           ))}
         </span>
         <span class="dots" aria-hidden="true">
-          <span class="dot" style="--i: 0"></span>
-          <span class="dot" style="--i: 1"></span>
-          <span class="dot" style="--i: 2"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
         </span>
       </p>
     </main>
@@ -118,6 +116,66 @@ const letters = [...loading]
       reveal var(--duration-slow) var(--ease-out) both
         calc(var(--intro) + var(--i) * var(--letter-stagger)),
       breathe 1.6s ease-in-out infinite calc(var(--intro) + var(--i) * 160ms);
+  }
+
+  .letter:nth-child(1) {
+    --i: 0;
+  }
+
+  .letter:nth-child(2) {
+    --i: 1;
+  }
+
+  .letter:nth-child(3) {
+    --i: 2;
+  }
+
+  .letter:nth-child(4) {
+    --i: 3;
+  }
+
+  .letter:nth-child(5) {
+    --i: 4;
+  }
+
+  .letter:nth-child(6) {
+    --i: 5;
+  }
+
+  .letter:nth-child(7) {
+    --i: 6;
+  }
+
+  .letter:nth-child(8) {
+    --i: 7;
+  }
+
+  .letter:nth-child(9) {
+    --i: 8;
+  }
+
+  .letter:nth-child(10) {
+    --i: 9;
+  }
+
+  .letter:nth-child(11) {
+    --i: 10;
+  }
+
+  .letter:nth-child(12) {
+    --i: 11;
+  }
+
+  .dot:nth-child(1) {
+    --i: 0;
+  }
+
+  .dot:nth-child(2) {
+    --i: 1;
+  }
+
+  .dot:nth-child(3) {
+    --i: 2;
   }
 
   @keyframes reveal {
