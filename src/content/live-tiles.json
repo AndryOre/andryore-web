@@ -1,0 +1,46 @@
+{
+  "en": {
+    "clock": {
+      "label": "Local time",
+      "fallbackGreeting": "Hello",
+      "greetings": {
+        "morning": "Good morning",
+        "afternoon": "Good afternoon",
+        "evening": "Good evening",
+        "night": "Good night"
+      },
+      "utcLabel": "UTC",
+      "placeholder": "--:--"
+    },
+    "github": {
+      "label": "GitHub",
+      "totalLabel": "contributions in the last year",
+      "capturedLabel": "Captured",
+      "gridLabel": "Contribution grid for the last year",
+      "less": "Less",
+      "more": "More"
+    }
+  },
+  "es": {
+    "clock": {
+      "label": "Hora local",
+      "fallbackGreeting": "Hola",
+      "greetings": {
+        "morning": "Buenos días",
+        "afternoon": "Buenas tardes",
+        "evening": "Buenas noches",
+        "night": "Buenas noches"
+      },
+      "utcLabel": "UTC",
+      "placeholder": "--:--"
+    },
+    "github": {
+      "label": "GitHub",
+      "totalLabel": "contribuciones en el último año",
+      "capturedLabel": "Capturado",
+      "gridLabel": "Cuadrícula de contribuciones del último año",
+      "less": "Menos",
+      "more": "Más"
+    }
+  }
+}

@@ -65,7 +65,7 @@ describe('home routes', () => {
   for (const locale of LOCALES) {
     test(`the ${locale} page renders the bento`, () => {
       const source = pageSource(locale)
-      expect(source).toContain(`<HomeBento locale="${locale}" />`)
+      expect(source).toContain(`<HomeBento locale="${locale}">`)
       expect(source).toContain(`locale="${locale}" wide`)
       expect(source).not.toContain('noindex')
     })

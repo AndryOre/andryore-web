@@ -20,6 +20,10 @@ const EXEMPTIONS: Readonly<Record<string, string>> = {
     'Astro endpoint that needs import.meta.glob; its logic lives in seo/sitemap.ts and i18n/parity.ts, both tested.',
   'src/pages/robots.txt.ts':
     'Astro endpoint that only wraps seo/robots.ts, which is tested.',
+  'src/lib/github-grid-build.ts':
+    'Build-time wrapper that needs import.meta.glob and process.env; the fetch and fallback logic lives in lib/github-grid.ts, which is tested.',
+  'scripts/update-github-grid.ts':
+    'CLI that needs the live GitHub API and writes the committed snapshot; the fetch logic is tested in src/lib/github-grid.test.ts.',
   'scripts/i18n-status.ts':
     'CLI that prints findStaleTranslations over the real content; the logic is tested in src/i18n/translations.test.ts.',
   'src/log/collection.ts':
