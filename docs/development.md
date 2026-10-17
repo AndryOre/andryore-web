@@ -12,24 +12,26 @@ the git hooks on `bun install` through the `prepare` script. `bunfig.toml` sets
 
 ## Scripts
 
-| Script                 | What it does                                                                                |
-| ---------------------- | ------------------------------------------------------------------------------------------- |
-| `bun run check`        | Aggregate gate: `format:check`, `lint`, `typecheck` and `knip`.                             |
-| `bun run fix`          | Formats the repository with Prettier (`format:write`).                                      |
-| `bun run format:check` | Checks formatting with Prettier (no writes).                                                |
-| `bun run format:write` | Formats the repository with Prettier.                                                       |
-| `bun run lint`         | ESLint with zero warnings allowed, using `--cache --cache-strategy content`.                |
-| `bun run lint:fix`     | ESLint with autofix.                                                                        |
-| `bun run typecheck`    | `astro check && tsc --noEmit`.                                                              |
-| `bun run knip`         | Finds unused files, exports and dependencies.                                               |
-| `bun run test`         | Runs `bun test` with coverage and the `bunfig.toml` threshold.                              |
-| `bun run lint:docs`    | Offline link and anchor check of the Markdown with lychee.                                  |
-| `bun run lint:commits` | Runs commitlint over the commits of the current branch.                                     |
-| `bun run ci:local`     | Frozen install, `lint:commits`, `check` and `test`: the CI pipeline locally.                |
-| `bun run brand:export` | Regenerates the brand rasters from the logo SVGs. Never edit the generated rasters by hand. |
+| Script                 | What it does                                                                                       |
+| ---------------------- | -------------------------------------------------------------------------------------------------- |
+| `bun run check`        | Aggregate gate: `format:check`, `lint`, `typecheck` and `knip`.                                    |
+| `bun run fix`          | Formats the repository with Prettier, then autofixes ESLint findings (`format:write`, `lint:fix`). |
+| `bun run cache:clear`  | Removes `/tmp/node-compile-cache`, `.eslintcache` and `node_modules/.cache`.                       |
+| `bun run format:check` | Checks formatting with Prettier (no writes).                                                       |
+| `bun run format:write` | Formats the repository with Prettier.                                                              |
+| `bun run lint`         | ESLint with zero warnings allowed, using `--cache --cache-strategy content`.                       |
+| `bun run lint:fix`     | ESLint with autofix.                                                                               |
+| `bun run typecheck`    | `astro check && tsc --noEmit`.                                                                     |
+| `bun run knip`         | Finds unused files, exports and dependencies.                                                      |
+| `bun run test`         | Runs `bun test` with coverage and the `bunfig.toml` threshold.                                     |
+| `bun run lint:docs`    | Offline link and anchor check of the Markdown with lychee.                                         |
+| `bun run lint:commits` | Runs commitlint over the commits of the current branch.                                            |
+| `bun run ci:local`     | Frozen install, `lint:commits`, `check`, `lint:docs` and `test`: the PR gates that need no build.  |
+| `bun run brand:export` | Regenerates the brand rasters from the logo SVGs. Never edit the generated rasters by hand.        |
 
-`eslint` and `tsc` run without `--bun`. Agents do not run a `build` script
-unless explicitly asked.
+When a command crashes inside `typescript.js`, see
+[Troubleshooting](troubleshooting.md). `eslint` and `tsc` run without `--bun`.
+Agents do not run a `build` script unless explicitly asked.
 
 ## Coverage
 
@@ -37,6 +39,12 @@ unless explicitly asked.
 `coverageThreshold = { lines = 0.55, functions = 0.4 }`. A run under either
 value fails, locally and in CI. Test files are skipped from the report
 (`coverageSkipTestFiles`).
+
+`scripts/coverage-manifest.test.ts` enforces the manifest rule: every source
+module under `scripts`, `eslint-rules`, `docs/brand/tools` and `src` needs a
+colocated `.test.ts` or `.test.mjs`, or an entry in its `EXEMPTIONS` map with a
+written reason. The test also fails on a stale exemption: the module is gone,
+now has a test, or the reason is empty.
 
 ## Git hooks
 
@@ -87,7 +95,7 @@ Astro site scaffold. Until then `eslint.config.mjs` has no contracts to edit.
 
 ## Skills install and update
 
-`.claude/skills` holds 22 third-party skills. They are installed with
+`.claude/skills` holds 25 third-party skills. They are installed with
 `bunx skills add <owner>/<repo>#<commit> -s <skill> -a claude-code`, always
 pinned to a commit so `skills-lock.json` records the exact `ref`. Read each
 `SKILL.md` and any bundled script before committing it. `bunx skills update`
@@ -111,9 +119,11 @@ Every PR runs `.github/workflows/ci.yml`. Job names:
 
 - **Quality**: format check, lint, typecheck, knip.
 - **Test**: `bun test`.
+- **Build**: `bun run build`, so a broken build fails the PR. It is the only
+  place the build runs; locally it stays opt-in.
 - **Commitlint**: validates the PR's commit messages.
 - **CI passed**: aggregates the jobs above; it is the single required status
-  check.
+  check, and the release gate reads it (see [Releasing](#releasing)).
 
 Other workflows: `lint-pr.yml` (PR title), `lint-docs.yml` (offline link and
 anchor check with lychee), `lint-workflows.yml` (workflow linting), `codeql.yml`
@@ -148,9 +158,13 @@ Releases are tag-driven and have no npm step. The notes come from
 4. Tag the merge commit with a signed tag and push it:
    `git tag -s vX.Y.Z <merge-sha> && git push origin vX.Y.Z`.
 
-Pushing a `v*` tag triggers `.github/workflows/release.yml`, which extracts the
-matching section of `CHANGELOG.md` as the release notes and creates the GitHub
-Release. Nothing is published to npm.
+Pushing a `v*` tag triggers `.github/workflows/release.yml`. After the
+main-ancestry check, a gate step polls the check runs of the tagged commit and
+requires a green `CI passed`, waiting up to 20 minutes for a pending one. A
+failed or missing `CI passed` stops the release; re-run the failed CI job on
+`main`, then re-run the release workflow. After the gate, the workflow extracts
+the matching section of `CHANGELOG.md` as the release notes and creates the
+GitHub Release. Nothing is published to npm.
 
 ## Merging
 
@@ -174,3 +188,18 @@ gh api -X POST repos/AndryOre/andryore-web/rulesets --input .github/rulesets/tag
 The required check names (`CI passed`, `Validate PR title`,
 `Check markdown links`) are the job names in `ci.yml`, `lint-pr.yml` and
 `lint-docs.yml`.
+
+A test (`scripts/workflows-invariants.test.ts`) also asserts that the required
+check names in the rulesets match the jobs the workflows define, so renaming a
+job without updating `.github/rulesets` fails CI.
+
+## Repository settings
+
+The rulesets above are committed as code, but most GitHub repository settings
+are not: secret scanning, push protection, private vulnerability reporting, the
+read-only default `GITHUB_TOKEN` and fork-PR approval are applied through the
+GitHub API or the settings UI.
+[ADR 0011](adr/0011-public-repo-security-posture.md) records which of them are
+in place and which are still open (`sha_pinning_required`, immutable releases,
+fork-PR approval for all outside contributors and the CodeQL default setup).
+Settings are owner actions; an agent never changes them.
