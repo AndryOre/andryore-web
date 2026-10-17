@@ -6,6 +6,7 @@ import {
   LOCALES,
 } from '../i18n/locales'
 
+const NOT_FOUND_PATH = '/404/'
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
 
 /**
@@ -51,9 +52,9 @@ export function buildSitemap(
   paths: readonly string[],
   lastmod?: string,
 ): string {
-  const entries = paths.flatMap((path) =>
-    LOCALES.map((locale) => urlEntry(locale, path, lastmod)),
-  )
+  const entries = paths
+    .filter((path) => path !== NOT_FOUND_PATH)
+    .flatMap((path) => LOCALES.map((locale) => urlEntry(locale, path, lastmod)))
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
