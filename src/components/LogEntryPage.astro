@@ -1,0 +1,160 @@
+---
+import logUi from '../content/log-ui.json'
+import type { Locale } from '../i18n/locales'
+import { renderLogEntry, type LogEntry } from '../log/collection'
+import {
+  formatLogDate,
+  logEntryPath,
+  logIndexPath,
+  readTimeLabel,
+} from '../log/entries'
+
+interface Props {
+  lang: Locale
+  entry: LogEntry
+  counterpart: LogEntry | undefined
+  previous: LogEntry | undefined
+  next: LogEntry | undefined
+}
+
+const { lang, entry, counterpart, previous, next } = Astro.props
+const copy = logUi[lang]
+const { Content } = await renderLogEntry(entry)
+---
+
+<article class="flex flex-col gap-8">
+  <a
+    href={logIndexPath(lang)}
+    class="text-muted-foreground hover:text-foreground font-mono text-xs no-underline"
+  >
+    ← {copy.back}
+  </a>
+
+  <header class="flex flex-col gap-3">
+    <h1 class="m-0 text-4xl font-bold tracking-tight break-words">
+      {entry.title}
+    </h1>
+    <p class="text-muted-foreground m-0 flex flex-wrap items-baseline gap-x-3 gap-y-1 font-mono text-xs">
+      <time datetime={entry.date.toISOString().slice(0, 10)}>
+        {formatLogDate(entry.date, lang)}
+      </time>
+      <span aria-hidden="true">·</span>
+      <span>{readTimeLabel(copy.readTime, entry.readMinutes)}</span>
+      {counterpart && (
+        <>
+          <span aria-hidden="true">·</span>
+          <a
+            href={logEntryPath(counterpart.lang, counterpart.key)}
+            hreflang={counterpart.lang}
+            lang={counterpart.lang}
+          >
+            {copy.otherLanguage}
+          </a>
+        </>
+      )}
+    </p>
+  </header>
+
+  <div class="log-prose max-w-[65ch]">
+    <Content />
+  </div>
+
+  {(previous || next) && (
+    <nav
+      aria-label={copy.entryNav}
+      class="border-border grid gap-4 border-t pt-6 sm:grid-cols-2"
+    >
+      {previous ? (
+        <a
+          href={logEntryPath(lang, previous.key)}
+          rel="prev"
+          class="flex min-w-0 flex-col gap-1 no-underline"
+        >
+          <span class="text-muted-foreground font-mono text-xs">
+            ← {copy.previous}
+          </span>
+          <span class="font-bold break-words">{previous.title}</span>
+        </a>
+      ) : (
+        <span></span>
+      )}
+      {next && (
+        <a
+          href={logEntryPath(lang, next.key)}
+          rel="next"
+          class="flex min-w-0 flex-col gap-1 no-underline sm:items-end sm:text-right"
+        >
+          <span class="text-muted-foreground font-mono text-xs">
+            {copy.next} →
+          </span>
+          <span class="font-bold break-words">{next.title}</span>
+        </a>
+      )}
+    </nav>
+  )}
+</article>
+
+<style is:global>
+  .log-prose {
+    overflow-wrap: break-word;
+  }
+
+  .log-prose > * + * {
+    margin-top: 1.25rem;
+  }
+
+  .log-prose h2 {
+    margin-top: 2.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .log-prose h3 {
+    margin-top: 2rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+  }
+
+  .log-prose ul,
+  .log-prose ol {
+    padding-left: 1.5rem;
+  }
+
+  .log-prose ul {
+    list-style: disc;
+  }
+
+  .log-prose ol {
+    list-style: decimal;
+  }
+
+  .log-prose a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .log-prose blockquote {
+    border-left: 2px solid var(--border);
+    padding-left: 1rem;
+    color: var(--muted-foreground);
+  }
+
+  .log-prose :not(pre) > code {
+    background: var(--muted);
+    border-radius: var(--radius);
+    padding: 0.1em 0.35em;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+
+  .log-prose pre {
+    background: var(--muted);
+    border-radius: var(--radius);
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+</style>

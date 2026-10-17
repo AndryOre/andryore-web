@@ -75,6 +75,7 @@ const switchTo = otherLocale(locale)
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <title>{title}</title>
+    <slot name="head" />
   </head>
   <body class="flex min-h-dvh flex-col">
     <a
