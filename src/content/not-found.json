@@ -1,0 +1,20 @@
+{
+  "en": {
+    "meta": {
+      "title": "Page not found",
+      "description": "This page does not exist or has moved."
+    },
+    "heading": "404",
+    "message": "This page does not exist or it moved.",
+    "action": "Go to the home page"
+  },
+  "es": {
+    "meta": {
+      "title": "Página no encontrada",
+      "description": "Esta página no existe o se movió."
+    },
+    "heading": "404",
+    "message": "Esta página no existe o se movió.",
+    "action": "Ir al inicio"
+  }
+}

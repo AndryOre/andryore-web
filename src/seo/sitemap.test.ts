@@ -16,6 +16,10 @@ describe('buildSitemap', () => {
     }
   })
 
+  test('never lists the 404 page', () => {
+    expect(buildSitemap(['/', '/404/'])).not.toContain('/404/')
+  })
+
   test('declares the xhtml namespace', () => {
     expect(xml).toContain('xmlns:xhtml="http://www.w3.org/1999/xhtml"')
   })

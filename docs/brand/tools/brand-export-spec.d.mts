@@ -44,6 +44,7 @@ export function bannerHtml(options: {
   theme: Theme
   wordmarkSvg: string
   fontFaces: string
+  locale?: 'en' | 'es'
 }): string
 
 export function assertSpec(
