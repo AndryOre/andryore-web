@@ -28,14 +28,19 @@
     "@commitlint/cli": "^21.2.3",
     "@commitlint/config-conventional": "^21.2.3",
     "@eslint-community/eslint-plugin-eslint-comments": "^4.8.1",
+    "@eslint-react/eslint-plugin": "^5.28.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
+    "@shadcn/lint": "^0.2.1",
     "@types/bun": "latest",
     "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "eslint": "^10",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-astro": "^3.2.1",
     "eslint-plugin-jsdoc": "^65.3.8",
     "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-unicorn": "^77",
     "husky": "^9.1.7",
     "knip": "^6.41.0",
@@ -43,6 +48,7 @@
     "playwright": "^1.63.0",
     "prettier": "^3.9.10",
     "prettier-plugin-astro": "^1.1.1",
+    "prettier-plugin-tailwindcss": "^0.8.1",
     "sharp": "^0.35.5",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.71.0",
@@ -53,6 +59,15 @@
     "bun": "1.4.2"
   },
   "dependencies": {
-    "astro": "^7.4.0"
+    "@astrojs/react": "^7.1.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource-variable/space-grotesk": "^5.3.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.4.0",
+    "clsx": "^2.1.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "tailwind-merge": "^3.7.0",
+    "tailwindcss": "^4.3.3"
   }
 }

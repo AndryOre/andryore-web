@@ -11,7 +11,13 @@ const config = {
   proseWrap: 'always',
   endOfLine: 'lf',
   arrowParens: 'always',
-  plugins: ['prettier-plugin-astro', '@ianvs/prettier-plugin-sort-imports'],
+  plugins: [
+    'prettier-plugin-astro',
+    '@ianvs/prettier-plugin-sort-imports',
+    'prettier-plugin-tailwindcss',
+  ],
+  tailwindStylesheet: './src/styles/global.css',
+  tailwindFunctions: ['cn', 'cva', 'clsx'],
   overrides: [{ files: '*.astro', options: { parser: 'astro' } }],
   importOrder: [
     '^astro(:.*)?$',
