@@ -12,13 +12,10 @@
       "marketplace": "Marketplace"
     },
     "statsHeading": "Facts",
-    "proofAsOf": "as of {date}",
     "worksWith": "Works with",
     "importsFrom": "Imports from",
-    "frameworks": "Works in",
     "exportFormats": "Export",
     "importFormats": "Import",
-    "skinTonesHeading": "Skin tones",
     "skinTones": [
       "Default",
       "Light",
@@ -51,13 +48,10 @@
       "marketplace": "Marketplace"
     },
     "statsHeading": "Datos",
-    "proofAsOf": "a {date}",
-    "worksWith": "Funciona en",
+    "worksWith": "Funciona con",
     "importsFrom": "Importa desde",
-    "frameworks": "Funciona con",
-    "exportFormats": "Exporta",
-    "importFormats": "Importa",
-    "skinTonesHeading": "Tonos de piel",
+    "exportFormats": "Exportar",
+    "importFormats": "Importar",
     "skinTones": [
       "Predeterminado",
       "Claro",

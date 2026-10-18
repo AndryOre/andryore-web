@@ -41,15 +41,17 @@ proof:
 platforms:
   - icon: 'chrome'
     label: 'Chrome'
+    href: 'https://chromewebstore.google.com/detail/gdhpeilfkeeajillmcncaelnppiakjhn'
   - icon: 'edge'
     label: 'Edge'
+    href: 'https://microsoftedge.microsoft.com/addons/detail/efknehclgcncocgochoibgiiagklcnho'
   - icon: 'brave'
     label: 'Brave'
   - icon: 'opera'
     label: 'Opera'
 platformNote:
-  'Brave and Opera install from the Chrome Web Store listing. There is no
-  Firefox or Safari build.'
+  'Brave and Opera install from the Chrome Web Store listing. No Firefox or
+  Safari build.'
 importsFrom:
   - icon: 'firefox'
     label: 'Firefox'

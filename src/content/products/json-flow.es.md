@@ -12,7 +12,6 @@ description:
   75.000 instalaciones, y construí su sitio de marketing.'
 state: contribution
 kind: contribution
-tag: 'Colaboración · Colaborador'
 year: '2024–25'
 url: https://json-flow.com
 links:
@@ -39,6 +38,7 @@ proof:
 platforms:
   - icon: 'monitor'
     label: 'VS Code'
+    href: 'https://marketplace.visualstudio.com/items?itemName=ManuelGil.vscode-json-flow'
 platformNote: 'Gratis en el Visual Studio Marketplace.'
 importsFrom: []
 exportFormats:

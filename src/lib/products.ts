@@ -96,7 +96,6 @@ export function createProductSchema<Source extends z.ZodType>(
     url: z.url(),
     changelog: z.url().optional(),
     kind: z.enum(['product', 'contribution']).default('product'),
-    tag: z.string().min(1).optional(),
     version: z.string().min(1).optional(),
     year: z.string().regex(/^\d{4}(?:–\d{2})?$/),
     stats: z.array(statSchema).default([]),
@@ -217,7 +216,7 @@ export interface ProductLinkSet {
  * @param product The product's website and optional link set.
  * @param product.url The product website.
  * @param product.links Source, npm and marketplace links, when they exist.
- * @returns The website first, then source, npm and marketplace when present.
+ * @returns The website first, then npm, marketplace and source when present.
  */
 export function headerLinks(product: {
   url: string
@@ -225,14 +224,43 @@ export function headerLinks(product: {
 }): HeaderLink[] {
   const { links } = product
   const candidates: { id: HeaderLinkId; href: string | undefined }[] = [
-    { id: 'source', href: links.source },
     { id: 'npm', href: links.npm },
     { id: 'marketplace', href: links.marketplace },
+    { id: 'source', href: links.source },
   ]
   const present = candidates.filter(
     (candidate): candidate is HeaderLink => candidate.href !== undefined,
   )
   return [{ id: 'website', href: product.url }, ...present]
+}
+
+/**
+ * The label of a stat with its date folded in.
+ * @param label The stat label as written in the product file.
+ * @param date The `YYYY-MM-DD` date of the figure, if it has one.
+ * @returns The label, then the date after a comma when the label already
+ *   holds a middle dot, otherwise after a middle dot.
+ */
+export function statLabel(label: string, date: string | undefined): string {
+  if (!date) return label
+  return `${label}${label.includes('·') ? ', ' : ' · '}${date}`
+}
+
+const COUNTABLE_STAT = /^(\d{1,3}(?:[.,]\d{3})+|\d+)(\+?)$/
+
+/**
+ * Splits a stat value into the integer a count-up can animate and its suffix.
+ * @param value The stat value as written, such as `75,000+` or `75.000+`.
+ * @returns The total and suffix, or `undefined` for versions, decimals, words
+ *   and year ranges, which must not count up.
+ */
+export function countableStat(
+  value: string,
+): { total: number; suffix: string } | undefined {
+  const match = COUNTABLE_STAT.exec(value)
+  if (!match) return undefined
+  const [, digits = '', suffix = ''] = match
+  return { total: Number(digits.replaceAll(/[.,]/g, '')), suffix }
 }
 
 export type ProductIconRef =
@@ -298,9 +326,9 @@ export function stackBadgeClass(label: string): string {
  */
 export const SKIN_TONE_CLASSES = [
   'bg-[#ffc83d]',
-  'bg-[#f7d7c4]',
-  'bg-[#d8b094]',
-  'bg-[#bb8a63]',
-  'bg-[#8d5a3c]',
-  'bg-[#5c3a26]',
+  'bg-[#f7dfc4]',
+  'bg-[#e3b98d]',
+  'bg-[#c69260]',
+  'bg-[#946239]',
+  'bg-[#5f4130]',
 ] as const
