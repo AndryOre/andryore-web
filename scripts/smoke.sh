@@ -37,6 +37,10 @@ done
 
 [ "$(status "$base/nope/")" = 404 ] || fail "missing page is not 404"
 [ "$(status "$base/es/nope/")" = 404 ] || fail "missing /es/ page is not 404"
+www_headers="$(curl -s -o /dev/null -D - -H 'Host: www.andryore.dev' "$base/es/?a=1" | tr -d '\r')"
+grep -qi '^HTTP/[0-9.]* 301' <<<"$www_headers" || fail "www is not a 301"
+grep -qi '^location: https://andryore.dev/es/?a=1$' <<<"$www_headers" ||
+  fail "www does not redirect to the apex"
 grep -q '<html lang="en"' <<<"$(curl -s "$base/nope/")" ||
   fail "root 404 is not English"
 grep -q '<html lang="es"' <<<"$(curl -s "$base/es/nope/")" ||
