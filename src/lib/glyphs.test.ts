@@ -14,7 +14,11 @@ describe('glyphs', () => {
     }
   })
 
+  test('includes the upload glyph', () => {
+    expect(glyphNames).toContain('upload')
+  })
+
   test('ships the full canvas set', () => {
-    expect(glyphNames).toHaveLength(56)
+    expect(glyphNames).toHaveLength(57)
   })
 })

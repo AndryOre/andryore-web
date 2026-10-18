@@ -19,7 +19,7 @@ function createFrames() {
 }
 
 describe('startCountUp', () => {
-  test('animates from 0 to the total in 800 ms, once', () => {
+  test('animates from 0 to the total in 900 ms with a cubic ease-out, once', () => {
     const target = { textContent: '1,234' }
     const frames = createFrames()
     startCountUp(target, 1234, {
@@ -33,13 +33,14 @@ describe('startCountUp', () => {
     const midway = Number(target.textContent.replace(',', ''))
     expect(midway).toBeGreaterThan(617)
     expect(midway).toBeLessThan(1234)
+    expect(midway).toBe(1080)
     frames.advance(1000 + COUNT_UP_DURATION_MS)
     expect(target.textContent).toBe('1,234')
     expect(frames.isIdle()).toBe(true)
   })
 
-  test('is 800 ms', () => {
-    expect(COUNT_UP_DURATION_MS).toBe(800)
+  test('is 900 ms', () => {
+    expect(COUNT_UP_DURATION_MS).toBe(900)
   })
 
   test('stays static under reduced motion', () => {

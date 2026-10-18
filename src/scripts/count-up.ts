@@ -1,5 +1,5 @@
 /** Length of the one-time counter animation, in milliseconds. */
-export const COUNT_UP_DURATION_MS = 800
+export const COUNT_UP_DURATION_MS = 900
 
 interface TextTarget {
   textContent: string | null
@@ -11,7 +11,7 @@ export interface CountUpOptions {
   requestFrame: (callback: (timestamp: number) => void) => number
 }
 
-const easeOut = (progress: number): number => 1 - (1 - progress) ** 4
+const easeOut = (progress: number): number => 1 - (1 - progress) ** 3
 
 /**
  * Counts a number up from 0 once. Under reduced motion, or for an empty
