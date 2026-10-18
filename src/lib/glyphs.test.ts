@@ -15,6 +15,6 @@ describe('glyphs', () => {
   })
 
   test('ships the full canvas set', () => {
-    expect(glyphNames).toHaveLength(55)
+    expect(glyphNames).toHaveLength(56)
   })
 })

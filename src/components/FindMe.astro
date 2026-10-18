@@ -24,18 +24,13 @@ const hasDarkMark = (icon: string): boolean => {
 
 <section
   id="find-me"
-  class="flex scroll-mt-4 flex-col items-center gap-6 pt-6 pb-2 text-center"
+  class="flex scroll-mt-4 flex-col items-center gap-5.5 px-2 pt-9 pb-2 text-center"
   aria-labelledby="find-me-heading"
 >
-  <div class="flex flex-col gap-2">
-    <h2
-      id="find-me-heading"
-      class="m-0 text-2xl font-bold tracking-[-0.025em] sm:text-[2rem]"
-    >
-      {copy.label}
-    </h2>
-    <p class="text-muted-foreground m-0 text-base">{copy.subline}</p>
-  </div>
+  <h2 id="find-me-heading" class="m-0 text-[2rem] font-bold tracking-[-0.03em]">
+    {copy.label}
+  </h2>
+  <p class="text-muted-foreground m-0 text-base">{copy.subline}</p>
   <ul class="m-0 flex list-none flex-wrap justify-center gap-3.5 p-0">
     {copy.items.map((item) => (
       <li class="group relative">
@@ -44,7 +39,7 @@ const hasDarkMark = (icon: string): boolean => {
           rel={externalLinkTokens()}
           aria-label={item.label}
           data-icon={item.icon}
-          class="find-me-link bg-card border-border rounded-pill inline-flex size-[3.75rem] items-center justify-center border shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)] outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          class="find-me-link bg-card border-border rounded-pill inline-flex size-[52px] items-center justify-center border outline-none sm:size-[60px] focus-visible:ring-2 focus-visible:ring-ring"
         >
           {hasDarkMark(item.icon) ? (
             <>
@@ -61,7 +56,7 @@ const hasDarkMark = (icon: string): boolean => {
         </a>
         <span
           aria-hidden="true"
-          class="bg-foreground text-background pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 translate-y-1 rounded-lg px-2.5 py-1 text-xs font-medium whitespace-nowrap opacity-0 transition duration-150 ease-out group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:transition-none"
+          class="bg-foreground text-background pointer-events-none absolute bottom-full left-1/2 z-10 mb-2.5 -translate-x-1/2 translate-y-1 rounded-lg px-2.5 py-1 text-xs font-medium whitespace-nowrap opacity-0 transition duration-150 ease-out group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:transition-none"
         >
           {item.label}
         </span>
@@ -72,11 +67,11 @@ const hasDarkMark = (icon: string): boolean => {
     data-email-chip
     role="group"
     aria-label={copy.emailLabel}
-    class="bg-card border-border rounded-pill flex w-fit max-w-full items-center gap-1 border py-1 pr-1 pl-4 [&_[data-copy-email]]:size-11"
+    class="find-me-row flex max-w-full flex-wrap items-center justify-center gap-2.5"
   >
     <span
       id={emailId}
-      class="min-w-0 font-mono text-sm [overflow-wrap:anywhere] select-all"
+      class="bg-card-2 border-border rounded-pill inline-flex min-h-8 min-w-0 items-center border px-3 font-mono text-[0.6875rem] font-medium [overflow-wrap:anywhere] select-all"
     >
       {CONTACT_EMAIL}
     </span>
@@ -94,7 +89,7 @@ const hasDarkMark = (icon: string): boolean => {
       href={`mailto:${CONTACT_EMAIL}`}
       aria-label={copy.sendLabel}
       data-send-email
-      class="text-muted-foreground hover:text-foreground rounded-pill inline-flex size-11 shrink-0 items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      class="rounded-pill inline-flex size-10 shrink-0 items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <svg
         width="18"
