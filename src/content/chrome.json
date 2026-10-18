@@ -22,14 +22,24 @@
       "language": {
         "label": "Language",
         "en": "English",
-        "es": "Español"
+        "es": "Español",
+        "codes": {
+          "en": "EN",
+          "es": "ES"
+        }
       }
     },
     "switchLabel": "Español",
     "switchAria": "Leer en español",
     "ogImageAlt": "AndryOre: Building, exploring, telling.",
     "wordmarkParts": ["Andry", "Ore"],
-    "openToWork": "Open to work"
+    "openToWork": "Open to work",
+    "fx": {
+      "label": "Sound",
+      "on": "On",
+      "off": "Off",
+      "hint": "Subtle interface sounds. Off by default."
+    }
   },
   "es": {
     "wordmark": "AndryOre",
@@ -54,13 +64,23 @@
       "language": {
         "label": "Idioma",
         "en": "English",
-        "es": "Español"
+        "es": "Español",
+        "codes": {
+          "en": "EN",
+          "es": "ES"
+        }
       }
     },
     "switchLabel": "English",
     "switchAria": "Read in English",
     "ogImageAlt": "AndryOre: Construyendo, explorando, contando.",
     "wordmarkParts": ["Andry", "Ore"],
-    "openToWork": "Disponible"
+    "openToWork": "Disponible",
+    "fx": {
+      "label": "Sonido",
+      "on": "Activado",
+      "off": "Desactivado",
+      "hint": "Sonidos sutiles de interfaz. Apagados por defecto."
+    }
   }
 }

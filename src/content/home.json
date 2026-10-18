@@ -4,7 +4,6 @@
       "title": "AndryOre | I build stuff and tell you how it went",
       "description": "Andry builds software and hardware, tests it and writes down what worked, what did not and what he would change."
     },
-    "sample": "SAMPLE",
     "hero": {
       "kicker": "Hi, I’m Andry",
       "lead": "I build ",
@@ -72,12 +71,18 @@
     "stream": {
       "label": "Stream",
       "live": "Live now",
-      "offline": "Offline",
-      "schedule": "Tuesdays and Thursdays, 19:00 UTC",
       "unavailable": "Status unavailable right now",
-      "open": "Open Twitch",
       "href": "https://www.twitch.tv/andryoredev",
-      "sample": true
+      "streamsStarted": false,
+      "comingSoon": "Streams start soon",
+      "planned": "Co-working sessions, Tuesdays and Thursdays",
+      "follow": "Follow on Twitch",
+      "nextLabel": "Next:",
+      "weekdays": ["M", "T", "W", "T", "F", "S", "S"],
+      "weekLabel": "Planned days: Tuesday and Thursday",
+      "liveTag": "LIVE",
+      "watch": "Watch on Twitch",
+      "slateAlt": "Memoji holding a clapperboard"
     },
     "links": {
       "label": "Find me",
@@ -101,7 +106,6 @@
       "title": "AndryOre | Hago cosas y te cuento cómo me fue",
       "description": "Andry construye software y hardware, lo prueba y escribe qué funcionó, qué no y qué cambiaría."
     },
-    "sample": "EJEMPLO",
     "hero": {
       "kicker": "Hola, soy Andry",
       "lead": "Construyo ",
@@ -169,12 +173,18 @@
     "stream": {
       "label": "Stream",
       "live": "En vivo ahora",
-      "offline": "Sin conexión",
-      "schedule": "Martes y jueves, 19:00 UTC",
       "unavailable": "Estado no disponible por ahora",
-      "open": "Abrir Twitch",
       "href": "https://www.twitch.tv/andryoredev",
-      "sample": true
+      "streamsStarted": false,
+      "comingSoon": "Los streams empiezan pronto",
+      "planned": "Sesiones de co-working, martes y jueves",
+      "follow": "Seguir en Twitch",
+      "nextLabel": "Siguiente:",
+      "weekdays": ["L", "M", "X", "J", "V", "S", "D"],
+      "weekLabel": "Días planeados: martes y jueves",
+      "liveTag": "EN VIVO",
+      "watch": "Ver en Twitch",
+      "slateAlt": "Memoji con una claqueta"
     },
     "links": {
       "label": "Encuéntrame",
