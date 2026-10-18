@@ -1,7 +1,10 @@
 ---
+import monocle from '../assets/afe/face-with-monocle.png'
 import notFound from '../content/not-found.json'
-import { homePath, type Locale } from '../i18n/locales'
+import { homePath, localePath, type Locale } from '../i18n/locales'
 import BaseLayout from '../layouts/BaseLayout.astro'
+import { NOT_FOUND_TILES } from '../lib/stack-scene'
+import StackTile from './StackTile.astro'
 
 interface Props {
   locale: Locale
@@ -9,6 +12,9 @@ interface Props {
 
 const { locale } = Astro.props
 const copy = notFound[locale]
+const [firstDigit = '4', , lastDigit = '4'] = [...copy.heading]
+const pillClass =
+  'rounded-pill inline-flex min-h-11 items-center px-5 text-sm font-medium no-underline'
 ---
 
 <BaseLayout
@@ -17,16 +23,47 @@ const copy = notFound[locale]
   locale={locale}
   noindex
 >
-  <section class="flex flex-col items-start gap-4 py-10">
-    <h1 class="text-muted-foreground m-0 font-mono text-5xl font-bold tracking-tight">
-      {copy.heading}
+  <section class="nf-stage py-10">
+    <div class="absolute inset-0" aria-hidden="true">
+      {NOT_FOUND_TILES.map((tile) => (
+        <StackTile
+          id={tile.id}
+          size={tile.size}
+          class:list={[
+            'stack-tile-field nf-tile',
+            tile.placement,
+            !tile.mobile && 'max-md:hidden',
+          ]}
+        />
+      ))}
+    </div>
+    <h1 class="nf-code" aria-label={copy.heading}>
+      <span aria-hidden="true">{firstDigit}</span>
+      <span class="nf-monocle" aria-hidden="true">
+        <img
+          src={monocle.src}
+          alt=""
+          width="100"
+          height="6400"
+          decoding="async"
+        />
+      </span>
+      <span aria-hidden="true">{lastDigit}</span>
     </h1>
-    <p class="m-0 text-lg">{copy.message}</p>
-    <a
-      href={homePath(locale)}
-      class="bg-primary text-primary-foreground rounded-pill inline-flex min-h-11 items-center px-5 py-2 text-sm font-medium no-underline hover:opacity-90"
-    >
-      {copy.action}
-    </a>
+    <p class="relative m-0 max-w-[32ch] text-lg text-balance">{copy.message}</p>
+    <div class="relative flex flex-wrap items-center justify-center gap-3">
+      <a
+        href={homePath(locale)}
+        class={`${pillClass} bg-foreground text-background`}
+      >
+        {copy.home}
+      </a>
+      <a
+        href={localePath(locale, '/#products')}
+        class={`${pillClass} border-border bg-card text-foreground border`}
+      >
+        {copy.products}
+      </a>
+    </div>
   </section>
 </BaseLayout>

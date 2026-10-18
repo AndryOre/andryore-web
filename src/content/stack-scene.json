@@ -1,0 +1,16 @@
+{
+  "en": {
+    "label": "Stack",
+    "title": "What I build with",
+    "ctaTitle": "See the full stack",
+    "count": "{count} tools and tech",
+    "action": "Open Uses →"
+  },
+  "es": {
+    "label": "Stack",
+    "title": "Con qué construyo",
+    "ctaTitle": "Mira el stack completo",
+    "count": "{count} herramientas y tecnologías",
+    "action": "Abrir Uses →"
+  }
+}

@@ -1,0 +1,61 @@
+---
+import stackScene from '../content/stack-scene.json'
+import { localePath, type Locale } from '../i18n/locales'
+import { END_CARD_TILES, STACK_TILES, stackToolCount } from '../lib/stack-scene'
+import StackTile from './StackTile.astro'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const copy = stackScene[locale]
+const count = copy.count.replace('{count}', () =>
+  String(stackToolCount(locale)),
+)
+---
+
+<section class="stack-scene" aria-labelledby="stack-scene-title">
+  <div class="stack-stage">
+    <div class="stack-field" aria-hidden="true">
+      {STACK_TILES.map((tile) => (
+        <StackTile
+          id={tile.id}
+          size={tile.size}
+          class:list={[
+            'stack-tile-field',
+            tile.placement,
+            !tile.mobile && 'max-md:hidden',
+          ]}
+        />
+      ))}
+    </div>
+
+    <header class="stack-title">
+      <p class="stack-label">
+        <span class="caret" aria-hidden="true"></span>
+        {copy.label}
+      </p>
+      <h2 id="stack-scene-title">{copy.title}</h2>
+    </header>
+
+    <div class="stack-cta">
+      <div class="stack-end-tiles" aria-hidden="true">
+        {END_CARD_TILES.map((tile) => (
+          <StackTile
+            id={tile.id}
+            size={56}
+            class:list={['stack-tile-end', tile.tilt]}
+          />
+        ))}
+      </div>
+      <div class="stack-cta-copy">
+        <p class="stack-cta-title">{copy.ctaTitle}</p>
+        <p class="stack-cta-count">{count}</p>
+      </div>
+      <a href={localePath(locale, '/uses/')} class="stack-cta-link">
+        {copy.action}
+      </a>
+    </div>
+  </div>
+</section>
