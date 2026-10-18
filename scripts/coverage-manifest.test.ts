@@ -30,8 +30,6 @@ const EXEMPTIONS: Readonly<Record<string, string>> = {
     'CLI that needs the live GitHub API and writes the committed snapshot; the fetch logic is tested in src/lib/github-grid.test.ts.',
   'scripts/i18n-status.ts':
     'CLI that prints findStaleTranslations over the real content; the logic is tested in src/i18n/translations.test.ts.',
-  'src/log/collection.ts':
-    'Thin wrapper over astro:content getCollection, which only resolves inside Astro; the logic lives in src/log/entries.ts, which is tested.',
   'docs/brand/tools/export.mjs':
     'Brand raster export CLI that needs a real browser and writes the committed rasters; its pure logic lives in brand-export-spec.mjs.',
 }

@@ -3,7 +3,8 @@
     "tryCta": "Try {name}",
     "state": {
       "live": "Live",
-      "beta": "Beta"
+      "beta": "Beta",
+      "contribution": "Contribution"
     },
     "proofHeading": "Proof",
     "proofAsOf": "as of {date}",
@@ -16,7 +17,8 @@
     "tryCta": "Probar {name}",
     "state": {
       "live": "Activo",
-      "beta": "Beta"
+      "beta": "Beta",
+      "contribution": "Colaboración"
     },
     "proofHeading": "Pruebas",
     "proofAsOf": "a {date}",

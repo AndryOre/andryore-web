@@ -26,12 +26,12 @@ export const SCORE_THRESHOLD = 90
 /** Lighthouse runs per page; the median of them is what is judged. */
 export const RUNS_PER_PAGE = 5
 
-/** Pages audited: home and one Log entry, in English and Spanish. */
+/** Pages audited: home and one product page, in English and Spanish. */
 export const AUDITED_PATHS: readonly string[] = [
   '/',
   '/es/',
-  '/log/nothing-from-other-origins/',
-  '/es/log/nothing-from-other-origins/',
+  '/products/snug/',
+  '/es/products/snug/',
 ]
 
 export type CategoryScores = Record<Category, number | null>

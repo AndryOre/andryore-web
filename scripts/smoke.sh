@@ -29,8 +29,8 @@ done
 fail() { echo "FAIL: $*" >&2; exit 1; }
 status() { curl -s -o /dev/null -w '%{http_code}' "$1"; }
 
-for route in / /about/ /colophon/ /uses/ /log/ /products/snug/ \
-  /es/ /es/about/ /es/colophon/ /es/uses/ /es/log/ /es/products/snug/ \
+for route in / /about/ /colophon/ /uses/ /products/snug/ \
+  /es/ /es/about/ /es/colophon/ /es/uses/ /es/products/snug/ \
   /sitemap.xml /robots.txt; do
   [ "$(status "$base$route")" = 200 ] || fail "$route is not 200"
 done
@@ -64,6 +64,8 @@ grep -q "script-src 'self' https://cloud.umami.is 'sha256-" <<<"$csp" ||
   fail "Umami is not the only extra script-src origin"
 grep -q "connect-src 'self' https://gateway.umami.is;" <<<"$csp" ||
   fail "Umami gateway is not the only extra connect-src origin"
+grep -q "manifest-src 'self';" <<<"$csp" ||
+  fail "CSP is missing manifest-src 'self'"
 case "$csp" in *"'unsafe-inline'"* | *"'unsafe-eval'"*) fail "CSP allows unsafe-inline or unsafe-eval" ;; esac
 grep -q "'sha256-" <<<"$csp" ||
   fail "CSP script-src has no sha256 hashes: inline scripts are blocked (ADR 0012)"

@@ -78,7 +78,7 @@ Rules for any change to the Site. Each one is backed by an ADR:
   island only where the UI needs client behaviour.
   [ADR 0006](docs/adr/0006-tailwind-and-shadcn-islands.md).
 - **Copy stays in content files.** Never hardcode user-facing text in
-  components; every page and Log entry exists in English and Spanish.
+  components; every page and product page exists in English and Spanish.
   [ADR 0002](docs/adr/0002-bilingual-parity.md).
 
 ## Coverage manifest

@@ -36,8 +36,8 @@ describe('runParityCheck', () => {
     const root = fixture({
       'src/pages/index.astro': '',
       'src/pages/es/index.astro': '',
-      'src/pages/log/index.astro': '',
-      'src/pages/es/log/index.astro': '',
+      'src/pages/about/index.astro': '',
+      'src/pages/es/about/index.astro': '',
     })
     expect(runParityCheck(root)).toEqual([])
   })
@@ -46,21 +46,22 @@ describe('runParityCheck', () => {
     const root = fixture({
       'src/pages/index.astro': '',
       'src/pages/es/index.astro': '',
-      'src/pages/log/index.astro': '',
+      'src/pages/about/index.astro': '',
     })
     expect(runParityCheck(root)).toEqual([
-      'Page /log/ exists in "en" but has no "es" pair.',
+      'Page /about/ exists in "en" but has no "es" pair.',
     ])
   })
 
-  test('fails when a Log entry lacks its translation', () => {
+  test('fails when a content entry lacks its translation', () => {
     const root = fixture({
       'src/pages/index.astro': '',
       'src/pages/es/index.astro': '',
-      'src/content/log/hello.en.md': '---\nlang: en\nkey: hello\n---\nBody',
+      'src/content/products/hello.en.md':
+        '---\nlang: en\nkey: hello\n---\nBody',
     })
     expect(runParityCheck(root)).toEqual([
-      'Content entry "hello" (src/content/log/hello.en.md) has no "es" translation.',
+      'Content entry "hello" (src/content/products/hello.en.md) has no "es" translation.',
     ])
   })
 
@@ -68,8 +69,8 @@ describe('runParityCheck', () => {
     const root = fixture({
       'src/pages/index.astro': '',
       'src/pages/es/index.astro': '',
-      'src/content/log/hello.en.md': '---\nlang: en\nkey: hello\n---\n',
-      'src/content/log/hello.es.md': '---\nlang: es\nkey: hello\n---\n',
+      'src/content/products/hello.en.md': '---\nlang: en\nkey: hello\n---\n',
+      'src/content/products/hello.es.md': '---\nlang: es\nkey: hello\n---\n',
     })
     expect(runParityCheck(root)).toEqual([])
   })

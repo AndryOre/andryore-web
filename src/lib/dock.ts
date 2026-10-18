@@ -4,7 +4,6 @@ import { localePath, type Locale } from '../i18n/locales'
 export const DOCK_PAGES = [
   { key: 'home', path: '/', section: '' },
   { key: 'products', path: '/#products', section: 'products' },
-  { key: 'log', path: '/log/', section: 'log' },
   { key: 'about', path: '/about/', section: 'about' },
   { key: 'uses', path: '/uses/', section: 'uses' },
 ] as const
@@ -12,14 +11,14 @@ export const DOCK_PAGES = [
 export type DockPageKey = (typeof DOCK_PAGES)[number]['key']
 
 /** Largest scale a dock item reaches under the pointer. */
-export const MAGNIFICATION_MAX_SCALE = 1.35
+export const MAGNIFICATION_MAX_SCALE = 1.15
 
 /** Distance from the pointer, in pixels, past which an item is not scaled. */
-export const MAGNIFICATION_RADIUS_PX = 96
+export const MAGNIFICATION_RADIUS_PX = 72
 
 /**
  * Which dock page a locale-neutral path belongs to.
- * @param path Path without any language prefix, such as `/log/first/`.
+ * @param path Path without any language prefix, such as `/products/snug/`.
  * @returns The page key, or undefined for pages the dock does not list.
  */
 export function activePageKey(path: string): DockPageKey | undefined {

@@ -14,8 +14,6 @@ describe('activePageKey', () => {
   test.each<[string, DockPageKey]>([
     ['/', 'home'],
     ['/products/snug/', 'products'],
-    ['/log/', 'log'],
-    ['/log/first-entry/', 'log'],
     ['/about/', 'about'],
     ['/uses/', 'uses'],
   ])('%s is %s', (path, key) => {
@@ -28,22 +26,27 @@ describe('activePageKey', () => {
   })
 
   test('does not match a longer first segment', () => {
-    expect(activePageKey('/logbook/')).toBeUndefined()
+    expect(activePageKey('/aboutus/')).toBeUndefined()
   })
 })
 
 describe('pageHref', () => {
   test('keeps English paths at the root', () => {
-    expect(pageHref('en', '/log/')).toBe('/log/')
+    expect(pageHref('en', '/about/')).toBe('/about/')
   })
 
   test('prefixes Spanish paths', () => {
-    expect(pageHref('es', '/log/')).toBe('/es/log/')
+    expect(pageHref('es', '/about/')).toBe('/es/about/')
     expect(pageHref('es', '/#products')).toBe('/es/#products')
   })
 })
 
 describe('magnificationScale', () => {
+  test('uses the 1.15 peak and 72 px radius of the design token', () => {
+    expect(MAGNIFICATION_MAX_SCALE).toBe(1.15)
+    expect(MAGNIFICATION_RADIUS_PX).toBe(72)
+  })
+
   test('peaks under the pointer', () => {
     expect(magnificationScale(0)).toBe(MAGNIFICATION_MAX_SCALE)
   })
@@ -61,11 +64,10 @@ describe('magnificationScale', () => {
 })
 
 describe('DOCK_PAGES', () => {
-  test('lists the five pages in order', () => {
+  test('lists the four pages in order', () => {
     expect(DOCK_PAGES.map((page) => page.key)).toEqual([
       'home',
       'products',
-      'log',
       'about',
       'uses',
     ])

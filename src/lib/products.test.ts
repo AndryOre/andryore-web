@@ -37,6 +37,7 @@ const valid = {
   value: 'A value line.',
   description: 'Meta description.',
   state: 'live',
+  year: '2024',
   url: 'https://example.com',
   changelog: 'https://example.com/changelog',
   stack: ['Astro'],
@@ -132,6 +133,8 @@ describe('real product content', () => {
     expect(files.toSorted((a, b) => a.localeCompare(b))).toEqual([
       'animated-fluent-emojis.en.md',
       'animated-fluent-emojis.es.md',
+      'json-flow.en.md',
+      'json-flow.es.md',
       'snug.en.md',
       'snug.es.md',
     ])
@@ -147,6 +150,133 @@ describe('real product content', () => {
       const frontmatter = frontmatterOf(file)
       expect(frontmatter).toMatch(new RegExp(`^key: ${key}$`, 'm'))
       expect(frontmatter).toMatch(new RegExp(`^lang: ${lang}$`, 'm'))
+    }
+  })
+})
+
+describe('real product data', () => {
+  const files = readdirSync(PRODUCTS_DIRECTORY).filter((file) =>
+    file.endsWith('.md'),
+  )
+  const parse = (file: string): Record<string, unknown> => {
+    const raw = readFileSync(path.join(PRODUCTS_DIRECTORY, file), 'utf8')
+    const frontmatter = /^---\r?\n([\s\S]*?)\r?\n---/.exec(raw)?.[1] ?? ''
+    const data: unknown = Bun.YAML.parse(frontmatter)
+    return z.record(z.string(), z.unknown()).parse(data)
+  }
+  const realSchema = createProductSchema(z.string())
+  const urlsOf = (value: unknown): string[] => {
+    if (typeof value === 'string') return /^https?:/.test(value) ? [value] : []
+    return typeof value !== 'object' || value === null
+      ? []
+      : Object.values(value).flatMap((inner) => urlsOf(inner))
+  }
+
+  test('every file passes the product schema', () => {
+    for (const file of files) {
+      expect(realSchema.safeParse(parse(file)).success).toBe(true)
+    }
+  })
+
+  test('no live entry is a draft, placeholder or sample', () => {
+    for (const file of files) {
+      const data = realSchema.parse(parse(file))
+      expect(data.draft).toBe(false)
+      expect(data.image.placeholder).toBe(false)
+      expect(JSON.stringify(data).toLowerCase()).not.toContain('sample')
+    }
+  })
+
+  test('every link is https', () => {
+    for (const file of files) {
+      const urls = urlsOf(parse(file))
+      expect(urls.length).toBeGreaterThan(0)
+      for (const url of urls) expect(url).toMatch(/^https:\/\//)
+    }
+  })
+
+  test('both languages carry the same facts', () => {
+    const englishFiles = files.filter((name) => name.endsWith('.en.md'))
+    for (const file of englishFiles) {
+      const english = realSchema.parse(parse(file))
+      const spanish = realSchema.parse(parse(file.replace('.en.md', '.es.md')))
+      expect(spanish.key).toBe(english.key)
+      expect(spanish.kind).toBe(english.kind)
+      expect(spanish.version).toBe(english.version)
+      expect(spanish.year).toBe(english.year)
+      expect(spanish.stack).toEqual(english.stack)
+      expect(spanish.stats.map((stat) => stat.date)).toEqual(
+        english.stats.map((stat) => stat.date),
+      )
+      expect(spanish.cards).toHaveLength(english.cards.length)
+      expect(spanish.platforms.map((item) => item.icon)).toEqual(
+        english.platforms.map((item) => item.icon),
+      )
+      expect(spanish.gallery).toHaveLength(english.gallery.length)
+      expect(spanish.sprites.map((item) => item.frames)).toEqual(
+        english.sprites.map((item) => item.frames),
+      )
+    }
+  })
+
+  test('Snug and Animated Fluent Emojis are shipped, not beta', () => {
+    for (const key of ['snug', 'animated-fluent-emojis']) {
+      const data = realSchema.parse(parse(`${key}.en.md`))
+      expect(data.state).toBe('live')
+      expect(data.kind).toBe('product')
+      expect(data.year).toBe('2024')
+    }
+    expect(realSchema.parse(parse('snug.en.md')).version).toBe('v2.2.0')
+    expect(
+      realSchema.parse(parse('animated-fluent-emojis.en.md')).version,
+    ).toBe('v0.8.0')
+  })
+
+  test('Snug does not claim a Firefox or Safari build', () => {
+    const snug = realSchema.parse(parse('snug.en.md'))
+    expect(snug.platforms.map((item) => item.label)).toEqual([
+      'Chrome',
+      'Edge',
+      'Brave',
+      'Opera',
+    ])
+    expect(snug.importsFrom.map((item) => item.label)).toEqual([
+      'Firefox',
+      'Safari',
+    ])
+  })
+
+  test('JSON Flow is a contribution with a dated install figure', () => {
+    for (const lang of ['en', 'es']) {
+      const data = realSchema.parse(parse(`json-flow.${lang}.md`))
+      expect(data.kind).toBe('contribution')
+      expect(data.state).toBe('contribution')
+      expect(data.tag).toMatch(/^(Contribution|Colaboración) · /)
+      expect(data.year).toBe('2024–25')
+      expect(data.stats[0]?.date).toBe('2026-10-18')
+      expect(data.stats[0]?.value).toMatch(/^75[.,]000\+$/)
+      expect(data.importFormats).toHaveLength(4)
+      expect(data.exportFormats).toHaveLength(3)
+      expect(data.changelog).toBeUndefined()
+    }
+  })
+
+  test('JSON Flow copy never claims the current version or commit counts', () => {
+    for (const lang of ['en', 'es']) {
+      const raw = readFileSync(
+        path.join(PRODUCTS_DIRECTORY, `json-flow.${lang}.md`),
+        'utf8',
+      )
+      expect(raw).not.toMatch(/\bv2\b/)
+      expect(raw.toLowerCase()).not.toMatch(/commits?\b/)
+    }
+  })
+
+  test('every sprite strip is a copied local asset', () => {
+    const data = realSchema.parse(parse('animated-fluent-emojis.en.md'))
+    expect(data.sprites.map((sprite) => sprite.frames)).toEqual([48, 61, 1, 48])
+    for (const sprite of data.sprites) {
+      expect(sprite.src).toStartWith('../../assets/products/sprites/')
     }
   })
 })

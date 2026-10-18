@@ -65,12 +65,6 @@ const PAGE_ICONS: Record<DockPageKey, ReactElement> = {
       <rect x="14" y="14" width="7" height="7" rx="2" />
     </>
   ),
-  log: (
-    <>
-      <path d="M5 4h11l3 3v13H5z" />
-      <path d="M9 11h6M9 15h6" />
-    </>
-  ),
   about: (
     <>
       <circle cx="12" cy="8" r="4" />
