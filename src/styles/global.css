@@ -3,6 +3,7 @@
 @import '@fontsource-variable/space-grotesk';
 @import '@fontsource-variable/jetbrains-mono';
 @import '../../docs/brand/tokens.css';
+@import './stack-scene.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -569,4 +570,11 @@ html:not(.dark) .github-tile {
   .twitch-button {
     transition: none;
   }
+}
+
+.caret-em {
+  width: 8px;
+  height: 0.78em;
+  margin-inline-start: 0.12em;
+  vertical-align: baseline;
 }
