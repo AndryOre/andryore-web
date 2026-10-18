@@ -5,7 +5,7 @@ import path from 'node:path'
 import { LOCALES, type Locale } from '../i18n/locales'
 import { GLYPH_BODIES } from '../lib/glyphs'
 import { ICONS } from '../lib/icons'
-import { BADGE_COLORS, SETUP_GLYPHS } from '../lib/uses'
+import { ALT_BADGES, BADGE_COLORS, SETUP_GLYPHS } from '../lib/uses'
 import chrome from './chrome.json'
 import uses from './uses.json'
 
@@ -35,7 +35,7 @@ const allUrls = (locale: Locale): string[] => {
 const shape = (locale: Locale): unknown[] =>
   [...uses[locale].tools, ...uses[locale].tech, ...uses[locale].setup].map(
     (entry) => [
-      'name' in entry ? entry.name : entry.label,
+      'name' in entry ? entry.name : null,
       'icon' in entry ? entry.icon : entry.glyph,
       'url' in entry ? entry.url : null,
     ],
@@ -46,7 +46,7 @@ describe('uses content', () => {
     const copy = uses[locale]
 
     test(`${locale} has 13 tools and 25 tech badges`, () => {
-      expect(copy.tools).toHaveLength(13)
+      expect(copy.tools).toHaveLength(15)
       expect(copy.tech).toHaveLength(25)
     })
 
@@ -72,7 +72,10 @@ describe('uses content', () => {
       const badges = [...copy.tools, ...copy.tech]
       for (const badge of badges) {
         expect(Object.hasOwn(ICONS, badge.icon)).toBe(true)
-        expect(Object.hasOwn(BADGE_COLORS, badge.icon)).toBe(true)
+        expect(
+          Object.hasOwn(BADGE_COLORS, badge.icon) ||
+            ALT_BADGES.has(badge.icon as never),
+        ).toBe(true)
       }
     })
 
@@ -141,12 +144,45 @@ describe('uses canvas copy', () => {
     expect(uses.en.setup.map((row) => row.role)).toEqual([
       'Laptop',
       'Microphone',
-      'Webcam',
+      'Camera',
       'Mouse',
       'Keyboard',
       'USB-C hub',
       'Earbuds',
     ])
+  })
+
+  test('the tools run in canvas order and Hono closes the tech list', () => {
+    expect(uses.en.tools.map((badge) => badge.name)).toEqual([
+      'Claude Code',
+      'Orca',
+      'Nushell',
+      'Starship',
+      'Git',
+      'GitHub CLI',
+      'Linear',
+      'Docker',
+      'Coolify',
+      'Tailscale',
+      'Cloudflare Tunnel',
+      'chezmoi + age',
+      'Bitwarden CLI',
+      'mise',
+      'GitHub Actions',
+    ])
+    expect(uses.en.tech.at(-1)?.name).toBe('Hono')
+    expect(uses.en.tech[2]?.name).toBe('Astro + Starlight')
+  })
+
+  test('the This site tiles carry the canvas subtitles', () => {
+    expect(uses.en.thisSite.hosting.body).toBe(
+      'Docker image with nginx, deployed through Coolify',
+    )
+    expect(uses.es.thisSite.hosting.title).toBe('Hosting')
+    expect(uses.es.thisSite.source.body).toBe('Público en GitHub')
+    expect(uses.en.thisSite.sourceLinkLabel).toBe('View the source on GitHub')
+    expect(uses.es.thisSite.sourceLinkLabel).toBe('Ver el código en GitHub')
+    expect(uses.es.setupHeading).toBe('Setup')
   })
 
   test('privacy copy stays in a card of its own', () => {

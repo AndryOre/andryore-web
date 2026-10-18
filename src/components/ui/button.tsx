@@ -4,8 +4,8 @@ import { cn } from '@/lib/utils'
 
 const VARIANT_CLASSES = {
   default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-  split:
-    'bg-primary text-primary-foreground hover:bg-primary/90 border-primary-foreground/30 border-l',
+  neutral:
+    'bg-card-2 text-foreground border border-border text-[15px] hover:-translate-y-px',
   secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
   ghost: 'hover:bg-accent hover:text-accent-foreground',
   dock: 'text-muted-foreground hover:text-foreground',
@@ -13,6 +13,7 @@ const VARIANT_CLASSES = {
 
 const SIZE_CLASSES = {
   default: 'min-h-11 px-4 py-2',
+  cta: 'h-11 px-[18px]',
   icon: 'size-11',
   dock: 'size-11',
 } as const

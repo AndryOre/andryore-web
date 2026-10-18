@@ -45,6 +45,7 @@ export const ICONS = {
   eslint: { file: 'eslint.svg', dark: 'eslint-dark.svg' },
   prettier: { file: 'prettier.svg', dark: 'prettier-dark.svg' },
   docker: { file: 'docker.svg' },
+  nginx: { file: 'nginx.svg' },
   linear: { file: 'linear.svg' },
   git: { file: 'git.svg' },
   bitwarden: { file: 'bitwarden.svg' },

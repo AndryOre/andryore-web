@@ -7,11 +7,24 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+:root {
+  --card-2: oklch(0.975 0.004 258);
+  --hl: rgb(255 255 255 / 0.9);
+  --shadow: 0 10px 28px -16px rgb(21 25 31 / 0.28);
+}
+
+.dark {
+  --card-2: oklch(0.255 0.02 256);
+  --hl: rgb(255 255 255 / 0.05);
+  --shadow: 0 12px 30px -16px rgb(0 0 0 / 0.7);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
+  --color-card-2: var(--card-2);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
@@ -29,6 +42,7 @@
   --color-ring: var(--ring);
   --radius-card: var(--radius-card);
   --radius-pill: var(--radius-pill);
+  --radius-item: 10px;
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
   --ease-out: var(--ease-out);
@@ -102,8 +116,22 @@
 
 @keyframes uses-float {
   50% {
-    transform: translateY(-0.75rem);
+    transform: translateY(-8px);
   }
+}
+
+@utility uses-surface-2 {
+  background: var(--card-2);
+  border-color: var(--border);
+  box-shadow:
+    inset 0 1px 0 var(--hl),
+    var(--shadow);
+}
+
+@utility uses-lift {
+  box-shadow:
+    inset 0 1px 0 var(--hl),
+    var(--shadow);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -405,10 +433,34 @@ body {
   --dock-height: 3.875rem;
 }
 
+[data-dock-nav] {
+  box-shadow:
+    inset 0 1px 0 var(--hl),
+    var(--shadow);
+}
+
+[data-dock-panel] {
+  box-shadow: var(--shadow);
+}
+
+[data-dock-item] {
+  border-radius: 10px;
+}
+
+[data-dock-lang] {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
 .find-me-link {
+  --glow: var(--foreground);
+  box-shadow:
+    inset 0 1px 0 var(--hl),
+    0 0 0 1px color-mix(in oklab, var(--glow) 16%, transparent),
+    0 10px 28px -12px color-mix(in oklab, var(--glow) 55%, transparent);
   transition:
-    box-shadow 160ms var(--ease-out),
-    transform 160ms var(--ease-out);
+    box-shadow 200ms var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
 }
 
 .find-me-link[data-icon='github'] {
@@ -416,15 +468,15 @@ body {
 }
 
 .find-me-link[data-icon='x'] {
-  --glow: #9aa0a6;
+  --glow: #c9d1d9;
 }
 
 .find-me-link[data-icon='youtube'] {
-  --glow: #ff0033;
+  --glow: #ff0000;
 }
 
 .find-me-link[data-icon='tiktok'] {
-  --glow: #25f4ee;
+  --glow: #fe2c55;
 }
 
 .find-me-link[data-icon='instagram'] {
@@ -445,7 +497,46 @@ body {
 
 .find-me-link:hover,
 .find-me-link:focus-visible {
-  box-shadow: 0 0 1.125rem color-mix(in srgb, var(--glow) 55%, transparent);
+  transform: translateY(-3px);
+  box-shadow:
+    inset 0 1px 0 var(--hl),
+    0 0 0 1px color-mix(in oklab, var(--glow) 36%, transparent),
+    0 14px 36px -10px color-mix(in oklab, var(--glow) 80%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .find-me-link:hover,
+  .find-me-link:focus-visible {
+    transform: none;
+  }
+}
+
+.find-me-row [data-copy-email],
+.find-me-row [data-send-email] {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  background: var(--card-2);
+  color: var(--foreground);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+@media (min-width: 40rem) {
+  .find-me-row [data-copy-email],
+  .find-me-row [data-send-email] {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.find-me-row [data-copy-email]:hover,
+.find-me-row [data-send-email]:hover {
+  transform: translateY(-1px);
+}
+
+.find-me-row svg {
+  width: 16px;
+  height: 16px;
 }
 
 .particle {
@@ -756,8 +847,26 @@ html:not(.dark) .github-tile {
 .caret-em {
   width: 8px;
   height: 0.78em;
-  margin-inline-start: 0.12em;
-  vertical-align: baseline;
+  margin-inline-start: 4px;
+  vertical-align: -0.02em;
+}
+
+.about-surface {
+  box-shadow:
+    inset 0 1px 0 var(--hl),
+    var(--shadow);
+}
+
+.about-timeline > li::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: -28px;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--primary);
+  border-radius: 50%;
+  background: var(--card);
 }
 
 /* GitHub tile details: months row, per-day tooltip, profile link. */

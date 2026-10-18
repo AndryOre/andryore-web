@@ -1,5 +1,4 @@
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
-import { CheckIcon } from 'lucide-react'
 import type { ComponentProps } from 'react'
 
 import { cn } from '@/lib/utils'
@@ -21,7 +20,7 @@ export function DropdownMenuContent({
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         className={cn(
-          'z-50 min-w-40 rounded-xl border border-border bg-popover p-1 text-popover-foreground shadow-md',
+          'about-surface z-50 min-w-52.5 rounded-card border border-border bg-popover p-1.5 text-popover-foreground',
           className,
         )}
         {...props}
@@ -39,16 +38,11 @@ export function DropdownMenuRadioItem({
     <DropdownMenuPrimitive.RadioItem
       data-slot="dropdown-menu-radio-item"
       className={cn(
-        'relative flex min-h-11 cursor-default items-center gap-2 rounded-lg py-2 pr-2 pl-8 text-sm outline-none select-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground',
+        'flex cursor-default items-center justify-between gap-3 rounded-item px-3 py-2.5 text-sm text-muted-foreground outline-none select-none data-[highlighted]:bg-muted data-[highlighted]:text-foreground data-[state=checked]:bg-muted data-[state=checked]:text-foreground',
         className,
       )}
       {...props}
     >
-      <span className="absolute left-2 flex size-4 items-center justify-center">
-        <DropdownMenuPrimitive.ItemIndicator>
-          <CheckIcon className="size-4" />
-        </DropdownMenuPrimitive.ItemIndicator>
-      </span>
       {children}
     </DropdownMenuPrimitive.RadioItem>
   )

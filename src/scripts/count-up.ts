@@ -26,7 +26,9 @@ export function startCountUp(
   total: number,
   options: CountUpOptions,
 ): void {
-  const format = new Intl.NumberFormat(options.locale)
+  const format = new Intl.NumberFormat(options.locale, {
+    useGrouping: 'always',
+  })
   if (options.reducedMotion || total <= 0) {
     target.textContent = format.format(Math.max(0, total))
     return

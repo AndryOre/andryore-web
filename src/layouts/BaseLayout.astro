@@ -151,15 +151,18 @@ const socialTags = [
     <header class="site-header sticky top-0 z-30">
       <div
         class:list={[
-          'mx-auto flex w-full items-center justify-between gap-4 px-4 py-4 sm:px-6',
+          'mx-auto flex w-full items-center justify-between gap-4 px-4 py-4 sm:px-10 sm:py-[22px]',
           wide ? 'max-w-[75rem]' : 'max-w-reading',
         ]}
       >
-        <span class="inline-flex text-xl font-bold tracking-tight">
+        <a
+          href={localePath(locale, '/')}
+          class="-my-2 inline-flex min-h-11 items-center text-xl font-bold tracking-[-0.02em] no-underline"
+        >
           <span>{copy.wordmarkParts[0]}</span>
           <span class="text-primary">{copy.wordmarkParts[1]}</span>
-        </span>
-        <span class="bg-secondary border-border rounded-pill inline-flex items-center gap-2 border px-2.5 py-0.5 font-mono text-[0.6875rem] font-medium tracking-[0.06em] whitespace-nowrap uppercase">
+        </a>
+        <span class="text-muted-foreground border-border rounded-pill inline-flex items-center gap-2 border px-3 py-1.5 font-mono text-[0.6875rem] font-medium tracking-[0.06em] whitespace-nowrap uppercase">
           <span
             class="bg-success size-[7px] rounded-full"
             aria-hidden="true"
@@ -173,7 +176,7 @@ const socialTags = [
       id="main"
       tabindex="-1"
       class:list={[
-        'mx-auto w-full flex-1 px-4 pt-8 pb-[calc(var(--dock-height)+2rem)] focus:outline-none sm:px-6',
+        'mx-auto grid w-full flex-1 content-start gap-7 px-4 pt-2 pb-[calc(var(--dock-height)+1rem)] focus:outline-none sm:gap-10 sm:px-10',
         wide ? 'max-w-[75rem]' : 'max-w-reading',
       ]}
     >

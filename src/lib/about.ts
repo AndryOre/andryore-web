@@ -8,8 +8,6 @@ export interface NumberStat {
   /** The value the count-up animates to; absent for a year. */
   count?: number
   suffix?: string
-  /** A dated qualifier, such as "As of Oct 18, 2026". */
-  note?: string
 }
 
 /** The About copy the figures are built from. */
@@ -19,44 +17,13 @@ export interface NumbersCopy {
   snugLabel: string
   snugUsers: number
   installsLabel: string
-  installsAsOf: string
   contributionsLabel: string
 }
 
 /** The inputs that come from other data: JSON Flow's row and the GitHub grid. */
 export interface NumbersSources {
-  installs: { total: number; date: string }
+  installs: { total: number }
   contributions: number | null
-}
-
-const UTC = 'UTC'
-
-/**
- * Formats a timeline date, either a year or a year and month.
- * @param date `YYYY` or `YYYY-MM`.
- * @param locale Language of the month name.
- * @returns "2025" for a year, or a short month and year such as "Aug 2024".
- */
-export function formatTimelineDate(date: string, locale: Locale): string {
-  if (!/^\d{4}-\d{2}$/.test(date)) return date
-  return new Intl.DateTimeFormat(locale, {
-    month: 'short',
-    year: 'numeric',
-    timeZone: UTC,
-  }).format(new Date(`${date}-01T00:00:00Z`))
-}
-
-/**
- * Formats a full ISO date with the year, such as "Oct 18, 2026".
- * @param date ISO date (YYYY-MM-DD).
- * @param locale Language of the format.
- * @returns The formatted date.
- */
-function formatFullDate(date: string, locale: Locale): string {
-  return new Intl.DateTimeFormat(locale, {
-    dateStyle: 'medium',
-    timeZone: UTC,
-  }).format(new Date(`${date}T00:00:00Z`))
 }
 
 /**
@@ -65,7 +32,7 @@ function formatFullDate(date: string, locale: Locale): string {
  * snapshot is available.
  * @param copy The About copy.
  * @param sources JSON Flow's installs and the GitHub grid total.
- * @param locale Language of the number and date formats.
+ * @param locale Language of the number format.
  * @returns The four figures, in display order.
  */
 export function buildNumberStats(
@@ -74,7 +41,7 @@ export function buildNumberStats(
   locale: Locale,
 ): NumberStat[] {
   const format = (value: number): string =>
-    new Intl.NumberFormat(locale).format(value)
+    new Intl.NumberFormat(locale, { useGrouping: 'always' }).format(value)
   return [
     {
       key: 'independent',
@@ -93,7 +60,6 @@ export function buildNumberStats(
       display: format(sources.installs.total),
       count: sources.installs.total,
       suffix: '+',
-      note: `${copy.installsAsOf} ${formatFullDate(sources.installs.date, locale)}`,
     },
     ...(sources.contributions === null
       ? []

@@ -35,7 +35,7 @@ const productEntry = (key: string): ProductEntry | undefined =>
 
 const SPRITE_SIZE = 56
 const PARTY_FRAMES = 61
-const PARTY_SIZE = 20
+const PARTY_SIZE = 28
 
 const tileClass =
   'bg-card border-border relative flex min-w-0 flex-col gap-3 overflow-hidden rounded-[1.25rem] border p-5 shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)]'
@@ -64,13 +64,13 @@ const metaLine = (entry: ProductEntry | undefined, year: string): string =>
 ---
 
 <div class="flex flex-col gap-12 sm:gap-16">
-  <section class="hero-grid grid items-center gap-10 py-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-14">
-    <div class="relative flex min-w-0 flex-col gap-6">
+  <section class="hero-grid grid items-center gap-4 py-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:gap-10">
+    <div class="relative flex min-w-0 flex-col gap-5.5">
       <p class={`hero-enter hero-enter-0 ${labelClass} justify-start`}>
         {hero.kicker}
         <span class="caret" aria-hidden="true"></span>
       </p>
-      <h1 class="hero-enter hero-enter-1 m-0 text-4xl leading-[1.04] font-bold tracking-[-0.035em] text-balance [overflow-wrap:anywhere] sm:text-5xl lg:text-[3.75rem]">
+      <h1 class="hero-enter hero-enter-1 relative m-0 text-4xl leading-[1.04] font-bold tracking-[-0.035em] text-balance [overflow-wrap:anywhere] sm:text-5xl lg:text-[3.75rem]">
         {hero.lead}
         <span class="text-primary relative inline-block">
           {hero.emphasis}
@@ -85,6 +85,12 @@ const metaLine = (entry: ProductEntry | undefined, year: string): string =>
           </span>
         </span>
         {hero.tail}
+        <span
+          class="annotation-in text-muted-foreground border-border bg-card-2 pointer-events-none absolute -top-[26px] right-0 hidden rounded-md border px-2 py-0.5 font-mono text-[0.6875rem] font-medium tracking-[0.02em] whitespace-nowrap motion-reduce:hidden xl:block"
+          aria-hidden="true"
+        >
+          {hero.annotation}
+        </span>
       </h1>
       <p class="hero-enter hero-enter-2 text-muted-foreground m-0 max-w-[56ch] text-base">
         {hero.body}
@@ -103,17 +109,11 @@ const metaLine = (entry: ProductEntry | undefined, year: string): string =>
           {hero.secondary.label}
         </a>
       </div>
-      <span
-        class="annotation-in text-muted-foreground border-border bg-secondary/60 pointer-events-none absolute top-0 right-0 hidden rounded-md border px-2 py-0.5 font-mono text-[0.6875rem] whitespace-nowrap motion-reduce:hidden xl:block"
-        aria-hidden="true"
-      >
-        {hero.annotation}
-      </span>
     </div>
 
     <div
       data-hero-art
-      class="hero-enter hero-enter-2 relative mx-auto grid h-[19rem] w-full max-w-[22rem] place-items-center lg:h-[24rem] lg:w-[22rem]"
+      class="hero-enter hero-enter-2 relative order-first grid h-[260px] w-full place-items-center lg:order-none lg:h-[380px]"
     >
       <div class="floaty motion-reduce:animate-none">
         <div class="avatar-tile">
@@ -129,22 +129,17 @@ const metaLine = (entry: ProductEntry | undefined, year: string): string =>
         </div>
       </div>
       {hasClock && (
-        <div class="floaty-late absolute top-2 left-0 motion-reduce:animate-none">
+        <div class="floaty-late absolute top-[12%] left-[4%] motion-reduce:animate-none">
           <slot name="clock" />
         </div>
       )}
-      <div class="floaty absolute right-0 bottom-2 max-w-full motion-reduce:animate-none">
+      <div class="floaty absolute right-[2%] bottom-[3%] max-w-full motion-reduce:animate-none">
         <span
           data-availability
-          class="bg-card border-border rounded-pill inline-flex items-center gap-2 border py-1.5 pr-2 pl-3 font-mono text-[0.6875rem] font-medium tracking-[0.06em] uppercase shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)]"
+          class="bg-card border-border rounded-pill inline-flex items-center gap-2 border px-3.5 py-2 font-mono text-xs font-medium text-muted-foreground shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)]"
         >
           <span
-            class="bg-success size-[7px] shrink-0 rounded-full"
-            aria-hidden="true"
-          ></span>
-          {hero.availability}
-          <span
-            class="block size-5 shrink-0 overflow-hidden"
+            class="block size-7 shrink-0 overflow-hidden"
             aria-hidden="true"
           >
             <Image
@@ -156,6 +151,7 @@ const metaLine = (entry: ProductEntry | undefined, year: string): string =>
               data-sprite={partyRun ? '' : undefined}
             />
           </span>
+          {hero.availability}
         </span>
       </div>
     </div>
@@ -265,7 +261,7 @@ const metaLine = (entry: ProductEntry | undefined, year: string): string =>
         class="bg-primary/15 text-primary grid size-10 place-items-center rounded-xl"
         aria-hidden="true"
       >
-        <ProductIcon name="puzzle" size={20} />
+        <ProductIcon name="workflow" size={20} />
       </span>
       <div class="flex min-w-0 flex-col gap-1">
         <p class={`${labelClass} justify-start`}>{contribution.label}</p>
@@ -276,15 +272,18 @@ const metaLine = (entry: ProductEntry | undefined, year: string): string =>
         </h3>
         <p class={bodyClass}>{contribution.description}</p>
       </div>
-      <p class="text-muted-foreground m-0 font-mono text-sm tabular-nums max-md:col-span-2">
-        <span
-          data-count-installs={contribution.metaTotal}
-          data-count-locale={locale}
-        >
-          {installsFigure}
+      <p class="text-muted-foreground m-0 inline-flex items-center gap-2 font-mono text-sm tabular-nums max-md:col-span-2">
+        <span>
+          {contribution.metaPrefix}
+          <span
+            data-count-installs={contribution.metaTotal}
+            data-count-locale={locale}
+          >
+            {installsFigure}
+          </span>
+          {contribution.metaSuffix}
         </span>
-        {contribution.metaSuffix}
-        <span aria-hidden="true"> ↗</span>
+        <ProductIcon name="external-link" size={14} />
       </p>
     </article>
   </section>

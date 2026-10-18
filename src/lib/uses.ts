@@ -15,48 +15,18 @@ export interface FieldIcon {
 }
 
 /**
- * The brand icons floating over the Uses title. The positions are literal
- * classes because the CSP forbids inline styles.
+ * The brand icons floating over the Uses title, in canvas order. The
+ * positions are literal classes because the CSP forbids inline styles.
  */
 export const FIELD_ICONS: readonly FieldIcon[] = [
-  {
-    id: 'typescript',
-    placement: 'size-[60px] top-4 left-4 sm:top-[5%] sm:left-[3%] sm:size-20',
-  },
-  {
-    id: 'bun',
-    placement:
-      'size-[60px] top-9 left-[30%] sm:top-[28%] sm:left-[13%] sm:size-[72px]',
-  },
-  {
-    id: 'astro',
-    placement:
-      'size-[60px] top-4 right-[30%] sm:top-[52%] sm:right-auto sm:left-[3%] sm:size-24',
-  },
-  {
-    id: 'react',
-    placement: 'size-[60px] top-9 right-4 sm:top-[5%] sm:right-[3%] sm:size-24',
-  },
-  {
-    id: 'docker',
-    placement:
-      'size-[60px] bottom-4 left-4 sm:bottom-[6%] sm:left-[13%] sm:size-[72px]',
-  },
-  {
-    id: 'claude',
-    placement:
-      'size-[60px] bottom-9 left-[30%] sm:top-[28%] sm:right-[13%] sm:bottom-auto sm:left-auto sm:size-20',
-  },
-  {
-    id: 'tailwindcss',
-    placement:
-      'size-[60px] bottom-4 right-[30%] sm:top-[52%] sm:right-[3%] sm:bottom-auto sm:size-[72px]',
-  },
-  {
-    id: 'playwright',
-    placement:
-      'size-[60px] bottom-9 right-4 sm:right-[13%] sm:bottom-[6%] sm:size-20',
-  },
+  { id: 'typescript', placement: 'left-[8%] top-[12%] size-[84px]' },
+  { id: 'bun', placement: 'left-[20%] top-[62%] size-[64px]' },
+  { id: 'astro', placement: 'left-[30%] top-[18%] size-[72px]' },
+  { id: 'react', placement: 'left-[44%] top-[70%] size-[96px]' },
+  { id: 'nextjs', placement: 'left-[58%] top-[8%] size-[60px]' },
+  { id: 'tailwindcss', placement: 'left-[66%] top-[66%] size-[72px]' },
+  { id: 'claude', placement: 'left-[78%] top-[20%] size-[84px]' },
+  { id: 'docker', placement: 'left-[88%] top-[58%] size-[64px]' },
 ]
 
 /** The Lucide glyphs of the Setup rows, in row order. */
@@ -79,127 +49,114 @@ export interface SwatchToken {
 /** The six tokens of the Color tile; the classes follow the active theme. */
 export const SWATCH_TOKENS: readonly SwatchToken[] = [
   { token: 'background', bg: 'bg-background' },
+  { token: 'card', bg: 'bg-card' },
+  { token: 'border', bg: 'bg-border' },
+  { token: 'muted-foreground', bg: 'bg-muted-foreground' },
   { token: 'foreground', bg: 'bg-foreground' },
   { token: 'primary', bg: 'bg-primary' },
-  { token: 'muted', bg: 'bg-muted' },
-  { token: 'border', bg: 'bg-border' },
-  { token: 'destructive', bg: 'bg-destructive' },
 ]
 
 interface BadgeColor {
   hex: string
   bg: string
+  ink: 'light' | 'dark'
 }
 
 /**
- * Brand colour of each badge. The class is a literal because the CSP forbids
- * inline styles and Tailwind only emits classes it can read.
+ * Brand colour of each badge and the ink set by hand per the canvas table:
+ * `light` is white text on the brand colour, `dark` is near-black text. Where
+ * the canvas sets white on a bright brand colour, the background is darkened
+ * just enough for 4.5:1 contrast. The classes are literals because the CSP
+ * forbids inline styles and Tailwind only emits classes it can read.
  */
 export const BADGE_COLORS: Readonly<Partial<Record<IconId, BadgeColor>>> = {
-  claude: { hex: '#d97757', bg: 'bg-[#d97757]' },
-  orca: { hex: '#171717', bg: 'bg-[#171717]' },
-  nushell: { hex: '#4e9a06', bg: 'bg-[#4e9a06]' },
-  git: { hex: '#f05032', bg: 'bg-[#f05032]' },
-  'github-actions': { hex: '#2088ff', bg: 'bg-[#2088ff]' },
-  linear: { hex: '#5e6ad2', bg: 'bg-[#5e6ad2]' },
-  docker: { hex: '#2496ed', bg: 'bg-[#2496ed]' },
-  coolify: { hex: '#6b16ed', bg: 'bg-[#6b16ed]' },
-  tailscale: { hex: '#242424', bg: 'bg-[#242424]' },
-  cloudflare: { hex: '#f38020', bg: 'bg-[#f38020]' },
-  chezmoi: { hex: '#4d4b4a', bg: 'bg-[#4d4b4a]' },
-  bitwarden: { hex: '#175ddc', bg: 'bg-[#175ddc]' },
-  mise: { hex: '#8b2252', bg: 'bg-[#8b2252]' },
-  typescript: { hex: '#3178c6', bg: 'bg-[#3178c6]' },
-  bun: { hex: '#fbf0df', bg: 'bg-[#fbf0df]' },
-  astro: { hex: '#bc52ee', bg: 'bg-[#bc52ee]' },
-  react: { hex: '#61dafb', bg: 'bg-[#61dafb]' },
-  nextjs: { hex: '#000000', bg: 'bg-[#000000]' },
-  hono: { hex: '#e36002', bg: 'bg-[#e36002]' },
-  tailwindcss: { hex: '#06b6d4', bg: 'bg-[#06b6d4]' },
-  'shadcn-ui': { hex: '#000000', bg: 'bg-[#000000]' },
-  'base-ui': { hex: '#18181b', bg: 'bg-[#18181b]' },
-  prisma: { hex: '#2d3748', bg: 'bg-[#2d3748]' },
-  supabase: { hex: '#3fcf8e', bg: 'bg-[#3fcf8e]' },
-  zod: { hex: '#3068b7', bg: 'bg-[#3068b7]' },
-  tanstack: { hex: '#ece8d1', bg: 'bg-[#ece8d1]' },
-  'better-auth': { hex: '#ffffff', bg: 'bg-[#ffffff]' },
-  'trigger-dev': { hex: '#4ade80', bg: 'bg-[#4ade80]' },
-  resend: { hex: '#000000', bg: 'bg-[#000000]' },
-  posthog: { hex: '#f54e00', bg: 'bg-[#f54e00]' },
-  dotenv: { hex: '#ecd53f', bg: 'bg-[#ecd53f]' },
-  wxt: { hex: '#67d55e', bg: 'bg-[#67d55e]' },
-  remotion: { hex: '#0b84f3', bg: 'bg-[#0b84f3]' },
-  turborepo: { hex: '#ff1e56', bg: 'bg-[#ff1e56]' },
-  playwright: { hex: '#2ead33', bg: 'bg-[#2ead33]' },
-  eslint: { hex: '#4b32c3', bg: 'bg-[#4b32c3]' },
-  prettier: { hex: '#f7b93e', bg: 'bg-[#f7b93e]' },
-  knip: { hex: '#f56e0f', bg: 'bg-[#f56e0f]' },
-}
-
-const WHITE = '#ffffff'
-const INK = '#0a0a0a'
-const MINIMUM_CONTRAST = 4.5
-
-function channel(value: number): number {
-  const scaled = value / 255
-  return scaled <= 0.03928 ? scaled / 12.92 : ((scaled + 0.055) / 1.055) ** 2.4
-}
-
-function luminance(hex: string): number {
-  const value = Number.parseInt(hex.slice(1), 16)
-  const red = channel((value >> 16) & 255)
-  const green = channel((value >> 8) & 255)
-  const blue = channel(value & 255)
-  return 0.2126 * red + 0.7152 * green + 0.0722 * blue
+  claude: { hex: '#b06046', bg: 'bg-[#b06046]', ink: 'light' },
+  nushell: { hex: '#438405', bg: 'bg-[#438405]', ink: 'light' },
+  starship: { hex: '#dd0b78', bg: 'bg-[#dd0b78]', ink: 'light' },
+  git: { hex: '#da372a', bg: 'bg-[#da372a]', ink: 'light' },
+  github: { hex: '#181717', bg: 'bg-[#181717]', ink: 'light' },
+  'github-actions': { hex: '#1b74d9', bg: 'bg-[#1b74d9]', ink: 'light' },
+  linear: { hex: '#5e6ad2', bg: 'bg-[#5e6ad2]', ink: 'light' },
+  docker: { hex: '#1d79c0', bg: 'bg-[#1d79c0]', ink: 'light' },
+  coolify: { hex: '#6b16ed', bg: 'bg-[#6b16ed]', ink: 'light' },
+  tailscale: { hex: '#242424', bg: 'bg-[#242424]', ink: 'light' },
+  cloudflare: { hex: '#f38020', bg: 'bg-[#f38020]', ink: 'dark' },
+  bitwarden: { hex: '#175ddc', bg: 'bg-[#175ddc]', ink: 'light' },
+  typescript: { hex: '#3178c6', bg: 'bg-[#3178c6]', ink: 'light' },
+  bun: { hex: '#000000', bg: 'bg-[#000000]', ink: 'light' },
+  astro: { hex: '#a749d4', bg: 'bg-[#a749d4]', ink: 'light' },
+  react: { hex: '#61dafb', bg: 'bg-[#61dafb]', ink: 'dark' },
+  nextjs: { hex: '#000000', bg: 'bg-[#000000]', ink: 'light' },
+  hono: { hex: '#c35302', bg: 'bg-[#c35302]', ink: 'light' },
+  tailwindcss: { hex: '#06b6d4', bg: 'bg-[#06b6d4]', ink: 'dark' },
+  'shadcn-ui': { hex: '#000000', bg: 'bg-[#000000]', ink: 'light' },
+  prisma: { hex: '#2d3748', bg: 'bg-[#2d3748]', ink: 'light' },
+  supabase: { hex: '#3fcf8e', bg: 'bg-[#3fcf8e]', ink: 'dark' },
+  zod: { hex: '#408aff', bg: 'bg-[#408aff]', ink: 'dark' },
+  tanstack: { hex: '#ece8d1', bg: 'bg-[#ece8d1]', ink: 'dark' },
+  'better-auth': { hex: '#ffffff', bg: 'bg-[#ffffff]', ink: 'dark' },
+  resend: { hex: '#000000', bg: 'bg-[#000000]', ink: 'light' },
+  posthog: { hex: '#000000', bg: 'bg-[#000000]', ink: 'light' },
+  dotenv: { hex: '#ecd53f', bg: 'bg-[#ecd53f]', ink: 'dark' },
+  wxt: { hex: '#67d55e', bg: 'bg-[#67d55e]', ink: 'dark' },
+  turborepo: { hex: '#e51b4d', bg: 'bg-[#e51b4d]', ink: 'light' },
+  playwright: { hex: '#248728', bg: 'bg-[#248728]', ink: 'light' },
+  eslint: { hex: '#4b32c3', bg: 'bg-[#4b32c3]', ink: 'light' },
+  prettier: { hex: '#f7b93e', bg: 'bg-[#f7b93e]', ink: 'dark' },
+  knip: { hex: '#bf560c', bg: 'bg-[#bf560c]', ink: 'light' },
 }
 
 /**
- * WCAG contrast ratio of two colours.
- * @param first A `#rrggbb` colour.
- * @param second A `#rrggbb` colour.
- * @returns The ratio, from 1 to 21.
+ * Brands whose own multicolour logo stays on a light grey `.bdg.alt` badge
+ * instead of a brand-coloured one.
  */
-export function contrastRatio(first: string, second: string): number {
-  const firstLuminance = luminance(first)
-  const secondLuminance = luminance(second)
-  const lighter = Math.max(firstLuminance, secondLuminance)
-  const darker = Math.min(firstLuminance, secondLuminance)
-  return (lighter + 0.05) / (darker + 0.05)
-}
+export const ALT_BADGES: ReadonlySet<IconId> = new Set<IconId>([
+  'orca',
+  'chezmoi',
+  'mise',
+  'base-ui',
+  'trigger-dev',
+  'remotion',
+])
 
-/** The classes and measured contrast of one badge. */
+/** The classes and brand colour of one badge. */
 export interface BadgeStyle {
   hex: string
   bg: string
   text: string
   logo: string
-  ratio: number
+}
+
+const ALT_STYLE: BadgeStyle = {
+  hex: '#eef0f4',
+  bg: 'bg-[#eef0f4]',
+  text: 'text-[#15191f]',
+  logo: '',
 }
 
 /**
- * Picks the badge text and logo tone: white unless the brand colour is too
- * light for 4.5:1, then dark.
- * @param id An icon id that has a badge colour.
+ * Picks the badge classes: the grey alt look with a full-colour logo, or the
+ * brand colour with a white or near-black name and a matching logo.
+ * @param id An icon id that has a badge colour or is an alt badge.
  * @returns Literal Tailwind classes for the background, text and logo.
  */
 export function badgeStyle(id: IconId): BadgeStyle {
+  if (ALT_BADGES.has(id)) return ALT_STYLE
   const color = BADGE_COLORS[id]
   if (color === undefined) throw new Error(`No badge colour for icon "${id}"`)
-  const white = contrastRatio(color.hex, WHITE)
-  const ink = contrastRatio(color.hex, INK)
-  if (white >= MINIMUM_CONTRAST || white >= ink) {
+  if (color.ink === 'light') {
     return {
-      ...color,
+      hex: color.hex,
+      bg: color.bg,
       text: 'text-white',
       logo: 'brightness-0 invert',
-      ratio: white,
     }
   }
   return {
-    ...color,
-    text: 'text-neutral-950',
+    hex: color.hex,
+    bg: color.bg,
+    text: 'text-[#111111]',
     logo: 'brightness-0',
-    ratio: ink,
   }
 }
 

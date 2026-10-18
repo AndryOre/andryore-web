@@ -34,6 +34,14 @@ describe('Dock', () => {
     expect(html).toContain('aria-label="Main"')
   })
 
+  test('uses the canvas dock geometry from sm and a compact one on phones', () => {
+    const html = render('en', '/')
+    expect(html).toContain('sm:gap-1')
+    expect(html).toContain('sm:p-2')
+    expect(html).toContain('gap-0 rounded-pill')
+    expect(html).toContain('data-dock-nav')
+  })
+
   test('orders the items as the canvas does', () => {
     const html = render('en', '/')
     const names = [
