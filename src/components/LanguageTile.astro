@@ -41,7 +41,7 @@ const labelClass =
         href={homePath(target)}
         hreflang={target}
         lang={target}
-        aria-label={copy[target]}
+        aria-label={`${copy.codes[target]} ${copy[target]}`}
         aria-current={target === locale ? 'true' : undefined}
         class:list={[
           'rounded-pill inline-flex min-h-9 min-w-11 items-center justify-center px-3 no-underline',
