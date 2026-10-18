@@ -1,6 +1,5 @@
+import { GITHUB_LOGIN } from './github-contributions'
 import { resolveGridSnapshot, type GridSnapshot } from './github-grid'
-
-const GITHUB_LOGIN = 'AndryOre'
 
 const committedSnapshots = import.meta.glob<GridSnapshot>(
   '../content/github-grid.json',

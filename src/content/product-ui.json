@@ -1,28 +1,78 @@
 {
   "en": {
-    "tryCta": "Try {name}",
     "state": {
       "live": "Live",
-      "beta": "Beta"
+      "beta": "Beta",
+      "contribution": "Contribution"
     },
-    "proofHeading": "Proof",
+    "links": {
+      "website": "Visit website",
+      "source": "View the source",
+      "npm": "npm",
+      "marketplace": "Marketplace"
+    },
+    "statsHeading": "Facts",
     "proofAsOf": "as of {date}",
+    "worksWith": "Works with",
+    "importsFrom": "Imports from",
+    "frameworks": "Works in",
+    "exportFormats": "Exports",
+    "importFormats": "Imports",
+    "skinTonesHeading": "Skin tones",
+    "skinTones": [
+      "Default",
+      "Light",
+      "Medium light",
+      "Medium",
+      "Medium dark",
+      "Dark"
+    ],
+    "highlightsHeading": "What it does",
+    "contributionHeading": "What I did",
+    "websiteHeading": "The website",
+    "websiteCaption": "Open {host}",
+    "galleryHeading": "Inside the extension",
     "whyHeading": "Why I built it",
+    "contributionWhyHeading": "How it came about",
     "stackHeading": "Stack",
-    "changelogLink": "Read the changelog",
-    "placeholderNote": "Placeholder image"
+    "changelogLink": "Read the changelog"
   },
   "es": {
-    "tryCta": "Probar {name}",
     "state": {
       "live": "Activo",
-      "beta": "Beta"
+      "beta": "Beta",
+      "contribution": "Colaboración"
     },
-    "proofHeading": "Pruebas",
+    "links": {
+      "website": "Visitar el sitio",
+      "source": "Ver el código",
+      "npm": "npm",
+      "marketplace": "Marketplace"
+    },
+    "statsHeading": "Datos",
     "proofAsOf": "a {date}",
+    "worksWith": "Funciona en",
+    "importsFrom": "Importa desde",
+    "frameworks": "Funciona con",
+    "exportFormats": "Exporta",
+    "importFormats": "Importa",
+    "skinTonesHeading": "Tonos de piel",
+    "skinTones": [
+      "Predeterminado",
+      "Claro",
+      "Medio claro",
+      "Medio",
+      "Medio oscuro",
+      "Oscuro"
+    ],
+    "highlightsHeading": "Qué hace",
+    "contributionHeading": "Qué hice",
+    "websiteHeading": "El sitio web",
+    "websiteCaption": "Abrir {host}",
+    "galleryHeading": "Dentro de la extensión",
     "whyHeading": "Por qué lo construí",
+    "contributionWhyHeading": "Cómo surgió",
     "stackHeading": "Stack",
-    "changelogLink": "Leer el registro de cambios",
-    "placeholderNote": "Imagen provisional"
+    "changelogLink": "Leer el registro de cambios"
   }
 }

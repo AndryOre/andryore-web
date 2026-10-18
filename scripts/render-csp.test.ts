@@ -1,5 +1,11 @@
 import { describe, expect, test } from 'bun:test'
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 
@@ -99,6 +105,20 @@ describe('collectHashes and renderPolicy', () => {
     } finally {
       rmSync(directory, { recursive: true, force: true })
     }
+  })
+
+  test('the shipped template allows the manifest and no unsafe sources', () => {
+    const template = readFileSync(
+      path.join(
+        import.meta.dir,
+        '..',
+        'docker',
+        'security-headers.conf.template',
+      ),
+      'utf8',
+    )
+    expect(template).toContain("manifest-src 'self';")
+    expect(template).not.toContain('unsafe-')
   })
 
   test('leaves no stray space when there are no hashes', () => {

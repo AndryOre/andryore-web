@@ -1,9 +1,11 @@
 import { z } from 'astro/zod'
 
 import { localePath, type Locale } from '../i18n/locales'
+import { GLYPH_BODIES, type GlyphName } from './glyphs'
+import { ICONS, type IconId } from './icons'
 
 /** Lifecycle states a product pill can show. */
-const PRODUCT_STATES = ['live', 'beta'] as const
+const PRODUCT_STATES = ['live', 'beta', 'contribution'] as const
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
 
@@ -22,6 +24,56 @@ const proofRowSchema = z.object({
 })
 
 export type ProofRow = z.infer<typeof proofRowSchema>
+
+const iconLabelSchema = z.object({
+  icon: z.string().min(1),
+  label: z.string().min(1),
+})
+
+const statSchema = z.object({
+  icon: z.string().min(1),
+  value: z.string().min(1),
+  label: z.string().min(1),
+  date: z
+    .string()
+    .refine(isRealDate, 'A dated stat needs a real YYYY-MM-DD date')
+    .optional(),
+})
+
+const platformSchema = iconLabelSchema.extend({
+  href: z.url().optional(),
+})
+
+const cardSchema = z.object({
+  icon: z.string().min(1),
+  title: z.string().min(1),
+  body: z.string().min(1),
+})
+
+const linksSchema = z.object({
+  npm: z.url().optional(),
+  source: z.url().optional(),
+  marketplace: z.url().optional(),
+})
+
+const createSpriteSchema = <Source extends z.ZodType>(imageSource: Source) =>
+  z.object({
+    src: imageSource,
+    alt: z.string().min(1),
+    frames: z.number().int().positive(),
+    fps: z.number().int().positive(),
+  })
+
+const createWebsiteSchema = <Source extends z.ZodType>(imageSource: Source) =>
+  z.object({
+    src: imageSource,
+    alt: z.string().min(1),
+    host: z.string().min(1),
+  })
+
+const createGalleryItemSchema = <Source extends z.ZodType>(
+  imageSource: Source,
+) => z.object({ src: imageSource, alt: z.string().min(1) })
 
 /**
  * Schema of one product file. A proof row cannot exist without its date, so a
@@ -42,7 +94,24 @@ export function createProductSchema<Source extends z.ZodType>(
     description: z.string().min(1).max(160),
     state: z.enum(PRODUCT_STATES),
     url: z.url(),
-    changelog: z.url(),
+    changelog: z.url().optional(),
+    kind: z.enum(['product', 'contribution']).default('product'),
+    tag: z.string().min(1).optional(),
+    version: z.string().min(1).optional(),
+    year: z.string().regex(/^\d{4}(?:–\d{2})?$/),
+    stats: z.array(statSchema).default([]),
+    platforms: z.array(platformSchema).default([]),
+    platformNote: z.string().min(1).optional(),
+    importsFrom: z.array(iconLabelSchema).default([]),
+    exportFormats: z.array(iconLabelSchema).default([]),
+    importFormats: z.array(iconLabelSchema).default([]),
+    cards: z.array(cardSchema).default([]),
+    callout: cardSchema.optional(),
+    skinTones: z.boolean().default(false),
+    links: linksSchema.default({}),
+    sprites: z.array(createSpriteSchema(imageSource)).default([]),
+    website: createWebsiteSchema(imageSource).optional(),
+    gallery: z.array(createGalleryItemSchema(imageSource)).default([]),
     stack: z.array(z.string().min(1)).min(1),
     proof: z.array(proofRowSchema).default([]),
     image: z.object({
@@ -127,3 +196,91 @@ export function englishProductKeys(files: readonly string[]): string[] {
 export function productPath(locale: Locale, key: string): string {
   return localePath(locale, `/products/${key}/`)
 }
+
+/** The kinds of call to action a product header can carry. */
+export type HeaderLinkId = 'website' | 'source' | 'npm' | 'marketplace'
+
+export interface HeaderLink {
+  id: HeaderLinkId
+  href: string
+}
+
+/** The links a product can carry, as the schema defines them. */
+export interface ProductLinkSet {
+  npm?: string | undefined
+  source?: string | undefined
+  marketplace?: string | undefined
+}
+
+/**
+ * The header calls to action of a product, in display order.
+ * @param product The product's website and optional link set.
+ * @param product.url The product website.
+ * @param product.links Source, npm and marketplace links, when they exist.
+ * @returns The website first, then source, npm and marketplace when present.
+ */
+export function headerLinks(product: {
+  url: string
+  links: ProductLinkSet
+}): HeaderLink[] {
+  const { links } = product
+  const candidates: { id: HeaderLinkId; href: string | undefined }[] = [
+    { id: 'source', href: links.source },
+    { id: 'npm', href: links.npm },
+    { id: 'marketplace', href: links.marketplace },
+  ]
+  const present = candidates.filter(
+    (candidate): candidate is HeaderLink => candidate.href !== undefined,
+  )
+  return [{ id: 'website', href: product.url }, ...present]
+}
+
+export type ProductIconRef =
+  { kind: 'brand'; id: IconId } | { kind: 'glyph'; name: GlyphName }
+
+/**
+ * Decides whether an icon name from a product file is a brand logo or a
+ * Lucide glyph.
+ * @param name The icon name as written in the product file.
+ * @returns A tagged reference, or `undefined` when the name is in neither set.
+ */
+export function classifyIcon(name: string): ProductIconRef | undefined {
+  const brandIds: readonly string[] = Object.keys(ICONS)
+  if (brandIds.includes(name)) return { kind: 'brand', id: name as IconId }
+  const glyphNames: readonly string[] = Object.keys(GLYPH_BODIES)
+  return glyphNames.includes(name)
+    ? { kind: 'glyph', name: name as GlyphName }
+    : undefined
+}
+
+const STACK_ICONS: Readonly<Record<string, IconId>> = {
+  react: 'react',
+  typescript: 'typescript',
+  'tailwind css': 'tailwindcss',
+  'shadcn/ui': 'shadcn-ui',
+  wxt: 'wxt',
+  astro: 'astro',
+  'astro + starlight': 'astro',
+}
+
+/**
+ * The brand icon of a stack badge.
+ * @param label The stack name as written in the product file.
+ * @returns The icon id, or `undefined` when the stack has no logo.
+ */
+export function stackIconId(label: string): IconId | undefined {
+  return STACK_ICONS[label.toLowerCase()]
+}
+
+/**
+ * Background classes of the six emoji skin-tone swatches, default first. They
+ * are literal so the Tailwind scanner sees them and no inline style is needed.
+ */
+export const SKIN_TONE_CLASSES = [
+  'bg-[#ffc83d]',
+  'bg-[#f7d7c4]',
+  'bg-[#d8b094]',
+  'bg-[#bb8a63]',
+  'bg-[#8d5a3c]',
+  'bg-[#5c3a26]',
+] as const

@@ -22,7 +22,6 @@ describe('Dock', () => {
     for (const name of [
       'Home',
       'Products',
-      'Log',
       'About',
       'Uses',
       'EN Language',
@@ -34,18 +33,18 @@ describe('Dock', () => {
   })
 
   test('localises names and links in Spanish', () => {
-    const html = render('es', '/log/')
+    const html = render('es', '/about/')
     expect(html).toContain('aria-label="Inicio"')
     expect(html).toContain('aria-label="ES Idioma"')
-    expect(html).toContain('href="/es/log/"')
+    expect(html).toContain('href="/es/about/"')
     expect(html).toContain('href="/es/#products"')
   })
 
   test('marks only the current page and draws the pill on it', () => {
-    const html = render('en', '/log/first-entry/')
+    const html = render('en', '/about/')
     expect(html.match(/aria-current="page"/g)).toHaveLength(1)
     expect(html.match(/data-dock-pill/g)).toHaveLength(1)
-    expect(html).toMatch(/href="\/log\/"[^>]*aria-current="page"/)
+    expect(html).toMatch(/href="\/about\/"[^>]*aria-current="page"/)
   })
 
   test('marks no page on a page the dock does not list', () => {
@@ -66,14 +65,14 @@ describe('LanguageMenu', () => {
       <LanguageMenu
         copy={chrome.es.dock.language}
         locale="es"
-        path="/log/first-entry/"
+        path="/about/"
       />,
     )
     expect(html).toContain('role="menu"')
-    expect(html).toContain('href="/log/first-entry/"')
-    expect(html).toContain('href="/es/log/first-entry/"')
+    expect(html).toContain('href="/about/"')
+    expect(html).toContain('href="/es/about/"')
     expect(html.match(/aria-current="true"/g)).toHaveLength(1)
-    expect(html).toMatch(/href="\/es\/log\/first-entry\/"[^>]*aria-current/)
+    expect(html).toMatch(/href="\/es\/about\/"[^>]*aria-current/)
     expect(html).toContain('data-locale-switch="en"')
   })
 })

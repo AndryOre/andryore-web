@@ -50,25 +50,13 @@ interface DockProps {
 const ITEM_CLASS =
   'relative inline-flex size-11 items-center justify-center rounded-pill text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring [&_svg]:size-5 [&_svg]:shrink-0'
 
-const PAGE_ICONS: Record<DockPageKey, ReactElement> = {
-  home: (
-    <>
-      <path d="M3 11l9-8 9 8" />
-      <path d="M5 10v10h14V10" />
-    </>
-  ),
+const PAGE_ICONS: Record<Exclude<DockPageKey, 'home'>, ReactElement> = {
   products: (
     <>
       <rect x="3" y="3" width="7" height="7" rx="2" />
       <rect x="14" y="3" width="7" height="7" rx="2" />
       <rect x="3" y="14" width="7" height="7" rx="2" />
       <rect x="14" y="14" width="7" height="7" rx="2" />
-    </>
-  ),
-  log: (
-    <>
-      <path d="M5 4h11l3 3v13H5z" />
-      <path d="M9 11h6M9 15h6" />
     </>
   ),
   about: (
@@ -85,7 +73,23 @@ const PAGE_ICONS: Record<DockPageKey, ReactElement> = {
   ),
 }
 
+function AoMark() {
+  return (
+    <svg viewBox="112 169 288 174" className="h-auto! w-4!" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M112.64 339.2 157.27 169.4H213.06L257.7 339.2H224.71L215.49 301.85H154.85L145.63 339.2H112.64ZM162.37 272.25H207.97L187.35 189.54H182.99L162.37 272.25Z"
+      />
+      <path
+        className="fill-primary"
+        d="M336.29 342.6Q318.34 342.6 304.03 335.32Q289.72 328.04 281.47 314.22Q273.22 300.39 273.22 280.98V277.1Q273.22 257.7 281.47 243.87Q289.72 230.04 304.03 222.77Q318.34 215.49 336.29 215.49Q354.24 215.49 368.55 222.77Q382.87 230.04 391.11 243.87Q399.36 257.7 399.36 277.1V280.98Q399.36 300.39 391.11 314.22Q382.87 328.04 368.55 335.32Q354.24 342.6 336.29 342.6ZM336.29 315.43Q350.36 315.43 359.58 306.33Q368.8 297.24 368.8 280.26V277.83Q368.8 260.85 359.7 251.75Q350.6 242.66 336.29 242.66Q322.22 242.66 313 251.75Q303.79 260.85 303.79 277.83V280.26Q303.79 297.24 313 306.33Q322.22 315.43 336.29 315.43Z"
+      />
+    </svg>
+  )
+}
+
 function PageIcon({ page }: { page: DockPageKey }) {
+  if (page === 'home') return <AoMark />
   return (
     <svg
       viewBox="0 0 24 24"

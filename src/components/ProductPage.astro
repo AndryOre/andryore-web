@@ -11,9 +11,13 @@ import { revealClass } from '../lib/motion'
 import {
   fillPlaceholder,
   formatProofDate,
-  visibleProof,
+  headerLinks,
+  SKIN_TONE_CLASSES,
+  stackIconId,
+  type HeaderLinkId,
   type ProductEntry,
 } from '../lib/products'
+import ProductIcon from './ProductIcon.astro'
 
 interface Props {
   locale: Locale
@@ -33,13 +37,41 @@ if (!entry) {
 }
 const { data } = entry
 const { Content } = await render(entry)
-const proof = visibleProof(data.proof)
+const isContribution = data.kind === 'contribution'
 
-const rowClass =
-  'border-border grid gap-1 border-t py-4 min-[700px]:grid-cols-[9rem_minmax(0,1fr)] min-[700px]:gap-6'
-const labelClass =
-  'text-muted-foreground font-mono text-xs tracking-widest uppercase'
-const valueClass = 'm-0 min-w-0 [overflow-wrap:anywhere]'
+const linkIcons: Record<HeaderLinkId, string> = {
+  website: 'globe',
+  source: 'github',
+  npm: 'package',
+  marketplace: 'puzzle',
+}
+const links = headerLinks(data)
+
+const sectionClass = 'flex flex-col gap-3'
+const headingClass =
+  'text-muted-foreground m-0 font-mono text-xs font-normal tracking-widest uppercase'
+const chipClass =
+  'border-border bg-card rounded-pill inline-flex min-h-9 items-center gap-2 border px-3 py-1 text-sm no-underline'
+const cardClass =
+  'border-border bg-card rounded-card flex flex-col gap-2 border p-5'
+interface Chip {
+  icon: string
+  label: string
+  href?: string | undefined
+}
+interface ChipGroup {
+  heading: string
+  items: Chip[]
+}
+const chipGroups: ChipGroup[] = [
+  {
+    heading: data.skinTones ? ui.frameworks : ui.worksWith,
+    items: data.platforms,
+  },
+  { heading: ui.importsFrom, items: data.importsFrom },
+  { heading: ui.exportFormats, items: data.exportFormats },
+  { heading: ui.importFormats, items: data.importFormats },
+].filter((group) => group.items.length > 0)
 ---
 
 <BaseLayout
@@ -47,7 +79,7 @@ const valueClass = 'm-0 min-w-0 [overflow-wrap:anywhere]'
   locale={locale}
   description={data.description}
 >
-  <article class="flex flex-col gap-8">
+  <article class="flex flex-col gap-10">
     <header class:list={['reveal', revealClass(0), 'flex flex-col gap-4']}>
       <div class="flex flex-wrap items-center gap-3">
         <h1 class="m-0 min-w-0 text-4xl font-bold tracking-tight [overflow-wrap:anywhere]">
@@ -59,98 +91,251 @@ const valueClass = 'm-0 min-w-0 [overflow-wrap:anywhere]'
         >
           {ui.state[data.state]}
         </span>
+        {data.tag && (
+          <span
+            class="bg-muted text-muted-foreground rounded-pill shrink-0 px-3 py-1 font-mono text-xs whitespace-nowrap"
+            data-product-tag
+          >
+            {data.tag}
+          </span>
+        )}
       </div>
       <p class="text-muted-foreground m-0 text-lg [overflow-wrap:anywhere]">
         {data.value}
       </p>
-      <p class="m-0">
+      <ul class="m-0 flex list-none flex-wrap gap-3 p-0">
+        {links.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              rel={externalLinkTokens()}
+              {...analyticsAttributes(ANALYTICS_EVENTS.productOpen, {
+                product: data.key,
+                link: link.id,
+              })}
+              class:list={[
+                'rounded-pill inline-flex min-h-11 items-center gap-2 px-5 py-2 text-sm font-medium no-underline',
+                link.id === 'website'
+                  ? 'bg-primary text-primary-foreground hover:opacity-90'
+                  : 'border-border bg-card hover:bg-muted border',
+              ]}
+            >
+              <ProductIcon name={linkIcons[link.id]} />
+              {ui.links[link.id]}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </header>
+
+    {data.stats.length > 0 && (
+      <section
+        class:list={['reveal', revealClass(1), sectionClass]}
+        aria-labelledby="product-facts"
+      >
+        <h2 id="product-facts" class={headingClass}>
+          {ui.statsHeading}
+        </h2>
+        <ul class="m-0 grid list-none grid-cols-1 gap-3 p-0 min-[480px]:grid-cols-2 min-[900px]:grid-cols-4">
+          {data.stats.map((stat) => (
+            <li class={cardClass} data-product-stat>
+              <ProductIcon
+                name={stat.icon}
+                size={20}
+                class="text-muted-foreground"
+              />
+              <span class="font-mono text-2xl tabular-nums [overflow-wrap:anywhere]">
+                {stat.value}
+              </span>
+              <span class="text-muted-foreground text-sm">{stat.label}</span>
+              {stat.date && (
+                <time
+                  class="text-muted-foreground font-mono text-xs"
+                  datetime={stat.date}
+                >
+                  {fillPlaceholder(
+                    ui.proofAsOf,
+                    'date',
+                    formatProofDate(stat.date, locale),
+                  )}
+                </time>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {chipGroups.length > 0 && (
+      <section class:list={['reveal', revealClass(2), 'flex flex-col gap-5']}>
+        {chipGroups.map((group) => (
+          <div class={sectionClass}>
+            <h2 class={headingClass}>{group.heading}</h2>
+            <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
+              {group.items.map((item) => (
+                <li>
+                  {item.href ? (
+                    <a
+                      href={item.href}
+                      rel={externalLinkTokens()}
+                      class={chipClass}
+                    >
+                      <ProductIcon name={item.icon} />
+                      {item.label}
+                    </a>
+                  ) : (
+                    <span class={chipClass}>
+                      <ProductIcon name={item.icon} />
+                      {item.label}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+        {data.platformNote && (
+          <p class="text-muted-foreground m-0 text-sm">{data.platformNote}</p>
+        )}
+      </section>
+    )}
+
+    {data.skinTones && (
+      <section class={sectionClass}>
+        <h2 class={headingClass}>{ui.skinTonesHeading}</h2>
+        <ul class="m-0 flex list-none flex-wrap gap-3 p-0">
+          {SKIN_TONE_CLASSES.map((toneClass, index) => (
+            <li class="flex items-center gap-2 text-sm">
+              <span
+                class:list={[
+                  toneClass,
+                  'border-border size-7 rounded-full border',
+                ]}
+                aria-hidden="true"
+              />
+              {ui.skinTones[index]}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {data.cards.length > 0 && (
+      <section class:list={['reveal', revealClass(3), sectionClass]}>
+        <h2 class={headingClass}>
+          {isContribution ? ui.contributionHeading : ui.highlightsHeading}
+        </h2>
+        <ul class="m-0 grid list-none grid-cols-1 gap-3 p-0 min-[800px]:grid-cols-3">
+          {data.cards.map((card) => (
+            <li class={cardClass}>
+              <ProductIcon name={card.icon} size={22} class="text-primary" />
+              <h3 class="m-0 text-base font-semibold">{card.title}</h3>
+              <p class="text-muted-foreground m-0 text-sm">{card.body}</p>
+            </li>
+          ))}
+        </ul>
+        {data.callout && (
+          <div class="border-border bg-muted rounded-card flex gap-3 border p-5">
+            <ProductIcon
+              name={data.callout.icon}
+              size={22}
+              class="text-primary mt-0.5"
+            />
+            <div class="flex flex-col gap-1">
+              <h3 class="m-0 text-base font-semibold">{data.callout.title}</h3>
+              <p class="text-muted-foreground m-0 text-sm">
+                {data.callout.body}
+              </p>
+            </div>
+          </div>
+        )}
+      </section>
+    )}
+
+    {data.website && (
+      <section class:list={['reveal', revealClass(4), sectionClass]}>
+        <h2 class={headingClass}>{ui.websiteHeading}</h2>
         <a
           href={data.url}
           rel={externalLinkTokens()}
+          class="border-border rounded-card group flex flex-col overflow-hidden border no-underline"
+          data-product-website={data.key}
           {...analyticsAttributes(ANALYTICS_EVENTS.productOpen, {
             product: data.key,
+            link: 'website-tile',
           })}
-          class="bg-primary text-primary-foreground rounded-pill inline-flex min-h-11 items-center px-5 py-2 text-sm font-medium no-underline hover:opacity-90"
         >
-          {fillPlaceholder(ui.tryCta, 'name', data.name)}
+          <Picture
+            src={data.website.src}
+            alt={data.website.alt}
+            formats={['avif', 'webp']}
+            widths={[480, 720, 1200]}
+            sizes="(min-width: 768px) 720px, 100vw"
+            loading="lazy"
+            class="w-full object-cover object-top"
+          />
+          <span class="bg-card flex items-center gap-2 px-4 py-3 font-mono text-sm">
+            <ProductIcon name="globe" />
+            {fillPlaceholder(ui.websiteCaption, 'host', data.website.host)}
+          </span>
+        </a>
+        {data.gallery.length > 0 && (
+          <>
+            <h2 class:list={[headingClass, 'mt-4']}>{ui.galleryHeading}</h2>
+            <ul class="m-0 grid list-none grid-cols-2 gap-3 p-0 min-[800px]:grid-cols-4">
+              {data.gallery.map((shot) => (
+                <li class="border-border rounded-card overflow-hidden border">
+                  <Picture
+                    src={shot.src}
+                    alt={shot.alt}
+                    formats={['avif', 'webp']}
+                    widths={[240, 480]}
+                    sizes="(min-width: 800px) 180px, 50vw"
+                    loading="lazy"
+                    class="h-full w-full object-cover"
+                  />
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </section>
+    )}
+
+    <section class:list={['reveal', revealClass(5), sectionClass]}>
+      <h2 class={headingClass}>
+        {isContribution ? ui.contributionWhyHeading : ui.whyHeading}
+      </h2>
+      <div class="flex max-w-reading flex-col gap-3 [overflow-wrap:anywhere]">
+        <Content />
+      </div>
+    </section>
+
+    <section class:list={['reveal', revealClass(6), sectionClass]}>
+      <h2 class={headingClass}>{ui.stackHeading}</h2>
+      <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
+        {data.stack.map((item) => {
+          const iconId = stackIconId(item)
+          return (
+            <li class={chipClass}>
+              {iconId && <ProductIcon name={iconId} />}
+              {item}
+            </li>
+          )
+        })}
+      </ul>
+    </section>
+
+    {data.changelog && (
+      <p class="border-border m-0 border-t pt-4">
+        <a
+          href={data.changelog}
+          rel={externalLinkTokens()}
+          class="text-primary"
+        >
+          {ui.changelogLink}
         </a>
       </p>
-    </header>
-
-    <figure
-      class:list={['reveal', revealClass(1), 'm-0 flex flex-col gap-2']}
-      data-product-image={data.key}
-      data-placeholder={data.image.placeholder ? '' : undefined}
-    >
-      <Picture
-        src={data.image.src}
-        alt={data.image.alt}
-        formats={['avif', 'webp']}
-        widths={[480, 720, 1200]}
-        sizes="(min-width: 768px) 720px, 100vw"
-        loading="lazy"
-        class="min-h-[260px] w-full rounded-[20px] object-cover"
-      />
-      {data.image.placeholder && (
-        <figcaption class={labelClass}>{ui.placeholderNote}</figcaption>
-      )}
-    </figure>
-
-    <dl class:list={['reveal', revealClass(2), 'm-0 flex flex-col']}>
-      {proof.length > 0 && (
-        <>
-          <div class={rowClass}>
-            <dt class={labelClass}>{ui.proofHeading}</dt>
-            <dd class={valueClass}>
-              <ul class="m-0 flex list-none flex-col gap-3 p-0">
-                {proof.map((row) => (
-                  <li class="flex flex-col gap-0.5">
-                    <span class="text-muted-foreground text-sm">
-                      {row.label}
-                    </span>
-                    <span class="font-mono text-xl tabular-nums">
-                      {row.value}
-                    </span>
-                    <time
-                      class="text-muted-foreground font-mono text-xs"
-                      datetime={row.date}
-                    >
-                      {fillPlaceholder(
-                        ui.proofAsOf,
-                        'date',
-                        formatProofDate(row.date, locale),
-                      )}
-                    </time>
-                  </li>
-                ))}
-              </ul>
-            </dd>
-          </div>
-        </>
-      )}
-      <div class={rowClass}>
-        <dt class={labelClass}>{ui.whyHeading}</dt>
-        <dd class={valueClass}>
-          <Content />
-        </dd>
-      </div>
-      <div class={rowClass}>
-        <dt class={labelClass}>{ui.stackHeading}</dt>
-        <dd class={valueClass}>
-          <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
-            {data.stack.map((item) => (
-              <li class="bg-muted rounded-pill px-3 py-1 font-mono text-xs">
-                {item}
-              </li>
-            ))}
-          </ul>
-        </dd>
-      </div>
-    </dl>
-    <p class="border-border m-0 border-t pt-4">
-      <a href={data.changelog} rel={externalLinkTokens()} class="text-primary">
-        {ui.changelogLink}
-      </a>
-    </p>
+    )}
   </article>
 </BaseLayout>

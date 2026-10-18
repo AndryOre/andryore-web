@@ -26,22 +26,28 @@ describe('homePath', () => {
 
 describe('localePath', () => {
   test('keeps English paths unprefixed', () => {
-    expect(localePath('en', '/log/')).toBe('/log/')
+    expect(localePath('en', '/about/')).toBe('/about/')
   })
 
   test('prefixes Spanish paths with /es', () => {
-    expect(localePath('es', '/log/')).toBe('/es/log/')
+    expect(localePath('es', '/about/')).toBe('/es/about/')
     expect(localePath('es', '/')).toBe('/es/')
   })
 })
 
 describe('splitLocalePath', () => {
   test('reads English paths', () => {
-    expect(splitLocalePath('/log/')).toEqual({ locale: 'en', path: '/log/' })
+    expect(splitLocalePath('/about/')).toEqual({
+      locale: 'en',
+      path: '/about/',
+    })
   })
 
   test('reads Spanish paths and strips the prefix', () => {
-    expect(splitLocalePath('/es/log/')).toEqual({ locale: 'es', path: '/log/' })
+    expect(splitLocalePath('/es/about/')).toEqual({
+      locale: 'es',
+      path: '/about/',
+    })
     expect(splitLocalePath('/es/')).toEqual({ locale: 'es', path: '/' })
     expect(splitLocalePath('/es')).toEqual({ locale: 'es', path: '/' })
   })
@@ -63,9 +69,9 @@ describe('otherLocale', () => {
 
 describe('alternatesFor', () => {
   test('lists both languages with hreflang and paths', () => {
-    expect(alternatesFor('/log/')).toEqual([
-      { locale: 'en', hreflang: 'en', path: '/log/' },
-      { locale: 'es', hreflang: 'es', path: '/es/log/' },
+    expect(alternatesFor('/about/')).toEqual([
+      { locale: 'en', hreflang: 'en', path: '/about/' },
+      { locale: 'es', hreflang: 'es', path: '/es/about/' },
     ])
   })
 })

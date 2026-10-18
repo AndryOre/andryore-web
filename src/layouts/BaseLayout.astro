@@ -136,8 +136,25 @@ const socialTags = [
       {copy.skipLink}
     </a>
 
-    <header class="px-4 py-4 sm:px-10 sm:py-6">
-      <span class="text-xl font-bold tracking-tight">{copy.wordmark}</span>
+    <header class="site-header sticky top-0 z-30">
+      <div
+        class:list={[
+          'mx-auto flex w-full items-center justify-between gap-4 px-4 py-4 sm:px-6',
+          wide ? 'max-w-[75rem]' : 'max-w-reading',
+        ]}
+      >
+        <span class="inline-flex text-xl font-bold tracking-tight">
+          <span>{copy.wordmarkParts[0]}</span>
+          <span class="text-primary">{copy.wordmarkParts[1]}</span>
+        </span>
+        <span class="bg-secondary border-border rounded-pill inline-flex items-center gap-2 border px-2.5 py-0.5 font-mono text-[0.6875rem] font-medium tracking-[0.06em] whitespace-nowrap uppercase">
+          <span
+            class="bg-success size-[7px] rounded-full"
+            aria-hidden="true"
+          ></span>
+          {copy.openToWork}
+        </span>
+      </div>
     </header>
 
     <main
@@ -161,12 +178,6 @@ const socialTags = [
           class="inline-flex min-h-11 min-w-11 items-center justify-center underline underline-offset-4"
         >
           {copy.usesLabel}
-        </a>
-        <a
-          href={localePath(locale, '/colophon/')}
-          class="inline-flex min-h-11 min-w-11 items-center justify-center underline underline-offset-4"
-        >
-          {copy.colophonLabel}
         </a>
         <a
           href={localePath(otherLocale(locale), path)}

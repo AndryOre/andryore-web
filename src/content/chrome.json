@@ -5,7 +5,6 @@
     "footerNote": "AndryOre",
     "footerNavLabel": "More about this site",
     "usesLabel": "Uses",
-    "colophonLabel": "Colophon",
     "theme": {
       "label": "Theme",
       "auto": "Auto",
@@ -17,7 +16,6 @@
       "pages": {
         "home": "Home",
         "products": "Products",
-        "log": "Log",
         "about": "About",
         "uses": "Uses"
       },
@@ -29,7 +27,9 @@
     },
     "switchLabel": "Español",
     "switchAria": "Leer en español",
-    "ogImageAlt": "AndryOre: Building, exploring, telling."
+    "ogImageAlt": "AndryOre: Building, exploring, telling.",
+    "wordmarkParts": ["Andry", "Ore"],
+    "openToWork": "Open to work"
   },
   "es": {
     "wordmark": "AndryOre",
@@ -37,7 +37,6 @@
     "footerNote": "AndryOre",
     "footerNavLabel": "Más sobre este sitio",
     "usesLabel": "Uso",
-    "colophonLabel": "Colofón",
     "theme": {
       "label": "Tema",
       "auto": "Automático",
@@ -49,7 +48,6 @@
       "pages": {
         "home": "Inicio",
         "products": "Productos",
-        "log": "Log",
         "about": "Sobre mí",
         "uses": "Setup"
       },
@@ -61,6 +59,8 @@
     },
     "switchLabel": "English",
     "switchAria": "Read in English",
-    "ogImageAlt": "AndryOre: Construyendo, explorando, contando."
+    "ogImageAlt": "AndryOre: Construyendo, explorando, contando.",
+    "wordmarkParts": ["Andry", "Ore"],
+    "openToWork": "Disponible"
   }
 }

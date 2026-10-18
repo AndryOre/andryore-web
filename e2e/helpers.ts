@@ -6,7 +6,9 @@ const THEME_STORAGE_KEY = 'theme'
 
 /**
  * Pins the theme before any page script runs, forces reduced motion and
- * answers the stream status endpoint that only nginx serves in production.
+ * answers the runtime endpoints that only the production server serves. The
+ * contributions answer is not a valid snapshot, so the tile keeps its build
+ * data without a network error.
  * @param page The page to configure.
  * @param theme The theme to paint.
  */
@@ -14,6 +16,9 @@ export async function preparePage(page: Page, theme: Theme): Promise<void> {
   await page.emulateMedia({ colorScheme: theme, reducedMotion: 'reduce' })
   await page.route('**/api/stream-status', (route) =>
     route.fulfill({ json: { state: 'offline' } }),
+  )
+  await page.route('**/api/github-contributions', (route) =>
+    route.fulfill({ json: {} }),
   )
   await page.addInitScript(
     ([key, value]) => {

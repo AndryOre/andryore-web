@@ -3,13 +3,10 @@ const LANGUAGES = ['en', 'es'] as const
 const PAGE_PATHS = [
   '/',
   '/about/',
-  '/colophon/',
   '/uses/',
-  '/log/',
-  '/log/every-entry-in-two-languages/',
-  '/log/nothing-from-other-origins/',
   '/products/snug/',
   '/products/animated-fluent-emojis/',
+  '/products/json-flow/',
 ] as const
 
 /** Every page route of the built Site, in English and Spanish. */
