@@ -101,10 +101,9 @@ cards:
       Desactivado por defecto.'
 callout:
   icon: 'shield-check'
-  title: 'Sin llamadas de red'
   body:
-    'Todo se queda en tu dispositivo. Código abierto con licencia MIT, y nunca
-    necesitas una cuenta.'
+    'Todo se queda en tu dispositivo. Sin cuenta, código abierto con licencia
+    MIT.'
 skinTones: false
 website:
   src: '../../assets/products/snug/website.png'

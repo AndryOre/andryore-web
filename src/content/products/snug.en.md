@@ -98,10 +98,7 @@ cards:
       'Hourly to weekly, to Downloads or a folder you choose. Off by default.'
 callout:
   icon: 'shield-check'
-  title: 'No network calls'
-  body:
-    'Everything stays on your device. Open source under MIT, and you never need
-    an account.'
+  body: 'Everything stays on your device. No account, open source under MIT.'
 skinTones: false
 website:
   src: '../../assets/products/snug/website.png'
