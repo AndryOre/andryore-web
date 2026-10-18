@@ -28,7 +28,9 @@
     },
     "switchLabel": "Español",
     "switchAria": "Leer en español",
-    "ogImageAlt": "AndryOre: Building, exploring, telling."
+    "ogImageAlt": "AndryOre: Building, exploring, telling.",
+    "wordmarkParts": ["Andry", "Ore"],
+    "openToWork": "Open to work"
   },
   "es": {
     "wordmark": "AndryOre",
@@ -59,6 +61,8 @@
     },
     "switchLabel": "English",
     "switchAria": "Read in English",
-    "ogImageAlt": "AndryOre: Construyendo, explorando, contando."
+    "ogImageAlt": "AndryOre: Construyendo, explorando, contando.",
+    "wordmarkParts": ["Andry", "Ore"],
+    "openToWork": "Disponible"
   }
 }

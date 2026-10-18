@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 
 import { LOCALES, type Locale } from '../i18n/locales'
+import chrome from './chrome.json'
 import home from './home.json'
 
 const SOURCE_ROOT = path.resolve(import.meta.dir, '..')
@@ -71,6 +72,63 @@ describe('home content', () => {
 
   test('StreamBoss is not shown', () => {
     expect(JSON.stringify(home).toLowerCase()).not.toContain('streamboss')
+  })
+})
+
+const sentence = (locale: Locale): string => {
+  const { lead, emphasis, tail } = home[locale].hero
+  return `${lead}${emphasis}${tail}`
+}
+
+describe('home v4 content', () => {
+  test('the headline reads as one sentence and does not lead with payments', () => {
+    expect(sentence('en')).toBe(
+      'I build web platforms that hold up in production.',
+    )
+    expect(sentence('es')).toBe(
+      'Construyo plataformas web que aguantan en producción.',
+    )
+    for (const locale of LOCALES) {
+      expect(sentence(locale)).not.toMatch(/pay|pago/i)
+    }
+  })
+
+  test('the contribution counter matches the displayed installs figure', () => {
+    for (const locale of LOCALES) {
+      const row = home[locale].products.contribution
+      const digits = Number(row.meta.replaceAll(/\D/g, ''))
+      expect(row.metaTotal).toBe(digits)
+      expect(row.metaSuffix).toStartWith('+')
+    }
+  })
+
+  test('the wordmark parts spell the wordmark in both languages', () => {
+    for (const locale of LOCALES) {
+      expect(chrome[locale].wordmarkParts.join('')).toBe(
+        chrome[locale].wordmark,
+      )
+    }
+  })
+})
+
+describe('home markup', () => {
+  const bento = readFileSync(
+    path.join(SOURCE_ROOT, 'components', 'HomeBento.astro'),
+    'utf8',
+  )
+
+  test('it names the slots later tickets fill', () => {
+    for (const slot of ['live-strip', 'find-me', 'stack-scene']) {
+      expect(bento).toContain(`data-slot="${slot}"`)
+    }
+  })
+
+  test('the products section carries the anchor id', () => {
+    expect(bento).toContain('id="products"')
+  })
+
+  test('it adds no inline script', () => {
+    expect(bento).not.toContain('is:inline')
   })
 })
 

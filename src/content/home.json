@@ -8,16 +8,24 @@
     "hero": {
       "kicker": "Hi, I’m Andry",
       "lead": "I build ",
-      "emphasis": "stuff",
-      "tail": " and tell you how it went.",
+      "emphasis": "web platforms",
+      "tail": " that hold up in production.",
       "body": "Today it might be a board, a 3D-printed part or a sleep log. Tomorrow, something else. I post what worked, what didn’t and what I’d change.",
-      "primary": { "label": "See what I build", "path": "/#products" },
-      "secondary": { "label": "About me", "path": "/about/" },
-      "annotation": "Space Grotesk 700 · 60 / 1.04"
+      "primary": {
+        "label": "See what I build",
+        "path": "/#products"
+      },
+      "secondary": {
+        "label": "About me",
+        "path": "/about/"
+      },
+      "annotation": "Space Grotesk 700 · 60 / 1.04",
+      "availability": "Open to contract and full-time work"
     },
     "about": {
       "label": "About me",
-      "body": "Builder who tests things. Software, hardware and whatever comes next."
+      "body": "Builder who tests things. Software, hardware and whatever comes next.",
+      "path": "/about/"
     },
     "products": {
       "label": "Product",
@@ -55,8 +63,11 @@
         "key": "json-flow",
         "path": "/products/json-flow/",
         "href": "https://json-flow.com",
-        "year": "2024–25"
-      }
+        "year": "2024–25",
+        "metaTotal": 75000,
+        "metaSuffix": "+ installs"
+      },
+      "heading": "Products"
     },
     "stream": {
       "label": "Stream",
@@ -93,17 +104,25 @@
     "sample": "EJEMPLO",
     "hero": {
       "kicker": "Hola, soy Andry",
-      "lead": "Hago ",
-      "emphasis": "cosas",
-      "tail": ", las pruebo y te cuento cómo me fue.",
+      "lead": "Construyo ",
+      "emphasis": "plataformas web",
+      "tail": " que aguantan en producción.",
       "body": "Hoy puede ser una placa, una pieza impresa en 3D o un registro de sueño; mañana, otra cosa. Publico lo que funcionó, lo que no y qué cambiaría.",
-      "primary": { "label": "Mira lo que construyo", "path": "/#products" },
-      "secondary": { "label": "Sobre mí", "path": "/about/" },
-      "annotation": "Space Grotesk 700 · 60 / 1.04"
+      "primary": {
+        "label": "Mira lo que construyo",
+        "path": "/#products"
+      },
+      "secondary": {
+        "label": "Sobre mí",
+        "path": "/about/"
+      },
+      "annotation": "Space Grotesk 700 · 60 / 1.04",
+      "availability": "Disponible para contratos y tiempo completo"
     },
     "about": {
       "label": "Sobre mí",
-      "body": "Alguien que construye y prueba cosas. Software, hardware y lo que venga."
+      "body": "Alguien que construye y prueba cosas. Software, hardware y lo que venga.",
+      "path": "/about/"
     },
     "products": {
       "label": "Producto",
@@ -141,8 +160,11 @@
         "key": "json-flow",
         "path": "/products/json-flow/",
         "href": "https://json-flow.com",
-        "year": "2024–25"
-      }
+        "year": "2024–25",
+        "metaTotal": 75000,
+        "metaSuffix": "+ instalaciones"
+      },
+      "heading": "Productos"
     },
     "stream": {
       "label": "Stream",
