@@ -57,11 +57,11 @@ approval ([ADR 0007](docs/adr/0007-split-license.md)).
 
 ## Overview
 
-A static, bilingual personal Site that presents Andry Orellana's work, its Log
-and its product pages. The theme mode follows the system and honors the
-visitor's choice of system, light or dark. The page is calm and typographic: a
-cool neutral ground, one indigo accent, flat surfaces and almost no decoration.
-Interactivity is the exception, never the default (ADR 0006).
+A static, bilingual personal Site that presents Andry Orellana's work and its
+product pages. The theme mode follows the system and honors the visitor's choice
+of system, light or dark. The page is calm and typographic: a cool neutral
+ground, one indigo accent, flat surfaces and almost no decoration. Interactivity
+is the exception, never the default (ADR 0006).
 
 ## Colors
 

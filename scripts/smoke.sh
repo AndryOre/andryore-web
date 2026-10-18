@@ -29,8 +29,8 @@ done
 fail() { echo "FAIL: $*" >&2; exit 1; }
 status() { curl -s -o /dev/null -w '%{http_code}' "$1"; }
 
-for route in / /about/ /colophon/ /uses/ /log/ /products/snug/ \
-  /es/ /es/about/ /es/colophon/ /es/uses/ /es/log/ /es/products/snug/ \
+for route in / /about/ /colophon/ /uses/ /products/snug/ \
+  /es/ /es/about/ /es/colophon/ /es/uses/ /es/products/snug/ \
   /sitemap.xml /robots.txt; do
   [ "$(status "$base$route")" = 200 ] || fail "$route is not 200"
 done

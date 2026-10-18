@@ -3,14 +3,14 @@ import { describe, expect, test } from 'bun:test'
 import { buildSitemap, readLastmod } from './sitemap'
 
 describe('buildSitemap', () => {
-  const xml = buildSitemap(['/', '/log/'], '2026-10-17')
+  const xml = buildSitemap(['/', '/about/'], '2026-10-17')
 
   test('lists each page in both languages', () => {
     for (const loc of [
       'https://andryore.dev/',
       'https://andryore.dev/es/',
-      'https://andryore.dev/log/',
-      'https://andryore.dev/es/log/',
+      'https://andryore.dev/about/',
+      'https://andryore.dev/es/about/',
     ]) {
       expect(xml).toContain(`<loc>${loc}</loc>`)
     }
@@ -25,17 +25,17 @@ describe('buildSitemap', () => {
   })
 
   test('gives every url a self-referencing alternate set with x-default', () => {
-    const spanishLog = xml.slice(
-      xml.indexOf('<loc>https://andryore.dev/es/log/'),
+    const spanishAbout = xml.slice(
+      xml.indexOf('<loc>https://andryore.dev/es/about/'),
     )
-    expect(spanishLog).toContain(
-      '<xhtml:link rel="alternate" hreflang="es" href="https://andryore.dev/es/log/"/>',
+    expect(spanishAbout).toContain(
+      '<xhtml:link rel="alternate" hreflang="es" href="https://andryore.dev/es/about/"/>',
     )
-    expect(spanishLog).toContain(
-      '<xhtml:link rel="alternate" hreflang="en" href="https://andryore.dev/log/"/>',
+    expect(spanishAbout).toContain(
+      '<xhtml:link rel="alternate" hreflang="en" href="https://andryore.dev/about/"/>',
     )
-    expect(spanishLog).toContain(
-      '<xhtml:link rel="alternate" hreflang="x-default" href="https://andryore.dev/log/"/>',
+    expect(spanishAbout).toContain(
+      '<xhtml:link rel="alternate" hreflang="x-default" href="https://andryore.dev/about/"/>',
     )
   })
 

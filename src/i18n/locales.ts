@@ -42,7 +42,7 @@ export function homePath(locale: Locale): string {
 
 /**
  * Splits a request path into its language and locale-neutral page path.
- * @param pathname A URL pathname such as `/es/log/`.
+ * @param pathname A URL pathname such as `/es/about/`.
  * @returns The language and the path without any language prefix.
  */
 export function splitLocalePath(pathname: string): {
