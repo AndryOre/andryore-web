@@ -3,8 +3,8 @@ import { describe, expect, test } from 'bun:test'
 import {
   formatCompactCountdown,
   formatCountdown,
+  formatNextStream,
   formatSession,
-  formatSessionLong,
   nextSession,
   selectStreamView,
   weekColumn,
@@ -60,11 +60,22 @@ describe('weekStrip', () => {
   })
 })
 
-describe('formatSessionLong', () => {
-  test('spells the weekday out in the locale', () => {
-    const start = new Date('2026-10-20T19:00:00Z')
-    expect(formatSessionLong(start, 'en')).toBe('Tuesday 19:00 UTC')
-    expect(formatSessionLong(start, 'es')).toBe('martes 19:00 UTC')
+describe('formatNextStream', () => {
+  const start = new Date('2026-10-20T19:00:00Z')
+  const now = new Date('2026-10-18T16:00:00Z')
+
+  test('joins the short weekday, time and compact countdown', () => {
+    const units = { prefix: 'in', day: 'd', hour: 'h', minute: 'min' }
+    expect(formatNextStream(start, now, 'en', units)).toBe(
+      'Tue 19:00 UTC · in 2 d 3 h',
+    )
+  })
+
+  test('capitalizes the weekday in Spanish', () => {
+    const units = { prefix: 'en', day: 'd', hour: 'h', minute: 'min' }
+    expect(formatNextStream(start, now, 'es', units)).toBe(
+      'Mar 19:00 UTC · en 2 d 3 h',
+    )
   })
 })
 
