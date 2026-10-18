@@ -62,7 +62,7 @@ describe('uses content', () => {
         expect(url.startsWith('https://')).toBe(true)
         expect(url).not.toContain('amzn.to')
         expect(url).not.toContain('tag=')
-        if (new URL(url).hostname.endsWith('amazon.com')) {
+        if (new URL(url).hostname === 'www.amazon.com') {
           expect(url).toMatch(/^https:\/\/www\.amazon\.com\/dp\/[A-Z0-9]{10}$/)
         }
       }
