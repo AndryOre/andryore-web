@@ -88,8 +88,7 @@ describe('uses content', () => {
       expect(copy.meta.description.length).toBeLessThanOrEqual(160)
     })
 
-    test(`${locale} footer links only to Uses`, () => {
-      expect(chrome[locale].usesLabel).not.toBe('')
+    test(`${locale} footer carries no colophon link`, () => {
       expect('colophonLabel' in chrome[locale]).toBe(false)
     })
 

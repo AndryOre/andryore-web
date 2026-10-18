@@ -1,0 +1,96 @@
+import { expect, test } from '@playwright/test'
+
+import { preparePage, settlePage } from './helpers'
+import { chromeMessages, languageOf, streamMessages } from './messages'
+
+const FX_STORAGE_KEY = 'ao-fx2'
+
+test.describe('live strip', () => {
+  test('theme slider steps through Light, Auto and Dark by keyboard', async ({
+    page,
+  }) => {
+    await preparePage(page, 'light')
+    await page.goto('/')
+    await settlePage(page)
+    const copy = chromeMessages('en').theme
+    const slider = page.locator('[data-theme-slider]')
+    await expect(slider).toHaveAttribute('role', 'slider')
+    await expect(slider).toHaveAttribute('aria-valuetext', copy.light)
+    await slider.focus()
+    await page.keyboard.press('ArrowDown')
+    await expect(slider).toHaveAttribute('aria-valuetext', copy.auto)
+    await page.keyboard.press('ArrowDown')
+    await expect(slider).toHaveAttribute('aria-valuetext', copy.dark)
+    await expect(page.locator('html')).toHaveClass(/dark/)
+    await page.keyboard.press('ArrowDown')
+    await expect(slider).toHaveAttribute('aria-valuenow', '2')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await expect(slider).toHaveAttribute('aria-valuetext', copy.light)
+    await expect(page.locator('html')).not.toHaveClass(/dark/)
+  })
+
+  test('language pill switches the locale route', async ({ page }) => {
+    await preparePage(page, 'light')
+    await page.goto('/')
+    await settlePage(page)
+    const tile = page.locator('[data-language-tile]')
+    await expect(tile.getByRole('link', { name: 'English' })).toHaveAttribute(
+      'aria-current',
+      'true',
+    )
+    await tile.getByRole('link', { name: 'Español' }).click()
+    await expect(page).toHaveURL(/\/es\/$/)
+    await expect(
+      page
+        .locator('[data-language-tile]')
+        .getByRole('link', { name: 'Español' }),
+    ).toHaveAttribute('aria-current', 'true')
+  })
+
+  test('sound switch toggles aria-checked and persists across reload', async ({
+    page,
+  }) => {
+    await preparePage(page, 'light')
+    await page.goto('/')
+    await settlePage(page)
+    const fx = page.getByRole('switch')
+    await expect(fx).toHaveAttribute('aria-checked', 'false')
+    await fx.click()
+    await expect(fx).toHaveAttribute('aria-checked', 'true')
+    expect(
+      await page.evaluate(
+        (key) => globalThis.localStorage.getItem(key),
+        FX_STORAGE_KEY,
+      ),
+    ).toBe('on')
+    await page.reload()
+    await settlePage(page)
+    await expect(page.getByRole('switch')).toHaveAttribute(
+      'aria-checked',
+      'true',
+    )
+  })
+
+  for (const route of ['/', '/es/'] as const) {
+    test(`stream tile shows the slate, then live, on ${route}`, async ({
+      page,
+    }) => {
+      const copy = streamMessages(languageOf(route))
+      await preparePage(page, 'light')
+      await page.goto(route)
+      await settlePage(page)
+      const slate = page.locator('[data-stream-panel="coming-soon"]')
+      await expect(slate).toContainText(copy.comingSoon)
+      await expect(slate).toContainText(copy.planned)
+
+      await page.route('**/api/stream-status', (handler) =>
+        handler.fulfill({ json: { state: 'live', title: 'Building' } }),
+      )
+      await page.reload()
+      await settlePage(page)
+      await expect(page.locator('[data-stream-title]')).toHaveText('Building')
+      await expect(page.locator('[data-stream-live-tag]')).toBeVisible()
+    })
+  }
+})

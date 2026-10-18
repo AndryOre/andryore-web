@@ -1,19 +1,12 @@
 import { useEffect, useSyncExternalStore, type ReactElement } from 'react'
 
+import { DARK_SCHEME_QUERY, type ThemePreference } from '@/lib/theme'
 import {
-  DARK_SCHEME_QUERY,
-  THEME_PREFERENCES,
-  type ThemePreference,
-} from '@/lib/theme'
-import {
-  chooseTheme,
   getServerThemeSnapshot,
   getThemeSnapshot,
   paintTheme,
   subscribeToTheme,
 } from '@/lib/theme-store'
-
-import { Button } from './ui/button'
 
 export interface ThemeToggleCopy {
   label: string
@@ -84,40 +77,4 @@ export function useThemePreference(): ThemePreference {
   }, [])
 
   return preference
-}
-
-/**
- * Three-state theme control: Auto, Light and Dark. Each option is a toggle
- * button inside a labelled group, so assistive tech hears the current state
- * and every option is a tab stop.
- * @param props Component props.
- * @param props.copy Localised labels.
- * @returns The control.
- */
-export default function ThemeToggle({ copy }: { copy: ThemeToggleCopy }) {
-  const preference = useThemePreference()
-
-  return (
-    <div
-      role="group"
-      aria-label={copy.label}
-      className="flex items-center gap-0.5 rounded-pill border border-border bg-card p-0.5"
-    >
-      {THEME_PREFERENCES.map((option) => (
-        <Button
-          key={option}
-          variant={preference === option ? 'secondary' : 'ghost'}
-          size="icon"
-          aria-pressed={preference === option}
-          aria-label={copy[option]}
-          title={copy[option]}
-          onClick={() => {
-            chooseTheme(option)
-          }}
-        >
-          <ThemeIcon preference={option} />
-        </Button>
-      ))}
-    </div>
-  )
 }

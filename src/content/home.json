@@ -4,7 +4,6 @@
       "title": "AndryOre | I build stuff and tell you how it went",
       "description": "Andry builds software and hardware, tests it and writes down what worked, what did not and what he would change."
     },
-    "sample": "SAMPLE",
     "hero": {
       "kicker": "Hi, I’m Andry",
       "lead": "I build ",
@@ -24,7 +23,7 @@
     },
     "about": {
       "label": "About me",
-      "body": "Builder who tests things. Software, hardware and whatever comes next.",
+      "body": "Builder who tests things. Software, hardware and whatever comes next. Open to full-time and contract roles.",
       "path": "/about/"
     },
     "products": {
@@ -72,25 +71,18 @@
     "stream": {
       "label": "Stream",
       "live": "Live now",
-      "offline": "Offline",
-      "schedule": "Tuesdays and Thursdays, 19:00 UTC",
       "unavailable": "Status unavailable right now",
-      "open": "Open Twitch",
       "href": "https://www.twitch.tv/andryoredev",
-      "sample": true
-    },
-    "links": {
-      "label": "Find me",
-      "items": [
-        {
-          "label": "GitHub",
-          "href": "https://github.com/AndryOre"
-        },
-        {
-          "label": "Twitch",
-          "href": "https://www.twitch.tv/andryoredev"
-        }
-      ]
+      "streamsStarted": false,
+      "comingSoon": "Streams start soon",
+      "planned": "Co-working sessions, Tuesdays and Thursdays",
+      "follow": "Follow on Twitch",
+      "nextLabel": "Next:",
+      "weekdays": ["M", "T", "W", "T", "F", "S", "S"],
+      "weekLabel": "Planned days: Tuesday and Thursday",
+      "liveTag": "LIVE",
+      "watch": "Watch on Twitch",
+      "slateAlt": "Memoji holding a clapperboard"
     },
     "theme": {
       "label": "Theme"
@@ -101,7 +93,6 @@
       "title": "AndryOre | Hago cosas y te cuento cómo me fue",
       "description": "Andry construye software y hardware, lo prueba y escribe qué funcionó, qué no y qué cambiaría."
     },
-    "sample": "EJEMPLO",
     "hero": {
       "kicker": "Hola, soy Andry",
       "lead": "Construyo ",
@@ -121,7 +112,7 @@
     },
     "about": {
       "label": "Sobre mí",
-      "body": "Alguien que construye y prueba cosas. Software, hardware y lo que venga.",
+      "body": "Alguien que construye y prueba cosas. Software, hardware y lo que venga. Disponible para roles de tiempo completo y contratos.",
       "path": "/about/"
     },
     "products": {
@@ -169,25 +160,18 @@
     "stream": {
       "label": "Stream",
       "live": "En vivo ahora",
-      "offline": "Sin conexión",
-      "schedule": "Martes y jueves, 19:00 UTC",
       "unavailable": "Estado no disponible por ahora",
-      "open": "Abrir Twitch",
       "href": "https://www.twitch.tv/andryoredev",
-      "sample": true
-    },
-    "links": {
-      "label": "Encuéntrame",
-      "items": [
-        {
-          "label": "GitHub",
-          "href": "https://github.com/AndryOre"
-        },
-        {
-          "label": "Twitch",
-          "href": "https://www.twitch.tv/andryoredev"
-        }
-      ]
+      "streamsStarted": false,
+      "comingSoon": "Los streams empiezan pronto",
+      "planned": "Sesiones de co-working, martes y jueves",
+      "follow": "Seguir en Twitch",
+      "nextLabel": "Siguiente:",
+      "weekdays": ["L", "M", "X", "J", "V", "S", "D"],
+      "weekLabel": "Días planeados: martes y jueves",
+      "liveTag": "EN VIVO",
+      "watch": "Ver en Twitch",
+      "slateAlt": "Memoji con una claqueta"
     },
     "theme": {
       "label": "Tema"

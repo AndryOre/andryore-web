@@ -395,3 +395,178 @@
     }
   }
 }
+
+:root {
+  --dock-height: 3.875rem;
+}
+
+.find-me-link {
+  transition:
+    box-shadow 160ms var(--ease-out),
+    transform 160ms var(--ease-out);
+}
+
+.find-me-link[data-icon='github'] {
+  --glow: #8b949e;
+}
+
+.find-me-link[data-icon='x'] {
+  --glow: #9aa0a6;
+}
+
+.find-me-link[data-icon='youtube'] {
+  --glow: #ff0033;
+}
+
+.find-me-link[data-icon='tiktok'] {
+  --glow: #25f4ee;
+}
+
+.find-me-link[data-icon='instagram'] {
+  --glow: #e1306c;
+}
+
+.find-me-link[data-icon='twitch'] {
+  --glow: #9146ff;
+}
+
+.find-me-link[data-icon='discord'] {
+  --glow: #5865f2;
+}
+
+.find-me-link[data-icon='linkedin'] {
+  --glow: #0a66c2;
+}
+
+.find-me-link:hover,
+.find-me-link:focus-visible {
+  box-shadow: 0 0 1.125rem color-mix(in srgb, var(--glow) 55%, transparent);
+}
+
+.particle {
+  animation: particle-burst 600ms var(--ease-out) forwards;
+}
+
+@keyframes particle-burst {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateX(1.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .particle {
+    display: none;
+  }
+}
+
+.github-tile {
+  --gh0: var(--muted);
+  --gh1: #0e4429;
+  --gh2: #26a641;
+  --gh3: #39d353;
+  --gh-glow: #2ea043;
+  background-image: radial-gradient(
+    120% 60% at 50% -12%,
+    color-mix(in oklab, var(--gh-glow) 15%, transparent),
+    transparent 62%
+  );
+  border-color: color-mix(in oklab, var(--gh-glow) 30%, var(--border));
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--gh-glow) 12%, transparent),
+    0 18px 48px -24px color-mix(in oklab, var(--gh-glow) 48%, transparent);
+  transition:
+    box-shadow 200ms var(--ease-out),
+    border-color 200ms var(--ease-out);
+}
+html:not(.dark) .github-tile {
+  --gh1: #9be9a8;
+  --gh2: #40c463;
+  --gh3: #216e39;
+  background-image: radial-gradient(
+    120% 60% at 50% -12%,
+    color-mix(in oklab, var(--gh-glow) 9%, transparent),
+    transparent 62%
+  );
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--gh-glow) 10%, transparent),
+    0 18px 44px -26px color-mix(in oklab, var(--gh-glow) 40%, transparent);
+}
+.github-tile:hover {
+  border-color: color-mix(in oklab, var(--gh-glow) 48%, var(--border));
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--gh-glow) 22%, transparent),
+    0 22px 56px -22px color-mix(in oklab, var(--gh-glow) 60%, transparent);
+}
+.github-grid i,
+.github-legend {
+  display: block;
+  aspect-ratio: 1;
+  border-radius: 9999px;
+  background: var(--gh0);
+}
+.github-legend {
+  width: 0.625rem;
+}
+.github-tile [data-level='1'] {
+  background: var(--gh1);
+}
+.github-tile [data-level='2'] {
+  background: var(--gh2);
+}
+.github-tile [data-level='3'],
+.github-tile [data-level='4'] {
+  background: var(--gh3);
+}
+.github-tile .github-stat {
+  color: var(--gh3);
+}
+
+.stream-tile {
+  --twitch: #9146ff;
+  background-image: radial-gradient(
+    120% 60% at 50% -12%,
+    color-mix(in oklab, var(--twitch) 12%, transparent),
+    transparent 62%
+  );
+  border-color: color-mix(in oklab, var(--twitch) 25%, var(--border));
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--twitch) 25%, transparent),
+    0 18px 48px -24px color-mix(in oklab, var(--twitch) 42%, transparent);
+  transition: box-shadow 200ms var(--ease-out);
+}
+.stream-tile:hover {
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--twitch) 45%, transparent),
+    0 22px 56px -22px color-mix(in oklab, var(--twitch) 60%, transparent);
+}
+.stream-tile[data-state='live'] {
+  animation: stream-glow 2.8s ease-in-out infinite;
+}
+.twitch-button {
+  transition: transform 160ms var(--ease-out);
+}
+.twitch-button:hover {
+  transform: translateY(-1px);
+}
+@keyframes stream-glow {
+  50% {
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--twitch) 55%, transparent),
+      0 22px 60px -20px color-mix(in oklab, var(--twitch) 70%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stream-tile,
+  .stream-tile[data-state='live'] {
+    animation: none;
+    transition: none;
+  }
+  .twitch-button {
+    transition: none;
+  }
+}

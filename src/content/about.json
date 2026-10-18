@@ -10,7 +10,8 @@
     "cvEnglishLabel": "Download the CV in English (PDF)",
     "cvSpanishLabel": "Descargar el CV en español (PDF)",
     "cvEnglishFile": "Andry-Orellana-CV-EN.pdf",
-    "cvSpanishFile": "Andry-Orellana-CV-ES.pdf"
+    "cvSpanishFile": "Andry-Orellana-CV-ES.pdf",
+    "openTo": "Open to full-time and contract roles."
   },
   "es": {
     "pageTitle": "Acerca de",
@@ -23,6 +24,7 @@
     "cvEnglishLabel": "Download the CV in English (PDF)",
     "cvSpanishLabel": "Descargar el CV en español (PDF)",
     "cvEnglishFile": "Andry-Orellana-CV-EN.pdf",
-    "cvSpanishFile": "Andry-Orellana-CV-ES.pdf"
+    "cvSpanishFile": "Andry-Orellana-CV-ES.pdf",
+    "openTo": "Disponible para roles de tiempo completo y contratos."
   }
 }

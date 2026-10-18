@@ -19,16 +19,21 @@ for (const route of HOME_ROUTES) {
       await settlePage(page)
       const tile = page.locator('[data-stream-tile]')
       await expect(tile.locator('[data-stream-panel="live"]')).toBeVisible()
+      await expect(tile.locator('[data-stream-live-tag]')).toHaveText(
+        copy.liveTag,
+      )
       await expect(tile.locator('[data-stream-panel="live"]')).toContainText(
-        copy.live,
+        copy.watch,
       )
       await expect(tile.locator('[data-stream-title]')).toHaveText(
         'Building the site',
       )
-      await expect(tile.locator('[data-stream-panel="offline"]')).toBeHidden()
+      await expect(
+        tile.locator('[data-stream-panel="coming-soon"]'),
+      ).toBeHidden()
     })
 
-    test('shows the offline panel when the channel is offline', async ({
+    test('shows the coming-soon slate when the channel is offline', async ({
       page,
     }) => {
       await page.route('**/api/stream-status', (handler) =>
@@ -36,12 +41,13 @@ for (const route of HOME_ROUTES) {
       )
       await page.goto(route)
       await settlePage(page)
-      const panel = page.locator('[data-stream-panel="offline"]')
+      const panel = page.locator('[data-stream-panel="coming-soon"]')
       await expect(panel).toBeVisible()
-      await expect(panel).toContainText(copy.offline)
+      await expect(panel).toContainText(copy.comingSoon)
+      await expect(panel).toContainText(copy.planned)
     })
 
-    test('falls back to unavailable when the endpoint fails', async ({
+    test('keeps the coming-soon slate when the endpoint fails', async ({
       page,
     }) => {
       await page.route('**/api/stream-status', (handler) =>
@@ -49,9 +55,9 @@ for (const route of HOME_ROUTES) {
       )
       await page.goto(route)
       await settlePage(page)
-      const panel = page.locator('[data-stream-panel="unavailable"]')
+      const panel = page.locator('[data-stream-panel="coming-soon"]')
       await expect(panel).toBeVisible()
-      await expect(panel).toHaveText(copy.unavailable)
+      await expect(panel).toContainText(copy.comingSoon)
     })
   })
 }

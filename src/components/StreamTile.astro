@@ -1,7 +1,11 @@
 ---
+import { Image } from 'astro:assets'
+
+import memoji from '../../docs/brand/avatar/memoji.webp'
 import home from '../content/home.json'
 import type { Locale } from '../i18n/locales'
 import { externalLinkTokens } from '../lib/external-link'
+import { SESSION_WEEKDAYS } from '../lib/stream-state'
 
 interface Props {
   locale: Locale
@@ -13,62 +17,133 @@ const stream = copy.stream
 
 const labelClass =
   'text-muted-foreground flex items-center justify-between gap-3 font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase'
-const sampleClass =
-  'border-border rounded-pill border px-2 font-mono text-[0.6875rem] tracking-[0.06em] whitespace-nowrap'
-const dotClass = 'inline-block size-2 shrink-0 rounded-full'
+const titleClass = 'm-0 text-base font-semibold text-balance'
+const bodyClass = 'text-muted-foreground m-0 text-sm [overflow-wrap:anywhere]'
+const buttonClass =
+  'twitch-button text-foreground border-border bg-secondary rounded-pill mt-auto inline-flex min-h-11 items-center justify-center gap-2 border px-4 text-sm font-medium no-underline'
+const panelClass = 'flex flex-1 flex-col gap-3'
+
+const WEEK_DAYS_MONDAY_FIRST = [1, 2, 3, 4, 5, 6, 0]
+const weekStrip = stream.weekdays.map((letter, index) => ({
+  letter,
+  lit: SESSION_WEEKDAYS.includes(WEEK_DAYS_MONDAY_FIRST[index] ?? -1),
+}))
+
+const TWITCH_GLYPH =
+  'M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z'
 ---
 
 <article
   data-stream-tile
-  data-state="offline"
-  class="bg-card border-border relative flex h-full min-w-0 flex-col gap-3 overflow-hidden rounded-[1.25rem] border p-5 shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)]"
+  data-state="coming-soon"
+  data-started={String(stream.streamsStarted)}
+  data-locale={locale}
+  class="stream-tile bg-card border-border relative flex h-full min-w-0 flex-col gap-3 overflow-hidden rounded-[1.25rem] border p-5"
 >
   <p class={labelClass}>
     <span>{stream.label}</span>
-    {stream.sample && <span class={sampleClass}>{copy.sample}</span>}
-  </p>
-
-  <p
-    data-stream-panel="live"
-    hidden
-    class="m-0 flex flex-col gap-1 [overflow-wrap:anywhere]"
-  >
-    <span class="flex items-center gap-2 font-medium">
-      <span class:list={[dotClass, 'bg-primary']} aria-hidden="true"></span>
-      {stream.live}
+    <span
+      data-stream-live-tag
+      hidden
+      class="stream-live-tag inline-flex items-center gap-1.5 rounded-pill bg-destructive px-2 py-0.5 text-[0.625rem] font-semibold tracking-[0.08em] text-white"
+    >
+      <span class="size-1.5 rounded-full bg-white" aria-hidden="true"></span>
+      {stream.liveTag}
     </span>
-    <span data-stream-title class="text-muted-foreground text-sm"></span>
   </p>
 
-  <p
-    data-stream-panel="offline"
-    class="m-0 flex flex-col gap-1 [overflow-wrap:anywhere]"
-  >
-    <span class="flex items-center gap-2 font-medium">
-      <span
-        class:list={[dotClass, 'bg-muted-foreground']}
+  <div data-stream-panel="coming-soon" class={panelClass}>
+    <div class="flex items-center gap-3">
+      <Image
+        src={memoji}
+        alt={stream.slateAlt}
+        width={56}
+        height={56}
+        class="size-14 shrink-0 rounded-2xl"
+      />
+      <p class={titleClass}>{stream.comingSoon}</p>
+    </div>
+    <p class={bodyClass}>{stream.planned}</p>
+    <a href={stream.href} rel={externalLinkTokens()} class={buttonClass}>
+      <svg
+        viewBox="0 0 24 24"
+        class="size-4"
+        fill="currentColor"
         aria-hidden="true"
-      ></span>
-      {stream.offline}
-    </span>
-    <span class="text-muted-foreground text-sm">{stream.schedule}</span>
-  </p>
+      >
+        <path d={TWITCH_GLYPH}></path>
+      </svg>
+      {stream.follow}
+    </a>
+  </div>
 
-  <p
-    data-stream-panel="unavailable"
-    hidden
-    class="text-muted-foreground m-0 text-sm [overflow-wrap:anywhere]"
-  >
-    {stream.unavailable}
-  </p>
+  <div data-stream-panel="scheduled" hidden class={panelClass}>
+    <ol
+      class="m-0 flex list-none justify-between gap-1 p-0"
+      aria-label={stream.weekLabel}
+    >
+      {weekStrip.map((day) => (
+        <li
+          class:list={[
+            'grid size-8 place-items-center rounded-full font-mono text-xs',
+            day.lit
+              ? 'bg-[#9146ff] font-semibold text-white'
+              : 'bg-secondary text-muted-foreground',
+          ]}
+        >
+          {day.letter}
+        </li>
+      ))}
+    </ol>
+    <p class={titleClass}>
+      {stream.nextLabel}
+      <span data-stream-next>&nbsp;</span>
+    </p>
+    <p data-stream-countdown class={bodyClass}>
+      &nbsp;
+    </p>
+    <a href={stream.href} rel={externalLinkTokens()} class={buttonClass}>
+      <svg
+        viewBox="0 0 24 24"
+        class="size-4"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path d={TWITCH_GLYPH}></path>
+      </svg>
+      {stream.follow}
+    </a>
+  </div>
 
-  <a
-    href={stream.href}
-    rel={externalLinkTokens()}
-    class="text-foreground mt-auto inline-flex min-h-11 items-center text-sm font-medium underline-offset-4 hover:underline"
-  >
-    {stream.open}
-  </a>
+  <div data-stream-panel="live" hidden class={panelClass}>
+    <p data-stream-title class={titleClass}></p>
+    <a href={stream.href} rel={externalLinkTokens()} class={buttonClass}>
+      <svg
+        viewBox="0 0 24 24"
+        class="size-4"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path d={TWITCH_GLYPH}></path>
+      </svg>
+      {stream.watch}
+    </a>
+  </div>
+
+  <div data-stream-panel="unavailable" hidden class={panelClass}>
+    <p class={bodyClass}>{stream.unavailable}</p>
+    <a href={stream.href} rel={externalLinkTokens()} class={buttonClass}>
+      <svg
+        viewBox="0 0 24 24"
+        class="size-4"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path d={TWITCH_GLYPH}></path>
+      </svg>
+      {stream.follow}
+    </a>
+  </div>
 </article>
 
 <script>
