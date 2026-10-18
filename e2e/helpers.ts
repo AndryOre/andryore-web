@@ -137,7 +137,12 @@ export async function findClippedText(page: Page): Promise<string[]> {
     for (const element of candidates) {
       const style = globalThis.getComputedStyle(element)
       const hides = style.overflowX === 'hidden' || style.overflowX === 'clip'
-      if (hides && element.scrollWidth > element.clientWidth + 1) {
+      const visuallyHidden = element.clientWidth <= 1
+      if (
+        hides &&
+        !visuallyHidden &&
+        element.scrollWidth > element.clientWidth + 1
+      ) {
         clipped.push(
           `${element.tagName.toLowerCase()} "${element.textContent.trim().slice(0, 30)}"`,
         )

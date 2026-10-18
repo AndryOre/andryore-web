@@ -1,9 +1,15 @@
 ---
+import { KeyRound, LayoutTemplate, Server } from 'lucide-react'
+
 import about from '../content/about.json'
-import type { Locale } from '../i18n/locales'
+import home from '../content/home.json'
+import { localePath, type Locale } from '../i18n/locales'
 import BaseLayout from '../layouts/BaseLayout.astro'
-import { ANALYTICS_EVENTS, analyticsAttributes } from '../lib/analytics'
-import { CV_PATHS } from '../lib/contact'
+import { buildNumberStats, formatTimelineDate } from '../lib/about'
+import { loadGridSnapshot } from '../lib/github-grid-build'
+import { badgeIconId } from '../lib/uses'
+import BrandIcon from './BrandIcon.astro'
+import CvSplitButton from './CvSplitButton'
 
 interface Props {
   locale: Locale
@@ -11,61 +17,229 @@ interface Props {
 
 const { locale } = Astro.props
 const copy = about[locale]
-const downloads = [
+const installs = home[locale].products.contribution
+const snapshot = await loadGridSnapshot()
+const stats = buildNumberStats(
+  copy,
   {
-    href: CV_PATHS.en,
-    file: copy.cvEnglishFile,
-    label: copy.cvEnglishLabel,
-    lang: 'en',
+    installs: { total: installs.metaTotal, date: installs.metaDate },
+    contributions: snapshot?.total ?? null,
   },
-  {
-    href: CV_PATHS.es,
-    file: copy.cvSpanishFile,
-    label: copy.cvSpanishLabel,
-    lang: 'es',
-  },
-]
+  locale,
+)
+const icons = {
+  'layout-template': LayoutTemplate,
+  'key-round': KeyRound,
+  server: Server,
+} as const
+
+const tileClass =
+  'bg-card border-border flex min-w-0 flex-col gap-3 rounded-[1.25rem] border p-5'
+const labelClass =
+  'text-muted-foreground m-0 flex items-center gap-2 font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase'
 ---
 
 <BaseLayout
   title={copy.pageTitle}
   description={copy.pageDescription}
   locale={locale}
+  wide
 >
-  <div class="flex flex-col gap-10">
-    <section aria-labelledby="about-heading" class="flex flex-col gap-3">
-      <h1 id="about-heading" class="m-0 text-3xl font-bold tracking-tight">
-        {copy.aboutHeading}
+  <div class="flex flex-col gap-12 sm:gap-16">
+    <section aria-labelledby="about-heading" class="flex flex-col gap-6 py-4">
+      <h1
+        id="about-heading"
+        aria-live="off"
+        data-typing
+        data-typing-phrase={copy.headline}
+        class="m-0 max-w-[22ch] text-4xl leading-[1.08] font-bold tracking-[-0.035em] text-balance [overflow-wrap:anywhere] sm:max-w-[28ch] sm:text-5xl lg:text-[3.5rem]"
+      >
+        <span class="sr-only">{copy.headline}</span>
+        <span class="grid" aria-hidden="true">
+          <span class="invisible col-start-1 row-start-1">
+            {copy.headline}
+            <span class="caret caret-em"></span>
+          </span>
+          <span class="col-start-1 row-start-1">
+            <span data-typing-text>{copy.headline}</span>
+            <span class="caret caret-em"></span>
+          </span>
+        </span>
       </h1>
-      <p class="m-0 text-lg font-medium">{copy.introLead}</p>
-      <p class="text-muted-foreground m-0">{copy.introBody}</p>
-      <p class="m-0 text-sm">{copy.openTo}</p>
+      <p class="text-muted-foreground m-0 max-w-[60ch] text-base sm:text-lg">
+        {copy.intro}
+      </p>
+      <div class="flex flex-wrap items-center gap-x-6 gap-y-4">
+        <CvSplitButton client:load locale={locale} copy={copy} />
+        <p class="m-0 text-sm font-medium">{copy.openTo}</p>
+      </div>
     </section>
 
-    <section aria-labelledby="cv-heading" class="flex flex-col gap-3">
-      <h2 id="cv-heading" class="m-0 text-base font-semibold">
-        {copy.cvHeading}
+    <section aria-labelledby="what-i-do-heading" class="flex flex-col gap-4">
+      <h2 id="what-i-do-heading" class={labelClass}>
+        {copy.whatIDo.heading}
       </h2>
-      <p class="text-muted-foreground m-0 text-sm">{copy.cvIntro}</p>
-      <ul class="m-0 flex list-none flex-col gap-2 p-0">
-        {downloads.map((item) => (
-          <li>
-            <a
-              href={item.href}
-              download={item.file}
-              hreflang={item.lang}
-              lang={item.lang}
-              type="application/pdf"
-              {...analyticsAttributes(ANALYTICS_EVENTS.cvDownload, {
-                language: item.lang,
-              })}
-              class="underline underline-offset-4"
+      <ul class="m-0 grid list-none gap-4 p-0 md:grid-cols-3">
+        {copy.whatIDo.items.map((item) => {
+          const Icon = icons[item.icon as keyof typeof icons]
+          return (
+            <li class={tileClass} data-what-i-do={item.key}>
+              <span class="bg-secondary text-primary border-border flex size-10 items-center justify-center rounded-xl border">
+                <Icon aria-hidden="true" size={20} />
+              </span>
+              <h3 class="m-0 text-lg font-semibold tracking-tight">
+                {item.title}
+              </h3>
+              <p class="text-muted-foreground m-0 text-sm">{item.body}</p>
+            </li>
+          )
+        })}
+      </ul>
+    </section>
+
+    <section aria-labelledby="numbers-heading" class="flex flex-col gap-4">
+      <h2 id="numbers-heading" class={labelClass}>
+        {copy.numbersHeading}
+      </h2>
+      <dl
+        class="m-0 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+        data-about-numbers
+      >
+        {stats.map((stat) => (
+          <div
+            class={tileClass}
+            data-stat={stat.key}
+            data-about-live={stat.key === 'contributions' ? '' : undefined}
+            data-locale={locale}
+          >
+            <dt class={labelClass}>{stat.label}</dt>
+            <dd class="m-0 flex flex-col gap-1">
+              <span class="text-4xl font-bold tracking-[-0.03em] tabular-nums">
+                {stat.count === undefined ? (
+                  stat.display
+                ) : (
+                  <span
+                    data-count-total={stat.count}
+                    data-count-locale={locale}
+                  >
+                    {stat.display}
+                  </span>
+                )}
+                {stat.suffix}
+              </span>
+              {stat.note && (
+                <span class="text-muted-foreground font-mono text-xs">
+                  {stat.note}
+                </span>
+              )}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <section aria-labelledby="timeline-heading" class="flex flex-col gap-4">
+      <h2 id="timeline-heading" class={labelClass}>
+        {copy.timelineHeading}
+      </h2>
+      <ol class="border-border m-0 flex list-none flex-col gap-5 border-l p-0 pl-6">
+        {copy.timeline.map((entry) => (
+          <li class="relative flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-6">
+            <span
+              class="bg-primary absolute top-[0.45rem] -left-[1.8125rem] size-2 rounded-full"
+              aria-hidden="true"
+            />
+            <time
+              datetime={entry.date}
+              class="text-muted-foreground font-mono text-xs tabular-nums sm:w-24"
             >
-              {item.label}
-            </a>
+              {formatTimelineDate(entry.date, locale)}
+            </time>
+            <span class="font-medium">{entry.title}</span>
           </li>
         ))}
-      </ul>
+      </ol>
+    </section>
+
+    <section aria-labelledby="stack-heading" class="flex flex-col gap-4">
+      <h2 id="stack-heading" class={labelClass}>
+        {copy.stackHeading}
+      </h2>
+      <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
+        <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
+          {copy.stack.map((item) => (
+            <li class="bg-secondary border-border rounded-pill inline-flex items-center gap-2 border py-1 pr-3 pl-2 text-sm">
+              <BrandIcon
+                id={badgeIconId(item.icon)}
+                class="size-5 dark:hidden"
+              />
+              <BrandIcon
+                id={badgeIconId(item.icon)}
+                variant="dark"
+                class="hidden size-5 dark:block"
+              />
+              {item.name}
+            </li>
+          ))}
+        </ul>
+        <a
+          href={localePath(locale, '/uses/')}
+          class="inline-flex min-h-11 items-center text-sm underline underline-offset-4"
+        >
+          {copy.stackLink}
+        </a>
+      </div>
     </section>
   </div>
 </BaseLayout>
+
+<script>
+  import { prefersReducedMotion } from '../lib/motion'
+  import { startCountUp } from '../scripts/count-up'
+  import { mountGithubTile } from '../scripts/github-tile'
+  import { startTyping } from '../scripts/typing-headline'
+
+  const reducedMotion = prefersReducedMotion(globalThis)
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-typing]')) {
+    const target = root.querySelector<HTMLElement>('[data-typing-text]')
+    const phrase = root.dataset.typingPhrase
+    if (target && phrase) {
+      startTyping(target, phrase, {
+        reducedMotion,
+        schedule: (callback, delay) => setTimeout(callback, delay),
+        cancel: (handle) => {
+          clearTimeout(handle)
+        },
+      })
+    }
+  }
+
+  const countUp = (target: HTMLElement): void => {
+    const total = Number(target.dataset.countTotal)
+    if (!Number.isFinite(total)) return
+    startCountUp(target, total, {
+      reducedMotion,
+      locale: target.dataset.countLocale ?? 'en',
+      requestFrame: (callback) => requestAnimationFrame(callback),
+    })
+  }
+
+  for (const target of document.querySelectorAll<HTMLElement>(
+    '[data-about-numbers] [data-count-total]:not([data-about-live] *)',
+  )) {
+    countUp(target)
+  }
+
+  for (const root of document.querySelectorAll<HTMLElement>(
+    '[data-about-live]',
+  )) {
+    void mountGithubTile(root).then(() => {
+      for (const target of root.querySelectorAll<HTMLElement>(
+        '[data-count-total]',
+      )) {
+        countUp(target)
+      }
+    })
+  }
+</script>

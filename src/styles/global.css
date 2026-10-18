@@ -570,3 +570,10 @@ html:not(.dark) .github-tile {
     transition: none;
   }
 }
+
+.caret-em {
+  width: 8px;
+  height: 0.78em;
+  margin-inline-start: 0.12em;
+  vertical-align: baseline;
+}
