@@ -52,6 +52,12 @@ Commands a worker runs before considering its own change done: see
 deliberately left out: it's slow and the maintainer asks for it explicitly,
 except in tickets whose acceptance criteria require it.
 
+For changes that affect rendered pages, the Lighthouse gate is
+`bun run lint:lighthouse` after a `bun run build`: median of 5 runs on home and
+a Log entry in EN and ES, failing below 90 in performance, accessibility, best
+practices or SEO; page weight is printed, never enforced. See
+[Lighthouse budget](../development.md#lighthouse-budget).
+
 ## Concurrency
 
 Max `concurrency.waveSize` live agents per wave, and a global

@@ -12,22 +12,28 @@ the git hooks on `bun install` through the `prepare` script. `bunfig.toml` sets
 
 ## Scripts
 
-| Script                 | What it does                                                                                       |
-| ---------------------- | -------------------------------------------------------------------------------------------------- |
-| `bun run check`        | Aggregate gate: `format:check`, `lint`, `typecheck` and `knip`.                                    |
-| `bun run fix`          | Formats the repository with Prettier, then autofixes ESLint findings (`format:write`, `lint:fix`). |
-| `bun run cache:clear`  | Removes `/tmp/node-compile-cache`, `.eslintcache` and `node_modules/.cache`.                       |
-| `bun run format:check` | Checks formatting with Prettier (no writes).                                                       |
-| `bun run format:write` | Formats the repository with Prettier.                                                              |
-| `bun run lint`         | ESLint with zero warnings allowed, using `--cache --cache-strategy content`.                       |
-| `bun run lint:fix`     | ESLint with autofix.                                                                               |
-| `bun run typecheck`    | `astro check && tsc --noEmit`.                                                                     |
-| `bun run knip`         | Finds unused files, exports and dependencies.                                                      |
-| `bun run test`         | Runs `bun test` with coverage and the `bunfig.toml` threshold.                                     |
-| `bun run lint:docs`    | Offline link and anchor check of the Markdown with lychee.                                         |
-| `bun run lint:commits` | Runs commitlint over the commits of the current branch.                                            |
-| `bun run ci:local`     | Frozen install, `lint:commits`, `check`, `lint:docs` and `test`: the PR gates that need no build.  |
-| `bun run brand:export` | Regenerates the brand rasters from the logo SVGs. Never edit the generated rasters by hand.        |
+| Script                    | What it does                                                                                       |
+| ------------------------- | -------------------------------------------------------------------------------------------------- |
+| `bun run check`           | Aggregate gate: `format:check`, `lint`, `typecheck` and `knip`.                                    |
+| `bun run fix`             | Formats the repository with Prettier, then autofixes ESLint findings (`format:write`, `lint:fix`). |
+| `bun run cache:clear`     | Removes `/tmp/node-compile-cache`, `.eslintcache` and `node_modules/.cache`.                       |
+| `bun run format:check`    | Checks formatting with Prettier (no writes).                                                       |
+| `bun run format:write`    | Formats the repository with Prettier.                                                              |
+| `bun run lint`            | ESLint with zero warnings allowed, using `--cache --cache-strategy content`.                       |
+| `bun run lint:fix`        | ESLint with autofix.                                                                               |
+| `bun run typecheck`       | `astro check && tsc --noEmit`.                                                                     |
+| `bun run knip`            | Finds unused files, exports and dependencies.                                                      |
+| `bun run test`            | Runs `bun test` with coverage and the `bunfig.toml` threshold.                                     |
+| `bun run lint:docs`       | Offline link and anchor check of the Markdown with lychee.                                         |
+| `bun run lint:lighthouse` | Lighthouse budget over the built `dist/`; see [Lighthouse budget](#lighthouse-budget).             |
+| `bun run lint:commits`    | Runs commitlint over the commits of the current branch.                                            |
+| `bun run ci:local`        | Frozen install, `lint:commits`, `check`, `lint:docs` and `test`: the PR gates that need no build.  |
+| `bun run brand:export`    | Regenerates the brand rasters from the logo SVGs. Never edit the generated rasters by hand.        |
+| `bun run test:e2e`        | Playwright axe, layout and hydration specs against `astro preview` of a built `dist/`.             |
+| `bun run test:visual`     | Visual snapshots inside the pinned Playwright image; `-- --update` regenerates them.               |
+| `bun run test:browsers`   | Layout specs in WebKit and Firefox inside the pinned Playwright image.                             |
+| `bun run test:smoke`      | Builds the nginx image and checks status codes, `/es/`, both 404s, headers and the sitemap.        |
+| `bun run audit:dist`      | Scans a build directory (default `dist`) for third-party requests and unsafe external links.       |
 
 When a command crashes inside `typescript.js`, see
 [Troubleshooting](troubleshooting.md). `eslint` and `tsc` run without `--bun`.
@@ -45,6 +51,57 @@ module under `scripts`, `eslint-rules`, `docs/brand/tools` and `src` needs a
 colocated `.test.ts` or `.test.mjs`, or an entry in its `EXEMPTIONS` map with a
 written reason. The test also fails on a stale exemption: the module is gone,
 now has a test, or the reason is empty.
+
+## Browser checks
+
+`bun test` is the unit runner and never picks up `e2e/` (`bunfig.toml` ignores
+it). Playwright (`@playwright/test`) owns `e2e/`; keep specs there, never under
+`src/pages`. Unit tests cover logic; e2e specs cover what only a browser shows:
+accessibility, layout, hydration and rendered pixels.
+
+Run `bun run build` first; the checks read `dist/`, and `build` stays opt-in for
+agents.
+
+- **E2E**: `bun run test:e2e` runs axe (tags `wcag2a`, `wcag2aa`, `wcag21a`,
+  `wcag21aa`, `wcag22aa`, `best-practice`) over every route in English and
+  Spanish, light and dark, plus the hydration spec (no console errors, failed or
+  4xx/5xx requests, nor requests outside the Umami allowlist) and the layout
+  sweep at 1280, 768, 375 and 320 px (no horizontal overflow, 43.5 px touch
+  targets, no clipped text). Further specs cover the stream tile states (live,
+  offline and the unavailable fallback), reduced motion (no animation or
+  transition on any route), the focus ring (3:1 contrast, light and dark),
+  internal links (200 with no redirect) and browser language (no redirect).
+  Locators come from the message files in `src/content` through
+  `e2e/messages.ts`. Use `--project=chromium` for the default run. Set
+  `E2E_BASE_URL` to run the specs against a server that is already up, such as
+  the nginx image, so the real header CSP applies instead of the meta policy.
+- **Other browsers**: `bun run test:browsers` runs the layout spec in `webkit`
+  and `firefox` inside the pinned Playwright image (Docker required), because
+  the host libraries those browsers need are not installed on a server.
+- **Visual**: `bun run test:visual` compares full-page snapshots at 1280, 768,
+  375 and 320 px, light and dark, with `maxDiffPixelRatio` 0.002 and reduced
+  motion forced. It runs in `mcr.microsoft.com/playwright`, tagged with the
+  Playwright version read from `bun.lock`, so pixels match everywhere. The
+  snapshots in `e2e/__snapshots__` regenerate only through
+  `bun run test:visual -- --update` (Docker required); never commit snapshots
+  captured outside the container.
+- **Smoke**: `bun run test:smoke` builds the `Dockerfile`, runs it and fails on
+  a missing `/es/` route, a missing 404 status, a missing security header, a CSP
+  with a third-party origin or `unsafe-inline`, a non-gzipped page, or a sitemap
+  URL without `lastmod`. It also fails when the CSP lacks `sha256` script hashes
+  or `require-trusted-types-for 'script'`. The image renders those hashes into
+  the nginx header at build time with `scripts/render-csp.ts` (ADR 0012), which
+  fails the build if an inline script or style has no hash.
+- **Dist audit**: `bun run audit:dist [dir]` fails on a third-party request in
+  HTML or CSS, and on an external link without `rel="noopener noreferrer"` (ADR
+  0009). The only allowed origins are the two Umami hosts (ADR 0014).
+
+`.github/workflows/site-quality.yml` runs the same commands on PRs that touch
+the Site. The visual job skips fork PRs because it mounts the repository into a
+container. The flaky-test summary (`scripts/flaky-summary.ts`) writes to the job
+summary and never fails the build. Conventions for specs: use `test.fixme` with
+a `BUG:` note instead of deleting a failing test, assert something meaningful,
+and never call `waitForTimeout`.
 
 ## Git hooks
 
@@ -156,6 +213,21 @@ third-party actions are pinned to a commit SHA, and
 opt in with `true`), no `pull_request_target`, and no expression interpolated
 inside a `run` script. `scripts/workflow-files.ts` parses the workflow files for
 those tests.
+
+## Lighthouse budget
+
+`bun run lint:lighthouse` serves `dist/` locally and audits the home page and
+the `nothing-from-other-origins` Log entry in English and Spanish, five runs
+each, with the Lighthouse version pinned in `scripts/lighthouse-budget.ts`. It
+prints a table with the median performance, accessibility, best practices and
+SEO scores plus the page weight. It exits non-zero when any median is below 90
+or any score is null; weight is reported and never fails. It needs a built site
+(`bun run build`, opt-in locally) and a Chrome binary: set `CHROME_PATH` when
+Chrome is not on the default path. The local server answers `/api/stream-status`
+with the offline state, as the nginx image's upstream does, so the missing
+endpoint does not log a console error. CI runs it in
+`.github/workflows/lighthouse.yml`. Renovate bumps the pinned version through a
+custom manager in `renovate.json5`.
 
 ## Renovate
 

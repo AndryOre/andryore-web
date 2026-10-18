@@ -33,6 +33,16 @@
     automerge: true,
   },
 
+  customManagers: [
+    {
+      customType: 'regex',
+      managerFilePatterns: ['/^scripts/lighthouse-budget\\.ts$/'],
+      matchStrings: ["LIGHTHOUSE_VERSION = '(?<currentValue>[^']+)'"],
+      depNameTemplate: 'lighthouse',
+      datasourceTemplate: 'npm',
+    },
+  ],
+
   packageRules: [
     {
       matchDepTypes: ['devDependencies'],

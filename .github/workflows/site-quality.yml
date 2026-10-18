@@ -1,0 +1,174 @@
+name: Site quality
+
+on:
+  pull_request:
+    paths:
+      - src/**
+      - public/**
+      - e2e/**
+      - docker/**
+      - Dockerfile
+      - astro.config.mjs
+      - package.json
+      - bun.lock
+      - playwright*.ts
+      - scripts/smoke.sh
+      - scripts/visual.sh
+      - scripts/browsers.sh
+      - scripts/render-csp.ts
+      - scripts/audit-distribution.ts
+      - scripts/flaky-summary.ts
+      - .github/workflows/site-quality.yml
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Docker smoke and dist audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
+
+      - name: Smoke the nginx image
+        run: bun run test:smoke
+        env:
+          SMOKE_COPY_DIST: ${{ runner.temp }}/dist
+
+      - name: Audit the copied dist
+        run: bun run audit:dist "$DIST_DIR"
+        env:
+          DIST_DIR: ${{ runner.temp }}/dist
+
+  csp:
+    name: Hydration and axe behind the nginx CSP
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install browsers
+        run: bunx playwright install --with-deps chromium
+
+      - name: Build and start the nginx image
+        run: |
+          docker build --build-arg SITE_LASTMOD="$(date -u +%F)" -t andryore-site-csp .
+          docker run -d --rm --name andryore-site-csp -p 127.0.0.1:8080:80 andryore-site-csp
+          for _ in $(seq 1 30); do curl -fs -o /dev/null http://127.0.0.1:8080/ && break; sleep 1; done
+
+      - name: Run hydration and axe against the image
+        run:
+          bun run test:e2e --project=chromium e2e/hydration.spec.ts
+          e2e/accessibility.spec.ts
+        env:
+          E2E_BASE_URL: http://127.0.0.1:8080
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: failure()
+        with:
+          name: csp-report
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7
+
+  e2e:
+    name: Accessibility and layout (Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
+
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: ${{ runner.os }}-bun-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install browsers
+        run: bunx playwright install --with-deps chromium
+
+      - name: Build
+        run: bun run build
+
+      - name: Run e2e
+        run: bun run test:e2e --project=chromium
+
+      - name: Summarise flaky tests
+        if: always()
+        continue-on-error: true
+        run: bun scripts/flaky-summary.ts
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: failure()
+        with:
+          name: e2e-report
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7
+
+  visual:
+    name: Visual snapshots
+    if:
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build
+        run: bun run build
+
+      - name: Compare snapshots in the pinned image
+        run: bun run test:visual
+
+      - name: Run the layout specs in WebKit and Firefox
+        run: bun run test:browsers
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: failure()
+        with:
+          name: visual-diff
+          path: test-results
+          retention-days: 7

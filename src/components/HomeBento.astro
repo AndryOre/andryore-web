@@ -104,7 +104,7 @@ const hero = copy.hero
       </div>
     </div>
     <span
-      class="annotation-in text-muted-foreground/70 border-border bg-secondary/60 pointer-events-none absolute top-6 right-6 hidden rounded-md border px-2 py-0.5 font-mono text-[0.6875rem] whitespace-nowrap motion-reduce:hidden lg:block"
+      class="annotation-in text-muted-foreground border-border bg-secondary/60 pointer-events-none absolute top-6 right-6 hidden rounded-md border px-2 py-0.5 font-mono text-[0.6875rem] whitespace-nowrap motion-reduce:hidden lg:block"
       aria-hidden="true"
     >
       {hero.annotation}
@@ -117,8 +117,8 @@ const hero = copy.hero
       <Image
         src={memoji}
         alt=""
-        width={132}
-        height={132}
+        width={264}
+        height={264}
         class="border-border bg-secondary size-[8.25rem] rounded-[1.75rem] border"
       />
     </div>
@@ -161,7 +161,7 @@ const hero = copy.hero
       <a
         href={localePath(locale, product.path)}
         class="border-border bg-secondary relative grid min-h-48 flex-1 place-items-center overflow-hidden rounded-[0.875rem] border no-underline"
-        aria-label={product.name}
+        aria-hidden="true"
         tabindex="-1"
       >
         {product.key === 'snug' ? (
@@ -193,7 +193,7 @@ const hero = copy.hero
         <h2 class="m-0 min-w-0 text-xl tracking-[-0.02em] [overflow-wrap:anywhere]">
           <a
             href={localePath(locale, product.path)}
-            class="text-foreground no-underline"
+            class="text-foreground inline-flex min-h-11 items-center no-underline"
           >
             {product.name}
           </a>
