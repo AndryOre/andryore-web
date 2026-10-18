@@ -48,6 +48,37 @@ test.describe('live strip', () => {
     ).toHaveAttribute('aria-current', 'true')
   })
 
+  test('language, fx and theme tiles match the canvas values', async ({
+    page,
+  }) => {
+    await preparePage(page, 'light')
+    await page.goto('/')
+    await settlePage(page)
+    const language = await page
+      .locator('[data-language-tabs] a')
+      .first()
+      .evaluate((node) => {
+        const style = getComputedStyle(node)
+        return [style.fontWeight, style.fontSize, style.minHeight]
+      })
+    expect(language).toEqual(['700', '13px', '44px'])
+    const fxSwitch = await page
+      .locator('[data-fx-switch] .fx-switch')
+      .evaluate((node) => {
+        const box = node.getBoundingClientRect()
+        return [box.width, box.height]
+      })
+    expect(fxSwitch).toEqual([56, 32])
+    const themeTab = await page
+      .locator('.theme-tab')
+      .first()
+      .evaluate((node) => {
+        const style = getComputedStyle(node)
+        return [style.flexDirection, style.fontSize, style.fontWeight]
+      })
+    expect(themeTab).toEqual(['column', '13px', '700'])
+  })
+
   test('sound switch toggles aria-checked and persists across reload', async ({
     page,
   }) => {

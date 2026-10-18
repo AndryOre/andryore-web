@@ -31,6 +31,13 @@ describe('chrome content', () => {
         ]).toEqual(expected)
       })
 
+      test('labels the FX tile like the canvas', () => {
+        const expected = { en: ['FX', 'Sound'], es: ['FX', 'Sonido'] }[locale]
+        expect([chrome[locale].fx.label, chrome[locale].fx.sound]).toEqual(
+          expected,
+        )
+      })
+
       test('carries no footer note', () => {
         expect(chrome[locale]).not.toHaveProperty('footerNote')
       })

@@ -102,7 +102,9 @@ export async function mountGithubTile(
     other: root.dataset.dayOther ?? 'days',
   })
   write(root, '[data-gh-stat="longest"]', view.longest)
+  write(root, '[data-gh-stat="longest-unit"]', view.longestUnit)
   write(root, '[data-gh-stat="current"]', view.current)
+  write(root, '[data-gh-stat="current-unit"]', view.currentUnit)
   write(root, '[data-gh-stat="best"]', view.best)
   write(root, '[data-gh-stat="best-date"]', view.bestDate)
   write(root, '[data-gh-stat="active"]', view.active)

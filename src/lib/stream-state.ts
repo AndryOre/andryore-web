@@ -159,18 +159,21 @@ export function weekStrip(now: Date): WeekDay[] {
 }
 
 /**
- * Formats a session start as full weekday and UTC time, such as
- * "Tuesday 19:00 UTC".
- * @param start Moment the session begins.
+ * Formats the next-stream value of the tile as one string, such as
+ * "Tue 19:00 UTC · in 2 d 3 h".
+ * @param start Moment the next session begins.
+ * @param now The current moment.
  * @param locale Language of the weekday.
- * @returns The label.
+ * @param units Lead word and unit words of the countdown.
+ * @returns The label with the capitalized short weekday.
  */
-export function formatSessionLong(start: Date, locale: string): string {
-  const weekday = new Intl.DateTimeFormat(locale, {
-    weekday: 'long',
-    timeZone: 'UTC',
-  }).format(start)
-  const hour = String(start.getUTCHours()).padStart(2, '0')
-  const minute = String(start.getUTCMinutes()).padStart(2, '0')
-  return `${weekday} ${hour}:${minute} UTC`
+export function formatNextStream(
+  start: Date,
+  now: Date,
+  locale: string,
+  units: CountdownUnits,
+): string {
+  const session = formatSession(start, locale)
+  const label = session.charAt(0).toUpperCase() + session.slice(1)
+  return `${label} · ${formatCompactCountdown(start, now, units)}`
 }

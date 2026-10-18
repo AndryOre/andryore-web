@@ -38,7 +38,10 @@ for (const route of HOME_ROUTES) {
         language === 'es' ? /contribuci/ : /contribution/,
       )
       await expect(tile.locator('[data-gh-stat="best"]')).toHaveText('9')
-      await expect(tile.locator('[data-gh-stat="longest"]')).toContainText('3')
+      await expect(tile.locator('[data-gh-stat="longest"]')).toHaveText('3')
+      await expect(tile.locator('[data-gh-stat="longest-unit"]')).toHaveText(
+        language === 'es' ? 'días' : 'days',
+      )
       await expect(tile.locator('[data-count-total]')).toHaveText(
         language === 'es' ? '4.321' : '4,321',
       )

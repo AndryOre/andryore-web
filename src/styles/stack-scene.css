@@ -1,8 +1,7 @@
 .stack-tile {
-  --hl: rgb(255 255 255 / 0.08);
-  --shadow: 0 10px 22px -12px rgb(0 0 0 / 0.55);
   --glow-alpha: 52%;
   --glow-reach: 0.5;
+  --glow-spread: 0.08;
   --k: 1;
   display: grid;
   flex: none;
@@ -11,20 +10,20 @@
   width: calc(var(--s) * 1px * var(--k));
   height: calc(var(--s) * 1px * var(--k));
   border: 1px solid color-mix(in oklab, var(--g) 22%, var(--border));
-  border-radius: 28%;
-  background: var(--secondary);
+  border-radius: 24%;
+  background: var(--card-2);
   box-shadow:
     inset 0 1px 0 var(--hl),
     var(--shadow),
-    0 0 calc(var(--s) * var(--glow-reach) * 1px) calc(var(--s) * -0.08px)
+    0 0 calc(var(--s) * var(--glow-reach) * 1px)
+      calc(var(--s) * var(--glow-spread) * -1px)
       color-mix(in oklab, var(--g) var(--glow-alpha), transparent);
 }
 
 html:not(.dark) .stack-tile {
-  --hl: rgb(255 255 255 / 0.9);
-  --shadow: 0 10px 20px -12px rgb(0 0 0 / 0.28);
   --glow-alpha: 36%;
   --glow-reach: 0.45;
+  --glow-spread: 0.1;
 }
 
 .stack-tile img {
@@ -33,23 +32,38 @@ html:not(.dark) .stack-tile {
 }
 
 .stack-scene {
+  --kx: 1;
+  --ky: 1;
+  --sz: 1;
   position: relative;
   border-block: 1px solid var(--border);
   background: var(--card);
 }
 
+@media (max-width: 40rem) {
+  .stack-scene {
+    --kx: 0.3;
+    --ky: 0.55;
+    --sz: 0.72;
+  }
+}
+
 .stack-stage {
-  --cluster-y: 8cqh;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 2rem;
-  height: calc(100svh - var(--dock-height));
-  min-height: 30rem;
+  height: 760px;
   overflow: hidden;
-  container-type: size;
   isolation: isolate;
+}
+
+@media (max-width: 40rem) {
+  .stack-stage {
+    height: 640px;
+  }
 }
 
 .stack-stage::before {
@@ -57,6 +71,7 @@ html:not(.dark) .stack-tile {
   position: absolute;
   inset: 0;
   z-index: -1;
+  pointer-events: none;
   background-image:
     linear-gradient(
       to right,
@@ -69,8 +84,11 @@ html:not(.dark) .stack-tile {
       transparent 1px
     );
   background-size: 44px 44px;
-  background-position: center;
-  mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+  mask-image: radial-gradient(
+    ellipse 65% 70% at 50% 50%,
+    #000 0%,
+    transparent 80%
+  );
 }
 
 .stack-field {
@@ -95,17 +113,37 @@ html:not(.dark) .stack-tile {
   }
 }
 
+.stack-tile-scatter {
+  --k: var(--sz);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: calc(var(--s) * -0.5px * var(--k));
+  margin-left: calc(var(--s) * -0.5px * var(--k));
+  translate: calc(var(--x) * 1px * var(--kx)) calc(var(--y) * 1px * var(--ky));
+  rotate: calc(var(--r) * 1deg);
+}
+
+@media (max-width: 40rem) {
+  .stack-tile-extra {
+    display: none;
+  }
+}
+
 .stack-title {
   position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 14px;
   text-align: center;
 }
 
 .stack-label {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  margin: 0 0 0.75rem;
+  justify-content: center;
+  gap: 10px;
+  margin: 0;
   color: var(--muted-foreground);
   font-family: var(--font-mono);
   font-size: 0.6875rem;
@@ -116,58 +154,100 @@ html:not(.dark) .stack-tile {
 
 .stack-title h2 {
   margin: 0;
-  font-size: clamp(2rem, 5.2cqw, 3.5rem);
+  font-size: 64px;
   font-weight: 700;
   letter-spacing: -0.035em;
-  line-height: 1.04;
+  line-height: 1.05;
+  text-shadow: 0 2px 40px
+    color-mix(in oklab, var(--background) 80%, transparent);
+  text-wrap: balance;
+}
+
+@media (max-width: 40rem) {
+  .stack-title h2 {
+    font-size: 34px;
+  }
 }
 
 .stack-cta {
   position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 16px;
+  min-width: 360px;
   max-width: calc(100% - 2rem);
-  padding: 1.875rem;
+  padding: 30px 44px 32px;
   border: 1px solid color-mix(in oklab, var(--primary) 22%, var(--border));
-  border-radius: 1.75rem;
-  background: color-mix(in oklab, var(--card) 94%, var(--foreground));
-  box-shadow: 0 0 60px -26px var(--primary);
+  border-radius: 28px;
+  background: var(--card-2);
+  box-shadow:
+    inset 0 1px 0 var(--hl),
+    var(--shadow),
+    0 0 60px -26px color-mix(in oklab, var(--primary) 60%, transparent);
   text-align: center;
 }
 
-@media (min-width: 48rem) {
+@media (max-width: 40rem) {
   .stack-cta {
-    padding: 1.875rem 2.75rem;
+    min-width: 0;
+    padding: 22px 24px;
   }
 }
 
 .stack-end-tiles {
   display: flex;
   gap: 12px;
+  margin-bottom: 4px;
+}
+
+@media (max-width: 40rem) {
+  .stack-end-tiles {
+    gap: 8px;
+  }
 }
 
 .stack-tile-end {
-  --k: 0.8148;
+  --k: 0.9643;
+  background: var(--card);
+  box-shadow:
+    inset 0 1px 0 var(--hl),
+    var(--shadow),
+    0 0 26px -4px color-mix(in oklab, var(--g) 52%, transparent);
 }
 
-@media (min-width: 48rem) {
+html:not(.dark) .stack-tile-end {
+  box-shadow:
+    inset 0 1px 0 var(--hl),
+    var(--shadow),
+    0 0 24px -6px color-mix(in oklab, var(--g) 36%, transparent);
+}
+
+@media (max-width: 40rem) {
   .stack-tile-end {
-    --k: 1;
+    --k: 0.7857;
   }
 }
 
 .stack-cta-copy {
   display: grid;
-  gap: 0.25rem;
+  justify-items: center;
+  gap: 16px;
 }
 
 .stack-cta-title {
   margin: 0;
-  font-size: 1.375rem;
+  font-size: 36px;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+@media (max-width: 40rem) {
+  .stack-cta-title {
+    font-size: 24px;
+  }
 }
 
 .stack-cta-count {
@@ -175,6 +255,8 @@ html:not(.dark) .stack-tile {
   color: var(--muted-foreground);
   font-family: var(--font-mono);
   font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
 }
 
 .stack-cta-link {
@@ -185,6 +267,7 @@ html:not(.dark) .stack-tile {
   border-radius: var(--radius-pill);
   background: var(--foreground);
   color: var(--background);
+  font-family: var(--font-mono);
   font-size: 0.875rem;
   font-weight: 500;
   text-decoration: none;
@@ -197,31 +280,55 @@ html:not(.dark) .stack-tile {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .stack-tile-field:not(.nf-tile) {
-    translate: calc(var(--x) * 0.08) calc(var(--cluster-y) + var(--y) * 0.08);
-    scale: 0.5;
-  }
-}
-
-@supports not ((animation-timeline: view()) and (animation-range: entry)) {
-  .stack-tile-field:not(.nf-tile) {
-    translate: calc(var(--x) * 0.08) calc(var(--cluster-y) + var(--y) * 0.08);
-    scale: 0.5;
-  }
-}
-
-@keyframes stack-converge {
+@keyframes stack-tile-move {
   to {
-    translate: calc(var(--x) * 0.08) calc(var(--cluster-y) + var(--y) * 0.08);
-    scale: 0.5;
+    translate: 0 0;
+    rotate: 0deg;
+    scale: 0.65;
   }
 }
 
-@keyframes stack-cta-in {
-  from {
+@keyframes stack-tile-fade {
+  0%,
+  63.67% {
+    opacity: 1;
+  }
+  80.42%,
+  100% {
     opacity: 0;
-    scale: 0.94;
+  }
+}
+
+@keyframes stack-title-fade {
+  0%,
+  32.64% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes stack-cta-move {
+  from {
+    translate: -50% calc(-50% + 24px);
+    scale: 0.92;
+  }
+  to {
+    translate: -50% -50%;
+    scale: 1;
+  }
+}
+
+@keyframes stack-cta-fade {
+  0%,
+  65.13% {
+    opacity: 0;
+  }
+  82.63%,
+  100% {
+    opacity: 1;
   }
 }
 
@@ -237,21 +344,50 @@ html:not(.dark) .stack-tile {
       top: 0;
     }
 
-    .stack-cta:focus-within {
-      animation: none;
-      opacity: 1;
+    .stack-tile-scatter {
+      animation:
+        stack-tile-move cubic-bezier(0.3333, 0, 0.6667, 1) both,
+        stack-tile-fade linear both;
+      animation-timeline: --stack, --stack;
+      animation-range:
+        entry 0% exit 40%,
+        entry 0% exit 40%;
     }
 
-    .stack-tile-field {
-      animation: stack-converge cubic-bezier(0.77, 0, 0.175, 1) both;
+    .stack-title {
+      animation: stack-title-fade linear both;
       animation-timeline: --stack;
-      animation-range: cover 30% cover 62%;
+      animation-range: entry 0% exit 40%;
     }
 
     .stack-cta {
-      animation: stack-cta-in cubic-bezier(0.23, 1, 0.32, 1) both;
-      animation-timeline: --stack;
-      animation-range: cover 52% cover 66%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      translate: -50% -50%;
+      animation:
+        stack-cta-move cubic-bezier(0.3333, 0, 0.6667, 1) both,
+        stack-cta-fade linear both;
+      animation-timeline: --stack, --stack;
+      animation-range:
+        entry 0% exit 40%,
+        entry 0% exit 40%;
+    }
+
+    .stack-cta:focus-within {
+      animation: none;
+      opacity: 1;
+      scale: 1;
+    }
+  }
+}
+
+@media (max-width: 40rem) {
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+    @media (prefers-reduced-motion: no-preference) {
+      .stack-scene {
+        height: 180svh;
+      }
     }
   }
 }

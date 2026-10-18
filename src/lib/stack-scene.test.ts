@@ -27,13 +27,36 @@ describe('STACK_TILES', () => {
     expect(STACK_TILES.filter((tile) => tile.mobile)).toHaveLength(12)
   })
 
-  test('every tile is a tool or tech of the Uses data, never Astro', () => {
-    for (const locale of LOCALES) {
-      for (const tile of STACK_TILES) {
+  test('every tile is a tool or tech of the Uses data', () => {
+    for (const locale of LOCALES)
+      for (const tile of STACK_TILES)
         expect(usesIcons(locale).has(tile.id)).toBe(true)
-        expect(tile.id).not.toBe('astro')
-      }
-    }
+  })
+
+  test('keeps the first twelve tiles of the canvas on mobile', () => {
+    expect(STACK_TILES.slice(0, 12).every((tile) => tile.mobile)).toBe(true)
+    expect(STACK_TILES.slice(12).some((tile) => tile.mobile)).toBe(false)
+  })
+
+  test('follows the canvas order, sizes and offsets', () => {
+    expect(STACK_TILES.map((tile) => tile.id).slice(0, 4)).toEqual([
+      'typescript',
+      'astro',
+      'react',
+      'nextjs',
+    ])
+    expect(STACK_TILES[0]?.placement).toBe('[--x:-430] [--y:-200] [--r:-8]')
+    expect(STACK_TILES.filter((tile) => tile.size === 96)).toHaveLength(4)
+    expect(STACK_TILES.filter((tile) => tile.size === 72)).toHaveLength(4)
+    expect(STACK_TILES.filter((tile) => tile.size === 56)).toHaveLength(16)
+  })
+
+  test('swaps hono, better-auth and github-actions for the canvas tiles', () => {
+    const ids = STACK_TILES.map((tile) => tile.id)
+    for (const id of ['astro', 'turborepo', 'bitwarden'] as const)
+      expect(ids).toContain(id)
+    for (const id of ['hono', 'better-auth', 'github-actions'])
+      expect(ids).not.toContain(id)
   })
 
   test('uses the three sizes and a placement per tile', () => {
@@ -84,6 +107,14 @@ describe('glow', () => {
     for (const id of ['nextjs', 'shadcn-ui', 'resend', 'tailscale'] as const)
       expect(glowHex(id)).toBe('#8b93a7')
     expect(glowHex('typescript')).toBe('#3178c6')
+  })
+
+  test('takes the canvas glow colours', () => {
+    expect(glowHex('astro')).toBe('#ff5d01')
+    expect(glowHex('tailwindcss')).toBe('#38bdf8')
+    expect(glowHex('turborepo')).toBe('#ef4444')
+    expect(glowHex('bitwarden')).toBe('#175ddc')
+    expect(glowHex('eslint')).toBe('#8080f2')
   })
 })
 

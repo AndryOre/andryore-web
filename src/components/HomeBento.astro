@@ -39,6 +39,8 @@ const PARTY_SIZE = 28
 
 const tileClass =
   'bg-card border-border relative flex min-w-0 flex-col gap-3 overflow-hidden rounded-[1.25rem] border p-5 shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)]'
+const stripTileClass =
+  'bg-card border-border relative flex min-w-0 flex-col gap-2.5 overflow-hidden rounded-[1.25rem] border p-5 shadow-[inset_0_1px_0_var(--hl),0_10px_28px_-16px_rgb(0_0_0/0.28)]'
 const linkTileClass = `link-tile ${tileClass}`
 const labelClass =
   'text-muted-foreground flex items-center justify-between gap-3 font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase'
@@ -301,20 +303,26 @@ const metaLine = (entry: ProductEntry | undefined, year: string): string =>
     </h2>
     <div
       data-slot="live-strip"
-      class="grid gap-4 md:grid-cols-2 lg:grid-cols-12"
+      class="grid grid-cols-1 gap-3 lg:auto-rows-[84px] lg:grid-cols-12 lg:gap-4"
     >
       {hasGithub && (
-        <div class="scroll-reveal md:col-span-2 lg:col-span-4">
+        <div class="scroll-reveal min-w-0 lg:[grid-area:1/1/5/5]">
           <slot name="github" />
         </div>
       )}
-      <div class="scroll-reveal scroll-stagger-1 lg:col-span-3">
+      <div class="scroll-reveal scroll-stagger-1 min-h-[360px] min-w-0 lg:[grid-area:1/5/5/8]">
         <slot name="stream" />
+      </div>
+      <div class="scroll-reveal scroll-stagger-2 min-h-[140px] min-w-0 lg:[grid-area:1/8/3/10]">
+        <LanguageTile locale={locale} />
+      </div>
+      <div class="scroll-reveal scroll-stagger-2 min-h-[140px] min-w-0 lg:[grid-area:3/8/5/10]">
+        <FxTile locale={locale} />
       </div>
       <article
         class:list={[
-          tileClass,
-          'scroll-reveal scroll-stagger-2 lg:order-4 lg:col-span-3',
+          stripTileClass,
+          'scroll-reveal scroll-stagger-2 min-h-[220px] lg:[grid-area:1/10/5/13]',
         ]}
       >
         <p class={labelClass}>{themeCopy.label}</p>
@@ -322,10 +330,6 @@ const metaLine = (entry: ProductEntry | undefined, year: string): string =>
           <ThemeSlider client:interaction copy={themeCopy} />
         </div>
       </article>
-      <div class="scroll-reveal scroll-stagger-2 grid grid-cols-2 gap-4 md:col-span-2 lg:order-3 lg:col-span-2 lg:grid-cols-1">
-        <LanguageTile locale={locale} />
-        <FxTile locale={locale} />
-      </div>
     </div>
   </section>
 

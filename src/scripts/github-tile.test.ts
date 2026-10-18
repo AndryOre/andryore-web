@@ -72,7 +72,10 @@ describe('mountGithubTile', () => {
     expect(text('[data-gh-grid]')?.dataset.cells).toBe(
       '2|2 contributions on Oct 16, 2026,4|5 contributions on Oct 17, 2026',
     )
-    expect(text('[data-gh-stat="longest"]')?.textContent).toBe('2 days')
+    expect(text('[data-gh-stat="longest"]')?.textContent).toBe('2')
+    expect(text('[data-gh-stat="longest-unit"]')?.textContent).toBe('days')
+    expect(text('[data-gh-stat="current-unit"]')?.textContent).toBe('days')
+    expect(text('[data-gh-stat="active"]')?.textContent).toBe('2')
     expect(text('[data-gh-stat="best"]')?.textContent).toBe('5')
     expect(text('[data-gh-stat="best-date"]')?.textContent).toBe('Oct 17')
     expect(text('[data-gh-updated]')?.textContent).toBe('Updated 3 hours ago')

@@ -1,6 +1,5 @@
 import {
-  formatCompactCountdown,
-  formatSessionLong,
+  formatNextStream,
   nextSession,
   selectStreamView,
   weekColumn,
@@ -57,7 +56,7 @@ export async function loadStreamStatus(
 }
 
 /**
- * Writes the next session and its compact countdown into the tile.
+ * Writes the next session and its compact countdown into the tile as one value.
  * @param root The tile element.
  * @param now The current moment.
  */
@@ -65,16 +64,13 @@ export function refreshCountdown(root: StreamTileRoot, now: Date): void {
   const locale = root.dataset.locale ?? 'en'
   const start = nextSession(now)
   const next = root.querySelector('[data-stream-next]')
-  if (next) next.textContent = formatSessionLong(start, locale)
-  const countdown = root.querySelector('[data-stream-countdown]')
-  if (countdown) {
-    countdown.textContent = formatCompactCountdown(start, now, {
-      prefix: root.dataset.cdIn ?? '',
-      day: root.dataset.cdDay ?? 'd',
-      hour: root.dataset.cdHour ?? 'h',
-      minute: root.dataset.cdMinute ?? 'min',
-    })
-  }
+  if (!next) return
+  next.textContent = formatNextStream(start, now, locale, {
+    prefix: root.dataset.cdIn ?? '',
+    day: root.dataset.cdDay ?? 'd',
+    hour: root.dataset.cdHour ?? 'h',
+    minute: root.dataset.cdMinute ?? 'min',
+  })
 }
 
 const DAY_SELECTORS: readonly string[] = [
@@ -118,7 +114,7 @@ export async function mountStreamTile(
   markToday(root, now)
   if (status.state === 'live') {
     const title = root.querySelector('[data-stream-title]')
-    if (title) title.textContent = status.title
+    if (title && status.title) title.textContent = status.title
   }
   if (view === 'scheduled') refreshCountdown(root, now)
 }

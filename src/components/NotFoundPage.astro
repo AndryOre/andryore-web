@@ -4,6 +4,7 @@ import notFound from '../content/not-found.json'
 import { homePath, localePath, type Locale } from '../i18n/locales'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import { NOT_FOUND_TILES } from '../lib/stack-scene'
+import stackSceneStylesheet from '../styles/stack-scene.css?url'
 import StackTile from './StackTile.astro'
 
 interface Props {
@@ -24,6 +25,7 @@ const pillClass =
   noindex
   wide
 >
+  <link rel="stylesheet" href={stackSceneStylesheet} />
   <section class="nf-stage">
     <div class="absolute inset-0" aria-hidden="true">
       {NOT_FOUND_TILES.map((tile) => (
