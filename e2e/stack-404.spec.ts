@@ -5,13 +5,15 @@ import { preparePage, settlePage } from './helpers'
 const NOT_FOUND_PAGES = [
   {
     path: '/does-not-exist/',
-    message: /wandered off/,
+    heading: /wandered off/,
+    message: /It is not here/,
     home: '/',
     products: '/#products',
   },
   {
     path: '/es/404/',
-    message: /se fue por su cuenta/,
+    heading: /se fue por su cuenta/,
+    message: /No está aquí/,
     home: '/es/',
     products: '/es/#products',
   },
@@ -24,7 +26,7 @@ for (const page of NOT_FOUND_PAGES) {
     await preparePage(browserPage, 'light')
     await browserPage.goto(page.path)
     await expect(
-      browserPage.getByRole('heading', { level: 1, name: '404' }),
+      browserPage.getByRole('heading', { level: 1, name: page.heading }),
     ).toBeVisible()
     await expect(browserPage.getByText(page.message)).toBeVisible()
     const links = browserPage.locator('.nf-stage a')

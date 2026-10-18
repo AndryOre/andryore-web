@@ -33,20 +33,12 @@ const updated = updatedLabel(
 const legend = [0, 1, 2, 3] as const
 const tips = { one: copy.tipOne, other: copy.tipOther, none: copy.tipNone }
 const months = monthLabels(snapshot.weeks, locale)
-const monthsLayout = [
-  `.github-months{grid-template-columns:repeat(${String(snapshot.weeks.length)},minmax(0,1fr))}`,
-  ...months.map(
-    (month, position) =>
-      `.github-months li:nth-child(${String(position + 1)}){grid-column:${String(month.column)} / span 4}`,
-  ),
-].join('')
 const stats = [
   { key: 'longest', label: copy.longestStreak, value: view.longest },
   { key: 'current', label: copy.currentStreak, value: view.current },
 ] as const
 ---
 
-<style is:inline set:html={monthsLayout}></style>
 <article
   data-github-grid
   data-locale={locale}
@@ -89,9 +81,13 @@ const stats = [
       formatContributionTip(day, locale, tips),
     )}
   />
-  <ol class="github-months m-0 grid list-none p-0" aria-hidden="true">
+  <ol
+    class="github-months m-0 grid list-none p-0"
+    data-weeks={snapshot.weeks.length}
+    aria-hidden="true"
+  >
     {months.map((month) => (
-      <li>{month.label}</li>
+      <li data-col={month.column}>{month.label}</li>
     ))}
   </ol>
   <p class="text-muted-foreground m-0 flex items-center justify-between gap-3 font-mono text-[0.6875rem]">
