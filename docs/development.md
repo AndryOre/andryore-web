@@ -257,6 +257,23 @@ failed or missing `CI passed` stops the release; re-run the failed CI job on
 the matching section of `CHANGELOG.md` as the release notes and creates the
 GitHub Release. Nothing is published to npm.
 
+## Deploying
+
+Coolify builds the `Dockerfile` and serves the image behind its proxy. The
+`andryore-web` application tracks `main` and serves `andryore.dev`;
+`andryore-web-develop` tracks `develop` and serves `dev.andryore.dev`. Both DNS
+records are DNS-only A records. `www.andryore.dev` resolves to the same server,
+and nginx answers it with a `301` to the apex, keeping the path and query.
+
+A push to `main` triggers a deploy through a GitHub push webhook that calls the
+application's Coolify GitHub webhook endpoint; the secret lives only in the
+webhook and in Coolify. PR preview deployments stay off so a fork PR can never
+run on the server; `dev.andryore.dev` covers pre-merge checks.
+
+To roll back, redeploy the previous good commit from the Coolify application
+page (Deployments, then Redeploy on the earlier entry), or revert the commit on
+`main` and let the webhook deploy the revert.
+
 ## Merging
 
 This repository merges pull requests via squash merge only, keeping a linear
