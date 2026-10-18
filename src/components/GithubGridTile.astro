@@ -1,7 +1,13 @@
 ---
 import tiles from '../content/live-tiles.json'
 import type { Locale } from '../i18n/locales'
-import type { GridLevel, GridSnapshot } from '../lib/github-grid'
+import type { GridSnapshot } from '../lib/github-grid'
+import {
+  computeStats,
+  gridCellsHtml,
+  statsView,
+  updatedLabel,
+} from '../lib/github-stats'
 
 interface Props {
   locale: Locale
@@ -11,28 +17,42 @@ interface Props {
 const { locale, snapshot } = Astro.props
 const copy = tiles[locale].github
 const total = new Intl.NumberFormat(locale).format(snapshot.total)
-
-const levelClass: Readonly<Record<GridLevel, string>> = {
-  0: 'bg-muted',
-  1: 'bg-primary/25',
-  2: 'bg-primary/50',
-  3: 'bg-primary/75',
-  4: 'bg-primary',
-}
-const legend: readonly GridLevel[] = [0, 1, 2, 3, 4]
-const cell = 'block aspect-square rounded-[2px]'
+const view = statsView(computeStats(snapshot), locale, {
+  one: copy.dayOne,
+  other: copy.dayOther,
+})
+const updated = updatedLabel(
+  copy.updatedLabel,
+  snapshot.capturedAt,
+  new Date(),
+  locale,
+)
+const legend = [0, 1, 2, 3] as const
+const stats = [
+  { key: 'longest', label: copy.longestStreak, value: view.longest },
+  { key: 'current', label: copy.currentStreak, value: view.current },
+] as const
 ---
 
 <article
   data-github-grid
-  class="bg-card border-border flex h-full min-w-0 flex-col gap-3 overflow-hidden rounded-[1.25rem] border p-5 shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)]"
+  data-locale={locale}
+  data-captured-at={snapshot.capturedAt}
+  data-updated-prefix={copy.updatedLabel}
+  data-grid-label={copy.gridLabel}
+  data-day-one={copy.dayOne}
+  data-day-other={copy.dayOther}
+  class="github-tile bg-card border-border flex h-full min-w-0 flex-col gap-3 overflow-hidden rounded-[1.25rem] border p-5"
 >
   <p class="text-muted-foreground m-0 flex items-center justify-between gap-3 font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase">
     <span>{copy.label}</span>
-    <span class="normal-case tabular-nums">
-      {copy.capturedLabel}
-      <time datetime={snapshot.capturedAt}>{snapshot.capturedAt}</time>
-    </span>
+    <time
+      class="normal-case tabular-nums"
+      data-gh-updated
+      datetime={snapshot.capturedAt}
+    >
+      {updated}
+    </time>
   </p>
   <p class="m-0 flex flex-wrap items-baseline gap-x-2">
     <span
@@ -47,42 +67,146 @@ const cell = 'block aspect-square rounded-[2px]'
   <div
     role="img"
     aria-label={`${copy.gridLabel}: ${total}`}
-    class="grid grid-flow-col grid-rows-7 auto-cols-fr gap-[2px]"
-  >
-    {snapshot.weeks.flatMap((week) =>
-      week.map((day) => (
-        <i
-          class:list={[cell, levelClass[day.level]]}
-          title={`${day.date}: ${day.count}`}
-        />
-      )),
-    )}
-  </div>
+    data-gh-grid
+    class="github-grid grid auto-cols-fr grid-flow-col grid-rows-7 gap-[2px]"
+    set:html={gridCellsHtml(snapshot.weeks)}
+  />
   <div
     class="text-muted-foreground flex items-center justify-end gap-1.5 font-mono text-[0.625rem] uppercase"
     aria-hidden="true"
   >
     <span>{copy.less}</span>
     {legend.map((level) => (
-      <i class:list={['size-2.5', cell, levelClass[level]]} />
+      <i class="github-legend" data-level={level} />
     ))}
     <span>{copy.more}</span>
   </div>
+  <dl class="m-0 mt-auto grid grid-cols-2 gap-2" aria-label={copy.statsLabel}>
+    {stats.map((stat) => (
+      <div class="bg-muted/50 border-border grid gap-0.5 rounded-xl border px-3 py-2">
+        <dt class="text-muted-foreground font-mono text-[0.625rem] uppercase tracking-[0.04em]">
+          {stat.label}
+        </dt>
+        <dd
+          class="github-stat m-0 text-lg font-bold tracking-[-0.02em] tabular-nums"
+          data-gh-stat={stat.key}
+        >
+          {stat.value}
+        </dd>
+      </div>
+    ))}
+    <div class="bg-muted/50 border-border grid gap-0.5 rounded-xl border px-3 py-2">
+      <dt class="text-muted-foreground font-mono text-[0.625rem] uppercase tracking-[0.04em]">
+        {copy.bestDay}
+      </dt>
+      <dd class="m-0 text-lg font-bold tracking-[-0.02em] tabular-nums">
+        <span class="github-stat" data-gh-stat="best">
+          {view.best}
+        </span>
+        <small class="text-muted-foreground font-mono text-[0.6875rem] font-medium">
+          {copy.bestDayUnit}
+          <span data-gh-stat="best-date">{view.bestDate}</span>
+        </small>
+      </dd>
+    </div>
+    <div class="bg-muted/50 border-border grid gap-0.5 rounded-xl border px-3 py-2">
+      <dt class="text-muted-foreground font-mono text-[0.625rem] uppercase tracking-[0.04em]">
+        {copy.activeDays}
+      </dt>
+      <dd
+        class="github-stat m-0 text-lg font-bold tracking-[-0.02em] tabular-nums"
+        data-gh-stat="active"
+      >
+        {view.active}
+      </dd>
+    </div>
+  </dl>
 </article>
+
+<style is:global>
+  .github-tile {
+    --gh0: var(--muted);
+    --gh1: #0e4429;
+    --gh2: #26a641;
+    --gh3: #39d353;
+    --gh-glow: #2ea043;
+    background-image: radial-gradient(
+      120% 60% at 50% -12%,
+      color-mix(in oklab, var(--gh-glow) 15%, transparent),
+      transparent 62%
+    );
+    border-color: color-mix(in oklab, var(--gh-glow) 30%, var(--border));
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--gh-glow) 12%, transparent),
+      0 18px 48px -24px color-mix(in oklab, var(--gh-glow) 48%, transparent);
+    transition:
+      box-shadow 200ms var(--ease-out),
+      border-color 200ms var(--ease-out);
+  }
+  html:not(.dark) .github-tile {
+    --gh1: #9be9a8;
+    --gh2: #40c463;
+    --gh3: #216e39;
+    background-image: radial-gradient(
+      120% 60% at 50% -12%,
+      color-mix(in oklab, var(--gh-glow) 9%, transparent),
+      transparent 62%
+    );
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--gh-glow) 10%, transparent),
+      0 18px 44px -26px color-mix(in oklab, var(--gh-glow) 40%, transparent);
+  }
+  .github-tile:hover {
+    border-color: color-mix(in oklab, var(--gh-glow) 48%, var(--border));
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--gh-glow) 22%, transparent),
+      0 22px 56px -22px color-mix(in oklab, var(--gh-glow) 60%, transparent);
+  }
+  .github-grid i,
+  .github-legend {
+    display: block;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background: var(--gh0);
+  }
+  .github-legend {
+    width: 0.625rem;
+  }
+  .github-tile [data-level='1'] {
+    background: var(--gh1);
+  }
+  .github-tile [data-level='2'] {
+    background: var(--gh2);
+  }
+  .github-tile [data-level='3'],
+  .github-tile [data-level='4'] {
+    background: var(--gh3);
+  }
+  .github-tile .github-stat {
+    color: var(--gh3);
+  }
+</style>
 
 <script>
   import { prefersReducedMotion } from '../lib/motion'
   import { startCountUp } from '../scripts/count-up'
+  import { mountGithubTile } from '../scripts/github-tile'
 
-  for (const target of document.querySelectorAll<HTMLElement>(
-    '[data-count-total]',
+  for (const root of document.querySelectorAll<HTMLElement>(
+    '[data-github-grid]',
   )) {
-    const total = Number(target.dataset.countTotal)
-    if (!Number.isFinite(total)) continue
-    startCountUp(target, total, {
-      reducedMotion: prefersReducedMotion(globalThis),
-      locale: target.dataset.countLocale ?? 'en',
-      requestFrame: (callback) => requestAnimationFrame(callback),
+    void mountGithubTile(root).then(() => {
+      for (const target of root.querySelectorAll<HTMLElement>(
+        '[data-count-total]',
+      )) {
+        const total = Number(target.dataset.countTotal)
+        if (!Number.isFinite(total)) continue
+        startCountUp(target, total, {
+          reducedMotion: prefersReducedMotion(globalThis),
+          locale: target.dataset.countLocale ?? 'en',
+          requestFrame: (callback) => requestAnimationFrame(callback),
+        })
+      }
     })
   }
 </script>
