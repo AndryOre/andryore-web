@@ -60,9 +60,10 @@ const hasDarkMark = (icon: string): boolean => {
   </ul>
   <div
     data-email-chip
+    role="group"
+    aria-label={copy.emailLabel}
     class="bg-secondary border-border rounded-pill flex w-fit max-w-full items-center gap-1 border py-0.5 pr-0.5 pl-4"
   >
-    <span class="sr-only">{copy.emailLabel}</span>
     <span
       id={emailId}
       class="min-w-0 font-mono text-sm [overflow-wrap:anywhere] select-all"

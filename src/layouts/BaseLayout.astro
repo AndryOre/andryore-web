@@ -1,6 +1,9 @@
 ---
 import '../styles/global.css'
 
+import jetbrainsMonoLatin from '@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2?url'
+import spaceGroteskLatin from '@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2?url'
+
 import Dock from '../components/Dock'
 import chrome from '../content/chrome.json'
 import home from '../content/home.json'
@@ -100,6 +103,20 @@ const socialTags = [
         href={absoluteUrl(localePath(DEFAULT_LOCALE, path))}
       />
     )}
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href={spaceGroteskLatin}
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href={jetbrainsMonoLatin}
+      crossorigin
+    />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
