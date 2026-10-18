@@ -12,6 +12,14 @@ import {
   SWATCH_TOKENS,
 } from './uses'
 
+const luminance = (hex: string): number => {
+  const [red = 0, green = 0, blue = 0] = [1, 3, 5].map((start) => {
+    const unit = Number.parseInt(hex.slice(start, start + 2), 16) / 255
+    return unit <= 0.03928 ? unit / 12.92 : ((unit + 0.055) / 1.055) ** 2.4
+  })
+  return 0.2126 * red + 0.7152 * green + 0.0722 * blue
+}
+
 describe('FIELD_ICONS', () => {
   test('holds the eight canvas icons in order with their positions', () => {
     expect(FIELD_ICONS.map((icon) => icon.id)).toEqual([
@@ -68,26 +76,18 @@ describe('badgeStyle', () => {
   test('sets the canvas colours for the changed brands', () => {
     expect(badgeStyle('starship').hex).toBe('#dd0b78')
     expect(badgeStyle('github').hex).toBe('#181717')
-    expect(badgeStyle('git').hex).toBe('#f03c2e')
+    expect(badgeStyle('git').hex).toBe('#da372a')
     expect(badgeStyle('bun').hex).toBe('#000000')
     expect(badgeStyle('zod').hex).toBe('#408aff')
     expect(badgeStyle('posthog').hex).toBe('#000000')
   })
 
-  test('uses dark text where white would fail WCAG AA on the brand', () => {
-    for (const id of [
-      'claude',
-      'nushell',
-      'git',
-      'github-actions',
-      'docker',
-      'astro',
-      'hono',
-      'turborepo',
-      'playwright',
-      'knip',
-    ] as const)
-      expect(badgeStyle(id).text).not.toBe('text-white')
+  test('keeps white text on every light-ink brand at WCAG AA contrast', () => {
+    for (const id of Object.keys(BADGE_COLORS) as IconId[]) {
+      const style = badgeStyle(id)
+      if (style.text !== 'text-white') continue
+      expect(1.05 / (luminance(style.hex) + 0.05)).toBeGreaterThanOrEqual(4.5)
+    }
   })
 
   test('gives the alt brands a grey badge and a full-colour logo', () => {

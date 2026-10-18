@@ -64,29 +64,30 @@ interface BadgeColor {
 
 /**
  * Brand colour of each badge and the ink set by hand per the canvas table:
- * `light` is white text on the brand colour, `dark` is near-black text. The
- * classes are literals because the CSP forbids inline styles and Tailwind
- * only emits classes it can read.
+ * `light` is white text on the brand colour, `dark` is near-black text. Where
+ * the canvas sets white on a bright brand colour, the background is darkened
+ * just enough for 4.5:1 contrast. The classes are literals because the CSP
+ * forbids inline styles and Tailwind only emits classes it can read.
  */
 export const BADGE_COLORS: Readonly<Partial<Record<IconId, BadgeColor>>> = {
-  claude: { hex: '#d97757', bg: 'bg-[#d97757]', ink: 'dark' },
-  nushell: { hex: '#4e9a06', bg: 'bg-[#4e9a06]', ink: 'dark' },
+  claude: { hex: '#b06046', bg: 'bg-[#b06046]', ink: 'light' },
+  nushell: { hex: '#438405', bg: 'bg-[#438405]', ink: 'light' },
   starship: { hex: '#dd0b78', bg: 'bg-[#dd0b78]', ink: 'light' },
-  git: { hex: '#f03c2e', bg: 'bg-[#f03c2e]', ink: 'dark' },
+  git: { hex: '#da372a', bg: 'bg-[#da372a]', ink: 'light' },
   github: { hex: '#181717', bg: 'bg-[#181717]', ink: 'light' },
-  'github-actions': { hex: '#2088ff', bg: 'bg-[#2088ff]', ink: 'dark' },
+  'github-actions': { hex: '#1b74d9', bg: 'bg-[#1b74d9]', ink: 'light' },
   linear: { hex: '#5e6ad2', bg: 'bg-[#5e6ad2]', ink: 'light' },
-  docker: { hex: '#2496ed', bg: 'bg-[#2496ed]', ink: 'dark' },
+  docker: { hex: '#1d79c0', bg: 'bg-[#1d79c0]', ink: 'light' },
   coolify: { hex: '#6b16ed', bg: 'bg-[#6b16ed]', ink: 'light' },
   tailscale: { hex: '#242424', bg: 'bg-[#242424]', ink: 'light' },
   cloudflare: { hex: '#f38020', bg: 'bg-[#f38020]', ink: 'dark' },
   bitwarden: { hex: '#175ddc', bg: 'bg-[#175ddc]', ink: 'light' },
   typescript: { hex: '#3178c6', bg: 'bg-[#3178c6]', ink: 'light' },
   bun: { hex: '#000000', bg: 'bg-[#000000]', ink: 'light' },
-  astro: { hex: '#bc52ee', bg: 'bg-[#bc52ee]', ink: 'dark' },
+  astro: { hex: '#a749d4', bg: 'bg-[#a749d4]', ink: 'light' },
   react: { hex: '#61dafb', bg: 'bg-[#61dafb]', ink: 'dark' },
   nextjs: { hex: '#000000', bg: 'bg-[#000000]', ink: 'light' },
-  hono: { hex: '#e36002', bg: 'bg-[#e36002]', ink: 'dark' },
+  hono: { hex: '#c35302', bg: 'bg-[#c35302]', ink: 'light' },
   tailwindcss: { hex: '#06b6d4', bg: 'bg-[#06b6d4]', ink: 'dark' },
   'shadcn-ui': { hex: '#000000', bg: 'bg-[#000000]', ink: 'light' },
   prisma: { hex: '#2d3748', bg: 'bg-[#2d3748]', ink: 'light' },
@@ -98,11 +99,11 @@ export const BADGE_COLORS: Readonly<Partial<Record<IconId, BadgeColor>>> = {
   posthog: { hex: '#000000', bg: 'bg-[#000000]', ink: 'light' },
   dotenv: { hex: '#ecd53f', bg: 'bg-[#ecd53f]', ink: 'dark' },
   wxt: { hex: '#67d55e', bg: 'bg-[#67d55e]', ink: 'dark' },
-  turborepo: { hex: '#ff1e56', bg: 'bg-[#ff1e56]', ink: 'dark' },
-  playwright: { hex: '#2ead33', bg: 'bg-[#2ead33]', ink: 'dark' },
+  turborepo: { hex: '#e51b4d', bg: 'bg-[#e51b4d]', ink: 'light' },
+  playwright: { hex: '#248728', bg: 'bg-[#248728]', ink: 'light' },
   eslint: { hex: '#4b32c3', bg: 'bg-[#4b32c3]', ink: 'light' },
   prettier: { hex: '#f7b93e', bg: 'bg-[#f7b93e]', ink: 'dark' },
-  knip: { hex: '#f56e0f', bg: 'bg-[#f56e0f]', ink: 'dark' },
+  knip: { hex: '#bf560c', bg: 'bg-[#bf560c]', ink: 'light' },
 }
 
 /**
