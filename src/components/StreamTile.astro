@@ -146,53 +146,6 @@ const TWITCH_GLYPH =
   </div>
 </article>
 
-<style is:global>
-  .stream-tile {
-    --twitch: #9146ff;
-    background-image: radial-gradient(
-      120% 60% at 50% -12%,
-      color-mix(in oklab, var(--twitch) 12%, transparent),
-      transparent 62%
-    );
-    border-color: color-mix(in oklab, var(--twitch) 25%, var(--border));
-    box-shadow:
-      0 0 0 1px color-mix(in oklab, var(--twitch) 25%, transparent),
-      0 18px 48px -24px color-mix(in oklab, var(--twitch) 42%, transparent);
-    transition: box-shadow 200ms var(--ease-out);
-  }
-  .stream-tile:hover {
-    box-shadow:
-      0 0 0 1px color-mix(in oklab, var(--twitch) 45%, transparent),
-      0 22px 56px -22px color-mix(in oklab, var(--twitch) 60%, transparent);
-  }
-  .stream-tile[data-state='live'] {
-    animation: stream-glow 2.8s ease-in-out infinite;
-  }
-  .twitch-button {
-    transition: transform 160ms var(--ease-out);
-  }
-  .twitch-button:hover {
-    transform: translateY(-1px);
-  }
-  @keyframes stream-glow {
-    50% {
-      box-shadow:
-        0 0 0 1px color-mix(in oklab, var(--twitch) 55%, transparent),
-        0 22px 60px -20px color-mix(in oklab, var(--twitch) 70%, transparent);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .stream-tile,
-    .stream-tile[data-state='live'] {
-      animation: none;
-      transition: none;
-    }
-    .twitch-button {
-      transition: none;
-    }
-  }
-</style>
-
 <script>
   import { mountStreamTile } from '../scripts/stream-tile'
 
