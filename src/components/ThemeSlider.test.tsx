@@ -29,11 +29,10 @@ describe('ThemeSlider', () => {
     expect(html.match(/aria-pressed="true"/g)).toHaveLength(1)
   })
 
-  test('feeds the indicator and the bar from the stored level', () => {
+  test('marks the indicator and the bar with the stored stop, never inline style', () => {
     const html = render('en')
-    expect(html).toContain('--stop-index:1')
-    expect(html).toContain('--strength:0.62')
-    expect(html).toContain('--level:62')
+    expect(html.match(/data-stop="auto"/g)).toHaveLength(2)
+    expect(html).not.toContain('style=')
   })
 
   test('keeps decorative icons out of the accessibility tree', () => {
