@@ -156,14 +156,12 @@ contract is new. See [ADR 0006](adr/0006-tailwind-and-shadcn-islands.md).
 first shadcn/ui component lands; the `@shadcn/lint` rules run on the React
 island files (`src/**/*.tsx`), not on `.astro` files.
 
-## Adding a Log entry
+## Adding a product page
 
-Add two Markdown files under `src/content/log/`, one in `en/` and one in `es/`.
-Both carry the same `key` (it is also the URL slug), their own `lang`, `title`,
-`description`, `date` and `readMinutes`. The Spanish file also sets `sourceHash`
-to the hash of the English body, which `bun run i18n:status` prints when it is
-missing or stale. Code blocks must stay byte-identical between the two files.
-The build fails on a missing pair, a repeated title or a changed code block
+Add two Markdown files under `src/content/products/`, `<key>.en.md` and
+`<key>.es.md`. Both carry the same `key` (it is also the URL slug) and their own
+`lang`; the front matter is validated by the product schema in
+`src/lib/products.ts`. The build fails on a missing pair or a repeated title
 ([ADR 0002](adr/0002-bilingual-parity.md)).
 
 ## Skills install and update
@@ -217,11 +215,11 @@ those tests.
 ## Lighthouse budget
 
 `bun run lint:lighthouse` serves `dist/` locally and audits the home page and
-the `nothing-from-other-origins` Log entry in English and Spanish, five runs
-each, with the Lighthouse version pinned in `scripts/lighthouse-budget.ts`. It
-prints a table with the median performance, accessibility, best practices and
-SEO scores plus the page weight. It exits non-zero when any median is below 90
-or any score is null; weight is reported and never fails. It needs a built site
+the Snug product page in English and Spanish, five runs each, with the
+Lighthouse version pinned in `scripts/lighthouse-budget.ts`. It prints a table
+with the median performance, accessibility, best practices and SEO scores plus
+the page weight. It exits non-zero when any median is below 90 or any score is
+null; weight is reported and never fails. It needs a built site
 (`bun run build`, opt-in locally) and a Chrome binary: set `CHROME_PATH` when
 Chrome is not on the default path. The local server answers `/api/stream-status`
 with the offline state, as the nginx image's upstream does, so the missing

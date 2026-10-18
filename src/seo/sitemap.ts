@@ -44,7 +44,7 @@ function urlEntry(
 /**
  * Builds the language-aware sitemap: one `<url>` per page and language, each
  * carrying the full `hreflang` set including itself.
- * @param paths Locale-neutral page paths such as `/` and `/log/`.
+ * @param paths Locale-neutral page paths such as `/` and `/about/`.
  * @param lastmod Optional `YYYY-MM-DD` date stamped on every url.
  * @returns The sitemap XML.
  */

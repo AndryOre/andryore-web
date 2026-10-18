@@ -11,14 +11,8 @@
       "emphasis": "stuff",
       "tail": " and tell you how it went.",
       "body": "Today it might be a board, a 3D-printed part or a sleep log. Tomorrow, something else. I post what worked, what didn’t and what I’d change.",
-      "primary": {
-        "label": "See what I tried last",
-        "path": "/log/"
-      },
-      "secondary": {
-        "label": "About me",
-        "path": "/about/"
-      },
+      "primary": { "label": "See what I build", "path": "/#products" },
+      "secondary": { "label": "About me", "path": "/about/" },
       "annotation": "Space Grotesk 700 · 60 / 1.04"
     },
     "about": {
@@ -64,42 +58,6 @@
         "year": "2024–25"
       }
     },
-    "status": {
-      "label": "Status",
-      "rows": [
-        {
-          "label": "Building",
-          "value": "This site",
-          "date": "2026-10-16",
-          "sample": true
-        },
-        {
-          "label": "Testing",
-          "value": "Co-working on stream",
-          "date": "2026-10-13",
-          "sample": true
-        },
-        {
-          "label": "Next stream",
-          "value": "Schedule being set",
-          "date": "2026-10-13",
-          "sample": true
-        },
-        {
-          "label": "Shipped",
-          "value": "Brand kit",
-          "date": "2026-10-13",
-          "sample": true
-        }
-      ]
-    },
-    "recent": {
-      "label": "Recent",
-      "all": "All entries",
-      "allPath": "/log/",
-      "empty": "Nothing here yet. The first entry lands soon.",
-      "entryPath": "/log/"
-    },
     "stream": {
       "label": "Stream",
       "live": "Live now",
@@ -139,14 +97,8 @@
       "emphasis": "cosas",
       "tail": ", las pruebo y te cuento cómo me fue.",
       "body": "Hoy puede ser una placa, una pieza impresa en 3D o un registro de sueño; mañana, otra cosa. Publico lo que funcionó, lo que no y qué cambiaría.",
-      "primary": {
-        "label": "Ver lo último que probé",
-        "path": "/log/"
-      },
-      "secondary": {
-        "label": "Sobre mí",
-        "path": "/about/"
-      },
+      "primary": { "label": "Mira lo que construyo", "path": "/#products" },
+      "secondary": { "label": "Sobre mí", "path": "/about/" },
       "annotation": "Space Grotesk 700 · 60 / 1.04"
     },
     "about": {
@@ -191,42 +143,6 @@
         "href": "https://json-flow.com",
         "year": "2024–25"
       }
-    },
-    "status": {
-      "label": "Estado",
-      "rows": [
-        {
-          "label": "Construyendo",
-          "value": "Este sitio",
-          "date": "2026-10-16",
-          "sample": true
-        },
-        {
-          "label": "Probando",
-          "value": "Co-working en stream",
-          "date": "2026-10-13",
-          "sample": true
-        },
-        {
-          "label": "Próximo stream",
-          "value": "Horario por definir",
-          "date": "2026-10-13",
-          "sample": true
-        },
-        {
-          "label": "Publicado",
-          "value": "Kit de marca",
-          "date": "2026-10-13",
-          "sample": true
-        }
-      ]
-    },
-    "recent": {
-      "label": "Reciente",
-      "all": "Todas las entradas",
-      "allPath": "/log/",
-      "empty": "Aún no hay nada. La primera entrada llega pronto.",
-      "entryPath": "/log/"
     },
     "stream": {
       "label": "Stream",

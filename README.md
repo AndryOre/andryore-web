@@ -1,8 +1,8 @@
 # andryore.dev
 
 The source of [andryore.dev](https://andryore.dev), the personal site of Andry
-Orellana: a static Astro site with the Log, the About page and the product pages
-for Snug, StreamBoss and Animated Fluent Emojis.
+Orellana: a static Astro site with the About page and the product pages for
+Snug, StreamBoss and Animated Fluent Emojis.
 
 ## Contributing
 
@@ -25,9 +25,9 @@ decisions are described in [GOVERNANCE](GOVERNANCE.md) and the direction in the
 The source code is licensed under the [MIT](LICENSE) license, © Andry Orellana.
 
 The brand assets (the logos, tokens, Open Graph image and avatar under
-`docs/brand/`) and the Site's content (the Log, the About text, the product
-pages and all other written content) are **all rights reserved**. They are not
-covered by the MIT license and may not be reused without written permission. See
+`docs/brand/`) and the Site's content (the About text, the product pages and all
+other written content) are **all rights reserved**. They are not covered by the
+MIT license and may not be reused without written permission. See
 [ADR 0007](docs/adr/0007-split-license.md).
 
 Third-party logos in `src/assets/icons` belong to their owners, are shown only

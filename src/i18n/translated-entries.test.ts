@@ -46,21 +46,21 @@ describe('readTranslatedEntries', () => {
   test('reads language, key, title, body and hash of Markdown entries', () => {
     withContent(
       {
-        'log/en/one.md': file('en', 'One'),
-        'log/es/uno.md': file('es', 'Uno', 'sourceHash: abc\n'),
+        'products/en/one.md': file('en', 'One'),
+        'products/es/uno.md': file('es', 'Uno', 'sourceHash: abc\n'),
         'chrome.json': '{}',
       },
       (root) => {
         expect(readTranslatedEntries(root)).toEqual([
           {
-            id: 'src/content/log/en/one.md',
+            id: 'src/content/products/en/one.md',
             lang: 'en',
             key: 'one',
             title: 'One',
             body: 'Body\n',
           },
           {
-            id: 'src/content/log/es/uno.md',
+            id: 'src/content/products/es/uno.md',
             lang: 'es',
             key: 'one',
             title: 'Uno',
@@ -77,9 +77,9 @@ describe('translationProblems', () => {
   test('flags duplicate titles and changed code blocks', () => {
     withContent(
       {
-        'log/en/one.md': `---\nlang: en\nkey: one\ntitle: "T"\n---\n\`\`\`\na\n\`\`\`\n`,
-        'log/es/uno.md': `---\nlang: es\nkey: one\ntitle: "T"\n---\n\`\`\`\nb\n\`\`\`\n`,
-        'log/en/two.md': file('en', 'T').replace('key: one', 'key: two'),
+        'products/en/one.md': `---\nlang: en\nkey: one\ntitle: "T"\n---\n\`\`\`\na\n\`\`\`\n`,
+        'products/es/uno.md': `---\nlang: es\nkey: one\ntitle: "T"\n---\n\`\`\`\nb\n\`\`\`\n`,
+        'products/en/two.md': file('en', 'T').replace('key: one', 'key: two'),
       },
       (root) => {
         const problems = translationProblems(root)

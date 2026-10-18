@@ -5,9 +5,6 @@ const PAGE_PATHS = [
   '/about/',
   '/colophon/',
   '/uses/',
-  '/log/',
-  '/log/every-entry-in-two-languages/',
-  '/log/nothing-from-other-origins/',
   '/products/snug/',
   '/products/animated-fluent-emojis/',
 ] as const

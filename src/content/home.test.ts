@@ -6,7 +6,6 @@ import { LOCALES, type Locale } from '../i18n/locales'
 import home from './home.json'
 
 const SOURCE_ROOT = path.resolve(import.meta.dir, '..')
-const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
 
 const pageSource = (locale: Locale): string =>
   readFileSync(
@@ -21,21 +20,10 @@ const pageSource = (locale: Locale): string =>
 const productKeys = (locale: Locale): string[] =>
   home[locale].products.items.map((item) => item.key)
 
-const statusDates = (locale: Locale): string[] =>
-  home[locale].status.rows.map((row) => row.date)
-
 describe('home content', () => {
   for (const locale of LOCALES) {
-    test(`${locale} status rows carry an ISO date`, () => {
-      const dates = statusDates(locale)
-      expect(dates.length).toBeGreaterThan(0)
-      for (const date of dates) expect(date).toMatch(ISO_DATE)
-    })
-
-    test(`${locale} status rows are flagged and products are real`, () => {
-      const rows = home[locale].status.rows
+    test(`${locale} products are real and shipped`, () => {
       const products = home[locale].products.items
-      expect(rows.every((row) => row.sample)).toBe(true)
       expect(products.every((product) => !product.sample)).toBe(true)
       expect(products.every((product) => product.year === '2024')).toBe(true)
       expect(products.every((product) => product.stateKind === 'shipped')).toBe(
@@ -47,7 +35,7 @@ describe('home content', () => {
       const row = home[locale].products.contribution
       expect(row.key).toBe('json-flow')
       expect(row.tag).toMatch(/ · /)
-      expect(row.metaDate).toMatch(ISO_DATE)
+      expect(row.metaDate).toMatch(/^\d{4}-\d{2}-\d{2}$/)
       expect(row.meta).toMatch(/^75[.,]000\+/)
       expect(row.href).toStartWith('https://')
       expect(row.year).toBe('2024–25')
@@ -73,8 +61,12 @@ describe('home content', () => {
     expect(es.products.contribution.path).toBe(en.products.contribution.path)
   })
 
-  test('both languages list the same status rows by date', () => {
-    expect(statusDates('es')).toEqual(statusDates('en'))
+  test('the hero links the products anchor and has no Log or Status tile', () => {
+    for (const locale of LOCALES) {
+      expect(home[locale].hero.primary.path).toBe('/#products')
+      expect(Object.keys(home[locale])).not.toContain('status')
+      expect(Object.keys(home[locale])).not.toContain('recent')
+    }
   })
 
   test('StreamBoss is not shown', () => {
