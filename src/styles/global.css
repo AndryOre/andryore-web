@@ -768,6 +768,7 @@ html:not(.dark) .github-tile {
   letter-spacing: 0.04em;
 }
 .github-months li {
+  grid-row: 1;
   min-width: 0;
   white-space: nowrap;
 }

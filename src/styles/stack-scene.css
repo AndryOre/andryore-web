@@ -198,14 +198,14 @@ html:not(.dark) .stack-tile {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .stack-tile-field {
+  .stack-tile-field:not(.nf-tile) {
     translate: calc(var(--x) * 0.08) calc(var(--cluster-y) + var(--y) * 0.08);
     scale: 0.5;
   }
 }
 
 @supports not ((animation-timeline: view()) and (animation-range: entry)) {
-  .stack-tile-field {
+  .stack-tile-field:not(.nf-tile) {
     translate: calc(var(--x) * 0.08) calc(var(--cluster-y) + var(--y) * 0.08);
     scale: 0.5;
   }
