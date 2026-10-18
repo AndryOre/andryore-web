@@ -18,7 +18,7 @@ const element = (): TileElement => {
     },
     replaceChildren: (...cells) => {
       dataset.cells = cells
-        .map((cell) => `${cell.dataset.level ?? ''}|${cell.title}`)
+        .map((cell) => `${cell.dataset.level ?? ''}|${cell.dataset.tip ?? ''}`)
         .join(',')
     },
   }
@@ -34,6 +34,9 @@ const createRoot = (locale = 'en') => {
       gridLabel: 'Grid',
       dayOne: locale === 'es' ? 'día' : 'day',
       dayOther: locale === 'es' ? 'días' : 'days',
+      tipOne: '{count} contribution on {date}',
+      tipOther: '{count} contributions on {date}',
+      tipNone: 'No contributions on {date}',
     },
     querySelector: (selector) => {
       if (!elements.has(selector)) elements.set(selector, element())
@@ -61,13 +64,13 @@ describe('mountGithubTile', () => {
     const shown = await mountGithubTile(root, {
       fetcher: () => Promise.resolve(Response.json(live)),
       now: () => NOW,
-      createCell: () => ({ dataset: {}, title: '' }),
+      createCell: () => ({ dataset: {} }),
     })
     expect(shown).toBe(true)
     expect(text('[data-count-total]')?.textContent).toBe('1,234')
     expect(text('[data-count-total]')?.dataset.countTotal).toBe('1234')
     expect(text('[data-gh-grid]')?.dataset.cells).toBe(
-      '2|2026-10-16: 2,4|2026-10-17: 5',
+      '2|2 contributions on Oct 16, 2026,4|5 contributions on Oct 17, 2026',
     )
     expect(text('[data-gh-stat="longest"]')?.textContent).toBe('2 days')
     expect(text('[data-gh-stat="best"]')?.textContent).toBe('5')
@@ -80,7 +83,7 @@ describe('mountGithubTile', () => {
     await mountGithubTile(root, {
       fetcher: () => Promise.resolve(Response.json(live)),
       now: () => NOW,
-      createCell: () => ({ dataset: {}, title: '' }),
+      createCell: () => ({ dataset: {} }),
     })
     expect(text('[data-gh-updated]')?.textContent).toBe(
       'Actualizado hace 3 horas',
@@ -92,7 +95,7 @@ describe('mountGithubTile', () => {
     const shown = await mountGithubTile(root, {
       fetcher: () => Promise.resolve(new Response('x', { status: 503 })),
       now: () => NOW,
-      createCell: () => ({ dataset: {}, title: '' }),
+      createCell: () => ({ dataset: {} }),
     })
     expect(shown).toBe(false)
     expect(text('[data-gh-grid]')).toBeUndefined()

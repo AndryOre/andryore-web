@@ -4,7 +4,9 @@ import type { StreamStatus } from '../lib/twitch-status'
 import {
   loadStreamStatus,
   mountStreamTile,
+  refreshCountdown,
   STATUS_ENDPOINT,
+  type StreamTileElement,
   type StreamTileRoot,
 } from './stream-tile'
 
@@ -14,26 +16,34 @@ const respond =
     Promise.resolve(Response.json(body, { status }))
 
 const createRoot = (started: boolean) => {
-  const panels = {
-    'coming-soon': { hidden: false },
-    scheduled: { hidden: true },
-    live: { hidden: true },
-    unavailable: { hidden: true },
-  }
   const title = { hidden: false, textContent: '' }
   const next = { hidden: false, textContent: '' }
   const countdown = { hidden: false, textContent: '' }
+  const days = new Map<string, StreamTileElement>(
+    Array.from({ length: 7 }, (_, column) => [
+      String(column),
+      { hidden: false, dataset: {} },
+    ]),
+  )
   const root: StreamTileRoot = {
-    dataset: { state: 'coming-soon', started: String(started), locale: 'en' },
+    dataset: {
+      state: 'coming-soon',
+      started: String(started),
+      locale: 'en',
+      cdIn: 'in',
+      cdDay: 'd',
+      cdHour: 'h',
+      cdMinute: 'min',
+    },
     querySelector: (selector: string) => {
       if (selector === '[data-stream-title]') return title
       if (selector === '[data-stream-next]') return next
       if (selector === '[data-stream-countdown]') return countdown
-      const match = /\[data-stream-panel="([\w-]+)"\]/.exec(selector)
-      return new Map(Object.entries(panels)).get(match?.[1] ?? '') ?? null
+      const match = /\[data-stream-day="(\d)"\]/.exec(selector)
+      return days.get(match?.[1] ?? '') ?? null
     },
   }
-  return { root, panels, title, next, countdown }
+  return { root, title, next, countdown, days }
 }
 
 describe('loadStreamStatus', () => {
@@ -74,10 +84,10 @@ describe('loadStreamStatus', () => {
 })
 
 describe('mountStreamTile', () => {
-  const now = new Date('2026-10-18T19:00:00Z')
+  const now = new Date('2026-10-18T16:00:00Z')
 
-  test('shows the live panel with the stream title', async () => {
-    const { root, panels, title } = createRoot(false)
+  test('sets the live state with the stream title', async () => {
+    const { root, title } = createRoot(false)
     await mountStreamTile(
       root,
       respond({ state: 'live', title: 'On air' }),
@@ -85,31 +95,43 @@ describe('mountStreamTile', () => {
     )
     expect(root.dataset.state).toBe('live')
     expect(title.textContent).toBe('On air')
-    expect(panels.live.hidden).toBe(false)
-    expect(panels['coming-soon'].hidden).toBe(true)
   })
 
   test('keeps coming soon before streams start', async () => {
-    const { root, panels } = createRoot(false)
+    const { root, next } = createRoot(false)
     await mountStreamTile(root, respond({ state: 'offline' }), now)
     expect(root.dataset.state).toBe('coming-soon')
-    expect(panels['coming-soon'].hidden).toBe(false)
-    expect(panels.scheduled.hidden).toBe(true)
+    expect(next.textContent).toBe('')
   })
 
-  test('shows the schedule with the next session once started', async () => {
-    const { root, panels, next, countdown } = createRoot(true)
+  test('shows the next session and the live countdown once started', async () => {
+    const { root, next, countdown } = createRoot(true)
     await mountStreamTile(root, respond({ state: 'offline' }), now)
-    expect(panels.scheduled.hidden).toBe(false)
-    expect(next.textContent).toBe('Tue 19:00 UTC')
-    expect(countdown.textContent).toBe('in 2 days')
+    expect(root.dataset.state).toBe('scheduled')
+    expect(next.textContent).toBe('Tuesday 19:00 UTC')
+    expect(countdown.textContent).toBe('in 2 d 3 h')
+  })
+
+  test('outlines only today in the week row', async () => {
+    const { root, days } = createRoot(true)
+    await mountStreamTile(root, respond({ state: 'offline' }), now)
+    const marked = [...days].filter(([, day]) => day.dataset?.today === 'true')
+    expect(marked.map(([column]) => column)).toEqual(['6'])
   })
 
   test('shows unavailable once started and the endpoint is down', async () => {
-    const { root, panels } = createRoot(true)
+    const { root } = createRoot(true)
     await mountStreamTile(root, () => Promise.reject(new Error('down')), now)
     expect(root.dataset.state).toBe('unavailable')
-    expect(panels.unavailable.hidden).toBe(false)
-    expect(panels.scheduled.hidden).toBe(true)
+  })
+})
+
+describe('refreshCountdown', () => {
+  test('moves the countdown forward with the clock', () => {
+    const { root, countdown } = createRoot(true)
+    refreshCountdown(root, new Date('2026-10-20T15:40:00Z'))
+    expect(countdown.textContent).toBe('in 3 h 20 min')
+    refreshCountdown(root, new Date('2026-10-20T15:41:00Z'))
+    expect(countdown.textContent).toBe('in 3 h 19 min')
   })
 })
