@@ -406,6 +406,38 @@
     transform 160ms var(--ease-out);
 }
 
+.find-me-link[data-icon='github'] {
+  --glow: #8b949e;
+}
+
+.find-me-link[data-icon='x'] {
+  --glow: #9aa0a6;
+}
+
+.find-me-link[data-icon='youtube'] {
+  --glow: #ff0033;
+}
+
+.find-me-link[data-icon='tiktok'] {
+  --glow: #25f4ee;
+}
+
+.find-me-link[data-icon='instagram'] {
+  --glow: #e1306c;
+}
+
+.find-me-link[data-icon='twitch'] {
+  --glow: #9146ff;
+}
+
+.find-me-link[data-icon='discord'] {
+  --glow: #5865f2;
+}
+
+.find-me-link[data-icon='linkedin'] {
+  --glow: #0a66c2;
+}
+
 .find-me-link:hover,
 .find-me-link:focus-visible {
   box-shadow: 0 0 1.125rem color-mix(in srgb, var(--glow) 55%, transparent);

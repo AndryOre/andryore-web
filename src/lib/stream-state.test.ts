@@ -56,6 +56,12 @@ describe('formatting', () => {
     expect(formatCountdown(start, new Date('2026-10-18T19:00:00Z'), 'en')).toBe(
       'in 2 days',
     )
+    expect(formatCountdown(start, new Date('2026-10-18T20:00:00Z'), 'en')).toBe(
+      'in 2 days',
+    )
+    expect(formatCountdown(start, new Date('2026-10-19T18:00:00Z'), 'en')).toBe(
+      'tomorrow',
+    )
     expect(formatCountdown(start, new Date('2026-10-20T16:30:00Z'), 'en')).toBe(
       'in 2 hours',
     )

@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test'
+import { readFileSync } from 'node:fs'
 
 import { LOCALES } from '../i18n/locales'
 import { ICONS } from '../lib/icons'
@@ -16,7 +17,6 @@ describe('find me content', () => {
       for (const item of copy.items) {
         expect(item.href).toStartWith('https://')
         expect(Object.keys(ICONS)).toContain(item.icon)
-        expect(item.glow).toMatch(/^#[0-9a-f]{6}$/)
       }
       const hrefs = copy.items.map((item) => item.href)
       expect(new Set(hrefs).size).toBe(hrefs.length)
@@ -31,9 +31,16 @@ describe('find me content', () => {
     })
   }
 
+  test('every profile has a glow rule in the global stylesheet', () => {
+    const stylesheet = readFileSync('src/styles/global.css', 'utf8')
+    for (const item of findMe.en.items) {
+      expect(stylesheet).toContain(`.find-me-link[data-icon='${item.icon}']`)
+    }
+  })
+
   test('both languages list the same profiles in the same order', () => {
     const shape = (locale: (typeof LOCALES)[number]) =>
-      findMe[locale].items.map(({ icon, href, glow }) => ({ icon, href, glow }))
+      findMe[locale].items.map(({ icon, href }) => ({ icon, href }))
     expect(shape('es')).toEqual(shape('en'))
     expect(Object.keys(findMe.es)).toEqual(Object.keys(findMe.en))
   })

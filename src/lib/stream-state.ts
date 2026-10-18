@@ -81,8 +81,13 @@ export function formatCountdown(
 ): string {
   const formatter = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' })
   const remaining = Math.max(0, start.getTime() - now.getTime())
+  const calendarDays = Math.round(
+    (Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()) -
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())) /
+      DAY_MS,
+  )
   if (remaining >= DAY_MS) {
-    return formatter.format(Math.floor(remaining / DAY_MS), 'day')
+    return formatter.format(calendarDays, 'day')
   }
   return remaining >= HOUR_MS
     ? formatter.format(Math.floor(remaining / HOUR_MS), 'hour')

@@ -33,7 +33,7 @@ const hasDarkMark = (icon: string): boolean => {
           href={item.href}
           rel={externalLinkTokens()}
           aria-label={item.label}
-          style={`--glow: ${item.glow}`}
+          data-icon={item.icon}
           class="find-me-link bg-secondary border-border rounded-pill inline-flex size-11 items-center justify-center border outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           {hasDarkMark(item.icon) ? (
