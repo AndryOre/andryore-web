@@ -29,7 +29,7 @@ const allUrls = (locale: Locale): string[] => {
     ...copy.setup.map((row) => ('url' in row ? row.url : '')),
     copy.thisSite.sourceUrl,
   ]
-  return urls.filter((url): url is string => url !== undefined && url !== '')
+  return urls.filter((url) => url !== '')
 }
 
 const shape = (locale: Locale): unknown[] =>
@@ -104,11 +104,11 @@ describe('uses content', () => {
     expect(shape('es')).toEqual(shape('en'))
   })
 
-  test('the Redmi Buds row has no link and every other row has one', () => {
+  test('every setup row links out', () => {
     for (const locale of LOCALES) {
       const { setup } = uses[locale]
       for (const row of setup) {
-        expect('url' in row).toBe(row.label !== 'Redmi Buds 4 Active')
+        expect('url' in row).toBe(true)
       }
     }
   })
