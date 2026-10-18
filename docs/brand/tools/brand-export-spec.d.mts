@@ -5,6 +5,7 @@ export type BannerFormat =
   | 'linkedin-banner'
   | 'youtube-banner'
   | 'twitch-banner'
+  | 'discord-banner'
   | 'twitch-offline'
 
 export interface FormatSpec {
@@ -15,6 +16,7 @@ export interface FormatSpec {
   minHeadlinePx: number
   handleSize: number
   wordmarkWidth: number
+  headline?: boolean
   lines?: string[]
   handle?: string
   safe?: { left: number; top: number; width: number; height: number }
@@ -29,6 +31,10 @@ export const AVATAR_SIZE: number
 export const PANEL_WIDTH: number
 export const PANEL_HEIGHT: number
 export const PANEL_MAX_BYTES: number
+export const DISCORD_ICON_SIZE: number
+export const DISCORD_ICON_MAX_BYTES: number
+export const DISCORD_EMOJI_SIZE: number
+export const DISCORD_EMOJI_MAX_BYTES: number
 export const PANEL_LABELS: string[]
 export const FORMATS: Record<BannerFormat, FormatSpec>
 
@@ -53,7 +59,4 @@ export function assertSpec(
   options?: { repositoryRoot?: string; log?: (message: string) => void },
 ): Promise<void>
 
-export function panelHtml(options: {
-  label: string
-  fontFaces: string
-}): string
+export function panelHtml(options: { label: string; fontFaces: string }): string

@@ -8,6 +8,10 @@ import {
   assertSpec,
   AVATAR_SIZE,
   bannerHtml,
+  DISCORD_EMOJI_MAX_BYTES,
+  DISCORD_EMOJI_SIZE,
+  DISCORD_ICON_MAX_BYTES,
+  DISCORD_ICON_SIZE,
   effectiveSize,
   FORMATS,
   headlineOnScreen,
@@ -38,6 +42,45 @@ function render(format: keyof typeof FORMATS, theme: 'dark' | 'light') {
     fontFaces: '@font-face{font-family:X}',
   })
 }
+
+function headlineFormats() {
+  return (Object.keys(FORMATS) as (keyof typeof FORMATS)[]).filter(
+    (format) => FORMATS[format].headline !== false,
+  )
+}
+
+describe('discord', () => {
+  it('uses the Discord native sizes and byte budgets', () => {
+    expect(FORMATS['discord-banner']).toMatchObject({
+      width: 680,
+      height: 240,
+      maxBytes: 300 * KB,
+    })
+    expect(DISCORD_ICON_SIZE).toBe(1024)
+    expect(DISCORD_ICON_MAX_BYTES).toBe(300 * KB)
+    expect(DISCORD_EMOJI_SIZE).toBe(128)
+    expect(DISCORD_EMOJI_MAX_BYTES).toBe(64 * KB)
+  })
+
+  it('keeps the banner content right of the avatar, inside x 220-656 and y 24-216', () => {
+    const { safe } = FORMATS['discord-banner']
+    expect(safe).toBeDefined()
+    expect(safe?.left).toBeGreaterThanOrEqual(220)
+    expect(safe?.top).toBeGreaterThanOrEqual(24)
+    expect((safe?.left ?? 0) + (safe?.width ?? 0)).toBeLessThanOrEqual(656)
+    expect((safe?.top ?? 0) + (safe?.height ?? 0)).toBeLessThanOrEqual(216)
+  })
+
+  it('renders the wordmark and the accent handle with no headline', () => {
+    const html = render('discord-banner', 'dark')
+    expect(html).toContain('<svg id="wordmark"></svg>')
+    expect(html).toContain('@andryore &middot; andryore.dev')
+    expect(html).toContain('width:680px;height:240px')
+    expect(html).toContain('left:220px;top:24px;width:436px;height:192px')
+    expect(html).not.toContain('Building, exploring,')
+    expect(html).not.toContain('telling')
+  })
+})
 
 describe('constants', () => {
   it('exposes the export sizes and budgets', () => {
@@ -113,21 +156,24 @@ describe('legibility', () => {
   })
 
   it('keeps every headline above its minimum native size', () => {
-    for (const { headlineSize, minHeadlinePx } of Object.values(FORMATS)) {
+    for (const { headline, headlineSize, minHeadlinePx } of Object.values(
+      FORMATS,
+    )) {
+      if (headline === false) continue
       expect(headlineSize).toBeGreaterThanOrEqual(minHeadlinePx)
     }
   })
 
   it('keeps every headline readable on a phone', () => {
-    for (const format of Object.keys(FORMATS)) {
-      const { phone } = headlineOnScreen(format as keyof typeof FORMATS)
+    for (const format of headlineFormats()) {
+      const { phone } = headlineOnScreen(format)
       expect(phone).toBeGreaterThanOrEqual(15)
     }
   })
 
   it('keeps the headline at or above 30 px on a desktop', () => {
-    for (const format of Object.keys(FORMATS)) {
-      const { desktop } = headlineOnScreen(format as keyof typeof FORMATS)
+    for (const format of headlineFormats()) {
+      const { desktop } = headlineOnScreen(format)
       expect(desktop).toBeGreaterThanOrEqual(30)
     }
   })

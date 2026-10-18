@@ -55,3 +55,7 @@ _Avoid_: activity feed
 **Sound**:
 The optional interface sounds, off by default, switched from the FX tile or the dock.
 _Avoid_: audio, music
+
+**Admin app**:
+The Discord application whose bot user is the identity the Discord MCP acts as on the AndryOre server. It is not a bot with its own code.
+_Avoid_: bot, Discord bot

@@ -9,6 +9,10 @@ import {
   AVATAR_SIZE,
   bannerHtml as buildBannerHtml,
   panelHtml as buildPanelHtml,
+  DISCORD_EMOJI_MAX_BYTES,
+  DISCORD_EMOJI_SIZE,
+  DISCORD_ICON_MAX_BYTES,
+  DISCORD_ICON_SIZE,
   FORMATS,
   KB,
   MARK_SIZES,
@@ -71,7 +75,7 @@ function assertSpec(outPath, spec) {
   return assertImageSpec(outPath, spec, { repositoryRoot })
 }
 
-async function renderSvg(svg, size, outPath) {
+async function renderSvg(svg, size, outPath, maxBytes = 200 * KB) {
   const page = await browser.newPage({
     viewport: { width: size, height: size },
   })
@@ -82,7 +86,7 @@ async function renderSvg(svg, size, outPath) {
   await mkdir(path.dirname(outPath), { recursive: true })
   await page.screenshot({ path: outPath, omitBackground: true })
   await page.close()
-  await assertSpec(outPath, { width: size, height: size, maxBytes: 200 * KB })
+  await assertSpec(outPath, { width: size, height: size, maxBytes })
 }
 
 async function renderBanner(format, outPath, locale = 'en') {
@@ -156,6 +160,7 @@ try {
     'youtube-banner',
     'twitch-banner',
     'twitch-offline',
+    'discord-banner',
   ]) {
     await renderBanner(format, path.join(brandRoot, 'social', `${format}.png`))
   }
@@ -179,6 +184,18 @@ try {
     markGridSvg,
     AVATAR_SIZE,
     path.join(brandRoot, 'social/avatar-ao-grid.png'),
+  )
+  await renderSvg(
+    markGridSvg,
+    DISCORD_ICON_SIZE,
+    path.join(brandRoot, 'social/discord-icon.png'),
+    DISCORD_ICON_MAX_BYTES,
+  )
+  await renderSvg(
+    markDarkSvg,
+    DISCORD_EMOJI_SIZE,
+    path.join(brandRoot, 'social/discord-emoji-ao.png'),
+    DISCORD_EMOJI_MAX_BYTES,
   )
 } finally {
   await browser.close()

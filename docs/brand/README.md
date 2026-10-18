@@ -21,6 +21,15 @@ by `bun run brand:export` and never edited by hand.
 `bun run brand:export` reads `logo/` and `brandbook/fonts/` and writes the
 platform banners and fallback avatars into `social/`, which is not tracked.
 
+The Discord admin app assets are part of that export, never edited by hand:
+
+- `social/discord-icon.png`: 1024x1024 grid mark, app and bot icon, at most 300
+  KB.
+- `social/discord-banner.png`: 680x240, no headline, wordmark and accent
+  weighted right with the lower left clear for the avatar, at most 300 KB.
+- `social/discord-emoji-ao.png`: 128x128 dark mark, the `ao` app emoji, at most
+  64 KB.
+
 ## License
 
 See [ADR 0007](../adr/0007-split-license.md).

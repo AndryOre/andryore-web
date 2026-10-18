@@ -28,6 +28,10 @@ export const AVATAR_SIZE = 800
 export const PANEL_WIDTH = 320
 export const PANEL_HEIGHT = 72
 export const PANEL_MAX_BYTES = 100 * KB
+export const DISCORD_ICON_SIZE = 1024
+export const DISCORD_ICON_MAX_BYTES = 300 * KB
+export const DISCORD_EMOJI_SIZE = 128
+export const DISCORD_EMOJI_MAX_BYTES = 64 * KB
 export const PANEL_LABELS = [
   'about',
   'schedule',
@@ -63,6 +67,9 @@ const DESIGN_WIDTH = 1500
  * - `lines` overrides the default two-line headline break; the accent phrase
  *   follows the last entry.
  * - `handle` overrides the default handle line (HTML-escaped by the caller).
+ * - `headline: false` drops the headline: only the wordmark and the handle line
+ *   render, so `headlineSize` and `minHeadlinePx` are 0 and exempt from the
+ *   legibility checks.
  * - `devices` turns on the wallpaper devices that only read on large surfaces.
  */
 export const FORMATS = {
@@ -125,6 +132,20 @@ export const FORMATS = {
     lines: ['Building, exploring,', ''],
     handle: 'twitch.tv/andryoredev &middot; andryore.dev',
     display: { desktop: 0.6, phone: 0.25 },
+    devices: { ghost: false, dimension: false },
+  },
+  'discord-banner': {
+    width: 680,
+    height: 240,
+    maxBytes: 300 * KB,
+    headline: false,
+    headlineSize: 0,
+    minHeadlinePx: 0,
+    handleSize: 13,
+    wordmarkWidth: 300,
+    handle: '@andryore &middot; andryore.dev',
+    safe: { left: 220, top: 24, width: 436, height: 192 },
+    display: { desktop: 1, phone: 0.5 },
     devices: { ghost: false, dimension: false },
   },
   'twitch-offline': {
@@ -217,9 +238,17 @@ export function bannerHtml({
        <div style="position:absolute;right:${margin}px;bottom:${Math.round(margin * 0.55 - 8 * unit)}px;width:${stroke}px;height:${Math.round(18 * unit)}px;background:rgba(${accentRgb},0.5)"></div>
        <div style="position:absolute;left:0;right:0;bottom:${Math.round(margin * 0.55 + 12 * unit)}px;text-align:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:${decoSize}px;letter-spacing:0.14em;color:${faint}">${width - 2 * margin}</div>`
     : ''
+  const hasHeadline = spec.headline !== false
+  const wordmarkGap = hasHeadline
+    ? Math.round(headlineSize * 0.5)
+    : Math.round(handleSize * 1.5)
   const wordmark = wordmarkWidth
-    ? `<div style="width:${wordmarkWidth}px;margin-bottom:${Math.round(headlineSize * 0.5)}px">${wordmarkSvg}</div>`
+    ? `<div style="width:${wordmarkWidth}px;margin-bottom:${wordmarkGap}px">${wordmarkSvg}</div>`
     : ''
+  const headlineBlock = hasHeadline
+    ? `<div style="font-weight:700;font-size:${headlineSize}px;letter-spacing:-0.035em;line-height:1.05;text-align:${wordmarkWidth ? 'left' : 'center'}">${lines.join('<br>')}<span style="color:${accent}">${headline.accent}</span>.</div>`
+    : ''
+  const handleGap = hasHeadline ? Math.round(headlineSize * 0.35) : 0
   return `<html lang="${locale}"><style>${fontFaces}svg{display:block;width:100%;height:auto}</style>
     <body style="margin:0;width:${width}px;height:${height}px;position:relative;overflow:hidden;font-family:'Space Grotesk',system-ui,sans-serif;color:${text};background-color:${ground};background-image:linear-gradient(rgba(${accentRgb},0.08) ${stroke}px,transparent ${stroke}px),linear-gradient(90deg,rgba(${accentRgb},0.08) ${stroke}px,transparent ${stroke}px);background-size:${cell}px ${cell}px">
       ${ghost}
@@ -228,8 +257,8 @@ export function bannerHtml({
       <div style="position:absolute;right:${margin}px;top:${Math.round(margin * 0.5)}px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:${decoSize}px;letter-spacing:0.14em;color:${faint}">${width} &times; ${height}</div>
       <div style="position:absolute;left:${safe.left}px;top:${safe.top}px;width:${safe.width}px;height:${safe.height}px;display:flex;flex-direction:column;align-items:${wordmarkWidth ? 'flex-start' : 'center'};justify-content:center">
         ${wordmark}
-        <div style="font-weight:700;font-size:${headlineSize}px;letter-spacing:-0.035em;line-height:1.05;text-align:${wordmarkWidth ? 'left' : 'center'}">${lines.join('<br>')}<span style="color:${accent}">${headline.accent}</span>.</div>
-        <div style="display:flex;align-items:center;gap:${Math.round(handleSize * 0.5)}px;margin-top:${Math.round(headlineSize * 0.35)}px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:${handleSize}px;letter-spacing:0.1em;color:${muted}">
+        ${headlineBlock}
+        <div style="display:flex;align-items:center;gap:${Math.round(handleSize * 0.5)}px;margin-top:${handleGap}px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:${handleSize}px;letter-spacing:0.1em;color:${muted}">
           <span style="display:inline-block;width:${Math.round(handleSize * 0.4)}px;height:${Math.round(handleSize * 0.4)}px;background:${accent}"></span><span>${spec.handle ?? HANDLE}</span>
         </div>
       </div>
