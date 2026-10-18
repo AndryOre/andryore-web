@@ -11,7 +11,7 @@ const QUERY = `query($login: String!) {
   }
 }`
 
-export type GridLevel = 0 | 1 | 2 | 3 | 4
+type GridLevel = 0 | 1 | 2 | 3 | 4
 
 const LEVELS: Readonly<Record<string, GridLevel>> = {
   NONE: 0,
@@ -21,7 +21,8 @@ const LEVELS: Readonly<Record<string, GridLevel>> = {
   FOURTH_QUARTILE: 4,
 }
 
-interface GridDay {
+/** One calendar day of the contribution grid. */
+export interface GridDay {
   date: string
   count: number
   level: GridLevel
