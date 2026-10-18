@@ -9,14 +9,17 @@
 
 :root {
   --card-2: oklch(0.975 0.004 258);
+  --hl: rgb(255 255 255 / 0.9);
+  --shadow: 0 10px 28px -16px rgb(21 25 31 / 0.28);
 }
 
 .dark {
   --card-2: oklch(0.255 0.02 256);
+  --hl: rgb(255 255 255 / 0.05);
+  --shadow: 0 12px 30px -16px rgb(0 0 0 / 0.7);
 }
 
 @theme inline {
-  --color-card-2: var(--card-2);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -115,18 +118,6 @@
   50% {
     transform: translateY(-8px);
   }
-}
-
-.uses-page {
-  --card-2: oklch(0.975 0.004 258);
-  --hl: rgb(255 255 255 / 0.9);
-  --shadow: 0 10px 28px -16px rgb(21 25 31 / 0.28);
-}
-
-html.dark .uses-page {
-  --card-2: oklch(0.255 0.02 256);
-  --hl: rgb(255 255 255 / 0.05);
-  --shadow: 0 12px 30px -16px rgb(0 0 0 / 0.7);
 }
 
 @utility uses-surface-2 {
@@ -440,8 +431,6 @@ body {
 
 :root {
   --dock-height: 3.875rem;
-  --hl: rgb(255 255 255 / 0.9);
-  --shadow: 0 10px 28px -16px rgb(21 25 31 / 0.28);
 }
 
 [data-dock-nav] {
@@ -463,14 +452,8 @@ body {
   letter-spacing: 0.04em;
 }
 
-.dark {
-  --hl: rgb(255 255 255 / 0.05);
-  --shadow: 0 12px 30px -16px rgb(0 0 0 / 0.7);
-}
-
 .find-me-link {
   --glow: var(--foreground);
-  --hl: rgb(255 255 255 / 0.9);
   box-shadow:
     inset 0 1px 0 var(--hl),
     0 0 0 1px color-mix(in oklab, var(--glow) 16%, transparent),
@@ -478,10 +461,6 @@ body {
   transition:
     box-shadow 200ms var(--ease-out),
     transform var(--duration-fast) var(--ease-out);
-}
-
-.dark .find-me-link {
-  --hl: rgb(255 255 255 / 0.05);
 }
 
 .find-me-link[data-icon='github'] {
@@ -862,18 +841,6 @@ html:not(.dark) .github-tile {
   height: 0.78em;
   margin-inline-start: 4px;
   vertical-align: -0.02em;
-}
-
-:root {
-  --card-2: oklch(0.975 0.004 258);
-  --hl: rgb(255 255 255 / 0.9);
-  --shadow: 0 10px 28px -16px rgb(21 25 31 / 0.28);
-}
-
-.dark {
-  --card-2: oklch(0.255 0.02 256);
-  --hl: rgb(255 255 255 / 0.05);
-  --shadow: 0 12px 30px -16px rgb(0 0 0 / 0.7);
 }
 
 .about-surface {
