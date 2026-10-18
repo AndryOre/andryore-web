@@ -36,7 +36,9 @@ test.describe('find me band', () => {
     ['phone', { width: 390, height: 844 }],
     ['desktop', { width: 1440, height: 900 }],
   ] as const) {
-    test(`the dock does not cover the footer at ${name}`, async ({ page }) => {
+    test(`the dock does not cover the find me band at ${name}`, async ({
+      page,
+    }) => {
       await page.setViewportSize(viewport)
       await preparePage(page, 'light')
       await page.goto('/')
@@ -45,12 +47,12 @@ test.describe('find me band', () => {
         globalThis.scrollTo(0, globalThis.document.body.scrollHeight)
       })
       const gap = await page.evaluate(() => {
-        const footer = globalThis.document.querySelector('footer small')
+        const band = globalThis.document.querySelector('#find-me')
         const dock = globalThis.document.querySelector('[data-dock-slot] nav')
-        return !footer || !dock
+        return !band || !dock
           ? NaN
           : dock.getBoundingClientRect().top -
-              footer.getBoundingClientRect().bottom
+              band.getBoundingClientRect().bottom
       })
       expect(gap).toBeGreaterThanOrEqual(0)
     })
