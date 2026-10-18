@@ -9,7 +9,9 @@ import { localePath, type Locale } from '../i18n/locales'
 import { formatProofDate, type ProductEntry } from '../lib/products'
 import { spriteClass } from '../lib/sprites'
 import FindMe from './FindMe.astro'
-import ThemeToggle from './ThemeToggle'
+import FxTile from './FxTile.astro'
+import LanguageTile from './LanguageTile.astro'
+import ThemeSlider from './ThemeSlider'
 
 interface Props {
   locale: Locale
@@ -20,7 +22,7 @@ const copy = home[locale]
 const themeCopy = chrome[locale].theme
 
 const hasClock = Astro.slots.has('clock')
-const hasLive = Astro.slots.has('github') || Astro.slots.has('stream')
+const hasGithub = Astro.slots.has('github')
 
 const entries: ProductEntry[] = await getCollection('products')
 const productEntry = (key: string): ProductEntry | undefined =>
@@ -260,20 +262,33 @@ const installsFigure = new Intl.NumberFormat(locale).format(
     </article>
   </section>
 
-  <div data-slot="live-strip" class="grid gap-4 empty:hidden lg:grid-cols-8">
-    {hasLive && (
-      <>
-        <div class="scroll-reveal lg:col-span-5">
-          <slot name="github" />
-        </div>
-        <div class="scroll-reveal scroll-stagger-1 lg:col-span-3">
-          <slot name="stream" />
-        </div>
-      </>
+  <div data-slot="live-strip" class="grid gap-4 md:grid-cols-2 lg:grid-cols-12">
+    {hasGithub && (
+      <div class="scroll-reveal md:col-span-2 lg:col-span-4">
+        <slot name="github" />
+      </div>
     )}
+    <div class="scroll-reveal scroll-stagger-1 lg:col-span-3">
+      <slot name="stream" />
+    </div>
+    <article
+      class:list={[
+        tileClass,
+        'scroll-reveal scroll-stagger-2 lg:order-4 lg:col-span-3',
+      ]}
+    >
+      <p class={labelClass}>{themeCopy.label}</p>
+      <div class="flex flex-1 items-center">
+        <ThemeSlider client:interaction copy={themeCopy} />
+      </div>
+    </article>
+    <div class="scroll-reveal scroll-stagger-2 grid grid-cols-2 gap-4 md:col-span-2 lg:order-3 lg:col-span-2 lg:grid-cols-1">
+      <LanguageTile locale={locale} />
+      <FxTile locale={locale} />
+    </div>
   </div>
 
-  <div class="grid gap-4 md:grid-cols-2">
+  <div class="grid gap-4">
     <a
       href={localePath(locale, copy.about.path)}
       class:list={[linkTileClass, 'scroll-reveal text-foreground no-underline']}
@@ -281,15 +296,6 @@ const installsFigure = new Intl.NumberFormat(locale).format(
       <p class={labelClass}>{copy.about.label}</p>
       <p class={bodyClass}>{copy.about.body}</p>
     </a>
-    <article
-      class:list={[
-        tileClass,
-        'scroll-reveal scroll-stagger-1 flex-row items-center justify-between',
-      ]}
-    >
-      <p class={labelClass}>{copy.theme.label}</p>
-      <ThemeToggle client:interaction copy={themeCopy} />
-    </article>
   </div>
 
   <div data-slot="find-me" class="empty:hidden">
