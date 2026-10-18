@@ -572,6 +572,12 @@ html:not(.dark) .github-tile {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .caret {
+    animation: none;
+  }
+}
+
 .caret-em {
   width: 8px;
   height: 0.78em;
