@@ -25,7 +25,7 @@ describe('Dock', () => {
       'About',
       'Uses',
       'Find me',
-      'Language',
+      'EN Language',
       'Theme',
       'Sound',
     ]) {
@@ -50,7 +50,7 @@ describe('Dock', () => {
       'Products',
       'Uses',
       'Find me',
-      'Language',
+      'EN Language',
       'Theme',
       'Sound',
     ]
@@ -74,7 +74,7 @@ describe('Dock', () => {
   test('localises names and links in Spanish', () => {
     const html = render('es', '/about/')
     expect(html).toContain('aria-label="Inicio"')
-    expect(html).toContain('aria-label="Idioma"')
+    expect(html).toContain('aria-label="ES Idioma"')
     expect(html).toContain('href="/es/about/"')
     expect(html).toContain('href="/es/#products"')
   })

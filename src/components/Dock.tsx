@@ -469,7 +469,7 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
         <Button
           variant="dock"
           size="dock"
-          aria-label={copy.language.label}
+          aria-label={`${locale.toUpperCase()} ${copy.language.label}`}
           aria-haspopup="menu"
           aria-expanded={openMenu === 'language'}
           data-dock-trigger="language"

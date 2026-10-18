@@ -40,7 +40,7 @@ for (const route of HOME_ROUTES) {
       await expect(tile.locator('[data-gh-stat="best"]')).toHaveText('9')
       await expect(tile.locator('[data-gh-stat="longest"]')).toContainText('3')
       await expect(tile.locator('[data-count-total]')).toHaveText(
-        language === 'es' ? '4321' : '4,321',
+        language === 'es' ? '4.321' : '4,321',
       )
       await expect(tile.locator('[data-gh-updated]')).toHaveText(
         language === 'es' ? /^Actualizado / : /^Updated /,

@@ -17,7 +17,7 @@ test.describe('about CV split button', () => {
 
     await page.locator('[data-cv-menu-trigger]').click()
     const english = page.getByRole('menuitemradio', { name: 'English (PDF)' })
-    const spanish = page.getByRole('menuitemradio', { name: 'Español (PDF)' })
+    const spanish = page.getByRole('menuitemradio', { name: 'Spanish (PDF)' })
     await expect(english).toBeVisible()
     await expect(spanish).toBeVisible()
 

@@ -74,7 +74,7 @@ describe('badgeStyle', () => {
     expect(badgeStyle('posthog').hex).toBe('#000000')
   })
 
-  test('keeps white text on the brands the canvas names', () => {
+  test('uses dark text where white would fail WCAG AA on the brand', () => {
     for (const id of [
       'claude',
       'nushell',
@@ -87,7 +87,7 @@ describe('badgeStyle', () => {
       'playwright',
       'knip',
     ] as const)
-      expect(badgeStyle(id).text).toBe('text-white')
+      expect(badgeStyle(id).text).not.toBe('text-white')
   })
 
   test('gives the alt brands a grey badge and a full-colour logo', () => {

@@ -513,12 +513,20 @@ body {
 
 .find-me-row [data-copy-email],
 .find-me-row [data-send-email] {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border: 1px solid var(--border);
   background: var(--card-2);
   color: var(--foreground);
   transition: transform var(--duration-fast) var(--ease-out);
+}
+
+@media (min-width: 40rem) {
+  .find-me-row [data-copy-email],
+  .find-me-row [data-send-email] {
+    width: 40px;
+    height: 40px;
+  }
 }
 
 .find-me-row [data-copy-email]:hover,
