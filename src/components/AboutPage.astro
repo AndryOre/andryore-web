@@ -2,6 +2,7 @@
 import about from '../content/about.json'
 import type { Locale } from '../i18n/locales'
 import BaseLayout from '../layouts/BaseLayout.astro'
+import { ANALYTICS_EVENTS, analyticsAttributes } from '../lib/analytics'
 import { CV_PATHS } from '../lib/contact'
 import ContactBlock from './ContactBlock.astro'
 
@@ -57,6 +58,9 @@ const downloads = [
               hreflang={item.lang}
               lang={item.lang}
               type="application/pdf"
+              {...analyticsAttributes(ANALYTICS_EVENTS.cvDownload, {
+                language: item.lang,
+              })}
               class="underline underline-offset-4"
             >
               {item.label}

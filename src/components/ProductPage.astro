@@ -5,6 +5,7 @@ import { getCollection, render } from 'astro:content'
 import productUi from '../content/product-ui.json'
 import type { Locale } from '../i18n/locales'
 import BaseLayout from '../layouts/BaseLayout.astro'
+import { ANALYTICS_EVENTS, analyticsAttributes } from '../lib/analytics'
 import { externalLinkTokens } from '../lib/external-link'
 import { revealClass } from '../lib/motion'
 import {
@@ -66,6 +67,9 @@ const valueClass = 'm-0 min-w-0 [overflow-wrap:anywhere]'
         <a
           href={data.url}
           rel={externalLinkTokens()}
+          {...analyticsAttributes(ANALYTICS_EVENTS.productOpen, {
+            product: data.key,
+          })}
           class="bg-primary text-primary-foreground rounded-pill inline-flex min-h-11 items-center px-5 py-2 text-sm font-medium no-underline hover:opacity-90"
         >
           {fillPlaceholder(ui.tryCta, 'name', data.name)}
