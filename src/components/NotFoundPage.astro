@@ -12,7 +12,7 @@ interface Props {
 
 const { locale } = Astro.props
 const copy = notFound[locale]
-const [firstDigit = '4', , lastDigit = '4'] = [...copy.heading]
+const [firstDigit = '4', , lastDigit = '4'] = [...copy.code]
 const pillClass =
   'rounded-pill inline-flex min-h-11 items-center px-5 text-sm font-medium no-underline'
 ---
@@ -22,8 +22,9 @@ const pillClass =
   description={copy.meta.description}
   locale={locale}
   noindex
+  wide
 >
-  <section class="nf-stage py-10">
+  <section class="nf-stage">
     <div class="absolute inset-0" aria-hidden="true">
       {NOT_FOUND_TILES.map((tile) => (
         <StackTile
@@ -37,9 +38,9 @@ const pillClass =
         />
       ))}
     </div>
-    <h1 class="nf-code" aria-label={copy.heading}>
-      <span aria-hidden="true">{firstDigit}</span>
-      <span class="nf-monocle" aria-hidden="true">
+    <div class="nf-code" aria-hidden="true">
+      <span>{firstDigit}</span>
+      <span class="nf-monocle">
         <img
           src={monocle.src}
           alt=""
@@ -48,9 +49,14 @@ const pillClass =
           decoding="async"
         />
       </span>
-      <span aria-hidden="true">{lastDigit}</span>
+      <span>{lastDigit}</span>
+    </div>
+    <h1 class="relative m-0 text-3xl leading-[1.08] font-bold tracking-[-0.03em] text-balance md:text-[2.5rem]">
+      {copy.heading}
     </h1>
-    <p class="relative m-0 max-w-[32ch] text-lg text-balance">{copy.message}</p>
+    <p class="text-muted-foreground relative m-0 max-w-[32ch] text-lg text-balance">
+      {copy.message}
+    </p>
     <div class="relative flex flex-wrap items-center justify-center gap-3">
       <a
         href={homePath(locale)}

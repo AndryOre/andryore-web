@@ -199,19 +199,111 @@ export async function loadLiveSnapshot(
   }
 }
 
+const escapeAttribute = (value: string): string =>
+  value
+    .replaceAll('&', '&amp;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+
+/** Tooltip templates with `{count}` and `{date}` placeholders. */
+export interface TipTemplates {
+  one: string
+  other: string
+  none: string
+}
+
+/**
+ * Builds the per-day tooltip, such as "3 contributions on Oct 12, 2026".
+ * @param day The date (YYYY-MM-DD) and contribution count.
+ * @param day.date The ISO date of the day.
+ * @param day.count The contributions on that day.
+ * @param locale Language of the date and the plural rule.
+ * @param templates The sentence for one, many and no contributions.
+ * @returns The tooltip text.
+ */
+export function formatContributionTip(
+  day: { date: string; count: number },
+  locale: string,
+  templates: TipTemplates,
+): string {
+  const date = new Intl.DateTimeFormat(locale, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(`${day.date}T00:00:00Z`))
+  let template = templates.other
+  if (day.count === 0) template = templates.none
+  else if (new Intl.PluralRules(locale).select(day.count) === 'one') {
+    template = templates.one
+  }
+  return template
+    .replace('{count}', () => new Intl.NumberFormat(locale).format(day.count))
+    .replace('{date}', () => date)
+}
+
+/** A month name placed at a 1-based week column of the grid. */
+export interface MonthLabel {
+  label: string
+  column: number
+}
+
+const MIN_MONTH_SPAN_WEEKS = 3
+
+/**
+ * Finds where each month starts along the weeks of the grid. A first label
+ * that the next month would overlap is dropped.
+ * @param weeks The weeks of the grid, oldest first.
+ * @param locale Language of the month names.
+ * @returns One label per month, with its week column.
+ */
+export function monthLabels(weeks: GridDay[][], locale: string): MonthLabel[] {
+  const formatter = new Intl.DateTimeFormat(locale, {
+    month: 'short',
+    timeZone: 'UTC',
+  })
+  const labels: MonthLabel[] = []
+  let previousMonth = ''
+  for (const [index, week] of weeks.entries()) {
+    const first = week[0]
+    if (!first) continue
+    const month = first.date.slice(0, 7)
+    if (month === previousMonth) continue
+    previousMonth = month
+    labels.push({
+      label: formatter.format(new Date(`${first.date}T00:00:00Z`)),
+      column: index + 1,
+    })
+  }
+  const [head, following] = labels
+  if (
+    head &&
+    following &&
+    following.column - head.column < MIN_MONTH_SPAN_WEEKS
+  ) {
+    labels.shift()
+  }
+  return labels
+}
+
 /**
  * Renders the grid cells as markup shared by the build and the live refresh.
  * Only dates, counts and levels are interpolated, and `isLiveSnapshot`
  * rejects any other shape before a live grid reaches this function.
  * @param weeks The weeks of the grid, oldest first.
+ * @param tip Builds the tooltip text of a day.
  * @returns One `<i>` per day, in column-major order.
  */
-export function gridCellsHtml(weeks: GridDay[][]): string {
+export function gridCellsHtml(
+  weeks: GridDay[][],
+  tip: (day: GridDay) => string,
+): string {
   return weeks
     .flat()
     .map(
       (day) =>
-        `<i data-level="${String(day.level)}" title="${day.date}: ${String(day.count)}"></i>`,
+        `<i data-level="${String(day.level)}" data-tip="${escapeAttribute(tip(day))}"></i>`,
     )
     .join('')
 }

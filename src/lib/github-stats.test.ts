@@ -3,12 +3,14 @@ import { describe, expect, test } from 'bun:test'
 import type { GridSnapshot } from './github-grid'
 import {
   computeStats,
+  formatContributionTip,
   formatDays,
   formatRelative,
   formatShortDate,
   gridCellsHtml,
   isLiveSnapshot,
   loadLiveSnapshot,
+  monthLabels,
   statsView,
   updatedLabel,
 } from './github-stats'
@@ -174,17 +176,29 @@ describe('loadLiveSnapshot', () => {
 })
 
 describe('gridCellsHtml and statsView', () => {
-  test('renders one cell per day with level and title', () => {
+  test('renders one cell per day with level and tooltip', () => {
     expect(
-      gridCellsHtml([
+      gridCellsHtml(
         [
-          { date: '2026-01-01', count: 0, level: 0 },
-          { date: '2026-01-02', count: 4, level: 3 },
+          [
+            { date: '2026-01-01', count: 0, level: 0 },
+            { date: '2026-01-02', count: 4, level: 3 },
+          ],
         ],
-      ]),
+        (day) => `${day.date}|${String(day.count)}`,
+      ),
     ).toBe(
-      '<i data-level="0" title="2026-01-01: 0"></i><i data-level="3" title="2026-01-02: 4"></i>',
+      '<i data-level="0" data-tip="2026-01-01|0"></i><i data-level="3" data-tip="2026-01-02|4"></i>',
     )
+  })
+
+  test('escapes the tooltip text', () => {
+    expect(
+      gridCellsHtml(
+        [[{ date: '2026-01-01', count: 1, level: 1 }]],
+        () => '"<&>',
+      ),
+    ).toContain('data-tip="&quot;&lt;&amp;&gt;"')
   })
 
   test('formats the stats for display', () => {
@@ -212,5 +226,77 @@ describe('gridCellsHtml and statsView', () => {
         weeks: [[{ date: '"><script>', count: 1, level: 1 }]],
       }),
     ).toBe(false)
+  })
+})
+
+describe('formatContributionTip', () => {
+  const en = {
+    one: '{count} contribution on {date}',
+    other: '{count} contributions on {date}',
+    none: 'No contributions on {date}',
+  }
+  const es = {
+    one: '{count} contribución el {date}',
+    other: '{count} contribuciones el {date}',
+    none: 'Sin contribuciones el {date}',
+  }
+
+  test('names the count and the full date in English', () => {
+    expect(
+      formatContributionTip({ date: '2026-10-12', count: 3 }, 'en', en),
+    ).toBe('3 contributions on Oct 12, 2026')
+    expect(
+      formatContributionTip({ date: '2026-10-12', count: 1 }, 'en', en),
+    ).toBe('1 contribution on Oct 12, 2026')
+  })
+
+  test('says so when the day is empty', () => {
+    expect(
+      formatContributionTip({ date: '2026-10-12', count: 0 }, 'en', en),
+    ).toBe('No contributions on Oct 12, 2026')
+  })
+
+  test('follows the Spanish plural and date format', () => {
+    expect(
+      formatContributionTip({ date: '2026-10-12', count: 3 }, 'es', es),
+    ).toBe('3 contribuciones el 12 oct 2026')
+  })
+})
+
+const week = (date: string) => [{ date, count: 0, level: 0 as const }]
+
+describe('monthLabels', () => {
+  test('labels the week where a month first appears', () => {
+    const weeks = [
+      week('2026-01-04'),
+      week('2026-01-11'),
+      week('2026-01-18'),
+      week('2026-01-25'),
+      week('2026-02-01'),
+      week('2026-02-08'),
+    ]
+    expect(monthLabels(weeks, 'en')).toEqual([
+      { label: 'Jan', column: 1 },
+      { label: 'Feb', column: 5 },
+    ])
+  })
+
+  test('drops a first label that a month change would overlap', () => {
+    const weeks = [
+      week('2026-01-25'),
+      week('2026-02-01'),
+      week('2026-02-08'),
+      week('2026-02-15'),
+      week('2026-02-22'),
+      week('2026-03-01'),
+    ]
+    expect(monthLabels(weeks, 'en').map((month) => month.label)).toEqual([
+      'Feb',
+      'Mar',
+    ])
+  })
+
+  test('uses the locale month names', () => {
+    expect(monthLabels([week('2026-10-04')], 'es')[0]?.label).toBe('oct')
   })
 })

@@ -115,8 +115,6 @@ gallery:
     alt: 'Pantalla de importación de Snug con vista previa de los cambios'
   - src: '../../assets/products/snug/03-auto-export.png'
     alt: 'Ajustes de respaldo automático de Snug'
-  - src: '../../assets/products/snug/04-popup.png'
-    alt: 'Ventana emergente de Snug en la barra de herramientas'
 stack:
   - 'WXT'
   - 'React'

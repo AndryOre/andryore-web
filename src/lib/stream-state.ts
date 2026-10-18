@@ -93,3 +93,84 @@ export function formatCountdown(
     ? formatter.format(Math.floor(remaining / HOUR_MS), 'hour')
     : formatter.format(Math.ceil(remaining / MINUTE_MS), 'minute')
 }
+
+/** Unit words and lead word of the compact countdown, from the content file. */
+export interface CountdownUnits {
+  prefix: string
+  day: string
+  hour: string
+  minute: string
+}
+
+/**
+ * Describes the time left until a start in the compact tile form, such as
+ * "in 2 d 3 h". Under a day it shows hours and minutes, under an hour only
+ * minutes, and it never goes below zero.
+ * @param start The future moment.
+ * @param now The current moment.
+ * @param units Lead word and unit words in the page language.
+ * @returns The countdown phrase.
+ */
+export function formatCompactCountdown(
+  start: Date,
+  now: Date,
+  units: CountdownUnits,
+): string {
+  const remaining = Math.max(0, start.getTime() - now.getTime())
+  const days = Math.floor(remaining / DAY_MS)
+  const hours = Math.floor((remaining % DAY_MS) / HOUR_MS)
+  if (days >= 1) {
+    return `${units.prefix} ${String(days)} ${units.day} ${String(hours)} ${units.hour}`
+  }
+  const minutes = Math.floor((remaining % HOUR_MS) / MINUTE_MS)
+  return hours >= 1
+    ? `${units.prefix} ${String(hours)} ${units.hour} ${String(minutes)} ${units.minute}`
+    : `${units.prefix} ${String(minutes)} ${units.minute}`
+}
+
+/**
+ * Finds the Monday-first column of a moment's UTC weekday.
+ * @param now The moment to place.
+ * @returns 0 for Monday up to 6 for Sunday.
+ */
+export function weekColumn(now: Date): number {
+  return (now.getUTCDay() + 6) % 7
+}
+
+/** One column of the week row. */
+export interface WeekDay {
+  /** True for a planned session day. */
+  session: boolean
+  /** True for the current UTC day. */
+  today: boolean
+}
+
+/**
+ * Builds the Monday-to-Sunday row of the stream tile.
+ * @param now The current moment.
+ * @returns Seven days, Monday first.
+ */
+export function weekStrip(now: Date): WeekDay[] {
+  const todayColumn = weekColumn(now)
+  return Array.from({ length: 7 }, (_, column) => ({
+    session: SESSION_WEEKDAYS.includes((column + 1) % 7),
+    today: column === todayColumn,
+  }))
+}
+
+/**
+ * Formats a session start as full weekday and UTC time, such as
+ * "Tuesday 19:00 UTC".
+ * @param start Moment the session begins.
+ * @param locale Language of the weekday.
+ * @returns The label.
+ */
+export function formatSessionLong(start: Date, locale: string): string {
+  const weekday = new Intl.DateTimeFormat(locale, {
+    weekday: 'long',
+    timeZone: 'UTC',
+  }).format(start)
+  const hour = String(start.getUTCHours()).padStart(2, '0')
+  const minute = String(start.getUTCMinutes()).padStart(2, '0')
+  return `${weekday} ${hour}:${minute} UTC`
+}
