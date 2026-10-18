@@ -8,9 +8,9 @@
   },
   "es": {
     "label": "Stack",
-    "title": "Con qué construyo",
-    "ctaTitle": "Mira el stack completo",
+    "title": "Con lo que construyo",
+    "ctaTitle": "Mira todo el stack",
     "count": "{count} herramientas y tecnologías",
-    "action": "Abrir Uses →"
+    "action": "Abrir Uso →"
   }
 }

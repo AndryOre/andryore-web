@@ -23,9 +23,9 @@ const count = copy.count.replace('{count}', () =>
           id={tile.id}
           size={tile.size}
           class:list={[
-            'stack-tile-field',
+            'stack-tile-scatter',
             tile.placement,
-            !tile.mobile && 'max-md:hidden',
+            !tile.mobile && 'stack-tile-extra',
           ]}
         />
       ))}
@@ -33,8 +33,8 @@ const count = copy.count.replace('{count}', () =>
 
     <header class="stack-title">
       <p class="stack-label">
-        <span class="caret" aria-hidden="true"></span>
         {copy.label}
+        <span class="caret" aria-hidden="true"></span>
       </p>
       <h2 id="stack-scene-title">{copy.title}</h2>
     </header>
