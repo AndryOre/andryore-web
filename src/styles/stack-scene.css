@@ -447,7 +447,13 @@ html:not(.dark) .stack-tile-end {
   display: block;
   width: 100%;
   height: auto;
-  animation: sprite-run 2.7s steps(63, jump-none) infinite;
+  animation: nf-sprite-run 2.7s steps(63, jump-none) infinite;
+}
+
+@keyframes nf-sprite-run {
+  to {
+    transform: translateY(-98.4375%);
+  }
 }
 
 .nf-title {
