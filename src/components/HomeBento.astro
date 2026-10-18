@@ -11,6 +11,7 @@ import { spriteClass } from '../lib/sprites'
 import FindMe from './FindMe.astro'
 import FxTile from './FxTile.astro'
 import LanguageTile from './LanguageTile.astro'
+import StackScene from './StackScene.astro'
 import ThemeSlider from './ThemeSlider'
 
 interface Props {
@@ -304,7 +305,9 @@ const installsFigure = new Intl.NumberFormat(locale).format(
     <FindMe locale={locale} />
   </div>
 
-  <div data-slot="stack-scene" class="empty:hidden"></div>
+  <div data-slot="stack-scene">
+    <StackScene locale={locale} />
+  </div>
 </div>
 
 <script>
