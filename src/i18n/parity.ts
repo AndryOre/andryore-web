@@ -19,7 +19,7 @@ const compareText = (left: string, right: string): number =>
   left.localeCompare(right)
 
 const PLACEHOLDER = /\{[^{}]+\}/g
-const LEAKED_TODO = /\b(?:TODO|FIXME|TBD|lorem ipsum)\b/i
+const LEAKED_TODO = /\b(?:TODO|FIXME|TBD)\b|\b[Ll]orem [Ii]psum\b/
 const MAX_TITLE_LENGTH = 60
 const MAX_DESCRIPTION_LENGTH = 160
 

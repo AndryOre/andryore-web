@@ -148,6 +148,12 @@ describe('lintCopy', () => {
     expect(lintCopy('f.json', { en: { a: 'TODO translate' } })).toHaveLength(1)
   })
 
+  test('does not mistake the Spanish word todo for a leaked TODO', () => {
+    expect(lintCopy('f.json', { es: { a: 'Sobre todo TypeScript' } })).toEqual(
+      [],
+    )
+  })
+
   test('flags a long title and description', () => {
     const problems = lintCopy('f.json', {
       en: { title: 'x'.repeat(61), description: 'y'.repeat(161) },

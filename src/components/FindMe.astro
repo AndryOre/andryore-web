@@ -22,11 +22,20 @@ const hasDarkMark = (icon: string): boolean => {
 }
 ---
 
-<article class="bg-card border-border relative flex min-w-0 flex-col gap-4 rounded-[1.25rem] border p-5 shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)]">
-  <p class="text-muted-foreground m-0 flex items-center justify-between gap-3 font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase">
-    {copy.label}
-  </p>
-  <ul class="m-0 flex list-none flex-wrap gap-3 p-0">
+<section
+  class="flex flex-col items-center gap-6 pt-6 pb-2 text-center"
+  aria-labelledby="find-me-heading"
+>
+  <div class="flex flex-col gap-2">
+    <h2
+      id="find-me-heading"
+      class="m-0 text-2xl font-bold tracking-[-0.025em] sm:text-[2rem]"
+    >
+      {copy.label}
+    </h2>
+    <p class="text-muted-foreground m-0 text-base">{copy.subline}</p>
+  </div>
+  <ul class="m-0 flex list-none flex-wrap justify-center gap-3.5 p-0">
     {copy.items.map((item) => (
       <li class="group relative">
         <a
@@ -34,19 +43,19 @@ const hasDarkMark = (icon: string): boolean => {
           rel={externalLinkTokens()}
           aria-label={item.label}
           data-icon={item.icon}
-          class="find-me-link bg-secondary border-border rounded-pill inline-flex size-11 items-center justify-center border outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          class="find-me-link bg-card border-border rounded-pill inline-flex size-[3.75rem] items-center justify-center border shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)] outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           {hasDarkMark(item.icon) ? (
             <>
-              <BrandIcon id={item.icon as IconId} class="size-5 dark:hidden" />
+              <BrandIcon id={item.icon as IconId} class="size-7 dark:hidden" />
               <BrandIcon
                 id={item.icon as IconId}
                 variant="dark"
-                class="hidden size-5 dark:block"
+                class="hidden size-7 dark:block"
               />
             </>
           ) : (
-            <BrandIcon id={item.icon as IconId} class="size-5" />
+            <BrandIcon id={item.icon as IconId} class="size-7" />
           )}
         </a>
         <span
@@ -62,7 +71,7 @@ const hasDarkMark = (icon: string): boolean => {
     data-email-chip
     role="group"
     aria-label={copy.emailLabel}
-    class="bg-secondary border-border rounded-pill flex w-fit max-w-full items-center gap-1 border py-0.5 pr-0.5 pl-4"
+    class="bg-card border-border rounded-pill flex w-fit max-w-full items-center gap-1 border py-1 pr-1 pl-4 [&_[data-copy-email]]:size-10"
   >
     <span
       id={emailId}
@@ -84,7 +93,7 @@ const hasDarkMark = (icon: string): boolean => {
       href={`mailto:${CONTACT_EMAIL}`}
       aria-label={copy.sendLabel}
       data-send-email
-      class="text-muted-foreground hover:text-foreground rounded-pill inline-flex size-11 shrink-0 items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      class="text-muted-foreground hover:text-foreground rounded-pill inline-flex size-10 shrink-0 items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <svg
         width="18"
@@ -102,4 +111,4 @@ const hasDarkMark = (icon: string): boolean => {
       </svg>
     </a>
   </div>
-</article>
+</section>
