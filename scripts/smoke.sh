@@ -64,6 +64,8 @@ grep -q "script-src 'self' https://cloud.umami.is 'sha256-" <<<"$csp" ||
   fail "Umami is not the only extra script-src origin"
 grep -q "connect-src 'self' https://gateway.umami.is;" <<<"$csp" ||
   fail "Umami gateway is not the only extra connect-src origin"
+grep -q "manifest-src 'self';" <<<"$csp" ||
+  fail "CSP is missing manifest-src 'self'"
 case "$csp" in *"'unsafe-inline'"* | *"'unsafe-eval'"*) fail "CSP allows unsafe-inline or unsafe-eval" ;; esac
 grep -q "'sha256-" <<<"$csp" ||
   fail "CSP script-src has no sha256 hashes: inline scripts are blocked (ADR 0012)"

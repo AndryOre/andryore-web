@@ -11,10 +11,10 @@ export const DOCK_PAGES = [
 export type DockPageKey = (typeof DOCK_PAGES)[number]['key']
 
 /** Largest scale a dock item reaches under the pointer. */
-export const MAGNIFICATION_MAX_SCALE = 1.35
+export const MAGNIFICATION_MAX_SCALE = 1.15
 
 /** Distance from the pointer, in pixels, past which an item is not scaled. */
-export const MAGNIFICATION_RADIUS_PX = 96
+export const MAGNIFICATION_RADIUS_PX = 72
 
 /**
  * Which dock page a locale-neutral path belongs to.
