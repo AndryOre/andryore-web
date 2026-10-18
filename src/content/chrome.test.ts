@@ -18,6 +18,19 @@ describe('chrome content', () => {
         expect(sound.on).not.toBe(sound.off)
       })
 
+      test('matches the canvas text table', () => {
+        const copy = chrome[locale]
+        const expected = {
+          en: ['Auto', 'Find me', 'Sound off'],
+          es: ['Auto', 'Encuéntrame', 'Sonido apagado'],
+        }[locale]
+        expect([
+          copy.theme.auto,
+          copy.dock.pages.findMe,
+          copy.dock.sound.off,
+        ]).toEqual(expected)
+      })
+
       test('carries no footer note', () => {
         expect(chrome[locale]).not.toHaveProperty('footerNote')
       })

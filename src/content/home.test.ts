@@ -36,7 +36,7 @@ describe('home content', () => {
       const row = home[locale].products.contribution
       expect(row.key).toBe('json-flow')
       expect(Object.keys(row)).not.toContain('tag')
-      expect(row.meta).toMatch(/^75[.,]000\+/)
+      expect(row.meta).toMatch(/75[.,]000/)
       expect(row.href).toStartWith('https://')
       expect(row.year).toBe('2024–25')
       expect(row.description).not.toMatch(/commit/i)
@@ -116,8 +116,21 @@ describe('home v4 content', () => {
       const row = home[locale].products.contribution
       const digits = Number(row.meta.replaceAll(/\D/g, ''))
       expect(row.metaTotal).toBe(digits)
-      expect(row.metaSuffix).toStartWith('+')
+      const figure = new Intl.NumberFormat(locale).format(row.metaTotal)
+      expect(`${row.metaPrefix}${figure}${row.metaSuffix}`).toBe(row.meta)
     }
+    expect(home.es.products.contribution.meta).toBe(
+      'Más de 75.000 instalaciones',
+    )
+  })
+
+  test('the availability copy is the canvas copy', () => {
+    expect(home.en.hero.availability).toBe(
+      'Open to contract and full-time work.',
+    )
+    expect(home.es.hero.availability).toBe(
+      'Abierto a trabajo por contrato y a tiempo completo.',
+    )
   })
 
   test('the wordmark parts spell the wordmark in both languages', () => {

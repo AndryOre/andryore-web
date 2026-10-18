@@ -19,7 +19,7 @@
         "path": "/about/"
       },
       "annotation": "Space Grotesk 700 · 60 / 1.04",
-      "availability": "Open to contract and full-time work"
+      "availability": "Open to contract and full-time work."
     },
     "products": {
       "imagePlaceholder": "placeholder until captured",
@@ -57,6 +57,7 @@
         "year": "2024–25",
         "metaDate": "2026-10-18",
         "metaTotal": 75000,
+        "metaPrefix": "",
         "metaSuffix": "+ installs"
       },
       "heading": "Things I shipped"
@@ -115,7 +116,7 @@
         "path": "/about/"
       },
       "annotation": "Space Grotesk 700 · 60 / 1.04",
-      "availability": "Disponible para contratos y tiempo completo"
+      "availability": "Abierto a trabajo por contrato y a tiempo completo."
     },
     "products": {
       "imagePlaceholder": "marcador hasta capturar",
@@ -145,7 +146,7 @@
         "label": "Colaboraciones",
         "name": "JSON Flow",
         "description": "Una extensión de VS Code que convierte JSON, YAML, XML y CSV en grafos interactivos. Hice el sitio de marketing y colaboré en el webview de React.",
-        "meta": "75.000+ instalaciones",
+        "meta": "Más de 75.000 instalaciones",
         "action": "Visitar json-flow.com",
         "key": "json-flow",
         "path": "/products/json-flow/",
@@ -153,7 +154,8 @@
         "year": "2024–25",
         "metaDate": "2026-10-18",
         "metaTotal": 75000,
-        "metaSuffix": "+ instalaciones"
+        "metaPrefix": "Más de ",
+        "metaSuffix": " instalaciones"
       },
       "heading": "Lo que publiqué"
     },

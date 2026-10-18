@@ -99,6 +99,7 @@ export default function CopyEmailButton({
         type="button"
         variant="ghost"
         size="icon"
+        className="size-11 sm:size-10"
         aria-label={copy.copyLabel}
         data-copy-email
         onClick={() => {

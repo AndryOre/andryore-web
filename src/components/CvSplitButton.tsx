@@ -21,6 +21,7 @@ interface CvSplitButtonCopy {
   cvLabel: string
   cvGroupLabel: string
   cvMenuLabel: string
+  cvFileTag: string
   cvEnglishOption: string
   cvSpanishOption: string
   cvEnglishFile: string
@@ -67,21 +68,21 @@ export default function CvSplitButton({
         type="application/pdf"
         data-cv-download
         {...analyticsAttributes(ANALYTICS_EVENTS.cvDownload, { language })}
-        className={buttonClassName('default', 'default', 'gap-2 pr-4 pl-5')}
+        className={buttonClassName('neutral', 'cta', 'border-r-0')}
       >
-        <DownloadIcon aria-hidden="true" />
+        <DownloadIcon aria-hidden="true" strokeWidth={1.8} />
         {`${copy.cvLabel} · ${language.toUpperCase()}`}
         <span className="sr-only">{options[language].label}</span>
       </a>
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Button
-            variant="split"
+            variant="neutral"
             size="icon"
             aria-label={copy.cvMenuLabel}
             data-cv-menu-trigger
           >
-            <ChevronDownIcon aria-hidden="true" />
+            <ChevronDownIcon aria-hidden="true" strokeWidth={1.8} />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -97,6 +98,7 @@ export default function CvSplitButton({
                 data-cv-option={option}
               >
                 {options[option].label}
+                <span aria-hidden="true">{copy.cvFileTag}</span>
               </DropdownMenuRadioItem>
             ))}
           </DropdownMenuRadioGroup>

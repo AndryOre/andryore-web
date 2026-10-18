@@ -54,6 +54,7 @@ repositories. The Ao mark is an own asset. The inline glyphs in
 | `prettier.svg`         | Prettier contributors               | <https://svgl.app/library/prettier-icon-light.svg>                                                        |
 | `prettier-dark.svg`    | Prettier contributors               | <https://svgl.app/library/prettier-icon-dark.svg>                                                         |
 | `docker.svg`           | Docker, Inc.                        | <https://svgl.app/library/docker.svg>                                                                     |
+| `nginx.svg`            | F5, Inc.                            | <https://svgl.app/library/nginx.svg>                                                                      |
 | `linear.svg`           | Linear Orbit, Inc.                  | <https://svgl.app/library/linear.svg>                                                                     |
 | `git.svg`              | Software Freedom Conservancy        | <https://svgl.app/library/git.svg>                                                                        |
 | `bitwarden.svg`        | Bitwarden Inc.                      | <https://svgl.app/library/bitwarden.svg>                                                                  |
