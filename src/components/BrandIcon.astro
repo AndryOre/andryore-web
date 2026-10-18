@@ -1,0 +1,30 @@
+---
+import { resolveIcon, type IconId } from '../lib/icons'
+
+interface Props {
+  id: IconId
+  class?: string
+  variant?: 'light' | 'dark'
+}
+
+const urls = import.meta.glob<string>('/src/assets/icons/*.svg', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+})
+
+const { id, class: className, variant = 'light' } = Astro.props
+const source = urls[resolveIcon(id)[variant]]
+if (source === undefined)
+  throw new Error(`Icon "${id}" has no ${variant} asset`)
+---
+
+<img
+  src={source}
+  alt=""
+  aria-hidden="true"
+  width="24"
+  height="24"
+  decoding="async"
+  class={className}
+/>

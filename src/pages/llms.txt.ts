@@ -1,7 +1,6 @@
 import type { APIRoute } from 'astro'
 
 import about from '../content/about.json'
-import colophon from '../content/colophon.json'
 import home from '../content/home.json'
 import uses from '../content/uses.json'
 import { buildLlmsTxt } from '../seo/llms'
@@ -22,7 +21,6 @@ export const GET: APIRoute = () =>
         },
       },
       { path: '/uses/', en: uses.en.meta, es: uses.es.meta },
-      { path: '/colophon/', en: colophon.en.meta, es: colophon.es.meta },
     ]),
     { headers: { 'Content-Type': 'text/plain; charset=utf-8' } },
   )
