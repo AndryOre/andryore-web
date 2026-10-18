@@ -22,6 +22,7 @@ import {
   headerLinks,
   productPath,
   SKIN_TONE_CLASSES,
+  stackBadgeClass,
   stackIconId,
   visibleProof,
 } from './products'
@@ -385,6 +386,47 @@ describe('classifyIcon', () => {
       for (const name of names) {
         expect(classifyIcon(name), `${file}: ${name}`).toBeDefined()
       }
+    }
+  })
+})
+
+describe('stackBadgeClass', () => {
+  test('colours every stack item the product files use', () => {
+    for (const file of readdirSync(PRODUCTS_DIRECTORY)) {
+      const source = readFileSync(path.join(PRODUCTS_DIRECTORY, file), 'utf8')
+      const stack = /^stack:\n((?: {2}- .+\n)+)/m.exec(source)?.[1] ?? ''
+      for (const line of stack.trim().split('\n')) {
+        const label = line.replaceAll(/^ *- '?|'?$/g, '')
+        expect(stackBadgeClass(label)).not.toBe('bg-muted text-foreground')
+      }
+    }
+  })
+
+  test('falls back to a neutral badge for an unknown stack', () => {
+    expect(stackBadgeClass('Unknown')).toBe('bg-muted text-foreground')
+  })
+})
+
+describe('product page copy', () => {
+  test('uses the canvas wording for state, sections and back link', () => {
+    expect(productUi.en.state.live).toBe('Shipped')
+    expect(productUi.es.state.live).toBe('Publicado')
+    expect(productUi.en.backLink).toBe('Products')
+    expect(productUi.en.builtWithHeading).toBe('Built with')
+    expect(productUi.en.galleryHeading).toBe('The real interface')
+    expect(productUi.en.websiteHeading).toBe('Website')
+  })
+
+  test('drops the changelog link from the page foot', () => {
+    expect(productUi.en).not.toHaveProperty('changelogLink')
+    expect(productUi.es).not.toHaveProperty('changelogLink')
+  })
+
+  test('shows at most three interface shots per product', () => {
+    for (const file of readdirSync(PRODUCTS_DIRECTORY)) {
+      const source = readFileSync(path.join(PRODUCTS_DIRECTORY, file), 'utf8')
+      const shots = source.match(/^ {2}- src: '.*\/\d\d-.*'$/gm) ?? []
+      expect(shots.length).toBeLessThanOrEqual(3)
     }
   })
 })

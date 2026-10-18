@@ -112,8 +112,6 @@ gallery:
     alt: 'Snug import screen with a preview of what will change'
   - src: '../../assets/products/snug/03-auto-export.png'
     alt: 'Snug automatic backup settings'
-  - src: '../../assets/products/snug/04-popup.png'
-    alt: 'Snug toolbar popup'
 stack:
   - 'WXT'
   - 'React'
