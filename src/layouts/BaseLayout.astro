@@ -1,0 +1,199 @@
+---
+import '../styles/global.css'
+
+import ContactBlock from '../components/ContactBlock.astro'
+import Dock from '../components/Dock'
+import chrome from '../content/chrome.json'
+import home from '../content/home.json'
+import {
+  absoluteUrl,
+  alternatesFor,
+  DEFAULT_LOCALE,
+  localePath,
+  otherLocale,
+  splitLocalePath,
+  type Locale,
+} from '../i18n/locales'
+import { THEME_INIT_SCRIPT } from '../scripts/theme-init'
+import {
+  documentTitle,
+  imageMetaTags,
+  pageOpenGraphTags,
+} from '../seo/metadata'
+import { siteGraphJsonLd } from '../seo/structured-data'
+
+interface Props {
+  title: string
+  locale?: Locale
+  description?: string
+  noindex?: boolean
+  dark?: boolean
+  wide?: boolean
+}
+
+const {
+  title,
+  locale = 'en',
+  description,
+  noindex = false,
+  dark = false,
+  wide = false,
+} = Astro.props
+
+const copy = chrome[locale]
+const year = new Date().getFullYear()
+const { path: routePath } = splitLocalePath(Astro.url.pathname)
+const path = routePath === '/404/' ? '/' : routePath
+const alternates = alternatesFor(path)
+const canonical = absoluteUrl(localePath(locale, path))
+const fullTitle = documentTitle(title, copy.wordmark)
+const pageDescription = description ?? home[locale].meta.description
+const socialTags = [
+  ...(Astro.slots.has('head')
+    ? []
+    : pageOpenGraphTags({
+        locale,
+        title: fullTitle,
+        description: pageDescription,
+        url: canonical,
+      })),
+  ...imageMetaTags(locale, copy.ogImageAlt),
+]
+---
+
+<html lang={locale} class:list={{ dark }}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta
+      name="theme-color"
+      content="#f1f3f6"
+      media="(prefers-color-scheme: light)"
+      data-theme-color="light"
+    />
+    <meta
+      name="theme-color"
+      content="#0d1117"
+      media="(prefers-color-scheme: dark)"
+      data-theme-color="dark"
+    />
+    <script is:inline set:html={THEME_INIT_SCRIPT}></script>
+    <meta name="description" content={pageDescription} />
+    {noindex && <meta name="robots" content="noindex" />}
+    {!noindex && <link rel="canonical" href={canonical} />}
+    {!noindex &&
+      alternates.map((alternate) => (
+        <link
+          rel="alternate"
+          hreflang={alternate.hreflang}
+          href={absoluteUrl(alternate.path)}
+        />
+      ))}
+    {!noindex && (
+      <link
+        rel="alternate"
+        hreflang="x-default"
+        href={absoluteUrl(localePath(DEFAULT_LOCALE, path))}
+      />
+    )}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    {socialTags.map((tag) => (
+      <meta property={tag.property} content={tag.content} />
+    ))}
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={siteGraphJsonLd(locale, home[locale].meta.description)}
+    ></script>
+    <title>{fullTitle}</title>
+    <slot name="head" />
+  </head>
+  <body class="flex min-h-dvh flex-col">
+    <a
+      href="#main"
+      class="bg-primary text-primary-foreground rounded-pill fixed top-3 left-3 z-50 inline-flex min-h-11 -translate-y-20 items-center px-4 font-mono text-xs font-medium focus:translate-y-0"
+    >
+      {copy.skipLink}
+    </a>
+
+    <header class="px-4 py-4 sm:px-10 sm:py-6">
+      <span class="text-xl font-bold tracking-tight">{copy.wordmark}</span>
+    </header>
+
+    <main
+      id="main"
+      tabindex="-1"
+      class:list={[
+        'mx-auto w-full flex-1 px-4 py-8 focus:outline-none sm:px-6',
+        wide ? 'max-w-[75rem]' : 'max-w-reading',
+      ]}
+    >
+      <slot />
+    </main>
+
+    <footer class="border-border text-muted-foreground mx-auto w-full max-w-reading border-t px-4 py-6 pb-32 font-mono text-xs sm:px-6">
+      <div class="mb-6">
+        <ContactBlock locale={locale} idSuffix="footer" />
+      </div>
+      <nav aria-label={copy.footerNavLabel} class="mb-4 flex flex-wrap gap-x-4">
+        <a
+          href={localePath(locale, '/uses/')}
+          class="inline-flex min-h-11 min-w-11 items-center justify-center underline underline-offset-4"
+        >
+          {copy.usesLabel}
+        </a>
+        <a
+          href={localePath(locale, '/colophon/')}
+          class="inline-flex min-h-11 min-w-11 items-center justify-center underline underline-offset-4"
+        >
+          {copy.colophonLabel}
+        </a>
+        <a
+          href={localePath(otherLocale(locale), path)}
+          lang={otherLocale(locale)}
+          hreflang={otherLocale(locale)}
+          aria-label={copy.switchAria}
+          data-locale-switch={otherLocale(locale)}
+          class="inline-flex min-h-11 min-w-11 items-center justify-center underline underline-offset-4"
+        >
+          {copy.switchLabel}
+        </a>
+      </nav>
+      <small>
+        © {year} {copy.footerNote}
+      </small>
+    </footer>
+
+    <div
+      data-dock-slot
+      class="pointer-events-none fixed inset-x-0 bottom-4 z-40 flex justify-center px-4"
+    >
+      <Dock
+        client:interaction
+        copy={copy.dock}
+        themeCopy={copy.theme}
+        locale={locale}
+        path={path}
+      />
+    </div>
+  </body>
+</html>
+
+<script>
+  import { rememberLocale } from '../i18n/preference'
+
+  document.addEventListener('click', (event) => {
+    const target = event.target
+    if (!(target instanceof Element)) return
+    const link = target.closest<HTMLElement>('[data-locale-switch]')
+    const locale = link?.dataset.localeSwitch
+    if (locale === 'en' || locale === 'es') {
+      rememberLocale(localStorage, locale)
+    }
+  })
+</script>

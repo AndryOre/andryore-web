@@ -33,6 +33,13 @@ the reason the coordinator generated for it (`forge lock-reason`) — that's bui
 into `/forge` itself, identical in every repo, and nothing below needs to
 restate it.
 
+**Base commit.** The harness creates `isolation: "worktree"` checkouts at the
+old `main` commit, not at `develop`, and the permission system denies
+`git reset --hard` there. A worker therefore creates its branch straight from
+the trunk: `git checkout -b <branch> develop`, then verifies that
+`git rev-parse HEAD` equals `git rev-parse develop` before installing anything.
+The dispatch prompt must say so; without it workers stop at bootstrap.
+
 A fresh worktree only needs `bun install --frozen-lockfile --silent`
 (`worktree.bootstrap` in `forge.config.json`). No codegen and no env files to
 copy from the main checkout.
@@ -44,6 +51,12 @@ Commands a worker runs before considering its own change done: see
 `bun run test`. After a docs change, also run `bun run lint:docs`. `build` is
 deliberately left out: it's slow and the maintainer asks for it explicitly,
 except in tickets whose acceptance criteria require it.
+
+For changes that affect rendered pages, the Lighthouse gate is
+`bun run lint:lighthouse` after a `bun run build`: median of 5 runs on home and
+a Log entry in EN and ES, failing below 90 in performance, accessibility, best
+practices or SEO; page weight is printed, never enforced. See
+[Lighthouse budget](../development.md#lighthouse-budget).
 
 ## Concurrency
 

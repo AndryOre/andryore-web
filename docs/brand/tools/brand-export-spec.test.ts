@@ -143,6 +143,20 @@ describe('bannerHtml', () => {
     expect(html).toContain('width:1200px;height:630px')
   })
 
+  it('renders the Spanish headline and lang for the es locale', () => {
+    const html = bannerHtml({
+      format: 'og',
+      theme: 'dark',
+      locale: 'es',
+      wordmarkSvg: '',
+      fontFaces: '',
+    })
+    expect(html).toContain('<html lang="es">')
+    expect(html).toContain('Construyendo, explorando,')
+    expect(html).toContain('contando')
+    expect(html).not.toContain('telling')
+  })
+
   it('uses the dark and light grounds of palette B7', () => {
     expect(render('og', 'dark')).toContain('background-color:#0D1117')
     expect(render('og', 'light')).toContain('background-color:#F1F3F6')

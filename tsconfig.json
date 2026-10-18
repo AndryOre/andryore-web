@@ -6,6 +6,8 @@
     "types": ["node", "bun"],
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "paths": { "@/*": ["./src/*"] },
     "skipLibCheck": true,
     "noEmit": true,
     "strict": true,
@@ -25,6 +27,9 @@
     "docs/brand/tools",
     "docs/brand/tokens-contrast.test.ts",
     "scripts",
+    "e2e",
+    "playwright.config.ts",
+    "playwright.visual.config.ts",
     ".github/**/*.ts"
   ],
   "exclude": ["node_modules", "dist", ".claude", ".forge"]

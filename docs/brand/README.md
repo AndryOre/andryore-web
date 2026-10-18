@@ -11,7 +11,8 @@ by `bun run brand:export` and never edited by hand.
 - [brandbook/fonts.css](brandbook/fonts.css) and
   [brandbook/fonts/](brandbook/fonts/): the Space Grotesk and JetBrains Mono
   font files and their [license](brandbook/fonts/OFL.md).
-- [og/](og/): the Open Graph image.
+- [og/](og/): the Open Graph images, one per language (`og-en.png`,
+  `og-es.png`). `brand:export` also writes the site favicons into `public/`.
 - [avatar/](avatar/): the current memoji avatar.
 - [tools/](tools/): the export script and its tests.
 

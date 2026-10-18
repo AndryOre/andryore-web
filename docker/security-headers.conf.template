@@ -1,0 +1,8 @@
+add_header Content-Security-Policy "default-src 'none'; script-src 'self' __SCRIPT_HASHES__; connect-src 'self'; style-src 'self' __STYLE_HASHES__; img-src 'self' data:; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests; require-trusted-types-for 'script'" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+add_header Permissions-Policy "accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), usb=()" always;
+add_header X-Frame-Options "DENY" always;
+add_header Cross-Origin-Opener-Policy "same-origin" always;
+add_header Cross-Origin-Resource-Policy "same-origin" always;
+add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;

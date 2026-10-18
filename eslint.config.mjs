@@ -1,8 +1,11 @@
 import eslintComments from '@eslint-community/eslint-plugin-eslint-comments'
+import eslintReact from '@eslint-react/eslint-plugin'
+import { plugin as shadcn } from '@shadcn/lint'
 import prettierConfig from 'eslint-config-prettier'
 import astro from 'eslint-plugin-astro'
 import jsdoc from 'eslint-plugin-jsdoc'
 import jsxA11y from 'eslint-plugin-jsx-a11y'
+import reactHooks from 'eslint-plugin-react-hooks'
 import unicorn from 'eslint-plugin-unicorn'
 import { defineConfig, globalIgnores } from 'eslint/config'
 import tseslint from 'typescript-eslint'
@@ -44,6 +47,16 @@ export const UNAWAITED_ASYNC_MATCHER_SELECTORS = [
     "bun-types types `.rejects`/`.resolves` as synchronous matchers, so `@typescript-eslint/no-floating-promises` can't see an un-awaited one and a failing assertion is never reported. Prefix the statement with `await` or return it.",
 }))
 
+/**
+ * `shadcn/no-restyle` contracts: one entry per real, bounded design decision
+ * about a component's `className`. Empty until the first shadcn/ui component
+ * lands; add entries here, never a file-wide disable.
+ */
+export const shadcnNoRestyleContracts = []
+
+/** Files that hold React islands and the shadcn/ui components they use. */
+const ISLAND_FILES = ['src/**/*.tsx']
+
 export default defineConfig([
   {
     files: ['**/*.{ts,tsx}'],
@@ -77,6 +90,8 @@ export default defineConfig([
         'error',
         {
           allowList: {
+            env: true,
+            utils: true,
             props: true,
             Props: true,
             ref: true,
@@ -164,6 +179,31 @@ export default defineConfig([
   {
     files: ['.github/ISSUE_TEMPLATE/**'],
     rules: { 'unicorn/filename-case': 'off' },
+  },
+  {
+    files: ISLAND_FILES,
+    extends: [eslintReact.configs['recommended-typescript']],
+    plugins: { 'react-hooks': reactHooks },
+    rules: { ...reactHooks.configs.flat.recommended.rules },
+  },
+  {
+    files: ISLAND_FILES,
+    plugins: { shadcn },
+    rules: {
+      'shadcn/no-restyle': [
+        'error',
+        { allow: ['layout'], contracts: shadcnNoRestyleContracts },
+      ],
+      'shadcn/no-raw-colors': 'error',
+      'shadcn/no-arbitrary-values': 'error',
+      'shadcn/no-inline-styles': 'error',
+      'shadcn/no-unknown-classes': 'error',
+      'shadcn/require-static-classes': 'error',
+    },
+  },
+  {
+    files: ['src/components/ui/**'],
+    rules: { 'shadcn/no-restyle': 'off' },
   },
   prettierConfig,
   globalIgnores([

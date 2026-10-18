@@ -6,4 +6,10 @@
 node_modules
 dist
 coverage
-docs
+docs/*
+!docs/brand
+docs/brand/*
+!docs/brand/tokens.css
+!docs/brand/avatar
+docs/brand/avatar/*
+!docs/brand/avatar/memoji.webp
