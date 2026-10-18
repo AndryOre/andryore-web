@@ -50,6 +50,12 @@ const cardSchema = z.object({
   body: z.string().min(1),
 })
 
+const calloutSchema = z.object({
+  icon: z.string().min(1),
+  title: z.string().min(1).optional(),
+  body: z.string().min(1),
+})
+
 const linksSchema = z.object({
   npm: z.url().optional(),
   source: z.url().optional(),
@@ -105,7 +111,7 @@ export function createProductSchema<Source extends z.ZodType>(
     exportFormats: z.array(iconLabelSchema).default([]),
     importFormats: z.array(iconLabelSchema).default([]),
     cards: z.array(cardSchema).default([]),
-    callout: cardSchema.optional(),
+    callout: calloutSchema.optional(),
     skinTones: z.boolean().default(false),
     links: linksSchema.default({}),
     sprites: z.array(createSpriteSchema(imageSource)).default([]),
@@ -301,18 +307,37 @@ export function stackIconId(label: string): IconId | undefined {
 }
 
 const STACK_BADGE_CLASSES: Readonly<Record<string, string>> = {
-  wxt: 'bg-[#067a43] text-white',
-  react: 'bg-[#087ea4] text-white',
-  typescript: 'bg-[#3178c6] text-white',
-  'tailwind css': 'bg-[#0e7490] text-white',
-  'shadcn/ui': 'bg-[#18181b] text-white',
-  astro: 'bg-[#6d28d9] text-white',
-  'astro + starlight': 'bg-[#6d28d9] text-white',
+  wxt: 'bg-[#67D55E] text-[#111]',
+  react: 'bg-[#61DAFB] text-[#111]',
+  typescript: 'bg-[#3178C6] text-white',
+  'tailwind css': 'bg-[#06B6D4] text-[#111]',
+  'shadcn/ui': 'bg-[#000] text-white',
+  astro: 'bg-[#BC52EE] text-[#111]',
+  'astro + starlight': 'bg-[#BC52EE] text-[#111]',
+}
+
+const STACK_HREFS: Readonly<Record<string, string>> = {
+  wxt: 'https://wxt.dev',
+  react: 'https://react.dev',
+  typescript: 'https://www.typescriptlang.org',
+  'tailwind css': 'https://tailwindcss.com',
+  'shadcn/ui': 'https://ui.shadcn.com',
+  astro: 'https://astro.build',
+  'astro + starlight': 'https://starlight.astro.build',
+}
+
+/**
+ * The official site of a stack item.
+ * @param label The stack name as written in the product file.
+ * @returns The site URL, or `undefined` when the stack has no known site.
+ */
+export function stackHref(label: string): string | undefined {
+  return STACK_HREFS[label.toLowerCase()]
 }
 
 /**
  * The coloured badge classes of a stack item. They are literal so the Tailwind
- * scanner sees them, and every pair keeps AA contrast for white text.
+ * scanner sees them, and each pair is the canvas brand colour with its text colour.
  * @param label The stack name as written in the product file.
  * @returns Background and text classes, neutral when the stack is unknown.
  */
