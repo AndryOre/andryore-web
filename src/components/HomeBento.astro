@@ -1,12 +1,14 @@
 ---
 import { Image } from 'astro:assets'
+import { getCollection } from 'astro:content'
 
 import memoji from '../../docs/brand/avatar/memoji.webp'
 import chrome from '../content/chrome.json'
 import home from '../content/home.json'
 import { localePath, type Locale } from '../i18n/locales'
 import { tokensForHref } from '../lib/external-link'
-import { revealClass } from '../lib/motion'
+import { formatProofDate, type ProductEntry } from '../lib/products'
+import { spriteClass } from '../lib/sprites'
 import ThemeToggle from './ThemeToggle'
 
 interface Props {
@@ -20,64 +22,65 @@ const themeCopy = chrome[locale].theme
 const hasClock = Astro.slots.has('clock')
 const hasLive = Astro.slots.has('github') || Astro.slots.has('stream')
 
-const tileBase =
-  'tile-reveal bg-card border-border relative flex min-w-0 flex-col gap-3 overflow-hidden rounded-[1.25rem] border p-5 shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)] transition-[transform,border-color] duration-[160ms] ease-out hover:-translate-y-0.5 hover:border-foreground/40'
+const entries: ProductEntry[] = await getCollection('products')
+const productEntry = (key: string): ProductEntry | undefined =>
+  entries.find(
+    (candidate) => candidate.data.lang === locale && candidate.data.key === key,
+  )
 
-const place = {
-  hero: 'sm:col-span-2 lg:col-span-8 lg:row-span-4 lg:p-8',
-  about: hasClock
-    ? 'lg:col-span-4 lg:row-span-3'
-    : 'lg:col-span-4 lg:row-span-4',
-  snug: 'lg:col-span-6 lg:row-span-4',
-  afe: 'lg:col-span-6 lg:row-span-4',
-  links: hasLive
-    ? 'lg:col-span-4 lg:row-span-2'
-    : 'sm:col-span-2 lg:col-span-8 lg:row-span-1',
-  theme: hasLive
-    ? 'lg:col-span-4 lg:row-span-1'
-    : 'sm:col-span-2 lg:col-span-4 lg:row-span-1',
-}
+const SPRITE_SIZE = 56
 
+const tileClass =
+  'bg-card border-border relative flex min-w-0 flex-col gap-3 overflow-hidden rounded-[1.25rem] border p-5 shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)]'
+const linkTileClass = `link-tile ${tileClass}`
 const labelClass =
   'text-muted-foreground flex items-center justify-between gap-3 font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase'
 const bodyClass = 'text-muted-foreground m-0 text-sm [overflow-wrap:anywhere]'
 const pillClass =
   'bg-secondary border-border inline-flex shrink-0 items-center gap-2 rounded-pill border px-2.5 py-0.5 font-mono text-[0.6875rem] font-medium tracking-[0.06em] whitespace-nowrap uppercase'
-const sampleClass =
-  'border-border rounded-pill border px-2 font-mono text-[0.6875rem] tracking-[0.06em] whitespace-nowrap'
+const availabilityClass =
+  'bg-secondary border-border inline-flex items-center gap-2 rounded-pill border px-2.5 py-1 font-mono text-[0.6875rem] font-medium tracking-[0.06em] uppercase'
 const dateClass =
   'text-muted-foreground font-mono text-xs tabular-nums whitespace-nowrap'
+const stretchedLink =
+  'text-foreground inline-flex min-h-11 items-center no-underline after:absolute after:inset-0 after:content-[""]'
+const handleClass =
+  'bg-background border-primary absolute size-[7px] rounded-[1px] border'
 
-const productsPlacement = [place.snug, place.afe]
 const hero = copy.hero
+const contribution = copy.products.contribution
+const installsFigure = new Intl.NumberFormat(locale).format(
+  contribution.metaTotal,
+)
 ---
 
-<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-12 lg:auto-rows-[minmax(5.25rem,auto)]">
-  <article
-    class:list={[tileBase, revealClass(0), place.hero, 'justify-between gap-7']}
-  >
-    <p class={labelClass}>{hero.kicker}</p>
-    <h1 class="relative m-0 text-4xl leading-[1.04] font-bold tracking-[-0.035em] text-balance [overflow-wrap:anywhere] sm:text-5xl lg:text-[3.75rem]">
-      {hero.lead}
-      <span class="relative inline-block">
-        {hero.emphasis}
-        <span
-          class="annotation-in outline-primary pointer-events-none absolute -inset-1 rounded-sm outline outline-1 motion-reduce:hidden"
-          aria-hidden="true"
-        >
-          <i class="bg-background border-primary absolute -top-[5px] -left-[5px] size-[7px] rounded-[1px] border"></i>
-          <i class="bg-background border-primary absolute -top-[5px] -right-[5px] size-[7px] rounded-[1px] border"></i>
-          <i class="bg-background border-primary absolute -bottom-[5px] -left-[5px] size-[7px] rounded-[1px] border"></i>
-          <i class="bg-background border-primary absolute -right-[5px] -bottom-[5px] size-[7px] rounded-[1px] border"></i>
+<div class="flex flex-col gap-12 sm:gap-16">
+  <section class="hero-grid grid items-center gap-10 py-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-14">
+    <div class="relative flex min-w-0 flex-col gap-6">
+      <p class={`hero-enter hero-enter-0 ${labelClass} justify-start`}>
+        {hero.kicker}
+        <span class="caret" aria-hidden="true"></span>
+      </p>
+      <h1 class="hero-enter hero-enter-1 m-0 text-4xl leading-[1.04] font-bold tracking-[-0.035em] text-balance [overflow-wrap:anywhere] sm:text-5xl lg:text-[3.75rem]">
+        {hero.lead}
+        <span class="text-primary relative inline-block">
+          {hero.emphasis}
+          <span
+            class="annotation-in outline-primary pointer-events-none absolute -inset-1 rounded-sm outline outline-1 motion-reduce:hidden"
+            aria-hidden="true"
+          >
+            <i class:list={[handleClass, '-top-[5px] -left-[5px]']}></i>
+            <i class:list={[handleClass, '-top-[5px] -right-[5px]']}></i>
+            <i class:list={[handleClass, '-bottom-[5px] -left-[5px]']}></i>
+            <i class:list={[handleClass, '-right-[5px] -bottom-[5px]']}></i>
+          </span>
         </span>
-      </span>
-      {hero.tail}
-    </h1>
-    <div class="grid gap-5">
-      <p class="text-muted-foreground m-0 max-w-[56ch] text-base">
+        {hero.tail}
+      </h1>
+      <p class="hero-enter hero-enter-2 text-muted-foreground m-0 max-w-[56ch] text-base">
         {hero.body}
       </p>
-      <div class="flex flex-wrap gap-2.5">
+      <div class="hero-enter hero-enter-3 flex flex-wrap gap-2.5">
         <a
           href={localePath(locale, hero.primary.path)}
           class="bg-foreground text-background rounded-pill inline-flex min-h-11 items-center px-5 text-sm font-medium no-underline transition-transform duration-[160ms] ease-out hover:-translate-y-px"
@@ -91,145 +94,261 @@ const hero = copy.hero
           {hero.secondary.label}
         </a>
       </div>
+      <span
+        class="annotation-in text-muted-foreground border-border bg-secondary/60 pointer-events-none absolute top-0 right-0 hidden rounded-md border px-2 py-0.5 font-mono text-[0.6875rem] whitespace-nowrap motion-reduce:hidden xl:block"
+        aria-hidden="true"
+      >
+        {hero.annotation}
+      </span>
     </div>
-    <span
-      class="annotation-in text-muted-foreground border-border bg-secondary/60 pointer-events-none absolute top-6 right-6 hidden rounded-md border px-2 py-0.5 font-mono text-[0.6875rem] whitespace-nowrap motion-reduce:hidden lg:block"
-      aria-hidden="true"
-    >
-      {hero.annotation}
-    </span>
-  </article>
 
-  <article class:list={[tileBase, revealClass(1), place.about]}>
-    <p class={labelClass}>{copy.about.label}</p>
-    <div class="grid flex-1 place-items-center">
-      <Image
-        src={memoji}
-        alt=""
-        width={264}
-        height={264}
-        class="border-border bg-secondary size-[8.25rem] rounded-[1.75rem] border"
-      />
-    </div>
-    <p class={bodyClass}>{copy.about.body}</p>
-  </article>
-
-  {hasClock && (
-    <div class:list={[revealClass(2), 'tile-reveal lg:col-span-4']}>
-      <slot name="clock" />
-    </div>
-  )}
-
-  {copy.products.items.map((product, index) => (
-    <article
-      id={index === 0 ? 'products' : undefined}
-      class:list={[
-        tileBase,
-        revealClass(3 + index),
-        'scroll-mt-4',
-        productsPlacement[index],
-        'sm:col-span-1',
-      ]}
-    >
-      <div class={labelClass}>
-        <span class="flex items-center gap-2">
-          {copy.products.label}
-          {product.sample && <span class={sampleClass}>{copy.sample}</span>}
-        </span>
-        <span class={pillClass}>
+    <div class="flex flex-col items-center gap-6 sm:flex-row lg:flex-col lg:items-center">
+      <div class="hero-enter hero-enter-2">
+        <div class="floaty relative pb-14">
+          <div class="avatar-tile">
+            <Image
+              src={memoji}
+              alt=""
+              width={460}
+              height={460}
+              class="relative z-10 size-full object-contain p-[8%]"
+            />
+          </div>
           <span
             class:list={[
-              'size-[7px] rounded-full',
-              product.stateKind === 'beta' ? 'bg-primary' : 'bg-success',
+              availabilityClass,
+              'absolute bottom-[3%] left-1/2 w-max max-w-[min(18rem,80vw)] -translate-x-1/2 text-center',
             ]}
-            aria-hidden="true"
-          />
-          {product.state}
-        </span>
-      </div>
-      <a
-        href={localePath(locale, product.path)}
-        class="border-border bg-secondary relative grid min-h-48 flex-1 place-items-center overflow-hidden rounded-[0.875rem] border no-underline"
-        aria-hidden="true"
-        tabindex="-1"
-      >
-        {product.key === 'snug' ? (
-          <span
-            class="bg-card border-border grid w-64 max-w-[80%] gap-2 rounded-[0.875rem] border p-3"
-            aria-hidden="true"
           >
-            <i class="bg-muted block h-7 rounded-lg" />
-            <i class="bg-muted block h-7 w-[82%] rounded-lg" />
-            <i class="bg-muted block h-7 w-[66%] rounded-lg" />
+            <span
+              class="bg-success size-[7px] shrink-0 rounded-full"
+              aria-hidden="true"
+            ></span>
+            {hero.availability}
           </span>
-        ) : (
-          <span class="grid grid-cols-4 gap-3 text-3xl" aria-hidden="true">
-            <span>🚀</span>
-            <span>🎉</span>
-            <span>✨</span>
-            <span>🔥</span>
-            <span>💡</span>
-            <span>🎨</span>
-            <span>🧩</span>
-            <span>☕</span>
-          </span>
-        )}
-        <span class="text-muted-foreground absolute right-2.5 bottom-2 font-mono text-[0.625rem] tracking-[0.06em] uppercase">
-          {copy.products.imagePlaceholder}
-        </span>
-      </a>
-      <div class="flex items-baseline justify-between gap-3">
-        <h2 class="m-0 min-w-0 text-xl tracking-[-0.02em] [overflow-wrap:anywhere]">
-          <a
-            href={localePath(locale, product.path)}
-            class="text-foreground inline-flex min-h-11 items-center no-underline"
-          >
-            {product.name}
-          </a>
-        </h2>
-        {product.year && <span class={dateClass}>{product.year}</span>}
+        </div>
       </div>
-      <p class={bodyClass}>{product.description}</p>
-    </article>
-  ))}
+      {hasClock && (
+        <div class="hero-enter hero-enter-4 w-full max-w-64 sm:w-64">
+          <div class="floaty-late">
+            <slot name="clock" />
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
 
-  {hasLive && (
-    <>
-      <div class:list={[revealClass(6), 'tile-reveal lg:col-span-5']}>
-        <slot name="github" />
-      </div>
-      <div class:list={[revealClass(7), 'tile-reveal lg:col-span-3']}>
-        <slot name="stream" />
-      </div>
-    </>
-  )}
-
-  <article class:list={[tileBase, revealClass(9), place.links]}>
-    <p class={labelClass}>{copy.links.label}</p>
-    <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
-      {copy.links.items.map((link) => (
-        <li>
-          <a
-            href={link.href}
-            rel={tokensForHref(link.href)}
-            class="border-border bg-secondary text-foreground rounded-pill inline-flex min-h-11 items-center border px-3 font-mono text-[0.6875rem] font-medium tracking-[0.06em] uppercase no-underline"
-          >
-            {link.label}
-          </a>
-        </li>
-      ))}
-    </ul>
-  </article>
-
-  <article
-    class:list={[
-      tileBase,
-      revealClass(10),
-      place.theme,
-      'flex-row items-center justify-between',
-    ]}
+  <section
+    id="products"
+    class="flex scroll-mt-4 flex-col gap-4"
+    aria-labelledby="products-heading"
   >
-    <p class={labelClass}>{copy.theme.label}</p>
-    <ThemeToggle client:interaction copy={themeCopy} />
-  </article>
+    <h2 id="products-heading" class:list={[labelClass, 'scroll-reveal m-0']}>
+      {copy.products.heading}
+    </h2>
+    <div class="grid gap-4 md:grid-cols-2">
+      {copy.products.items.map((product, index) => {
+        const entry = productEntry(product.key)
+        const website = entry?.data.website
+        const sprites =
+          product.key === 'animated-fluent-emojis'
+            ? (entry?.data.sprites ?? [])
+            : []
+        return (
+          <article
+            class:list={[
+              linkTileClass,
+              'scroll-reveal',
+              `scroll-stagger-${index}`,
+            ]}
+          >
+            <div class={labelClass}>
+              <span>{copy.products.label}</span>
+              <span class={pillClass}>
+                <span
+                  class="bg-success size-[7px] rounded-full"
+                  aria-hidden="true"
+                />
+                {product.state}
+              </span>
+            </div>
+            <div
+              data-product-image={product.key}
+              class="border-border bg-secondary relative aspect-[16/10] overflow-hidden rounded-[0.875rem] border"
+            >
+              {website && (
+                <Image
+                  src={website.src}
+                  alt=""
+                  width={960}
+                  height={600}
+                  class="size-full object-cover object-top"
+                />
+              )}
+              {sprites.length > 0 && (
+                <div
+                  class="bg-card/85 border-border rounded-pill absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1 border px-2 py-1 backdrop-blur-sm"
+                  aria-hidden="true"
+                >
+                  {sprites.map((sprite) => {
+                    const run = spriteClass(sprite.frames)
+                    return (
+                      <span class="block size-14 overflow-hidden">
+                        <Image
+                          src={sprite.src}
+                          alt=""
+                          width={SPRITE_SIZE * 2}
+                          height={SPRITE_SIZE * 2 * sprite.frames}
+                          class:list={['sprite-strip block h-auto w-full', run]}
+                          data-sprite={run ? '' : undefined}
+                        />
+                      </span>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+            <div class="flex items-baseline justify-between gap-3">
+              <h3 class="m-0 min-w-0 text-xl tracking-[-0.02em] [overflow-wrap:anywhere]">
+                <a
+                  href={localePath(locale, product.path)}
+                  class={stretchedLink}
+                >
+                  {product.name}
+                </a>
+              </h3>
+              {product.year && <span class={dateClass}>{product.year}</span>}
+            </div>
+            <p class={bodyClass}>{product.description}</p>
+          </article>
+        )
+      })}
+    </div>
+
+    <article
+      class:list={[
+        linkTileClass,
+        'scroll-reveal scroll-stagger-2 gap-4 md:flex-row md:items-center md:justify-between',
+      ]}
+    >
+      <div class="flex min-w-0 flex-col gap-2">
+        <p class={`${labelClass} flex-wrap justify-start`}>
+          {contribution.label}
+          <span class={pillClass}>{contribution.tag}</span>
+        </p>
+        <h3 class="m-0 min-w-0 text-xl tracking-[-0.02em] [overflow-wrap:anywhere]">
+          <a href={localePath(locale, contribution.path)} class={stretchedLink}>
+            {contribution.name}
+          </a>
+        </h3>
+        <p class={bodyClass}>{contribution.description}</p>
+      </div>
+      <p class="m-0 flex shrink-0 flex-col gap-1 md:items-end">
+        <span class="font-mono text-lg font-semibold tabular-nums">
+          <span
+            data-count-installs={contribution.metaTotal}
+            data-count-locale={locale}
+          >
+            {installsFigure}
+          </span>
+          {contribution.metaSuffix}
+        </span>
+        <time class={dateClass} datetime={contribution.metaDate}>
+          {formatProofDate(contribution.metaDate, locale)}
+        </time>
+      </p>
+    </article>
+  </section>
+
+  <div data-slot="live-strip" class="grid gap-4 empty:hidden lg:grid-cols-8">
+    {hasLive && (
+      <>
+        <div class="scroll-reveal lg:col-span-5">
+          <slot name="github" />
+        </div>
+        <div class="scroll-reveal scroll-stagger-1 lg:col-span-3">
+          <slot name="stream" />
+        </div>
+      </>
+    )}
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2">
+    <a
+      href={localePath(locale, copy.about.path)}
+      class:list={[linkTileClass, 'scroll-reveal text-foreground no-underline']}
+    >
+      <p class={labelClass}>{copy.about.label}</p>
+      <p class={bodyClass}>{copy.about.body}</p>
+    </a>
+    <article
+      class:list={[
+        tileClass,
+        'scroll-reveal scroll-stagger-1 flex-row items-center justify-between',
+      ]}
+    >
+      <p class={labelClass}>{copy.theme.label}</p>
+      <ThemeToggle client:interaction copy={themeCopy} />
+    </article>
+  </div>
+
+  <div data-slot="find-me" class="empty:hidden">
+    <article class:list={[tileClass, 'scroll-reveal']}>
+      <p class={labelClass}>{copy.links.label}</p>
+      <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
+        {copy.links.items.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              rel={tokensForHref(link.href)}
+              class="border-border bg-secondary text-foreground rounded-pill inline-flex min-h-11 items-center border px-3 font-mono text-[0.6875rem] font-medium tracking-[0.06em] uppercase no-underline"
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </article>
+  </div>
+
+  <div data-slot="stack-scene" class="empty:hidden"></div>
 </div>
+
+<script>
+  import { prefersReducedMotion } from '../lib/motion'
+  import { startCountUp } from '../scripts/count-up'
+  import { observeVisibility } from '../scripts/in-view'
+
+  const createObserver =
+    'IntersectionObserver' in globalThis
+      ? (callback: ConstructorParameters<typeof IntersectionObserver>[0]) =>
+          new IntersectionObserver(callback)
+      : undefined
+
+  const counters = document.querySelectorAll<HTMLElement>(
+    '[data-count-installs]',
+  )
+  observeVisibility(
+    [...counters],
+    (target) => {
+      const total = Number(target.dataset.countInstalls)
+      if (!Number.isFinite(total)) return
+      startCountUp(target, total, {
+        reducedMotion: prefersReducedMotion(globalThis),
+        locale: target.dataset.countLocale ?? 'en',
+        requestFrame: (callback) => requestAnimationFrame(callback),
+      })
+    },
+    { createObserver, once: true },
+  )
+
+  const strips = document.querySelectorAll<HTMLElement>('[data-sprite]')
+  observeVisibility(
+    [...strips],
+    (target, visible) => {
+      if (visible) delete target.dataset.paused
+      else target.dataset.paused = ''
+    },
+    { createObserver },
+  )
+</script>

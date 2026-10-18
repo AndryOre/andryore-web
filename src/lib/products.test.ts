@@ -11,13 +11,18 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { z } from 'astro/zod'
 
+import productUi from '../content/product-ui.json'
 import { runParityCheck } from '../i18n/parity-check'
 import {
+  classifyIcon,
   createProductSchema,
   englishProductKeys,
   fillPlaceholder,
   formatProofDate,
+  headerLinks,
   productPath,
+  SKIN_TONE_CLASSES,
+  stackIconId,
   visibleProof,
 } from './products'
 
@@ -298,6 +303,88 @@ describe('product parity', () => {
       ])
     } finally {
       rmSync(root, { recursive: true, force: true })
+    }
+  })
+})
+
+describe('headerLinks', () => {
+  const base = { url: 'https://site.example', links: {} }
+
+  test('lists the website first, then the source', () => {
+    expect(
+      headerLinks({
+        ...base,
+        links: { source: 'https://github.com/a/b' },
+      }),
+    ).toEqual([
+      { id: 'website', href: 'https://site.example' },
+      { id: 'source', href: 'https://github.com/a/b' },
+    ])
+  })
+
+  test('adds npm and the marketplace only when present', () => {
+    const ids = headerLinks({
+      ...base,
+      links: {
+        npm: 'https://npm.example/p',
+        marketplace: 'https://market.example/p',
+      },
+    }).map((link) => link.id)
+    expect(ids).toEqual(['website', 'npm', 'marketplace'])
+  })
+})
+
+describe('stackIconId', () => {
+  test('maps known stack names to a brand icon', () => {
+    expect(stackIconId('React')).toBe('react')
+    expect(stackIconId('Tailwind CSS')).toBe('tailwindcss')
+    expect(stackIconId('shadcn/ui')).toBe('shadcn-ui')
+    expect(stackIconId('Astro + Starlight')).toBe('astro')
+  })
+
+  test('returns nothing for an unknown name', () => {
+    expect(stackIconId('Obscure')).toBeUndefined()
+  })
+})
+
+describe('SKIN_TONE_CLASSES', () => {
+  test('has one distinct swatch per UI label', () => {
+    expect(new Set(SKIN_TONE_CLASSES).size).toBe(6)
+    expect(productUi.en.skinTones).toHaveLength(6)
+    expect(productUi.es.skinTones).toHaveLength(6)
+  })
+})
+
+describe('product UI copy', () => {
+  test('never claims v2 or commit counts', () => {
+    expect(JSON.stringify(productUi)).not.toMatch(/\bv2\b|commits?\b/i)
+  })
+
+  test('has the same keys in both languages', () => {
+    expect(
+      Object.keys(productUi.es).toSorted((a, b) => a.localeCompare(b)),
+    ).toEqual(Object.keys(productUi.en).toSorted((a, b) => a.localeCompare(b)))
+  })
+})
+
+describe('classifyIcon', () => {
+  test('tells brand logos from glyphs and rejects unknown names', () => {
+    expect(classifyIcon('chrome')).toEqual({ kind: 'brand', id: 'chrome' })
+    expect(classifyIcon('eye')).toEqual({ kind: 'glyph', name: 'eye' })
+    expect(classifyIcon('nope')).toBeUndefined()
+  })
+
+  test('resolves every icon the product files use', () => {
+    for (const file of readdirSync(PRODUCTS_DIRECTORY)) {
+      const raw = readFileSync(path.join(PRODUCTS_DIRECTORY, file), 'utf8')
+      const names = raw
+        .matchAll(/^\s*(?:- )?icon: '([^']+)'/gm)
+        .map((match) => match[1] ?? '')
+        .toArray()
+      expect(names.length).toBeGreaterThan(0)
+      for (const name of names) {
+        expect(classifyIcon(name), `${file}: ${name}`).toBeDefined()
+      }
     }
   })
 })
