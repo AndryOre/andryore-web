@@ -3,19 +3,11 @@ import { describe, expect, test } from 'bun:test'
 import about from '../content/about.json'
 import githubGrid from '../content/github-grid.json'
 import home from '../content/home.json'
-import { buildNumberStats, formatTimelineDate } from './about'
-
-describe('formatTimelineDate', () => {
-  test('keeps a bare year and names the month otherwise', () => {
-    expect(formatTimelineDate('2025', 'en')).toBe('2025')
-    expect(formatTimelineDate('2024-08', 'en')).toBe('Aug 2024')
-    expect(formatTimelineDate('2024-08', 'es')).toMatch(/ago.*2024/i)
-  })
-})
+import { buildNumberStats } from './about'
 
 describe('buildNumberStats', () => {
   const sources = {
-    installs: { total: 75_000, date: '2026-10-18' },
+    installs: { total: 75_000 },
     contributions: 1234,
   }
 
@@ -45,12 +37,19 @@ describe('buildNumberStats', () => {
     expect(JSON.stringify(about)).not.toContain(String(githubGrid.total))
   })
 
-  test('dates the installs figure with its day', () => {
+  test('shows the installs figure with a plus and no dated note', () => {
     const installs = buildNumberStats(about.en, sources, 'en').find(
       (stat) => stat.key === 'installs',
     )
     expect(installs?.suffix).toBe('+')
-    expect(installs?.note).toBe('As of Oct 18, 2026')
+    expect(installs).not.toHaveProperty('note')
+  })
+
+  test('groups four-digit figures in Spanish like the canvas', () => {
+    const snug = buildNumberStats(about.es, sources, 'es').find(
+      (stat) => stat.key === 'snug',
+    )
+    expect(snug?.display).toBe('5.000')
   })
 
   test('uses the same installs total as the Home contribution row', () => {

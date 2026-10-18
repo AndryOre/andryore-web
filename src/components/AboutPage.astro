@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets'
 import {
   Activity,
+  Briefcase,
   CalendarDays,
   Download,
   KeyRound,
@@ -15,10 +16,11 @@ import about from '../content/about.json'
 import home from '../content/home.json'
 import { localePath, type Locale } from '../i18n/locales'
 import BaseLayout from '../layouts/BaseLayout.astro'
-import { buildNumberStats, formatTimelineDate } from '../lib/about'
+import { buildNumberStats } from '../lib/about'
 import { loadGridSnapshot } from '../lib/github-grid-build'
 import type { IconId } from '../lib/icons'
 import CvSplitButton from './CvSplitButton'
+import { buttonClassName } from './ui/button'
 import UsesBadge from './UsesBadge.astro'
 
 interface Props {
@@ -32,7 +34,7 @@ const snapshot = await loadGridSnapshot()
 const stats = buildNumberStats(
   copy,
   {
-    installs: { total: installs.metaTotal, date: installs.metaDate },
+    installs: { total: installs.metaTotal },
     contributions: snapshot?.total ?? null,
   },
   locale,
@@ -53,11 +55,10 @@ const longestPhrase = copy.typingPhrases.toSorted(
   (a, b) => b.length - a.length,
 )[0]
 
-const tileClass =
-  'bg-card border-border flex min-w-0 flex-col gap-3 rounded-[1.25rem] border p-5'
-const iconTileClass =
-  'bg-secondary text-primary border-border flex size-10 shrink-0 items-center justify-center rounded-xl border'
-const headingClass = 'm-0 text-2xl font-bold tracking-[-0.025em]'
+const surfaceClass = 'about-surface bg-card border-border border'
+const iconBoxClass =
+  'grid size-10 place-items-center rounded-xl bg-[color-mix(in_oklab,var(--primary)_14%,var(--card-2))] text-primary'
+const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
 ---
 
 <BaseLayout
@@ -65,21 +66,27 @@ const headingClass = 'm-0 text-2xl font-bold tracking-[-0.025em]'
   description={copy.pageDescription}
   locale={locale}
 >
-  <div class="flex flex-col gap-12 sm:gap-14">
+  <div
+    class="flex flex-col gap-10 max-[700px]:gap-7 min-[760px]:-mx-5"
+    data-about-column
+  >
     <section
       aria-labelledby="about-heading"
-      class="bg-card border-border flex flex-col items-start gap-6 rounded-[1.25rem] border p-6 sm:flex-row sm:items-center sm:gap-8 sm:p-8"
+      class:list={[
+        surfaceClass,
+        'grid gap-7 rounded-[20px] p-[22px] min-[701px]:grid-cols-[auto_1fr] min-[701px]:items-center min-[701px]:p-8',
+      ]}
     >
       <Image
         src={memoji}
         alt=""
-        width={200}
-        height={200}
+        width={240}
+        height={240}
         loading="eager"
-        class="bg-secondary border-border size-[100px] shrink-0 rounded-[22px] border object-contain p-1.5"
+        class="bg-card-2 border-border size-[120px] rounded-[26px] border object-contain"
       />
-      <div class="flex min-w-0 flex-col gap-3.5">
-        <p class="text-muted-foreground m-0 font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase">
+      <div class="grid min-w-0 gap-3.5">
+        <p class="text-muted-foreground m-0 font-mono text-[11px] font-medium tracking-[0.08em] uppercase">
           {copy.kicker}
         </p>
         <h1
@@ -87,7 +94,7 @@ const headingClass = 'm-0 text-2xl font-bold tracking-[-0.025em]'
           aria-label={`${copy.typingPrefix}${firstPhrase}`}
           data-typing
           data-typing-phrases={JSON.stringify(copy.typingPhrases)}
-          class="m-0 text-3xl leading-[1.1] font-bold tracking-[-0.03em] text-balance sm:text-4xl"
+          class="m-0 text-[clamp(30px,4.4vw,46px)] leading-[1.1] font-bold tracking-[-0.03em] text-balance"
         >
           <span aria-hidden="true">
             {copy.typingPrefix}
@@ -97,39 +104,49 @@ const headingClass = 'm-0 text-2xl font-bold tracking-[-0.025em]'
                 <span class="caret caret-em"></span>
               </span>
               <span class="col-start-1 row-start-1">
-                <span data-typing-text>{firstPhrase}</span>
+                <span data-typing-text class="text-primary">
+                  {firstPhrase}
+                </span>
                 <span class="caret caret-em"></span>
               </span>
             </span>
           </span>
         </h1>
-        <p class="text-muted-foreground m-0 text-base sm:text-[1.0625rem]">
+        <p class="text-muted-foreground m-0 max-w-[56ch] text-[17px]">
           {copy.subline}
         </p>
-        <div class="flex flex-wrap items-center gap-3">
+        <div class="flex flex-wrap gap-2.5">
           <CvSplitButton client:load locale={locale} copy={copy} />
-          <span class="bg-secondary border-border inline-flex min-h-8 items-center rounded-full border px-3 font-mono text-[0.6875rem] font-medium tracking-[0.06em] uppercase">
+          <a
+            href={localePath(locale, '/') + '#find-me'}
+            class={buttonClassName('neutral', 'cta')}
+          >
+            <Briefcase aria-hidden="true" className="size-4.5!" />
             {copy.openTo}
-          </span>
+          </a>
         </div>
       </div>
     </section>
 
-    <section aria-labelledby="what-i-do-heading" class="flex flex-col gap-4">
+    <section aria-labelledby="what-i-do-heading" class="grid gap-3.5">
       <h2 id="what-i-do-heading" class={headingClass}>
         {copy.whatIDo.heading}
       </h2>
-      <ul class="m-0 grid list-none gap-4 p-0 md:grid-cols-3">
+      <ul class="m-0 grid list-none gap-3 p-0 min-[701px]:grid-cols-3">
         {copy.whatIDo.items.map((item) => {
           const Icon = whatIcons[item.icon as keyof typeof whatIcons]
           return (
-            <li class={tileClass} data-what-i-do={item.key}>
-              <span class={iconTileClass} aria-hidden="true">
-                <Icon aria-hidden="true" size={20} />
+            <li
+              class:list={[
+                surfaceClass,
+                'grid content-start gap-2.5 rounded-[18px] p-[18px]',
+              ]}
+              data-what-i-do={item.key}
+            >
+              <span class={iconBoxClass} aria-hidden="true">
+                <Icon aria-hidden="true" size={18} />
               </span>
-              <h3 class="m-0 text-lg font-semibold tracking-tight">
-                {item.title}
-              </h3>
+              <h3 class="m-0 text-[15px] font-bold">{item.title}</h3>
               <p class="text-muted-foreground m-0 text-sm">{item.body}</p>
             </li>
           )
@@ -137,45 +154,44 @@ const headingClass = 'm-0 text-2xl font-bold tracking-[-0.025em]'
       </ul>
     </section>
 
-    <section aria-labelledby="numbers-heading" class="flex flex-col gap-4">
+    <section aria-labelledby="numbers-heading" class="grid gap-3.5">
       <h2 id="numbers-heading" class={headingClass}>
         {copy.numbersHeading}
       </h2>
-      <dl class="m-0 grid grid-cols-2 gap-4 md:grid-cols-4" data-about-numbers>
+      <dl
+        class="m-0 grid grid-cols-2 gap-3 min-[701px]:grid-cols-4"
+        data-about-numbers
+      >
         {stats.map((stat) => {
           const Icon = statIcons[stat.key]
           return (
             <div
-              class={tileClass}
+              class:list={[
+                surfaceClass,
+                'grid min-w-0 gap-1 rounded-[18px] p-4',
+              ]}
               data-stat={stat.key}
               data-about-live={stat.key === 'contributions' ? '' : undefined}
               data-locale={locale}
             >
-              <span class={iconTileClass} aria-hidden="true">
-                <Icon aria-hidden="true" size={20} />
+              <span class="text-muted-foreground mb-1" aria-hidden="true">
+                <Icon aria-hidden="true" size={18} />
               </span>
-              <dt class="text-muted-foreground order-last text-sm">
+              <dt class="text-muted-foreground order-last font-mono text-[11px] leading-[1.4]">
                 {stat.label}
               </dt>
-              <dd class="m-0 flex flex-col gap-1">
-                <span class="text-3xl font-bold tracking-[-0.03em] tabular-nums">
-                  {stat.count === undefined ? (
-                    stat.display
-                  ) : (
-                    <span
-                      data-count-total={stat.count}
-                      data-count-locale={locale}
-                    >
-                      {stat.display}
-                    </span>
-                  )}
-                  {stat.suffix}
-                </span>
-                {stat.note && (
-                  <span class="text-muted-foreground font-mono text-xs">
-                    {stat.note}
+              <dd class="m-0 text-[28px] leading-[1.1] font-bold tracking-[-0.03em] tabular-nums">
+                {stat.count === undefined ? (
+                  stat.display
+                ) : (
+                  <span
+                    data-count-total={stat.count}
+                    data-count-locale={locale}
+                  >
+                    {stat.display}
                   </span>
                 )}
+                {stat.suffix}
               </dd>
             </div>
           )
@@ -183,54 +199,49 @@ const headingClass = 'm-0 text-2xl font-bold tracking-[-0.025em]'
       </dl>
     </section>
 
-    <section aria-labelledby="timeline-heading" class="flex flex-col gap-4">
+    <section aria-labelledby="timeline-heading" class="grid gap-3.5">
       <h2 id="timeline-heading" class={headingClass}>
         {copy.timelineHeading}
       </h2>
-      <ol class="border-border m-0 flex list-none flex-col gap-6 border-l p-0 pl-6">
+      <ol class="about-timeline border-border m-0 ml-1.5 grid list-none gap-0 border-l p-0 pl-[22px]">
         {copy.timeline.map((entry) => (
-          <li class="relative flex flex-col gap-1">
-            <span
-              class="bg-primary absolute top-[0.45rem] -left-[1.8125rem] size-2 rounded-full"
-              aria-hidden="true"
-            />
+          <li class="relative grid gap-0.5 pb-[22px]">
             <time
               datetime={entry.date}
-              class="text-muted-foreground font-mono text-xs tabular-nums"
+              class="text-muted-foreground font-mono text-[11px] font-medium tracking-[0.06em] uppercase"
             >
-              {formatTimelineDate(entry.date, locale)}
+              {entry.date}
             </time>
-            <span class="font-semibold">{entry.title}</span>
+            <strong class="font-bold">{entry.title}</strong>
             <span class="text-muted-foreground text-sm">{entry.body}</span>
           </li>
         ))}
       </ol>
     </section>
 
-    <section class="flex flex-col gap-5" data-about-closing>
-      <div class="flex max-w-[65ch] flex-col gap-4">
+    <section class="grid gap-3.5" data-about-closing>
+      <div class="grid max-w-[65ch] gap-4">
         {copy.bio.map((paragraph) => (
           <p class="m-0">{paragraph}</p>
         ))}
       </div>
-      <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
-        <ul class="m-0 flex list-none flex-wrap gap-2.5 p-0">
-          {copy.stack.map((item) => (
-            <li>
-              <UsesBadge
-                badge={{ name: item.name, icon: item.icon as IconId }}
-              />
-            </li>
-          ))}
-        </ul>
-        <a
-          href={localePath(locale, '/uses/')}
-          class="text-muted-foreground hover:text-foreground inline-flex min-h-11 items-center font-mono text-xs underline underline-offset-4"
-        >
-          {copy.stackLink}
-          <span aria-hidden="true">&nbsp;→</span>
-        </a>
-      </div>
+    </section>
+
+    <section class="grid gap-3.5">
+      <ul class="m-0 flex list-none flex-wrap gap-2.5 p-0">
+        {copy.stack.map((item) => (
+          <li>
+            <UsesBadge badge={{ name: item.name, icon: item.icon as IconId }} />
+          </li>
+        ))}
+      </ul>
+      <a
+        href={localePath(locale, '/uses/')}
+        class="text-muted-foreground hover:text-foreground w-fit font-mono text-xs underline underline-offset-[3px]"
+      >
+        {copy.stackLink}
+        <span aria-hidden="true">&nbsp;→</span>
+      </a>
     </section>
   </div>
 </BaseLayout>
@@ -298,6 +309,7 @@ const headingClass = 'm-0 text-2xl font-bold tracking-[-0.025em]'
           continue
         target.textContent = new Intl.NumberFormat(
           target.dataset.countLocale ?? 'en',
+          { useGrouping: 'always' },
         ).format(total)
       }
     })

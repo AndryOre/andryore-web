@@ -28,6 +28,16 @@ describe('CvSplitButton', () => {
     expect(render('es')).toContain('CV · ES')
   })
 
+  test('labels the group and both file options like the canvas', () => {
+    expect(about.en.cvGroupLabel).toBe('Download CV')
+    expect(about.es.cvGroupLabel).toBe('Descargar CV')
+    expect(about.en.cvEnglishOption).toBe('English (PDF)')
+    expect(about.en.cvSpanishOption).toBe('Spanish (PDF)')
+    expect(about.es.cvEnglishOption).toBe('Inglés (PDF)')
+    expect(about.es.cvSpanishOption).toBe('Español (PDF)')
+    expect(render('en')).toContain('aria-label="Download CV"')
+  })
+
   test('tracks the download by language', () => {
     expect(render('es')).toContain('data-umami-event-language="es"')
   })

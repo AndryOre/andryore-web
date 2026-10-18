@@ -8,7 +8,6 @@
     "snugLabel": "Snug users · Chrome Web Store",
     "snugUsers": 5000,
     "installsLabel": "JSON Flow installs · Marketplace",
-    "installsAsOf": "As of",
     "contributionsLabel": "GitHub contributions, last year",
     "timelineHeading": "Timeline",
     "stack": [
@@ -34,10 +33,11 @@
       }
     ],
     "cvLabel": "CV",
-    "cvGroupLabel": "Download my CV",
+    "cvGroupLabel": "Download CV",
+    "cvFileTag": "PDF",
     "cvMenuLabel": "Choose the CV language",
     "cvEnglishOption": "English (PDF)",
-    "cvSpanishOption": "Español (PDF)",
+    "cvSpanishOption": "Spanish (PDF)",
     "cvEnglishFile": "Andry-Orellana-CV-EN.pdf",
     "cvSpanishFile": "Andry-Orellana-CV-ES.pdf",
     "kicker": "Andry Orellana",
@@ -50,7 +50,7 @@
       "products people use."
     ],
     "subline": "For startups and small teams. Freelance since 2024, open to contract and full-time work.",
-    "openTo": "Open to contract and full-time work",
+    "openTo": "Open to contract and full-time work.",
     "whatIDo": {
       "heading": "What I do",
       "items": [
@@ -121,7 +121,6 @@
     "snugLabel": "Usuarios de Snug · Chrome Web Store",
     "snugUsers": 5000,
     "installsLabel": "Instalaciones de JSON Flow · Marketplace",
-    "installsAsOf": "Al",
     "contributionsLabel": "Contribuciones en GitHub, último año",
     "timelineHeading": "Línea de tiempo",
     "stack": [
@@ -147,9 +146,10 @@
       }
     ],
     "cvLabel": "CV",
-    "cvGroupLabel": "Descargar mi CV",
+    "cvGroupLabel": "Descargar CV",
+    "cvFileTag": "PDF",
     "cvMenuLabel": "Elegir el idioma del CV",
-    "cvEnglishOption": "English (PDF)",
+    "cvEnglishOption": "Inglés (PDF)",
     "cvSpanishOption": "Español (PDF)",
     "cvEnglishFile": "Andry-Orellana-CV-EN.pdf",
     "cvSpanishFile": "Andry-Orellana-CV-ES.pdf",
@@ -163,7 +163,7 @@
       "productos que la gente usa."
     ],
     "subline": "Para startups y equipos pequeños. Freelance desde 2024, abierto a contrato y a tiempo completo.",
-    "openTo": "Abierto a trabajo por contrato y a tiempo completo",
+    "openTo": "Abierto a trabajo por contrato y a tiempo completo.",
     "whatIDo": {
       "heading": "Qué hago",
       "items": [
@@ -223,6 +223,6 @@
       "Soy Andry. Construyo plataformas web de producción para startups y equipos pequeños, desde auth y APIs hasta la infraestructura self-hosted que los sostiene. Freelance desde 2024.",
       "Fuera del trabajo con clientes publico mis propios productos, Snug y Animated Fluent Emojis, y colaboro en JSON Flow, una extensión de VS Code con más de 75.000 instalaciones."
     ],
-    "stackLink": "Todas las herramientas que uso"
+    "stackLink": "Todo lo que uso"
   }
 }

@@ -50,7 +50,7 @@ describe('startCountUp', () => {
       locale: 'es',
       requestFrame: frames.request,
     })
-    expect(target.textContent).toBe('1234')
+    expect(target.textContent).toBe('1.234')
     expect(frames.isIdle()).toBe(true)
   })
 
