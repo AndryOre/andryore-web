@@ -44,6 +44,11 @@ describe('pageHref', () => {
 })
 
 describe('magnificationScale', () => {
+  test('uses the 1.15 peak and 72 px radius of the design token', () => {
+    expect(MAGNIFICATION_MAX_SCALE).toBe(1.15)
+    expect(MAGNIFICATION_RADIUS_PX).toBe(72)
+  })
+
   test('peaks under the pointer', () => {
     expect(magnificationScale(0)).toBe(MAGNIFICATION_MAX_SCALE)
   })

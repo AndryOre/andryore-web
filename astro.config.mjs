@@ -18,7 +18,10 @@ export default defineConfig({
         hashes: [THEME_INIT_SCRIPT_HASH],
         resources: ["'self'", UMAMI_SCRIPT_ORIGIN],
       },
-      directives: [`connect-src 'self' ${UMAMI_GATEWAY_ORIGIN}`],
+      directives: [
+        `connect-src 'self' ${UMAMI_GATEWAY_ORIGIN}`,
+        "manifest-src 'self'",
+      ],
     },
   },
   markdown: { syntaxHighlight: false },
