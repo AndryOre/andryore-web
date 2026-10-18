@@ -1,5 +1,4 @@
 ---
-import { glyphSvg } from '../lib/glyphs'
 import { badgeStyle, type UsesBadge } from '../lib/uses'
 import BrandIcon from './BrandIcon.astro'
 
@@ -10,7 +9,7 @@ interface Props {
 const { badge } = Astro.props
 const style = badgeStyle(badge.icon)
 const tone = [
-  'inline-flex h-8 items-center gap-2 rounded-md px-2.5 font-mono text-[11px] font-medium tracking-wide uppercase ring-1 ring-black/10 ring-inset dark:ring-white/15',
+  'inline-flex h-[34px] items-center gap-2 rounded-[6px] pr-3 pl-2.5 font-mono text-xs font-bold tracking-[0.06em] whitespace-nowrap uppercase no-underline',
   style.bg,
   style.text,
 ]
@@ -19,20 +18,25 @@ const tone = [
 {badge.url ? (
   <a
     href={badge.url}
+    target="_blank"
     rel="noopener noreferrer"
-    class:list={[tone, 'group focus-visible:outline-ring hover:brightness-110']}
+    class:list={[
+      tone,
+      'group transition-transform duration-150 hover:-translate-y-0.5 focus-visible:-translate-y-0.5',
+    ]}
   >
-    <BrandIcon id={badge.icon} class:list={['size-4', style.logo]} />
+    <BrandIcon id={badge.icon} class:list={['size-4 flex-none', style.logo]} />
     <span>{badge.name}</span>
     <span
       aria-hidden="true"
-      class="hidden size-3 group-hover:inline-block group-focus-visible:inline-block"
-      set:html={glyphSvg('external-link', 12)}
-    />
+      class="w-0 overflow-hidden text-[11px] font-normal not-italic opacity-0 transition-[opacity,width] duration-150 group-hover:w-[11px] group-hover:opacity-80 group-focus-visible:w-[11px] group-focus-visible:opacity-80"
+    >
+      ↗
+    </span>
   </a>
 ) : (
   <span class:list={tone}>
-    <BrandIcon id={badge.icon} class:list={['size-4', style.logo]} />
+    <BrandIcon id={badge.icon} class:list={['size-4 flex-none', style.logo]} />
     <span>{badge.name}</span>
   </span>
 )}

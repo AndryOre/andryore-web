@@ -21,19 +21,24 @@
         "url": "https://github.com/stablyai/orca"
       },
       {
-        "name": "Nushell + Starship",
+        "name": "Nushell",
         "icon": "nushell",
         "url": "https://www.nushell.sh"
       },
       {
-        "name": "Git + GitHub CLI",
-        "icon": "git",
-        "url": "https://cli.github.com"
+        "name": "Starship",
+        "icon": "starship",
+        "url": "https://starship.rs"
       },
       {
-        "name": "GitHub Actions",
-        "icon": "github-actions",
-        "url": "https://github.com/features/actions"
+        "name": "Git",
+        "icon": "git",
+        "url": "https://git-scm.com"
+      },
+      {
+        "name": "GitHub CLI",
+        "icon": "github",
+        "url": "https://cli.github.com"
       },
       {
         "name": "Linear",
@@ -74,6 +79,11 @@
         "name": "mise",
         "icon": "mise",
         "url": "https://mise.jdx.dev"
+      },
+      {
+        "name": "GitHub Actions",
+        "icon": "github-actions",
+        "url": "https://github.com/features/actions"
       }
     ],
     "tech": [
@@ -88,7 +98,7 @@
         "url": "https://bun.sh"
       },
       {
-        "name": "Astro (+ Starlight)",
+        "name": "Astro + Starlight",
         "icon": "astro",
         "url": "https://astro.build"
       },
@@ -101,11 +111,6 @@
         "name": "Next.js",
         "icon": "nextjs",
         "url": "https://nextjs.org"
-      },
-      {
-        "name": "Hono",
-        "icon": "hono",
-        "url": "https://hono.dev"
       },
       {
         "name": "Tailwind CSS",
@@ -201,12 +206,17 @@
         "name": "knip",
         "icon": "knip",
         "url": "https://knip.dev"
+      },
+      {
+        "name": "Hono",
+        "icon": "hono",
+        "url": "https://hono.dev"
       }
     ],
     "setupHeading": "Setup",
     "setup": [
       {
-        "label": "Legion 7i Gen 9",
+        "label": "Lenovo Legion 7i Gen 9 (16IRX9)",
         "role": "Laptop",
         "glyph": "laptop",
         "url": "https://www.lenovo.com/us/en/p/laptops/legion-laptops/legion-7-series/legion-7i-gen-9-16-inch-intel/83fd0018us"
@@ -219,7 +229,7 @@
       },
       {
         "label": "Logitech C920",
-        "role": "Webcam",
+        "role": "Camera",
         "glyph": "camera",
         "url": "https://www.amazon.com/dp/B006JH8T3S"
       },
@@ -230,7 +240,7 @@
         "url": "https://www.amazon.com/dp/B092CB69Q4"
       },
       {
-        "label": "Nuphy Air60 V2 Cowberry",
+        "label": "Nuphy Air60 V2, Cowberry switches",
         "role": "Keyboard",
         "glyph": "keyboard",
         "url": "https://www.amazon.com/dp/B0CRH6JSVL"
@@ -253,11 +263,13 @@
       "intro": "How andryore.dev is made.",
       "framework": {
         "title": "Framework",
-        "body": "Static output, a few React islands"
+        "body": "Static output, a few React islands",
+        "name": "Astro"
       },
       "styling": {
         "title": "Styling",
-        "body": "Tailwind CSS v4 and shadcn/ui"
+        "body": "Tailwind CSS v4 and shadcn/ui",
+        "name": "Tailwind CSS + shadcn/ui"
       },
       "type": {
         "title": "Type",
@@ -271,21 +283,23 @@
             "text": "Aa"
           }
         ],
-        "readout": "60 px · 16 px"
+        "readout": "60 px · 16 px",
+        "body": "Space Grotesk and JetBrains Mono, self-hosted"
       },
       "color": {
         "title": "Color",
-        "body": "Six real tokens, light and dark"
+        "body": "A cool gray with a blue accent, light and dark"
       },
       "hosting": {
         "title": "Hosting",
-        "body": "Docker, nginx and Coolify"
+        "body": "Docker image with nginx, deployed through Coolify"
       },
       "source": {
         "title": "Source",
-        "body": "Public"
+        "body": "Public on GitHub",
+        "name": "AndryOre/andryore-web"
       },
-      "sourceLinkLabel": "View the source",
+      "sourceLinkLabel": "View the source on GitHub",
       "sourceUrl": "https://github.com/AndryOre/andryore-web",
       "privacyHeading": "Privacy",
       "privacyBody": "This site uses Umami Cloud, a cookieless analytics service, as its only third party. It sets no cookies and stores nothing in your browser. It counts page views and a few clicks (navigation, language and theme switches, product and CV links) without identifying you, and it ignores visitors who send Do Not Track."
@@ -297,7 +311,7 @@
       "description": "Las herramientas, la tecnología y el equipo con los que construyo y transmito, y cómo está hecho este sitio."
     },
     "heading": "Uso",
-    "intro": "Con qué construyo y transmito: herramientas en mi equipo, tecnología en mis proyectos, mi setup y cómo está hecho este sitio.",
+    "intro": "Con lo que construyo y hago stream: herramientas en mi máquina, tecnología en mis proyectos, mi setup y cómo está hecho este sitio.",
     "toolsHeading": "Herramientas",
     "techHeading": "Tecnología",
     "techClosing": "y muchas más por el camino",
@@ -313,19 +327,24 @@
         "url": "https://github.com/stablyai/orca"
       },
       {
-        "name": "Nushell + Starship",
+        "name": "Nushell",
         "icon": "nushell",
         "url": "https://www.nushell.sh"
       },
       {
-        "name": "Git + GitHub CLI",
-        "icon": "git",
-        "url": "https://cli.github.com"
+        "name": "Starship",
+        "icon": "starship",
+        "url": "https://starship.rs"
       },
       {
-        "name": "GitHub Actions",
-        "icon": "github-actions",
-        "url": "https://github.com/features/actions"
+        "name": "Git",
+        "icon": "git",
+        "url": "https://git-scm.com"
+      },
+      {
+        "name": "GitHub CLI",
+        "icon": "github",
+        "url": "https://cli.github.com"
       },
       {
         "name": "Linear",
@@ -366,6 +385,11 @@
         "name": "mise",
         "icon": "mise",
         "url": "https://mise.jdx.dev"
+      },
+      {
+        "name": "GitHub Actions",
+        "icon": "github-actions",
+        "url": "https://github.com/features/actions"
       }
     ],
     "tech": [
@@ -380,7 +404,7 @@
         "url": "https://bun.sh"
       },
       {
-        "name": "Astro (+ Starlight)",
+        "name": "Astro + Starlight",
         "icon": "astro",
         "url": "https://astro.build"
       },
@@ -393,11 +417,6 @@
         "name": "Next.js",
         "icon": "nextjs",
         "url": "https://nextjs.org"
-      },
-      {
-        "name": "Hono",
-        "icon": "hono",
-        "url": "https://hono.dev"
       },
       {
         "name": "Tailwind CSS",
@@ -493,13 +512,18 @@
         "name": "knip",
         "icon": "knip",
         "url": "https://knip.dev"
+      },
+      {
+        "name": "Hono",
+        "icon": "hono",
+        "url": "https://hono.dev"
       }
     ],
-    "setupHeading": "Equipo",
+    "setupHeading": "Setup",
     "setup": [
       {
-        "label": "Legion 7i Gen 9",
-        "role": "Portátil",
+        "label": "Lenovo Legion 7i Gen 9 (16IRX9)",
+        "role": "Laptop",
         "glyph": "laptop",
         "url": "https://www.lenovo.com/us/en/p/laptops/legion-laptops/legion-7-series/legion-7i-gen-9-16-inch-intel/83fd0018us"
       },
@@ -511,7 +535,7 @@
       },
       {
         "label": "Logitech C920",
-        "role": "Cámara web",
+        "role": "Cámara",
         "glyph": "camera",
         "url": "https://www.amazon.com/dp/B006JH8T3S"
       },
@@ -522,7 +546,7 @@
         "url": "https://www.amazon.com/dp/B092CB69Q4"
       },
       {
-        "label": "Nuphy Air60 V2 Cowberry",
+        "label": "Nuphy Air60 V2, switches Cowberry",
         "role": "Teclado",
         "glyph": "keyboard",
         "url": "https://www.amazon.com/dp/B0CRH6JSVL"
@@ -545,11 +569,13 @@
       "intro": "Cómo está hecho andryore.dev.",
       "framework": {
         "title": "Framework",
-        "body": "Salida estática, unas pocas islas de React"
+        "body": "Salida estática, algunas islas de React",
+        "name": "Astro"
       },
       "styling": {
         "title": "Estilos",
-        "body": "Tailwind CSS v4 y shadcn/ui"
+        "body": "Tailwind CSS v4 y shadcn/ui",
+        "name": "Tailwind CSS + shadcn/ui"
       },
       "type": {
         "title": "Tipografía",
@@ -563,21 +589,23 @@
             "text": "Aa"
           }
         ],
-        "readout": "60 px · 16 px"
+        "readout": "60 px · 16 px",
+        "body": "Space Grotesk y JetBrains Mono, auto-hospedadas"
       },
       "color": {
         "title": "Color",
-        "body": "Seis tokens reales, claro y oscuro"
+        "body": "Un gris frío con acento azul, claro y oscuro"
       },
       "hosting": {
-        "title": "Alojamiento",
-        "body": "Docker, nginx y Coolify"
+        "title": "Hosting",
+        "body": "Imagen Docker con nginx, desplegada con Coolify"
       },
       "source": {
         "title": "Código",
-        "body": "Público"
+        "body": "Público en GitHub",
+        "name": "AndryOre/andryore-web"
       },
-      "sourceLinkLabel": "Ver el código fuente",
+      "sourceLinkLabel": "Ver el código en GitHub",
       "sourceUrl": "https://github.com/AndryOre/andryore-web",
       "privacyHeading": "Privacidad",
       "privacyBody": "Este sitio usa Umami Cloud, un servicio de analítica sin cookies, como único tercero. No crea cookies ni guarda nada en tu navegador. Cuenta las visitas a las páginas y algunos clics (navegación, cambios de idioma y de tema, enlaces de productos y del CV) sin identificarte, e ignora a quienes envían No Rastrear."

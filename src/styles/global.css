@@ -111,8 +111,34 @@
 
 @keyframes uses-float {
   50% {
-    transform: translateY(-0.75rem);
+    transform: translateY(-8px);
   }
+}
+
+.uses-page {
+  --card-2: oklch(0.975 0.004 258);
+  --hl: rgb(255 255 255 / 0.9);
+  --shadow: 0 10px 28px -16px rgb(21 25 31 / 0.28);
+}
+
+html.dark .uses-page {
+  --card-2: oklch(0.255 0.02 256);
+  --hl: rgb(255 255 255 / 0.05);
+  --shadow: 0 12px 30px -16px rgb(0 0 0 / 0.7);
+}
+
+@utility uses-surface-2 {
+  background: var(--card-2);
+  border-color: var(--border);
+  box-shadow:
+    inset 0 1px 0 var(--hl),
+    var(--shadow);
+}
+
+@utility uses-lift {
+  box-shadow:
+    inset 0 1px 0 var(--hl),
+    var(--shadow);
 }
 
 @media (prefers-reduced-motion: no-preference) {

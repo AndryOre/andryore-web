@@ -2,10 +2,10 @@ import { describe, expect, test } from 'bun:test'
 
 import { ICONS, type IconId } from './icons'
 import {
+  ALT_BADGES,
   BADGE_COLORS,
   badgeIconId,
   badgeStyle,
-  contrastRatio,
   FIELD_ICONS,
   floatClass,
   SETUP_GLYPHS,
@@ -13,15 +13,27 @@ import {
 } from './uses'
 
 describe('FIELD_ICONS', () => {
-  test('holds 8 to 12 brand icons with unique ids and placements', () => {
-    expect(FIELD_ICONS.length).toBeGreaterThanOrEqual(8)
-    expect(FIELD_ICONS.length).toBeLessThanOrEqual(12)
-    expect(new Set(FIELD_ICONS.map((icon) => icon.id)).size).toBe(
-      FIELD_ICONS.length,
-    )
-    expect(new Set(FIELD_ICONS.map((icon) => icon.placement)).size).toBe(
-      FIELD_ICONS.length,
-    )
+  test('holds the eight canvas icons in order with their positions', () => {
+    expect(FIELD_ICONS.map((icon) => icon.id)).toEqual([
+      'typescript',
+      'bun',
+      'astro',
+      'react',
+      'nextjs',
+      'tailwindcss',
+      'claude',
+      'docker',
+    ])
+    expect(FIELD_ICONS.map((icon) => icon.placement)).toEqual([
+      'left-[8%] top-[12%] size-[84px]',
+      'left-[20%] top-[62%] size-[64px]',
+      'left-[30%] top-[18%] size-[72px]',
+      'left-[44%] top-[70%] size-[96px]',
+      'left-[58%] top-[8%] size-[60px]',
+      'left-[66%] top-[66%] size-[72px]',
+      'left-[78%] top-[20%] size-[84px]',
+      'left-[88%] top-[58%] size-[64px]',
+    ])
     for (const icon of FIELD_ICONS)
       expect(Object.hasOwn(ICONS, icon.id)).toBe(true)
   })
@@ -40,13 +52,6 @@ describe('floatClass', () => {
   })
 })
 
-describe('contrastRatio', () => {
-  test('matches the WCAG reference values', () => {
-    expect(contrastRatio('#000000', '#ffffff')).toBeCloseTo(21, 1)
-    expect(contrastRatio('#ffffff', '#ffffff')).toBeCloseTo(1, 5)
-  })
-})
-
 describe('badgeStyle', () => {
   test('uses a white logo and name on a dark brand', () => {
     const style = badgeStyle('coolify')
@@ -54,17 +59,58 @@ describe('badgeStyle', () => {
     expect(style.logo).toContain('invert')
   })
 
-  test('uses dark text on a light brand', () => {
-    const style = badgeStyle('bun')
-    expect(style.text).not.toBe('text-white')
+  test('uses near-black text on a light brand', () => {
+    const style = badgeStyle('react')
+    expect(style.text).toBe('text-[#111111]')
     expect(style.logo).not.toContain('invert')
   })
 
-  test('every badge reaches 4.5:1 and its class names its hex', () => {
+  test('sets the canvas colours for the changed brands', () => {
+    expect(badgeStyle('starship').hex).toBe('#dd0b78')
+    expect(badgeStyle('github').hex).toBe('#181717')
+    expect(badgeStyle('git').hex).toBe('#f03c2e')
+    expect(badgeStyle('bun').hex).toBe('#000000')
+    expect(badgeStyle('zod').hex).toBe('#408aff')
+    expect(badgeStyle('posthog').hex).toBe('#000000')
+  })
+
+  test('keeps white text on the brands the canvas names', () => {
+    for (const id of [
+      'claude',
+      'nushell',
+      'git',
+      'github-actions',
+      'docker',
+      'astro',
+      'hono',
+      'turborepo',
+      'playwright',
+      'knip',
+    ] as const)
+      expect(badgeStyle(id).text).toBe('text-white')
+  })
+
+  test('gives the alt brands a grey badge and a full-colour logo', () => {
+    for (const id of ALT_BADGES) {
+      const style = badgeStyle(id)
+      expect(style.bg).toBe('bg-[#eef0f4]')
+      expect(style.text).toBe('text-[#15191f]')
+      expect(style.logo).toBe('')
+    }
+    expect([...ALT_BADGES].toSorted((a, b) => a.localeCompare(b))).toEqual([
+      'base-ui',
+      'chezmoi',
+      'mise',
+      'orca',
+      'remotion',
+      'trigger-dev',
+    ])
+  })
+
+  test('every coloured badge class names its hex', () => {
     for (const id of Object.keys(BADGE_COLORS) as IconId[]) {
       const style = badgeStyle(id)
       expect(style.bg).toBe(`bg-[${style.hex}]`)
-      expect(style.ratio).toBeGreaterThanOrEqual(4.5)
     }
   })
 

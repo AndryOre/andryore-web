@@ -59,7 +59,7 @@ describe('stackToolCount', () => {
         uses[locale].tools.length + uses[locale].tech.length,
       )
     }
-    expect(stackToolCount('en')).toBe(38)
+    expect(stackToolCount('en')).toBe(40)
   })
 
   test('is what the copy shows through its count placeholder', () => {

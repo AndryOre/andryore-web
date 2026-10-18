@@ -7,16 +7,16 @@ import BrandIcon from './BrandIcon.astro'
   {FIELD_ICONS.map((icon, index) => (
     <span
       class:list={[
-        'border-border bg-card absolute flex items-center justify-center rounded-[24%] border shadow-md',
+        'uses-surface-2 absolute grid place-items-center rounded-[24%] border',
         icon.placement,
         floatClass(index),
       ]}
     >
-      <BrandIcon id={icon.id} class="size-1/2 dark:hidden" />
+      <BrandIcon id={icon.id} class="size-[58%] dark:hidden" />
       <BrandIcon
         id={icon.id}
         variant="dark"
-        class="hidden size-1/2 dark:block"
+        class="hidden size-[58%] dark:block"
       />
     </span>
   ))}
