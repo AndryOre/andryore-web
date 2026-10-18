@@ -1,4 +1,10 @@
-import { getFxStorage, readFx, writeFx, type FxStorage } from '../lib/fx-store'
+import {
+  getFxStorage,
+  readFx,
+  subscribeFx,
+  writeFx,
+  type FxStorage,
+} from '../lib/fx-store'
 
 /** The parts of the switch element the script touches, so tests can fake it. */
 export interface FxSwitchElement {
@@ -16,14 +22,12 @@ export function mountFxSwitch(
   element: FxSwitchElement,
   storage: FxStorage | undefined = getFxStorage(),
 ): void {
-  let enabled = readFx(storage)
   const paint = (): void => {
-    element.setAttribute('aria-checked', String(enabled))
+    element.setAttribute('aria-checked', String(readFx(storage)))
   }
   paint()
+  subscribeFx(paint)
   element.addEventListener('click', () => {
-    enabled = !enabled
-    writeFx(storage, enabled)
-    paint()
+    writeFx(storage, !readFx(storage))
   })
 }

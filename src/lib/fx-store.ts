@@ -7,6 +7,13 @@ export interface FxStorage {
   setItem: (key: string, value: string) => void
 }
 
+/** The event dispatched on the window whenever the Sound choice changes. */
+const FX_CHANGE_EVENT = 'ao-fx-change'
+
+const noop = (): void => {
+  return
+}
+
 const memory: { enabled: boolean } = { enabled: false }
 
 /**
@@ -54,5 +61,23 @@ export function writeFx(
     storage?.setItem(FX_STORAGE_KEY, enabled ? 'on' : 'off')
   } catch {
     return
+  } finally {
+    if (typeof globalThis.dispatchEvent === 'function')
+      globalThis.dispatchEvent(new Event(FX_CHANGE_EVENT))
+  }
+}
+
+/**
+ * Subscribes to Sound changes made in this page or in another tab.
+ * @param onChange Called after every change.
+ * @returns A function that removes the subscription.
+ */
+export function subscribeFx(onChange: () => void): () => void {
+  if (typeof globalThis.addEventListener !== 'function') return noop
+  globalThis.addEventListener(FX_CHANGE_EVENT, onChange)
+  globalThis.addEventListener('storage', onChange)
+  return () => {
+    globalThis.removeEventListener(FX_CHANGE_EVENT, onChange)
+    globalThis.removeEventListener('storage', onChange)
   }
 }

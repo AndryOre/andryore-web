@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 
 import chrome from '../content/chrome.json'
 import type { Locale } from '../i18n/locales'
-import Dock, { LanguageMenu, ThemeMenu } from './Dock'
+import Dock, { LanguageMenu, SoundSwitch, ThemeMenu } from './Dock'
 
 function render(locale: Locale, path: string): string {
   return renderToStaticMarkup(
@@ -24,12 +24,43 @@ describe('Dock', () => {
       'Products',
       'About',
       'Uses',
+      'Find me',
       'EN Language',
       'Theme',
+      'Sound',
     ]) {
       expect(html).toContain(`aria-label="${name}"`)
     }
     expect(html).toContain('aria-label="Main"')
+  })
+
+  test('orders the items as the canvas does', () => {
+    const html = render('en', '/')
+    const names = [
+      'Home',
+      'About',
+      'Products',
+      'Uses',
+      'Find me',
+      'EN Language',
+      'Theme',
+      'Sound',
+    ]
+    const positions = names.map((name) => html.indexOf(`aria-label="${name}"`))
+    expect(positions).toEqual(positions.toSorted((a, b) => a - b))
+    expect(positions.every((position) => position >= 0)).toBe(true)
+  })
+
+  test('links Find me to the home anchor in each language', () => {
+    expect(render('en', '/about/')).toContain('href="/#find-me"')
+    expect(render('es', '/')).toContain('href="/es/#find-me"')
+  })
+
+  test('renders Sound off by default as a switch', () => {
+    const html = render('en', '/')
+    expect(html).toMatch(/role="switch"[^>]*aria-checked="false"/)
+    expect(html).toContain('Sound off')
+    expect(html).not.toContain('data-dock-sound-dot')
   })
 
   test('localises names and links in Spanish', () => {
@@ -85,5 +116,16 @@ describe('ThemeMenu', () => {
     expect(html.match(/role="menuitemradio"/g)).toHaveLength(3)
     expect(html.match(/aria-checked="true"/g)).toHaveLength(1)
     expect(html).toMatch(/aria-checked="true"[^>]*>Dark</)
+  })
+})
+
+describe('SoundSwitch', () => {
+  test('shows the dot, the checked state and the on tooltip when on', () => {
+    const html = renderToStaticMarkup(
+      <SoundSwitch copy={chrome.es.dock.sound} enabled onToggle={mock()} />,
+    )
+    expect(html).toContain('aria-checked="true"')
+    expect(html).toContain('data-dock-sound-dot')
+    expect(html).toContain('Sonido activado')
   })
 })
