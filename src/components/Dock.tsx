@@ -8,6 +8,7 @@ import {
 } from 'react'
 
 import { localePath, LOCALES, type Locale } from '@/i18n/locales'
+import { ANALYTICS_EVENTS, analyticsAttributes } from '@/lib/analytics'
 import {
   activePageKey,
   DOCK_PAGES,
@@ -186,6 +187,9 @@ export function LanguageMenu({
             hrefLang={code}
             lang={code}
             data-locale-switch={code}
+            {...analyticsAttributes(ANALYTICS_EVENTS.languageSwitch, {
+              to: code,
+            })}
             aria-current={code === locale ? 'true' : undefined}
             className={menuItemClass(code === locale)}
           >
@@ -223,6 +227,9 @@ export function ThemeMenu({
             type="button"
             role="menuitemradio"
             aria-checked={preference === option}
+            {...analyticsAttributes(ANALYTICS_EVENTS.themeSwitch, {
+              theme: option,
+            })}
             className={menuItemClass(preference === option)}
             onClick={() => {
               onChoose(option)
@@ -338,6 +345,9 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
               href={pageHref(locale, page.path)}
               aria-label={copy.pages[page.key]}
               aria-current={active ? 'page' : undefined}
+              {...analyticsAttributes(ANALYTICS_EVENTS.dockNavigate, {
+                page: page.key,
+              })}
               className={cn(ITEM_CLASS, active && 'text-foreground')}
             >
               {active && (
