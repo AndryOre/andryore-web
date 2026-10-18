@@ -124,7 +124,7 @@ const headingClass = 'm-0 text-2xl font-bold tracking-[-0.025em]'
           const Icon = whatIcons[item.icon as keyof typeof whatIcons]
           return (
             <li class={tileClass} data-what-i-do={item.key}>
-              <span class={iconTileClass}>
+              <span class={iconTileClass} aria-hidden="true">
                 <Icon aria-hidden="true" size={20} />
               </span>
               <h3 class="m-0 text-lg font-semibold tracking-tight">
@@ -151,9 +151,12 @@ const headingClass = 'm-0 text-2xl font-bold tracking-[-0.025em]'
               data-about-live={stat.key === 'contributions' ? '' : undefined}
               data-locale={locale}
             >
-              <span class={iconTileClass}>
+              <span class={iconTileClass} aria-hidden="true">
                 <Icon aria-hidden="true" size={20} />
               </span>
+              <dt class="text-muted-foreground order-last text-sm">
+                {stat.label}
+              </dt>
               <dd class="m-0 flex flex-col gap-1">
                 <span class="text-3xl font-bold tracking-[-0.03em] tabular-nums">
                   {stat.count === undefined ? (
@@ -174,9 +177,6 @@ const headingClass = 'm-0 text-2xl font-bold tracking-[-0.025em]'
                   </span>
                 )}
               </dd>
-              <dt class="text-muted-foreground order-last text-sm">
-                {stat.label}
-              </dt>
             </div>
           )
         })}

@@ -95,4 +95,17 @@ describe('fx store', () => {
     writeFx(undefined, false)
     expect(readFx(undefined)).toBe(false)
   })
+
+  test('keeps the new choice when only the write fails', () => {
+    const readOnly: FxStorage = {
+      getItem: () => 'off',
+      setItem: () => {
+        throw new Error('quota')
+      },
+    }
+    writeFx(readOnly, true)
+    expect(readFx(readOnly)).toBe(true)
+    writeFx(fakeStorage(), false)
+    expect(readFx(readOnly)).toBe(false)
+  })
 })
