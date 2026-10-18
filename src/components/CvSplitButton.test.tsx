@@ -23,6 +23,11 @@ describe('CvSplitButton', () => {
     expect(render('es')).toContain(`aria-label="${about.es.cvMenuLabel}"`)
   })
 
+  test('shows the language of the file next to the label', () => {
+    expect(render('en')).toContain('CV · EN')
+    expect(render('es')).toContain('CV · ES')
+  })
+
   test('tracks the download by language', () => {
     expect(render('es')).toContain('data-umami-event-language="es"')
   })

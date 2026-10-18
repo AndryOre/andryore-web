@@ -70,7 +70,7 @@ export default function CvSplitButton({
         className={buttonClassName('default', 'default', 'gap-2 pr-4 pl-5')}
       >
         <DownloadIcon aria-hidden="true" />
-        {copy.cvLabel}
+        {`${copy.cvLabel} · ${language.toUpperCase()}`}
         <span className="sr-only">{options[language].label}</span>
       </a>
       <DropdownMenu modal={false}>
