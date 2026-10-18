@@ -19,16 +19,44 @@ export interface FieldIcon {
  * classes because the CSP forbids inline styles.
  */
 export const FIELD_ICONS: readonly FieldIcon[] = [
-  { id: 'typescript', placement: 'top-[8%] left-[6%]' },
-  { id: 'bun', placement: 'top-[14%] left-[30%]' },
-  { id: 'astro', placement: 'top-[6%] left-[56%]' },
-  { id: 'react', placement: 'top-[18%] right-[8%]' },
-  { id: 'docker', placement: 'top-[44%] left-[12%]' },
-  { id: 'claude', placement: 'top-[48%] left-[44%]' },
-  { id: 'tailwindcss', placement: 'top-[42%] right-[22%]' },
-  { id: 'git', placement: 'bottom-[10%] left-[24%]' },
-  { id: 'playwright', placement: 'bottom-[8%] left-[62%]' },
-  { id: 'prisma', placement: 'bottom-[14%] right-[6%]' },
+  {
+    id: 'typescript',
+    placement: 'size-[60px] top-4 left-4 sm:top-[5%] sm:left-[3%] sm:size-20',
+  },
+  {
+    id: 'bun',
+    placement:
+      'size-[60px] top-9 left-[30%] sm:top-[28%] sm:left-[13%] sm:size-[72px]',
+  },
+  {
+    id: 'astro',
+    placement:
+      'size-[60px] top-4 right-[30%] sm:top-[52%] sm:right-auto sm:left-[3%] sm:size-24',
+  },
+  {
+    id: 'react',
+    placement: 'size-[60px] top-9 right-4 sm:top-[5%] sm:right-[3%] sm:size-24',
+  },
+  {
+    id: 'docker',
+    placement:
+      'size-[60px] bottom-4 left-4 sm:bottom-[6%] sm:left-[13%] sm:size-[72px]',
+  },
+  {
+    id: 'claude',
+    placement:
+      'size-[60px] bottom-9 left-[30%] sm:top-[28%] sm:right-[13%] sm:bottom-auto sm:left-auto sm:size-20',
+  },
+  {
+    id: 'tailwindcss',
+    placement:
+      'size-[60px] bottom-4 right-[30%] sm:top-[52%] sm:right-[3%] sm:bottom-auto sm:size-[72px]',
+  },
+  {
+    id: 'playwright',
+    placement:
+      'size-[60px] bottom-9 right-4 sm:right-[13%] sm:bottom-[6%] sm:size-20',
+  },
 ]
 
 /** The Lucide glyphs of the Setup rows, in row order. */
