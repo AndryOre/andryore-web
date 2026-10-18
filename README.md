@@ -29,3 +29,8 @@ The brand assets (the logos, tokens, Open Graph image and avatar under
 pages and all other written content) are **all rights reserved**. They are not
 covered by the MIT license and may not be reused without written permission. See
 [ADR 0007](docs/adr/0007-split-license.md).
+
+Third-party logos in `src/assets/icons` belong to their owners, are shown only
+to name technologies, and are not covered by the repo licence
+([ADR 0007](docs/adr/0007-split-license.md); sources in
+[`SOURCES.md`](src/assets/icons/SOURCES.md)).
