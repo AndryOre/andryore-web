@@ -14,6 +14,7 @@ import {
 import memoji from '../../docs/brand/avatar/memoji.webp'
 import about from '../content/about.json'
 import home from '../content/home.json'
+import uses from '../content/uses.json'
 import { localePath, type Locale } from '../i18n/locales'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import { buildNumberStats } from '../lib/about'
@@ -38,6 +39,12 @@ const stats = buildNumberStats(
     contributions: snapshot?.total ?? null,
   },
   locale,
+)
+const officialSites = new Map(
+  [...uses[locale].tools, ...uses[locale].tech].map((item) => [
+    item.icon,
+    item.url,
+  ]),
 )
 const whatIcons = {
   layers: Layers,
@@ -235,7 +242,13 @@ const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
       <ul class="m-0 flex list-none flex-wrap gap-2.5 p-0">
         {copy.stack.map((item) => (
           <li>
-            <UsesBadge badge={{ name: item.name, icon: item.icon as IconId }} />
+            <UsesBadge
+              badge={{
+                name: item.name,
+                icon: item.icon as IconId,
+                url: officialSites.get(item.icon),
+              }}
+            />
           </li>
         ))}
       </ul>
