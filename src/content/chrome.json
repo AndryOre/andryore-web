@@ -36,9 +36,8 @@
     "wordmarkParts": ["Andry", "Ore"],
     "openToWork": "Open to work",
     "fx": {
-      "label": "Sound",
-      "on": "On",
-      "off": "Off",
+      "label": "FX",
+      "sound": "Sound",
       "hint": "Subtle interface sounds. Off by default."
     }
   },
@@ -79,9 +78,8 @@
     "wordmarkParts": ["Andry", "Ore"],
     "openToWork": "Disponible",
     "fx": {
-      "label": "Sonido",
-      "on": "Activado",
-      "off": "Desactivado",
+      "label": "FX",
+      "sound": "Sonido",
       "hint": "Sonidos sutiles de interfaz. Apagados por defecto."
     }
   }

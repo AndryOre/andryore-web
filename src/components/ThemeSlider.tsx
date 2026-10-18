@@ -107,7 +107,7 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
   }
 
   return (
-    <div className="flex min-h-40 flex-1 gap-3 self-stretch">
+    <div className="flex min-h-35 flex-1 gap-3 self-stretch">
       <div
         role="group"
         aria-label={copy.label}
@@ -129,7 +129,7 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
               chooseTheme(stop)
             }}
             className={cn(
-              'theme-tab relative z-10 flex min-h-11 items-center gap-2 px-3 font-mono text-xs font-bold',
+              'theme-tab relative z-10 flex min-h-11 flex-col items-center justify-center gap-2 px-3 text-center font-mono font-bold',
               stop === preference ? 'text-background' : 'text-muted-foreground',
             )}
           >

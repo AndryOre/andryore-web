@@ -26,37 +26,47 @@ const SPEAKER =
   type="button"
   role="switch"
   aria-checked="false"
-  aria-labelledby="fx-label"
+  aria-labelledby="fx-label fx-sound"
   aria-describedby="fx-hint"
   data-fx-switch
-  class="group bg-card border-border rounded-[1.25rem] border p-5 text-left shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)] relative flex min-w-0 cursor-pointer flex-col justify-between gap-3 overflow-hidden"
+  class="group bg-card border-border focus-visible:outline-foreground relative flex min-w-0 cursor-pointer flex-col justify-between gap-2.5 overflow-hidden rounded-[1.25rem] border p-4 text-left shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)] focus-visible:outline-2 focus-visible:-outline-offset-4"
 >
-  <span class="text-foreground">
-    <svg {...iconProps} class="hidden size-7 group-aria-checked:block">
-      <path d={SPEAKER}></path>
-      <path d="M16 9a5 5 0 0 1 0 6"></path>
-      <path d="M19.364 18.364a9 9 0 0 0 0-12.728"></path>
-    </svg>
-    <svg {...iconProps} class="size-7 group-aria-checked:hidden">
-      <path d={SPEAKER}></path>
-      <line x1="22" x2="16" y1="9" y2="15"></line>
-      <line x1="16" x2="22" y1="9" y2="15"></line>
-    </svg>
-  </span>
-  <span class="flex flex-wrap items-center justify-between gap-2">
+  <span class="flex items-center gap-2.5">
+    <span class="text-foreground">
+      <svg {...iconProps} class="hidden size-5.5 group-aria-checked:block">
+        <path d={SPEAKER}></path>
+        <path d="M16 9a5 5 0 0 1 0 6"></path>
+        <path d="M19.364 18.364a9 9 0 0 0 0-12.728"></path>
+      </svg>
+      <svg {...iconProps} class="size-5.5 group-aria-checked:hidden">
+        <path d={SPEAKER}></path>
+        <line x1="22" x2="16" y1="9" y2="15"></line>
+        <line x1="16" x2="22" y1="9" y2="15"></line>
+      </svg>
+    </span>
     <span
       id="fx-label"
       class="text-muted-foreground font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase"
     >
       {copy.label}
     </span>
-    <span class="bg-secondary border-border rounded-pill border px-2 py-0.5 font-mono text-[0.6875rem] font-medium">
-      <span class="group-aria-checked:hidden">{copy.off}</span>
-      <span class="hidden group-aria-checked:inline">{copy.on}</span>
-    </span>
   </span>
-  <span id="fx-hint" class="text-muted-foreground text-sm">
+  <span
+    id="fx-hint"
+    class="text-muted-foreground text-[13px] leading-[1.35] font-medium"
+  >
     {copy.hint}
+  </span>
+  <span class="flex items-center justify-between gap-2.5">
+    <b id="fx-sound" class="text-[15px] font-semibold">
+      {copy.sound}
+    </b>
+    <span
+      aria-hidden="true"
+      class="fx-switch bg-muted border-border rounded-pill group-aria-checked:bg-foreground/88 pointer-events-none relative h-8 w-14 flex-none border group-aria-checked:border-transparent"
+    >
+      <span class="fx-knob bg-muted-foreground group-aria-checked:bg-background rounded-pill absolute top-[3px] left-[3px] size-6"></span>
+    </span>
   </span>
 </button>
 

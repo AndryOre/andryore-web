@@ -29,6 +29,13 @@ describe('ThemeSlider', () => {
     expect(html.match(/aria-pressed="true"/g)).toHaveLength(1)
   })
 
+  test('stacks each tab icon above its centred label', () => {
+    const html = render('en')
+    expect(html).toContain('flex-col items-center justify-center')
+    expect(html).toContain('text-center font-mono font-bold')
+    expect(html).toContain('min-h-35')
+  })
+
   test('marks the indicator and the bar with the stored stop, never inline style', () => {
     const html = render('en')
     expect(html.match(/data-stop="auto"/g)).toHaveLength(2)
