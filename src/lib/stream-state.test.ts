@@ -1,11 +1,72 @@
 import { describe, expect, test } from 'bun:test'
 
 import {
+  formatCompactCountdown,
   formatCountdown,
   formatSession,
+  formatSessionLong,
   nextSession,
   selectStreamView,
+  weekColumn,
+  weekStrip,
 } from './stream-state'
+
+describe('formatCompactCountdown', () => {
+  const units = { prefix: 'in', day: 'd', hour: 'h', minute: 'min' }
+  const start = new Date('2026-10-20T19:00:00Z')
+
+  test('shows days and hours when a day or more is left', () => {
+    const now = new Date('2026-10-18T16:00:00Z')
+    expect(formatCompactCountdown(start, now, units)).toBe('in 2 d 3 h')
+  })
+
+  test('shows hours and minutes under a day', () => {
+    const now = new Date('2026-10-20T15:40:00Z')
+    expect(formatCompactCountdown(start, now, units)).toBe('in 3 h 20 min')
+  })
+
+  test('shows only minutes under an hour and never goes negative', () => {
+    expect(
+      formatCompactCountdown(start, new Date('2026-10-20T18:45:00Z'), units),
+    ).toBe('in 15 min')
+    expect(
+      formatCompactCountdown(start, new Date('2026-10-21T00:00:00Z'), units),
+    ).toBe('in 0 min')
+  })
+})
+
+describe('weekColumn', () => {
+  test('maps UTC weekdays to a Monday-first column', () => {
+    expect(weekColumn(new Date('2026-10-19T12:00:00Z'))).toBe(0)
+    expect(weekColumn(new Date('2026-10-20T12:00:00Z'))).toBe(1)
+    expect(weekColumn(new Date('2026-10-25T12:00:00Z'))).toBe(6)
+  })
+})
+
+describe('weekStrip', () => {
+  test('marks Tuesday and Thursday as sessions and today as current', () => {
+    const strip = weekStrip(new Date('2026-10-22T08:00:00Z'))
+    expect(strip.map((day) => day.session)).toEqual([
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+    ])
+    expect(strip.findIndex((day) => day.today)).toBe(3)
+    expect(strip.filter((day) => day.today)).toHaveLength(1)
+  })
+})
+
+describe('formatSessionLong', () => {
+  test('spells the weekday out in the locale', () => {
+    const start = new Date('2026-10-20T19:00:00Z')
+    expect(formatSessionLong(start, 'en')).toBe('Tuesday 19:00 UTC')
+    expect(formatSessionLong(start, 'es')).toBe('martes 19:00 UTC')
+  })
+})
 
 describe('selectStreamView', () => {
   test('live wins regardless of the flag', () => {

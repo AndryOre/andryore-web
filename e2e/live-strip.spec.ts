@@ -82,9 +82,10 @@ test.describe('live strip', () => {
       await preparePage(page, 'light')
       await page.goto(route)
       await settlePage(page)
-      const slate = page.locator('[data-stream-panel="coming-soon"]')
-      await expect(slate).toContainText(copy.comingSoon)
-      await expect(slate).toContainText(copy.planned)
+      const tile = page.locator('[data-stream-tile]')
+      await expect(tile).toHaveAttribute('data-state', 'coming-soon')
+      await expect(tile.getByText(copy.comingSoon)).toBeVisible()
+      await expect(tile.getByText(copy.planned)).toBeVisible()
 
       await page.route('**/api/stream-status', (handler) =>
         handler.fulfill({ json: { state: 'live', title: 'Building' } }),
@@ -92,7 +93,13 @@ test.describe('live strip', () => {
       await page.reload()
       await settlePage(page)
       await expect(page.locator('[data-stream-title]')).toHaveText('Building')
-      await expect(page.locator('[data-stream-live-tag]')).toBeVisible()
+      await expect(page.locator('[data-stream-tile]')).toHaveAttribute(
+        'data-state',
+        'live',
+      )
+      await expect(
+        page.locator('[data-stream-tile]').getByText(copy.liveTag),
+      ).toBeVisible()
     })
   }
 })

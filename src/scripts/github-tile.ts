@@ -1,5 +1,6 @@
 import {
   computeStats,
+  formatContributionTip,
   loadLiveSnapshot,
   statsView,
   updatedLabel,
@@ -18,7 +19,6 @@ export interface TileElement {
 /** One contribution cell, built with DOM APIs so Trusted Types stay satisfied. */
 interface TileCell {
   dataset: Record<string, string | undefined>
-  title: string
 }
 
 /** The tile root: its configuration and the elements to refresh. */
@@ -87,7 +87,11 @@ export async function mountGithubTile(
       ...live.weeks.flat().map((day) => {
         const cell = createCell()
         cell.dataset.level = String(day.level)
-        cell.title = `${day.date}: ${String(day.count)}`
+        cell.dataset.tip = formatContributionTip(day, locale, {
+          one: root.dataset.tipOne ?? '',
+          other: root.dataset.tipOther ?? '',
+          none: root.dataset.tipNone ?? '',
+        })
         return cell
       }),
     )

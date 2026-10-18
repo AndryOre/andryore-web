@@ -26,7 +26,14 @@
       "bestDayUnit": "contributions",
       "activeDays": "Active days",
       "dayOne": "day",
-      "dayOther": "days"
+      "dayOther": "days",
+      "profileHandle": "@AndryOre",
+      "profileHref": "https://github.com/AndryOre",
+      "profileLabel": "AndryOre on GitHub",
+      "monthsLabel": "Months",
+      "tipOne": "{count} contribution on {date}",
+      "tipOther": "{count} contributions on {date}",
+      "tipNone": "No contributions on {date}"
     }
   },
   "es": {
@@ -56,7 +63,14 @@
       "bestDayUnit": "contribuciones",
       "activeDays": "Días activos",
       "dayOne": "día",
-      "dayOther": "días"
+      "dayOther": "días",
+      "profileHandle": "@AndryOre",
+      "profileHref": "https://github.com/AndryOre",
+      "profileLabel": "AndryOre en GitHub",
+      "monthsLabel": "Meses",
+      "tipOne": "{count} contribución el {date}",
+      "tipOther": "{count} contribuciones el {date}",
+      "tipNone": "Sin contribuciones el {date}"
     }
   }
 }

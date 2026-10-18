@@ -73,12 +73,23 @@
       "comingSoon": "Streams start soon",
       "planned": "Co-working sessions, Tuesdays and Thursdays",
       "follow": "Follow on Twitch",
-      "nextLabel": "Next:",
+      "nextLabel": "Next stream",
       "weekdays": ["M", "T", "W", "T", "F", "S", "S"],
       "weekLabel": "Planned days: Tuesday and Thursday",
       "liveTag": "LIVE",
       "watch": "Watch on Twitch",
-      "slateAlt": "Memoji holding a clapperboard"
+      "slateAlt": "Memoji holding a clapperboard",
+      "handle": "andryoredev",
+      "badgeComingSoon": "Coming soon",
+      "badgeOffline": "Offline",
+      "badgeUnavailable": "Unavailable",
+      "screenOffline": "andryoredev is offline",
+      "plannedLine": "Planned: Tuesday and Thursday, 19:00 UTC",
+      "sessionHour": "19",
+      "countdownIn": "in",
+      "countdownDay": "d",
+      "countdownHour": "h",
+      "countdownMinute": "min"
     },
     "theme": {
       "label": "Theme"
@@ -158,12 +169,23 @@
       "comingSoon": "Los streams empiezan pronto",
       "planned": "Sesiones de co-working, martes y jueves",
       "follow": "Seguir en Twitch",
-      "nextLabel": "Siguiente:",
+      "nextLabel": "Próximo stream",
       "weekdays": ["L", "M", "X", "J", "V", "S", "D"],
       "weekLabel": "Días planeados: martes y jueves",
       "liveTag": "EN VIVO",
       "watch": "Ver en Twitch",
-      "slateAlt": "Memoji con una claqueta"
+      "slateAlt": "Memoji con una claqueta",
+      "handle": "andryoredev",
+      "badgeComingSoon": "Próximamente",
+      "badgeOffline": "Desconectado",
+      "badgeUnavailable": "No disponible",
+      "screenOffline": "andryoredev está desconectado",
+      "plannedLine": "Planeado: martes y jueves, 19:00 UTC",
+      "sessionHour": "19",
+      "countdownIn": "en",
+      "countdownDay": "d",
+      "countdownHour": "h",
+      "countdownMinute": "min"
     },
     "theme": {
       "label": "Tema"
