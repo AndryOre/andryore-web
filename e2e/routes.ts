@@ -6,6 +6,7 @@ const PAGE_PATHS = [
   '/uses/',
   '/products/snug/',
   '/products/animated-fluent-emojis/',
+  '/products/json-flow/',
 ] as const
 
 /** Every page route of the built Site, in English and Spanish. */
