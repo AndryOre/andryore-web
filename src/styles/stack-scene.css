@@ -34,6 +34,8 @@ html:not(.dark) .stack-tile {
 
 .stack-scene {
   position: relative;
+  border-block: 1px solid var(--border);
+  background: var(--card);
 }
 
 .stack-stage {
@@ -43,13 +45,10 @@ html:not(.dark) .stack-tile {
   align-items: center;
   justify-content: center;
   gap: 2rem;
-  height: calc(100svh - 2rem - var(--dock-height));
+  height: calc(100svh - var(--dock-height));
   min-height: 30rem;
   overflow: hidden;
   container-type: size;
-  border: 1px solid var(--border);
-  border-radius: 1.75rem;
-  background: var(--card);
   isolation: isolate;
 }
 
@@ -198,6 +197,20 @@ html:not(.dark) .stack-tile {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .stack-tile-field {
+    translate: calc(var(--x) * 0.08) calc(var(--cluster-y) + var(--y) * 0.08);
+    scale: 0.5;
+  }
+}
+
+@supports not ((animation-timeline: view()) and (animation-range: entry)) {
+  .stack-tile-field {
+    translate: calc(var(--x) * 0.08) calc(var(--cluster-y) + var(--y) * 0.08);
+    scale: 0.5;
+  }
+}
+
 @keyframes stack-converge {
   to {
     translate: calc(var(--x) * 0.08) calc(var(--cluster-y) + var(--y) * 0.08);
@@ -221,7 +234,7 @@ html:not(.dark) .stack-tile {
 
     .stack-stage {
       position: sticky;
-      top: 1rem;
+      top: 0;
     }
 
     .stack-cta:focus-within {

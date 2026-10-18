@@ -47,7 +47,8 @@
         "label": "LinkedIn",
         "href": "https://linkedin.com/in/AndryOre"
       }
-    ]
+    ],
+    "subline": "Say hi wherever you like."
   },
   "es": {
     "label": "Encuéntrame",
@@ -97,6 +98,7 @@
         "label": "LinkedIn",
         "href": "https://linkedin.com/in/AndryOre"
       }
-    ]
+    ],
+    "subline": "Salúdame donde prefieras."
   }
 }

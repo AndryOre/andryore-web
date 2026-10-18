@@ -8,10 +8,10 @@ interface TextTarget {
 }
 
 export interface ClockParts {
-  greeting: TextTarget
+  greeting?: TextTarget
   local: TextTarget
   utc: TextTarget
-  greetings: Readonly<Record<GreetingPeriod, string>>
+  greetings?: Readonly<Record<GreetingPeriod, string>>
 }
 
 export interface ClockOptions {
@@ -25,7 +25,7 @@ const localHour = (instant: Date, timeZone?: string): number =>
   Number(formatClock(instant, timeZone).slice(0, 2))
 
 /**
- * Writes the greeting and both times for one instant.
+ * Writes both times, and the greeting when the parts carry one for one instant.
  * @param parts The text nodes to fill and the greetings by period.
  * @param instant The moment to show.
  * @param timeZone An IANA zone; omit for the browser's own.
@@ -35,8 +35,10 @@ export function renderClock(
   instant: Date,
   timeZone?: string,
 ): void {
-  parts.greeting.textContent =
-    parts.greetings[greetingPeriod(localHour(instant, timeZone))]
+  if (parts.greeting && parts.greetings) {
+    parts.greeting.textContent =
+      parts.greetings[greetingPeriod(localHour(instant, timeZone))]
+  }
   parts.local.textContent = formatClock(instant, timeZone)
   parts.utc.textContent = formatClock(instant, 'UTC')
 }

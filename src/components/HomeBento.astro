@@ -3,14 +3,16 @@ import { Image } from 'astro:assets'
 import { getCollection } from 'astro:content'
 
 import memoji from '../../docs/brand/avatar/memoji.webp'
+import partyPopper from '../assets/products/sprites/party-popper.png'
 import chrome from '../content/chrome.json'
 import home from '../content/home.json'
 import { localePath, type Locale } from '../i18n/locales'
-import { formatProofDate, type ProductEntry } from '../lib/products'
+import type { ProductEntry } from '../lib/products'
 import { spriteClass } from '../lib/sprites'
 import FindMe from './FindMe.astro'
 import FxTile from './FxTile.astro'
 import LanguageTile from './LanguageTile.astro'
+import ProductIcon from './ProductIcon.astro'
 import StackScene from './StackScene.astro'
 import ThemeSlider from './ThemeSlider'
 
@@ -32,6 +34,8 @@ const productEntry = (key: string): ProductEntry | undefined =>
   )
 
 const SPRITE_SIZE = 56
+const PARTY_FRAMES = 61
+const PARTY_SIZE = 20
 
 const tileClass =
   'bg-card border-border relative flex min-w-0 flex-col gap-3 overflow-hidden rounded-[1.25rem] border p-5 shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)]'
@@ -39,12 +43,9 @@ const linkTileClass = `link-tile ${tileClass}`
 const labelClass =
   'text-muted-foreground flex items-center justify-between gap-3 font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase'
 const bodyClass = 'text-muted-foreground m-0 text-sm [overflow-wrap:anywhere]'
+const sectionHeadingClass = 'm-0 text-2xl font-bold tracking-[-0.025em]'
 const pillClass =
   'bg-secondary border-border inline-flex shrink-0 items-center gap-2 rounded-pill border px-2.5 py-0.5 font-mono text-[0.6875rem] font-medium tracking-[0.06em] whitespace-nowrap uppercase'
-const availabilityClass =
-  'bg-secondary border-border inline-flex items-center gap-2 rounded-pill border px-2.5 py-1 font-mono text-[0.6875rem] font-medium tracking-[0.06em] uppercase'
-const dateClass =
-  'text-muted-foreground font-mono text-xs tabular-nums whitespace-nowrap'
 const stretchedLink =
   'text-foreground inline-flex min-h-11 items-center no-underline after:absolute after:inset-0 after:content-[""]'
 const handleClass =
@@ -55,6 +56,11 @@ const contribution = copy.products.contribution
 const installsFigure = new Intl.NumberFormat(locale).format(
   contribution.metaTotal,
 )
+const partyRun = spriteClass(PARTY_FRAMES)
+const metaLine = (entry: ProductEntry | undefined, year: string): string =>
+  [year, entry?.data.version, entry?.data.stack.join(', ')]
+    .filter(Boolean)
+    .join(' · ')
 ---
 
 <div class="flex flex-col gap-12 sm:gap-16">
@@ -105,41 +111,53 @@ const installsFigure = new Intl.NumberFormat(locale).format(
       </span>
     </div>
 
-    <div class="flex flex-col items-center gap-6 sm:flex-row lg:flex-col lg:items-center">
-      <div class="hero-enter hero-enter-2">
-        <div class="floaty relative pb-14">
-          <div class="avatar-tile">
-            <Image
-              src={memoji}
-              alt=""
-              width={460}
-              height={460}
-              loading="eager"
-              fetchpriority="high"
-              class="relative z-10 size-full object-contain p-[8%]"
-            />
-          </div>
-          <span
-            class:list={[
-              availabilityClass,
-              'absolute bottom-[3%] left-1/2 w-max max-w-[min(18rem,80vw)] -translate-x-1/2 text-center',
-            ]}
-          >
-            <span
-              class="bg-success size-[7px] shrink-0 rounded-full"
-              aria-hidden="true"
-            ></span>
-            {hero.availability}
-          </span>
+    <div
+      data-hero-art
+      class="hero-enter hero-enter-2 relative mx-auto grid h-[19rem] w-full max-w-[22rem] place-items-center lg:h-[24rem] lg:w-[22rem]"
+    >
+      <div class="floaty motion-reduce:animate-none">
+        <div class="avatar-tile">
+          <Image
+            src={memoji}
+            alt=""
+            width={460}
+            height={460}
+            loading="eager"
+            fetchpriority="high"
+            class="relative z-10 size-full object-contain p-[8%]"
+          />
         </div>
       </div>
       {hasClock && (
-        <div class="hero-enter hero-enter-4 w-full max-w-64 sm:w-64">
-          <div class="floaty-late">
-            <slot name="clock" />
-          </div>
+        <div class="floaty-late absolute top-2 left-0 motion-reduce:animate-none">
+          <slot name="clock" />
         </div>
       )}
+      <div class="floaty absolute right-0 bottom-2 max-w-full motion-reduce:animate-none">
+        <span
+          data-availability
+          class="bg-card border-border rounded-pill inline-flex items-center gap-2 border py-1.5 pr-2 pl-3 font-mono text-[0.6875rem] font-medium tracking-[0.06em] uppercase shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)]"
+        >
+          <span
+            class="bg-success size-[7px] shrink-0 rounded-full"
+            aria-hidden="true"
+          ></span>
+          {hero.availability}
+          <span
+            class="block size-5 shrink-0 overflow-hidden"
+            aria-hidden="true"
+          >
+            <Image
+              src={partyPopper}
+              alt=""
+              width={PARTY_SIZE * 2}
+              height={PARTY_SIZE * 2 * PARTY_FRAMES}
+              class:list={['sprite-strip block h-auto w-full', partyRun]}
+              data-sprite={partyRun ? '' : undefined}
+            />
+          </span>
+        </span>
+      </div>
     </div>
   </section>
 
@@ -148,7 +166,10 @@ const installsFigure = new Intl.NumberFormat(locale).format(
     class="flex scroll-mt-4 flex-col gap-4"
     aria-labelledby="products-heading"
   >
-    <h2 id="products-heading" class:list={[labelClass, 'scroll-reveal m-0']}>
+    <h2
+      id="products-heading"
+      class:list={[sectionHeadingClass, 'scroll-reveal']}
+    >
       {copy.products.heading}
     </h2>
     <div class="grid gap-4 md:grid-cols-2">
@@ -163,42 +184,32 @@ const installsFigure = new Intl.NumberFormat(locale).format(
           <article
             class:list={[
               linkTileClass,
-              'scroll-reveal',
+              'scroll-reveal gap-3.5 p-3.5 pb-5',
               `scroll-stagger-${index}`,
             ]}
           >
-            <div class={labelClass}>
-              <span>{copy.products.label}</span>
-              <span class={pillClass}>
-                <span
-                  class="bg-success size-[7px] rounded-full"
-                  aria-hidden="true"
-                />
-                {product.state}
-              </span>
-            </div>
             <div
               data-product-image={product.key}
-              class="border-border bg-secondary relative aspect-[16/10] overflow-hidden rounded-[0.875rem] border"
+              class="border-border bg-secondary relative aspect-video overflow-hidden rounded-[0.875rem] border"
             >
               {website && (
                 <Image
                   src={website.src}
                   alt=""
                   width={960}
-                  height={600}
+                  height={540}
                   class="size-full object-cover object-top"
                 />
               )}
               {sprites.length > 0 && (
                 <div
-                  class="bg-card/85 border-border rounded-pill absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1 border px-2 py-1 backdrop-blur-sm"
+                  class="bg-card/85 border-border rounded-pill absolute right-3 bottom-3 flex gap-1.5 border px-2.5 py-1.5 backdrop-blur-sm"
                   aria-hidden="true"
                 >
                   {sprites.map((sprite) => {
                     const run = spriteClass(sprite.frames)
                     return (
-                      <span class="block size-14 overflow-hidden">
+                      <span class="block size-10 overflow-hidden">
                         <Image
                           src={sprite.src}
                           alt=""
@@ -213,18 +224,32 @@ const installsFigure = new Intl.NumberFormat(locale).format(
                 </div>
               )}
             </div>
-            <div class="flex items-baseline justify-between gap-3">
-              <h3 class="m-0 min-w-0 text-xl tracking-[-0.02em] [overflow-wrap:anywhere]">
-                <a
-                  href={localePath(locale, product.path)}
-                  class={stretchedLink}
-                >
-                  {product.name}
-                </a>
-              </h3>
-              {product.year && <span class={dateClass}>{product.year}</span>}
+            <div class="flex min-w-0 flex-col gap-1.5 px-1.5">
+              <div class="flex items-center justify-between gap-3">
+                <h3 class="m-0 min-w-0 text-2xl tracking-[-0.025em] [overflow-wrap:anywhere]">
+                  <a
+                    href={localePath(locale, product.path)}
+                    class={stretchedLink}
+                  >
+                    {product.name}
+                  </a>
+                </h3>
+                <span class={pillClass}>
+                  <span
+                    class="bg-success size-[7px] rounded-full"
+                    aria-hidden="true"
+                  />
+                  {product.state}
+                </span>
+              </div>
+              <p class={bodyClass}>{product.description}</p>
+              <p
+                data-product-meta
+                class="text-muted-foreground m-0 font-mono text-xs [overflow-wrap:anywhere]"
+              >
+                {metaLine(entry, product.year)}
+              </p>
             </div>
-            <p class={bodyClass}>{product.description}</p>
           </article>
         )
       })}
@@ -233,14 +258,17 @@ const installsFigure = new Intl.NumberFormat(locale).format(
     <article
       class:list={[
         linkTileClass,
-        'scroll-reveal scroll-stagger-2 gap-4 md:flex-row md:items-center md:justify-between',
+        'scroll-reveal scroll-stagger-2 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-2 px-5 py-4 md:grid-cols-[auto_minmax(0,1fr)_auto]',
       ]}
     >
-      <div class="flex min-w-0 flex-col gap-2">
-        <p class={`${labelClass} flex-wrap justify-start`}>
-          {contribution.label}
-          <span class={pillClass}>{contribution.tag}</span>
-        </p>
+      <span
+        class="bg-primary/15 text-primary grid size-10 place-items-center rounded-xl"
+        aria-hidden="true"
+      >
+        <ProductIcon name="puzzle" size={20} />
+      </span>
+      <div class="flex min-w-0 flex-col gap-1">
+        <p class={`${labelClass} justify-start`}>{contribution.label}</p>
         <h3 class="m-0 min-w-0 text-xl tracking-[-0.02em] [overflow-wrap:anywhere]">
           <a href={localePath(locale, contribution.path)} class={stretchedLink}>
             {contribution.name}
@@ -248,65 +276,62 @@ const installsFigure = new Intl.NumberFormat(locale).format(
         </h3>
         <p class={bodyClass}>{contribution.description}</p>
       </div>
-      <p class="m-0 flex shrink-0 flex-col gap-1 md:items-end">
-        <span class="font-mono text-lg font-semibold tabular-nums">
-          <span
-            data-count-installs={contribution.metaTotal}
-            data-count-locale={locale}
-          >
-            {installsFigure}
-          </span>
-          {contribution.metaSuffix}
+      <p class="text-muted-foreground m-0 font-mono text-sm tabular-nums max-md:col-span-2">
+        <span
+          data-count-installs={contribution.metaTotal}
+          data-count-locale={locale}
+        >
+          {installsFigure}
         </span>
-        <time class={dateClass} datetime={contribution.metaDate}>
-          {formatProofDate(contribution.metaDate, locale)}
-        </time>
+        {contribution.metaSuffix}
+        <span aria-hidden="true"> ↗</span>
       </p>
     </article>
   </section>
 
-  <div data-slot="live-strip" class="grid gap-4 md:grid-cols-2 lg:grid-cols-12">
-    {hasGithub && (
-      <div class="scroll-reveal md:col-span-2 lg:col-span-4">
-        <slot name="github" />
-      </div>
-    )}
-    <div class="scroll-reveal scroll-stagger-1 lg:col-span-3">
-      <slot name="stream" />
-    </div>
-    <article
-      class:list={[
-        tileClass,
-        'scroll-reveal scroll-stagger-2 lg:order-4 lg:col-span-3',
-      ]}
-    >
-      <p class={labelClass}>{themeCopy.label}</p>
-      <div class="flex flex-1 items-center">
-        <ThemeSlider client:interaction copy={themeCopy} />
-      </div>
-    </article>
-    <div class="scroll-reveal scroll-stagger-2 grid grid-cols-2 gap-4 md:col-span-2 lg:order-3 lg:col-span-2 lg:grid-cols-1">
-      <LanguageTile locale={locale} />
-      <FxTile locale={locale} />
-    </div>
+  <div
+    data-slot="stack-scene"
+    class="ml-[calc(50%-50vw)] w-screen max-w-[100vw]"
+  >
+    <StackScene locale={locale} />
   </div>
 
-  <div class="grid gap-4">
-    <a
-      href={localePath(locale, copy.about.path)}
-      class:list={[linkTileClass, 'scroll-reveal text-foreground no-underline']}
+  <section class="flex flex-col gap-4" aria-labelledby="live-heading">
+    <h2 id="live-heading" class:list={[sectionHeadingClass, 'scroll-reveal']}>
+      {copy.live.heading}
+    </h2>
+    <div
+      data-slot="live-strip"
+      class="grid gap-4 md:grid-cols-2 lg:grid-cols-12"
     >
-      <p class={labelClass}>{copy.about.label}</p>
-      <p class={bodyClass}>{copy.about.body}</p>
-    </a>
-  </div>
+      {hasGithub && (
+        <div class="scroll-reveal md:col-span-2 lg:col-span-4">
+          <slot name="github" />
+        </div>
+      )}
+      <div class="scroll-reveal scroll-stagger-1 lg:col-span-3">
+        <slot name="stream" />
+      </div>
+      <article
+        class:list={[
+          tileClass,
+          'scroll-reveal scroll-stagger-2 lg:order-4 lg:col-span-3',
+        ]}
+      >
+        <p class={labelClass}>{themeCopy.label}</p>
+        <div class="flex flex-1 items-center">
+          <ThemeSlider client:interaction copy={themeCopy} />
+        </div>
+      </article>
+      <div class="scroll-reveal scroll-stagger-2 grid grid-cols-2 gap-4 md:col-span-2 lg:order-3 lg:col-span-2 lg:grid-cols-1">
+        <LanguageTile locale={locale} />
+        <FxTile locale={locale} />
+      </div>
+    </div>
+  </section>
 
   <div data-slot="find-me" class="empty:hidden">
     <FindMe locale={locale} />
-  </div>
-
-  <div data-slot="stack-scene">
-    <StackScene locale={locale} />
   </div>
 </div>
 

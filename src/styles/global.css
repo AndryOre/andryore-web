@@ -278,6 +278,10 @@
     calc(var(--tile) * 7 / 8 - 1px) calc(var(--tile) * 7 / 8 - 6px);
 }
 
+body {
+  overflow-x: clip;
+}
+
 .caret {
   display: inline-block;
   width: 8px;
