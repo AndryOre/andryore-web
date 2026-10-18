@@ -12,10 +12,10 @@ import { revealClass } from '../lib/motion'
 import {
   classifyIcon,
   countableStat,
-  fillPlaceholder,
   headerLinks,
   SKIN_TONE_CLASSES,
   stackBadgeClass,
+  stackHref,
   stackIconId,
   statLabel,
   type HeaderLinkId,
@@ -63,8 +63,8 @@ const labelClass =
   'text-muted-foreground m-0 inline-flex items-center gap-2.5 font-mono text-[11px] font-medium tracking-[0.08em] uppercase'
 const chipClass =
   'border-border bg-card-2 inline-flex min-h-9 items-center gap-2 rounded-[10px] border px-3 font-mono text-xs font-semibold no-underline'
-const cardClass =
-  'border-border bg-card rounded-card flex flex-col gap-2 border p-5'
+const iconTileClass =
+  'inline-flex size-10 shrink-0 items-center justify-center rounded-xl'
 const buttonClass =
   'inline-flex h-11 items-center gap-2.5 rounded-pill border px-[18px] text-[15px] font-medium no-underline'
 const iconSize = (name: string): number =>
@@ -82,6 +82,7 @@ const hasFormatsCard =
   data.skinTones ||
   data.platformNote !== undefined
 const showFrame = isContribution && data.website !== undefined
+const showWebsiteTile = !isContribution && data.website !== undefined
 const backHref = localePath(locale, '/#products')
 ---
 
@@ -367,30 +368,46 @@ const backHref = localePath(locale, '/#products')
 
     {data.cards.length > 0 && (
       <section class:list={['reveal', revealClass(4), sectionClass]}>
-        <h2 class={headingClass}>
-          {isContribution ? ui.contributionHeading : ui.highlightsHeading}
-        </h2>
         <ul class="m-0 grid list-none grid-cols-1 gap-3 p-0 min-[800px]:grid-cols-3">
           {data.cards.map((card) => (
-            <li class={cardClass}>
-              <ProductIcon name={card.icon} size={22} class="text-primary" />
-              <h3 class="m-0 text-base font-semibold">{card.title}</h3>
+            <li
+              class:list={[
+                'border-border bg-card flex flex-col gap-2.5 rounded-[18px] border p-[18px]',
+                surfaceShadow,
+              ]}
+            >
+              <span
+                class:list={[
+                  iconTileClass,
+                  'text-primary bg-[color-mix(in_oklab,var(--primary)_14%,var(--card-2))]',
+                ]}
+              >
+                <ProductIcon name={card.icon} size={22} />
+              </span>
+              <h3 class="m-0 text-[15px] font-semibold">{card.title}</h3>
               <p class="text-muted-foreground m-0 text-sm">{card.body}</p>
             </li>
           ))}
         </ul>
         {data.callout && (
           <div
-            class="border-success/40 bg-success/10 rounded-card flex gap-3 border p-5"
+            class="flex items-center justify-center gap-3.5 rounded-[18px] border border-[color-mix(in_oklab,var(--success)_35%,var(--border))] bg-[color-mix(in_oklab,var(--success)_10%,var(--card))] px-5 py-[18px] text-center"
             data-product-callout
           >
-            <ProductIcon
-              name={data.callout.icon}
-              size={22}
-              class="text-success mt-0.5"
-            />
-            <div class="flex flex-col gap-1">
-              <h3 class="m-0 text-base font-semibold">{data.callout.title}</h3>
+            <span
+              class:list={[
+                iconTileClass,
+                'text-success bg-[color-mix(in_oklab,var(--success)_18%,var(--card-2))]',
+              ]}
+            >
+              <ProductIcon name={data.callout.icon} size={22} />
+            </span>
+            <div class="flex min-w-0 flex-col gap-1">
+              {data.callout.title && (
+                <h3 class="m-0 text-[15px] font-semibold">
+                  {data.callout.title}
+                </h3>
+              )}
               <p class="text-muted-foreground m-0 text-sm">
                 {data.callout.body}
               </p>
@@ -405,20 +422,49 @@ const backHref = localePath(locale, '/#products')
       <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
         {data.stack.map((item) => {
           const iconId = stackIconId(item)
-          return (
-            <li
-              class:list={[
-                'inline-flex min-h-9 items-center gap-2 rounded-md px-3 py-1 font-mono text-xs font-bold tracking-wider uppercase',
-                stackBadgeClass(item),
-              ]}
-              data-product-badge
-            >
+          const href = stackHref(item)
+          const darkGlyph = !stackBadgeClass(item).includes('text-white')
+          const badgeClass = [
+            'group inline-flex h-[34px] items-center gap-2 rounded-md pr-3 pl-2.5 font-mono text-xs font-bold tracking-[0.06em] uppercase no-underline',
+            stackBadgeClass(item),
+          ]
+          const content = (
+            <>
               {iconId && (
-                <span class="inline-flex size-5 items-center justify-center rounded-sm bg-white">
-                  <ProductIcon name={iconId} size={14} />
-                </span>
+                <ProductIcon
+                  name={iconId}
+                  size={16}
+                  class:list={[
+                    darkGlyph
+                      ? '[&_img]:brightness-0'
+                      : '[&_img]:brightness-0 [&_img]:invert',
+                  ]}
+                />
               )}
               {item}
+              {href && (
+                <span
+                  class="hidden group-hover:inline group-focus-visible:inline"
+                  aria-hidden="true"
+                >
+                  ↗
+                </span>
+              )}
+            </>
+          )
+          return (
+            <li data-product-badge>
+              {href ? (
+                <a
+                  href={href}
+                  rel={externalLinkTokens()}
+                  class:list={badgeClass}
+                >
+                  {content}
+                </a>
+              ) : (
+                <span class:list={badgeClass}>{content}</span>
+              )}
             </li>
           )
         })}
@@ -430,7 +476,7 @@ const backHref = localePath(locale, '/#products')
         <h2 class={headingClass}>{ui.galleryHeading}</h2>
         <ul class="m-0 grid list-none grid-cols-1 gap-3 p-0 min-[640px]:grid-cols-3">
           {data.gallery.map((shot) => (
-            <li class="border-border rounded-card overflow-hidden border">
+            <li class="border-border overflow-hidden rounded-xl border">
               <Picture
                 src={shot.src}
                 alt={shot.alt}
@@ -446,26 +492,35 @@ const backHref = localePath(locale, '/#products')
       </section>
     )}
 
-    {data.website && (
+    {showWebsiteTile && data.website && (
       <section class:list={['reveal', revealClass(7), sectionClass]}>
         <h2 class={headingClass}>{ui.websiteHeading}</h2>
-        <figure
-          class="border-border bg-card rounded-card m-0 overflow-hidden border"
+        <a
+          href={data.url}
+          rel={externalLinkTokens()}
+          class="border-border bg-card block overflow-hidden rounded-2xl border no-underline"
           data-product-browser
+          data-product-website={data.key}
+          {...analyticsAttributes(ANALYTICS_EVENTS.productOpen, {
+            product: data.key,
+            link: 'website-tile',
+          })}
         >
-          <div
-            class="border-border bg-muted flex items-center gap-3 border-b px-4 py-2"
-            aria-hidden="true"
-          >
-            <span class="flex gap-1.5">
-              <span class="bg-border size-2.5 rounded-full"></span>
-              <span class="bg-border size-2.5 rounded-full"></span>
-              <span class="bg-border size-2.5 rounded-full"></span>
+          <span class="bg-card border-border flex items-center gap-3 border-b px-3.5 py-2.5">
+            <span class="flex gap-1.5" aria-hidden="true">
+              <span class="bg-border size-[9px] rounded-full"></span>
+              <span class="bg-border size-[9px] rounded-full"></span>
+              <span class="bg-border size-[9px] rounded-full"></span>
             </span>
-            <span class="bg-background text-muted-foreground rounded-pill min-w-0 flex-1 px-3 py-1 font-mono text-xs break-all">
+            <span class="bg-muted text-muted-foreground rounded-pill mx-auto min-w-0 px-3 py-1 text-center font-mono text-[11px] break-all">
               {data.website.host}
             </span>
-          </div>
+            <ProductIcon
+              name="external-link"
+              size={14}
+              class="text-muted-foreground"
+            />
+          </span>
           <Picture
             src={data.website.src}
             alt={data.website.alt}
@@ -473,24 +528,9 @@ const backHref = localePath(locale, '/#products')
             widths={[480, 720, 1200]}
             sizes="(min-width: 768px) 720px, 100vw"
             loading="lazy"
-            class="w-full object-cover object-top"
+            class="block aspect-[16/10] w-full object-cover object-top"
           />
-          <figcaption class="border-border border-t p-3">
-            <a
-              href={data.url}
-              rel={externalLinkTokens()}
-              class="bg-primary text-primary-foreground rounded-pill inline-flex min-h-11 items-center gap-2 px-5 py-2 font-mono text-sm no-underline hover:opacity-90"
-              data-product-website={data.key}
-              {...analyticsAttributes(ANALYTICS_EVENTS.productOpen, {
-                product: data.key,
-                link: 'website-tile',
-              })}
-            >
-              <ProductIcon name="globe" />
-              {fillPlaceholder(ui.websiteCaption, 'host', data.website.host)}
-            </a>
-          </figcaption>
-        </figure>
+        </a>
       </section>
     )}
 

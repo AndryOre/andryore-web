@@ -24,13 +24,10 @@
       "Medium dark",
       "Dark"
     ],
-    "highlightsHeading": "What it does",
-    "contributionHeading": "What I did",
     "websiteHeading": "Website",
-    "websiteCaption": "Open {host}",
     "galleryHeading": "The real interface",
     "whyHeading": "Why I built it",
-    "contributionWhyHeading": "How it came about",
+    "contributionWhyHeading": "What I did",
     "backLink": "Products",
     "builtWithHeading": "Built with",
     "heroLabel": "Overview"
@@ -60,15 +57,12 @@
       "Medio oscuro",
       "Oscuro"
     ],
-    "highlightsHeading": "Qué hace",
-    "contributionHeading": "Qué hice",
     "websiteHeading": "Sitio web",
-    "websiteCaption": "Abrir {host}",
     "galleryHeading": "La interfaz real",
     "whyHeading": "Por qué lo construí",
-    "contributionWhyHeading": "Cómo surgió",
+    "contributionWhyHeading": "Qué hice",
     "backLink": "Productos",
-    "builtWithHeading": "Construido con",
+    "builtWithHeading": "Hecho con",
     "heroLabel": "Resumen"
   }
 }

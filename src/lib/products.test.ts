@@ -24,6 +24,7 @@ import {
   productPath,
   SKIN_TONE_CLASSES,
   stackBadgeClass,
+  stackHref,
   stackIconId,
   statLabel,
   visibleProof,
@@ -384,6 +385,14 @@ describe('stackIconId', () => {
   })
 })
 
+describe('stackHref', () => {
+  test('links stack items to their official sites', () => {
+    expect(stackHref('React')).toBe('https://react.dev')
+    expect(stackHref('WXT')).toBe('https://wxt.dev')
+    expect(stackHref('Obscure')).toBeUndefined()
+  })
+})
+
 describe('SKIN_TONE_CLASSES', () => {
   test('uses the canvas swatch colours', () => {
     expect(SKIN_TONE_CLASSES).toEqual([
@@ -445,8 +454,18 @@ describe('stackBadgeClass', () => {
       for (const line of stack.trim().split('\n')) {
         const label = line.replaceAll(/^ *- '?|'?$/g, '')
         expect(stackBadgeClass(label)).not.toBe('bg-muted text-foreground')
+        expect(stackHref(label), label).toBeDefined()
       }
     }
+  })
+
+  test('uses the canvas brand colours', () => {
+    expect(stackBadgeClass('WXT')).toBe('bg-[#67D55E] text-[#111]')
+    expect(stackBadgeClass('React')).toBe('bg-[#61DAFB] text-[#111]')
+    expect(stackBadgeClass('TypeScript')).toBe('bg-[#3178C6] text-white')
+    expect(stackBadgeClass('Tailwind CSS')).toBe('bg-[#06B6D4] text-[#111]')
+    expect(stackBadgeClass('shadcn/ui')).toBe('bg-[#000] text-white')
+    expect(stackBadgeClass('Astro + Starlight')).toBe('bg-[#BC52EE] text-white')
   })
 
   test('falls back to a neutral badge for an unknown stack', () => {
@@ -468,6 +487,12 @@ describe('product page copy', () => {
     expect(productUi.en.builtWithHeading).toBe('Built with')
     expect(productUi.en.galleryHeading).toBe('The real interface')
     expect(productUi.en.websiteHeading).toBe('Website')
+    expect(productUi.es.builtWithHeading).toBe('Hecho con')
+    expect(productUi.en.contributionWhyHeading).toBe('What I did')
+    expect(productUi.es.contributionWhyHeading).toBe('Qué hice')
+    expect(productUi.en).not.toHaveProperty('websiteCaption')
+    expect(productUi.en).not.toHaveProperty('highlightsHeading')
+    expect(productUi.en).not.toHaveProperty('contributionHeading')
   })
 
   test('drops the changelog link from the page foot', () => {
