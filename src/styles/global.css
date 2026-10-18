@@ -3,7 +3,6 @@
 @import '@fontsource-variable/space-grotesk';
 @import '@fontsource-variable/jetbrains-mono';
 @import '../../docs/brand/tokens.css';
-@import './stack-scene.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 

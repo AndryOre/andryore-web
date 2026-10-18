@@ -2,6 +2,7 @@
 import stackScene from '../content/stack-scene.json'
 import { localePath, type Locale } from '../i18n/locales'
 import { END_CARD_TILES, STACK_TILES, stackToolCount } from '../lib/stack-scene'
+import stackSceneStylesheet from '../styles/stack-scene.css?url'
 import StackTile from './StackTile.astro'
 
 interface Props {
@@ -15,7 +16,11 @@ const count = copy.count.replace('{count}', () =>
 )
 ---
 
-<section class="stack-scene" aria-labelledby="stack-scene-title">
+<section
+  class="stack-scene"
+  aria-labelledby="stack-scene-title"
+  data-defer-stylesheet={stackSceneStylesheet}
+>
   <div class="stack-stage">
     <div class="stack-field" aria-hidden="true">
       {STACK_TILES.map((tile) => (
@@ -59,3 +64,14 @@ const count = copy.count.replace('{count}', () =>
     </div>
   </div>
 </section>
+
+<script>
+  import {
+    DEFERRED_STYLESHEET_SELECTOR,
+    loadStylesheet,
+  } from '../scripts/defer-stylesheet'
+
+  const href = document.querySelector<HTMLElement>(DEFERRED_STYLESHEET_SELECTOR)
+    ?.dataset.deferStylesheet
+  if (href) loadStylesheet(document.createElement('link'), href, document.head)
+</script>
