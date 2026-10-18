@@ -76,22 +76,20 @@ export function computeStats(snapshot: GridSnapshot): GridStats {
 }
 
 /**
- * Formats "{n} {unit}" for a number of days.
+ * Picks the singular or plural day word for a count.
  * @param count The number of days.
- * @param locale Language of the number format and plural rule.
+ * @param locale Language of the plural rule.
  * @param units The singular and plural words from the content file.
- * @returns For example "12 days".
+ * @returns For example "day" or "days".
  */
-export function formatDays(
+export function dayUnit(
   count: number,
   locale: string,
   units: DayUnits,
 ): string {
-  const word =
-    new Intl.PluralRules(locale).select(count) === 'one'
-      ? units.one
-      : units.other
-  return `${new Intl.NumberFormat(locale).format(count)} ${word}`
+  return new Intl.PluralRules(locale).select(count) === 'one'
+    ? units.one
+    : units.other
 }
 
 /**
@@ -311,7 +309,9 @@ export function gridCellsHtml(
 /** Display strings of the stats row. */
 export interface StatsView {
   longest: string
+  longestUnit: string
   current: string
+  currentUnit: string
   best: string
   bestDate: string
   active: string
@@ -322,18 +322,22 @@ export interface StatsView {
  * @param stats The computed stats.
  * @param locale Language of numbers, dates and plurals.
  * @param units Day unit words from the content file.
- * @returns Display strings; the best day is "0" with an empty date when none.
+ * @returns Bare numbers plus the day units; the best day is "0" with an empty
+ * date when none.
  */
 export function statsView(
   stats: GridStats,
   locale: string,
   units: DayUnits,
 ): StatsView {
+  const number = new Intl.NumberFormat(locale)
   return {
-    longest: formatDays(stats.longestStreak, locale, units),
-    current: formatDays(stats.currentStreak, locale, units),
-    best: new Intl.NumberFormat(locale).format(stats.bestDay?.count ?? 0),
+    longest: number.format(stats.longestStreak),
+    longestUnit: dayUnit(stats.longestStreak, locale, units),
+    current: number.format(stats.currentStreak),
+    currentUnit: dayUnit(stats.currentStreak, locale, units),
+    best: number.format(stats.bestDay?.count ?? 0),
     bestDate: stats.bestDay ? formatShortDate(stats.bestDay.date, locale) : '',
-    active: formatDays(stats.activeDays, locale, units),
+    active: number.format(stats.activeDays),
   }
 }

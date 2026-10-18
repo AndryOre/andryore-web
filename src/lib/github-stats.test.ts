@@ -3,8 +3,8 @@ import { describe, expect, test } from 'bun:test'
 import type { GridSnapshot } from './github-grid'
 import {
   computeStats,
+  dayUnit,
   formatContributionTip,
-  formatDays,
   formatRelative,
   formatShortDate,
   gridCellsHtml,
@@ -103,10 +103,10 @@ describe('computeStats', () => {
 describe('formatting', () => {
   const now = new Date('2026-10-18T12:00:00Z')
 
-  test('formats days with plural rules', () => {
+  test('picks the day unit with plural rules', () => {
     const units = { one: 'day', other: 'days' }
-    expect(formatDays(1, 'en', units)).toBe('1 day')
-    expect(formatDays(12, 'en', units)).toBe('12 days')
+    expect(dayUnit(1, 'en', units)).toBe('day')
+    expect(dayUnit(12, 'en', units)).toBe('days')
   })
 
   test('formats a short UTC date', () => {
@@ -212,9 +212,12 @@ describe('gridCellsHtml and statsView', () => {
       'es',
       { one: 'día', other: 'días' },
     )
-    expect(view.longest).toBe('2 días')
+    expect(view.longest).toBe('2')
+    expect(view.longestUnit).toBe('días')
+    expect(view.current).toBe('2')
+    expect(view.currentUnit).toBe('días')
     expect(view.best).toBe('7')
-    expect(view.active).toBe('2 días')
+    expect(view.active).toBe('2')
   })
 
   test('rejects payloads with unsafe dates', () => {

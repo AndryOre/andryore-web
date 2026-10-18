@@ -573,6 +573,7 @@ body {
   );
   border-color: color-mix(in oklab, var(--gh-glow) 30%, var(--border));
   box-shadow:
+    inset 0 1px 0 var(--hl),
     0 0 0 1px color-mix(in oklab, var(--gh-glow) 12%, transparent),
     0 18px 48px -24px color-mix(in oklab, var(--gh-glow) 48%, transparent);
   transition:
@@ -589,12 +590,14 @@ html:not(.dark) .github-tile {
     transparent 62%
   );
   box-shadow:
+    inset 0 1px 0 var(--hl),
     0 0 0 1px color-mix(in oklab, var(--gh-glow) 10%, transparent),
     0 18px 44px -26px color-mix(in oklab, var(--gh-glow) 40%, transparent);
 }
 .github-tile:hover {
   border-color: color-mix(in oklab, var(--gh-glow) 48%, var(--border));
   box-shadow:
+    inset 0 1px 0 var(--hl),
     0 0 0 1px color-mix(in oklab, var(--gh-glow) 22%, transparent),
     0 22px 56px -22px color-mix(in oklab, var(--gh-glow) 60%, transparent);
 }
@@ -618,7 +621,7 @@ html:not(.dark) .github-tile {
 .github-tile [data-level='4'] {
   background: var(--gh3);
 }
-.github-tile .github-stat {
+.github-tile .github-stat-current [data-gh-stat='current'] {
   color: var(--gh3);
 }
 
@@ -871,7 +874,7 @@ html:not(.dark) .github-tile {
 
 /* GitHub tile details: months row, per-day tooltip, profile link. */
 .github-months {
-  margin-top: -0.25rem;
+  margin-top: 6px;
   color: var(--muted-foreground);
   font: 0.625rem var(--font-mono);
   letter-spacing: 0.04em;
