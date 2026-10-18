@@ -3,6 +3,30 @@ import type { ThemePreference } from './theme'
 /** The slider stops from top to bottom, brightest first. */
 export const THEME_STOPS: readonly ThemePreference[] = ['light', 'auto', 'dark']
 
+const STOP_LEVELS: Readonly<Record<ThemePreference, number>> = {
+  light: 100,
+  auto: 62,
+  dark: 24,
+}
+
+/**
+ * Finds the brightness level a stop fills the bar to.
+ * @param stop The theme stop to read.
+ * @returns A percentage: Dark 24, Auto 62, Light 100.
+ */
+export function stopLevel(stop: ThemePreference): number {
+  return STOP_LEVELS[stop]
+}
+
+/**
+ * Finds the 0 to 1 strength of a stop, which turns the sun and lights its rays.
+ * @param stop The theme stop to read.
+ * @returns The level as a fraction.
+ */
+export function stopStrength(stop: ThemePreference): number {
+  return STOP_LEVELS[stop] / 100
+}
+
 /**
  * Moves a stop index by a key press. Down and right go towards Dark, up and
  * left towards Light.

@@ -1,6 +1,26 @@
 import { describe, expect, test } from 'bun:test'
 
-import { stopAfterKey, stopFromRatio, THEME_STOPS } from './theme-stops'
+import {
+  stopAfterKey,
+  stopFromRatio,
+  stopLevel,
+  stopStrength,
+  THEME_STOPS,
+} from './theme-stops'
+
+describe('theme stop levels', () => {
+  test('map each stop to the brightness percentage of the canvas', () => {
+    expect(stopLevel('dark')).toBe(24)
+    expect(stopLevel('auto')).toBe(62)
+    expect(stopLevel('light')).toBe(100)
+  })
+
+  test('the strength is a 0 to 1 fraction that drives the sun', () => {
+    expect(stopStrength('light')).toBe(1)
+    expect(stopStrength('auto')).toBe(0.62)
+    expect(stopStrength('dark')).toBe(0.24)
+  })
+})
 
 describe('theme stops', () => {
   test('are ordered Light, Auto, Dark', () => {

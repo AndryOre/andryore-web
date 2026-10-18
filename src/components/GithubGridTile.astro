@@ -1,10 +1,13 @@
 ---
 import tiles from '../content/live-tiles.json'
 import type { Locale } from '../i18n/locales'
+import { externalLinkTokens } from '../lib/external-link'
 import type { GridSnapshot } from '../lib/github-grid'
 import {
   computeStats,
+  formatContributionTip,
   gridCellsHtml,
+  monthLabels,
   statsView,
   updatedLabel,
 } from '../lib/github-stats'
@@ -28,6 +31,8 @@ const updated = updatedLabel(
   locale,
 )
 const legend = [0, 1, 2, 3] as const
+const tips = { one: copy.tipOne, other: copy.tipOther, none: copy.tipNone }
+const months = monthLabels(snapshot.weeks, locale)
 const stats = [
   { key: 'longest', label: copy.longestStreak, value: view.longest },
   { key: 'current', label: copy.currentStreak, value: view.current },
@@ -42,7 +47,10 @@ const stats = [
   data-grid-label={copy.gridLabel}
   data-day-one={copy.dayOne}
   data-day-other={copy.dayOther}
-  class="github-tile bg-card border-border flex h-full min-w-0 flex-col gap-3 overflow-hidden rounded-[1.25rem] border p-5"
+  data-tip-one={copy.tipOne}
+  data-tip-other={copy.tipOther}
+  data-tip-none={copy.tipNone}
+  class="github-tile bg-card border-border relative flex h-full min-w-0 flex-col gap-3 rounded-[1.25rem] border p-5"
 >
   <p class="text-muted-foreground m-0 flex items-center justify-between gap-3 font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase">
     <span>{copy.label}</span>
@@ -69,18 +77,41 @@ const stats = [
     aria-label={`${copy.gridLabel}: ${total}`}
     data-gh-grid
     class="github-grid grid auto-cols-fr grid-flow-col grid-rows-7 gap-[2px]"
-    set:html={gridCellsHtml(snapshot.weeks)}
+    set:html={gridCellsHtml(snapshot.weeks, (day) =>
+      formatContributionTip(day, locale, tips),
+    )}
   />
-  <div
-    class="text-muted-foreground flex items-center justify-end gap-1.5 font-mono text-[0.625rem] uppercase"
+  <ol
+    class="github-months m-0 grid list-none p-0"
+    style={`grid-template-columns: repeat(${String(snapshot.weeks.length)}, minmax(0, 1fr))`}
     aria-hidden="true"
   >
-    <span>{copy.less}</span>
-    {legend.map((level) => (
-      <i class="github-legend" data-level={level} />
+    {months.map((month) => (
+      <li style={`grid-column: ${String(month.column)} / span 4`}>
+        {month.label}
+      </li>
     ))}
-    <span>{copy.more}</span>
-  </div>
+  </ol>
+  <p class="text-muted-foreground m-0 flex items-center justify-between gap-3 font-mono text-[0.6875rem]">
+    <a
+      href={copy.profileHref}
+      rel={externalLinkTokens()}
+      aria-label={copy.profileLabel}
+      class="github-profile"
+    >
+      {copy.profileHandle} ↗
+    </a>
+    <span
+      class="flex items-center gap-1.5 text-[0.625rem] uppercase"
+      aria-hidden="true"
+    >
+      <span>{copy.less}</span>
+      {legend.map((level) => (
+        <i class="github-legend" data-level={level} />
+      ))}
+      <span>{copy.more}</span>
+    </span>
+  </p>
   <dl class="m-0 mt-auto grid grid-cols-2 gap-2" aria-label={copy.statsLabel}>
     {stats.map((stat) => (
       <div class="bg-muted/50 border-border grid gap-0.5 rounded-xl border px-3 py-2">

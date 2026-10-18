@@ -33,6 +33,10 @@ for (const route of HOME_ROUTES) {
       await settlePage(page)
       const tile = page.locator('[data-github-grid]')
       await expect(tile.locator('[data-gh-grid] i')).toHaveCount(4)
+      await expect(tile.locator('[data-gh-grid] i').first()).toHaveAttribute(
+        'data-tip',
+        language === 'es' ? /contribuci/ : /contribution/,
+      )
       await expect(tile.locator('[data-gh-stat="best"]')).toHaveText('9')
       await expect(tile.locator('[data-gh-stat="longest"]')).toContainText('3')
       await expect(tile.locator('[data-count-total]')).toHaveText(

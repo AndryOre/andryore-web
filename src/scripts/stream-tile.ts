@@ -1,9 +1,9 @@
 import {
-  formatCountdown,
-  formatSession,
+  formatCompactCountdown,
+  formatSessionLong,
   nextSession,
   selectStreamView,
-  type StreamView,
+  weekColumn,
 } from '../lib/stream-state'
 import type { StreamStatus } from '../lib/twitch-status'
 
@@ -12,20 +12,21 @@ export const STATUS_ENDPOINT = '/api/stream-status'
 
 type Fetcher = (url: string) => Promise<Response>
 
+/** The parts of an element the script writes, so tests can fake them. */
+export interface StreamTileElement {
+  hidden: boolean
+  textContent?: string | null
+  dataset?: Record<string, string | undefined>
+}
+
 /** The parts of the tile root the script touches, so tests can fake them. */
 export interface StreamTileRoot {
   dataset: Record<string, string | undefined>
-  querySelector: (
-    selector: string,
-  ) => { hidden: boolean; textContent?: string | null } | null
+  querySelector: (selector: string) => StreamTileElement | null
 }
 
-const PANEL_SELECTORS: Readonly<Record<StreamView, string>> = {
-  'coming-soon': '[data-stream-panel="coming-soon"]',
-  scheduled: '[data-stream-panel="scheduled"]',
-  live: '[data-stream-panel="live"]',
-  unavailable: '[data-stream-panel="unavailable"]',
-}
+/** Milliseconds between countdown refreshes. */
+export const COUNTDOWN_INTERVAL_MS = 30_000
 
 const UNAVAILABLE: StreamStatus = { state: 'unavailable' }
 
@@ -56,10 +57,52 @@ export async function loadStreamStatus(
 }
 
 /**
- * Picks the view from the live answer and the `data-started` flag, then shows
- * only the matching panel. Without JavaScript the server-rendered coming-soon
- * slate stays.
- * @param root The tile element holding the four state panels.
+ * Writes the next session and its compact countdown into the tile.
+ * @param root The tile element.
+ * @param now The current moment.
+ */
+export function refreshCountdown(root: StreamTileRoot, now: Date): void {
+  const locale = root.dataset.locale ?? 'en'
+  const start = nextSession(now)
+  const next = root.querySelector('[data-stream-next]')
+  if (next) next.textContent = formatSessionLong(start, locale)
+  const countdown = root.querySelector('[data-stream-countdown]')
+  if (countdown) {
+    countdown.textContent = formatCompactCountdown(start, now, {
+      prefix: root.dataset.cdIn ?? '',
+      day: root.dataset.cdDay ?? 'd',
+      hour: root.dataset.cdHour ?? 'h',
+      minute: root.dataset.cdMinute ?? 'min',
+    })
+  }
+}
+
+const DAY_SELECTORS: readonly string[] = [
+  '[data-stream-day="0"]',
+  '[data-stream-day="1"]',
+  '[data-stream-day="2"]',
+  '[data-stream-day="3"]',
+  '[data-stream-day="4"]',
+  '[data-stream-day="5"]',
+  '[data-stream-day="6"]',
+]
+
+/**
+ * Outlines today's column of the week row.
+ * @param root The tile element.
+ * @param now The current moment.
+ */
+function markToday(root: StreamTileRoot, now: Date): void {
+  const selector = DAY_SELECTORS[weekColumn(now)]
+  const day = selector ? root.querySelector(selector) : null
+  if (day?.dataset) day.dataset.today = 'true'
+}
+
+/**
+ * Picks the view from the live answer and the `data-started` flag and sets it
+ * on the tile; CSS shows the matching parts. Without JavaScript the
+ * server-rendered coming-soon slate stays.
+ * @param root The tile element holding the state-specific parts.
  * @param fetcher The `fetch` to use; defaults to the platform one.
  * @param now The current moment, injectable for tests.
  * @returns Resolves once the tile shows the answer.
@@ -72,21 +115,10 @@ export async function mountStreamTile(
   const status = await loadStreamStatus(fetcher)
   const view = selectStreamView(status, root.dataset.started === 'true')
   root.dataset.state = view
-  for (const [panel, selector] of Object.entries(PANEL_SELECTORS)) {
-    const element = root.querySelector(selector)
-    if (element) element.hidden = panel !== view
-  }
-  const tag = root.querySelector('[data-stream-live-tag]')
-  if (tag) tag.hidden = view !== 'live'
+  markToday(root, now)
   if (status.state === 'live') {
     const title = root.querySelector('[data-stream-title]')
     if (title) title.textContent = status.title
   }
-  if (view !== 'scheduled') return
-  const locale = root.dataset.locale ?? 'en'
-  const start = nextSession(now)
-  const next = root.querySelector('[data-stream-next]')
-  if (next) next.textContent = formatSession(start, locale)
-  const countdown = root.querySelector('[data-stream-countdown]')
-  if (countdown) countdown.textContent = formatCountdown(start, now, locale)
+  if (view === 'scheduled') refreshCountdown(root, now)
 }

@@ -1,21 +1,30 @@
-import { useRef, type KeyboardEvent, type PointerEvent } from 'react'
+import {
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+  type PointerEvent,
+} from 'react'
 
 import type { ThemePreference } from '@/lib/theme'
-import { stopAfterKey, stopFromRatio, THEME_STOPS } from '@/lib/theme-stops'
+import {
+  stopAfterKey,
+  stopFromRatio,
+  stopLevel,
+  stopStrength,
+  THEME_STOPS,
+} from '@/lib/theme-stops'
 import { chooseTheme } from '@/lib/theme-store'
 import { cn } from '@/lib/utils'
 
 import { useThemePreference, type ThemeToggleCopy } from './ThemeToggle'
 
+const RAY_PATH =
+  'M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4'
+
 const STOP_PATHS: Readonly<Record<ThemePreference, readonly string[]>> = {
-  light: [
-    'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z',
-    'M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4',
-  ],
-  auto: [
-    'M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4',
-    'M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4',
-  ],
+  light: ['M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z', RAY_PATH],
+  auto: ['M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4', RAY_PATH],
   dark: ['M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z'],
 }
 
@@ -43,24 +52,49 @@ function StopIcon({ stop }: { stop: ThemePreference }) {
   )
 }
 
-const STOP_OFFSET_CLASS: Readonly<Record<ThemePreference, string>> = {
-  light: 'top-0',
-  auto: 'top-1/3',
-  dark: 'top-2/3',
+/**
+ * The sun at the foot of the brightness bar. It turns with the level and its
+ * rays fade with it, through the `--strength` custom property.
+ * @returns The decorative SVG.
+ */
+function BarSun() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      aria-hidden="true"
+      className="theme-sun pointer-events-none absolute bottom-3.5 left-1/2 size-6.5 -translate-x-1/2 text-background"
+    >
+      <circle cx="12" cy="12" r="4" />
+      <path className="theme-sun-rays" d={RAY_PATH} />
+    </svg>
+  )
 }
 
 /**
- * Brightness-style vertical theme control with three stops: Light, Auto and
- * Dark. The track is one `slider`; arrow keys step between the stops and a
- * press on the track jumps to the nearest one.
+ * Theme control: vertical sliding tabs for Light, Auto and Dark next to a
+ * brightness bar. The bar is one `slider`; arrow keys step between the stops
+ * and a press or drag on it picks the nearest one. Tabs and bar always agree
+ * because both read and write the same stored preference.
  * @param props Component props.
  * @param props.copy Localised labels.
  * @returns The control.
  */
 export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
   const preference = useThemePreference()
-  const trackRef = useRef<HTMLDivElement>(null)
+  const barRef = useRef<HTMLDivElement>(null)
+  const [dragging, setDragging] = useState(false)
   const index = THEME_STOPS.indexOf(preference)
+
+  const pick = (clientY: number): void => {
+    const box = barRef.current?.getBoundingClientRect()
+    if (!box || box.height === 0) return
+    const stop = THEME_STOPS[stopFromRatio((clientY - box.top) / box.height)]
+    if (stop) chooseTheme(stop)
+  }
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>): void => {
     const next = stopAfterKey(index, event.key)
@@ -71,17 +105,55 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
   }
 
   const onPointerDown = (event: PointerEvent<HTMLDivElement>): void => {
-    const box = trackRef.current?.getBoundingClientRect()
-    if (!box || box.height === 0) return
-    const next = stopFromRatio((event.clientY - box.top) / box.height)
-    const stop = THEME_STOPS[next]
-    if (stop) chooseTheme(stop)
+    event.currentTarget.setPointerCapture(event.pointerId)
+    setDragging(true)
+    pick(event.clientY)
+  }
+
+  const onPointerMove = (event: PointerEvent<HTMLDivElement>): void => {
+    if (dragging) pick(event.clientY)
+  }
+
+  const endDrag = (): void => {
+    setDragging(false)
   }
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex min-h-40 flex-1 gap-3 self-stretch">
       <div
-        ref={trackRef}
+        role="group"
+        aria-label={copy.label}
+        data-theme-tabs
+        className="theme-tabs relative grid flex-1 grid-rows-3 bg-muted p-1"
+      >
+        <span
+          aria-hidden="true"
+          data-theme-indicator
+          className="theme-indicator absolute inset-x-1 top-1 bg-foreground"
+          style={{ '--stop-index': index } as CSSProperties}
+        />
+        {THEME_STOPS.map((stop) => (
+          <button
+            key={stop}
+            type="button"
+            aria-pressed={stop === preference}
+            onClick={() => {
+              chooseTheme(stop)
+            }}
+            className={cn(
+              'theme-tab relative z-10 flex min-h-11 items-center gap-2 px-3 font-mono text-xs font-bold',
+              stop === preference ? 'text-background' : 'text-muted-foreground',
+            )}
+          >
+            <span className="size-5 shrink-0 [&>svg]:size-5">
+              <StopIcon stop={stop} />
+            </span>
+            {copy[stop]}
+          </button>
+        ))}
+      </div>
+      <div
+        ref={barRef}
         role="slider"
         tabIndex={0}
         aria-label={copy.label}
@@ -91,44 +163,26 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
         aria-valuenow={index}
         aria-valuetext={copy[preference]}
         data-theme-slider
+        data-dragging={dragging}
         onKeyDown={onKeyDown}
         onPointerDown={onPointerDown}
-        className="relative flex h-36 w-12 shrink-0 cursor-pointer touch-none flex-col rounded-pill border border-border bg-secondary p-1"
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        className="theme-bar relative w-19 shrink-0 cursor-ns-resize touch-none overflow-hidden bg-muted"
+        style={
+          {
+            '--strength': stopStrength(preference),
+            '--level': stopLevel(preference),
+          } as CSSProperties
+        }
       >
-        <span aria-hidden="true" className="absolute inset-1">
-          <span
-            className={cn(
-              'absolute inset-x-0 h-1/3 rounded-full bg-foreground transition-all duration-200 ease-out motion-reduce:transition-none',
-              STOP_OFFSET_CLASS[preference],
-            )}
-          />
-        </span>
-        {THEME_STOPS.map((stop) => (
-          <span
-            key={stop}
-            aria-hidden="true"
-            className={cn(
-              'relative grid flex-1 place-items-center [&>svg]:size-5',
-              stop === preference ? 'text-background' : 'text-muted-foreground',
-            )}
-          >
-            <StopIcon stop={stop} />
-          </span>
-        ))}
+        <span
+          aria-hidden="true"
+          className="theme-fill absolute inset-x-0 bottom-0 bg-foreground"
+        />
+        <BarSun />
       </div>
-      <ul className="m-0 flex h-36 list-none flex-col border border-transparent py-1 font-mono text-xs">
-        {THEME_STOPS.map((stop) => (
-          <li
-            key={stop}
-            className={cn(
-              'grid flex-1 items-center',
-              stop === preference ? 'text-foreground' : 'text-muted-foreground',
-            )}
-          >
-            {copy[stop]}
-          </li>
-        ))}
-      </ul>
     </div>
   )
 }

@@ -15,18 +15,10 @@ const { locale } = Astro.props
 const copy = home[locale]
 const stream = copy.stream
 
-const labelClass =
-  'text-muted-foreground flex items-center justify-between gap-3 font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase'
-const titleClass = 'm-0 text-base font-semibold text-balance'
-const bodyClass = 'text-muted-foreground m-0 text-sm [overflow-wrap:anywhere]'
-const buttonClass =
-  'twitch-button text-foreground border-border bg-secondary rounded-pill mt-auto inline-flex min-h-11 items-center justify-center gap-2 border px-4 text-sm font-medium no-underline'
-const panelClass = 'flex flex-1 flex-col gap-3'
-
-const WEEK_DAYS_MONDAY_FIRST = [1, 2, 3, 4, 5, 6, 0]
-const weekStrip = stream.weekdays.map((letter, index) => ({
+const weekStrip = stream.weekdays.map((letter, column) => ({
   letter,
-  lit: SESSION_WEEKDAYS.includes(WEEK_DAYS_MONDAY_FIRST[index] ?? -1),
+  column,
+  session: SESSION_WEEKDAYS.includes((column + 1) % 7),
 }))
 
 const TWITCH_GLYPH =
@@ -38,71 +30,104 @@ const TWITCH_GLYPH =
   data-state="coming-soon"
   data-started={String(stream.streamsStarted)}
   data-locale={locale}
-  class="stream-tile bg-card border-border relative flex h-full min-w-0 flex-col gap-3 overflow-hidden rounded-[1.25rem] border p-5"
+  data-cd-in={stream.countdownIn}
+  data-cd-day={stream.countdownDay}
+  data-cd-hour={stream.countdownHour}
+  data-cd-minute={stream.countdownMinute}
+  class="stream-tile bg-card border-border relative flex h-full min-w-0 flex-col overflow-hidden rounded-[1.25rem] border"
 >
-  <p class={labelClass}>
-    <span>{stream.label}</span>
-    <span
-      data-stream-live-tag
-      hidden
-      class="stream-live-tag inline-flex items-center gap-1.5 rounded-pill bg-destructive px-2 py-0.5 text-[0.625rem] font-semibold tracking-[0.08em] text-white"
-    >
-      <span class="size-1.5 rounded-full bg-white" aria-hidden="true"></span>
-      {stream.liveTag}
-    </span>
-  </p>
+  <div class="h-1 shrink-0 bg-[#9146ff]" aria-hidden="true"></div>
+  <div class="flex flex-1 flex-col gap-3 p-5">
+    <p class="stream-head">
+      <span class="stream-who">
+        <svg
+          viewBox="0 0 24 24"
+          class="size-4"
+          fill="#9146ff"
+          aria-hidden="true"
+        >
+          <path d={TWITCH_GLYPH}></path>
+        </svg>
+        {stream.handle}
+      </span>
+      <span data-show="live" class="stream-badge stream-badge-live">
+        <i aria-hidden="true"></i>
+        {stream.liveTag}
+      </span>
+      <span data-show="coming-soon" class="stream-badge">
+        {stream.badgeComingSoon}
+      </span>
+      <span data-show="scheduled" class="stream-badge">
+        {stream.badgeOffline}
+      </span>
+      <span data-show="unavailable" class="stream-badge">
+        {stream.badgeUnavailable}
+      </span>
+    </p>
 
-  <div data-stream-panel="coming-soon" class={panelClass}>
-    <div class="flex items-center gap-3">
-      <Image
-        src={memoji}
-        alt={stream.slateAlt}
-        width={56}
-        height={56}
-        class="size-14 shrink-0 rounded-2xl"
-      />
-      <p class={titleClass}>{stream.comingSoon}</p>
-    </div>
-    <p class={bodyClass}>{stream.planned}</p>
-    <a href={stream.href} rel={externalLinkTokens()} class={buttonClass}>
-      <svg
-        viewBox="0 0 24 24"
-        class="size-4"
-        fill="currentColor"
-        aria-hidden="true"
+    <div class="stream-screen" data-stream-screen>
+      <div data-show="live" class="stream-screen-copy">
+        <span class="stream-play" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z"></path>
+          </svg>
+        </span>
+        <p data-stream-title class="stream-screen-title"></p>
+      </div>
+      <div
+        data-show="coming-soon scheduled unavailable"
+        class="stream-screen-copy"
       >
-        <path d={TWITCH_GLYPH}></path>
-      </svg>
-      {stream.follow}
-    </a>
-  </div>
+        <Image
+          src={memoji}
+          alt={stream.slateAlt}
+          width={44}
+          height={44}
+          class="stream-memoji"
+        />
+        <p data-show="coming-soon" class="stream-screen-title">
+          {stream.comingSoon}
+        </p>
+        <p data-show="coming-soon" class="stream-screen-sub">
+          {stream.planned}
+        </p>
+        <p data-show="scheduled" class="stream-screen-title">
+          {stream.screenOffline}
+        </p>
+        <p data-show="unavailable" class="stream-screen-title">
+          {stream.unavailable}
+        </p>
+      </div>
+    </div>
 
-  <div data-stream-panel="scheduled" hidden class={panelClass}>
-    <ol
-      class="m-0 flex list-none justify-between gap-1 p-0"
-      aria-label={stream.weekLabel}
-    >
+    <ol class="stream-week" aria-label={stream.weekLabel}>
       {weekStrip.map((day) => (
         <li
-          class:list={[
-            'grid size-8 place-items-center rounded-full font-mono text-xs',
-            day.lit
-              ? 'bg-[#9146ff] font-semibold text-white'
-              : 'bg-secondary text-muted-foreground',
-          ]}
+          data-stream-day={day.column}
+          data-session={String(day.session)}
+          class="stream-day"
         >
           {day.letter}
+          {day.session && <i>{stream.sessionHour}</i>}
         </li>
       ))}
     </ol>
-    <p class={titleClass}>
+
+    <p data-show="coming-soon" class="stream-line">
+      {stream.plannedLine}
+    </p>
+    <p data-show="scheduled" class="stream-line">
       {stream.nextLabel}
-      <span data-stream-next>&nbsp;</span>
+      <strong data-stream-next>&nbsp;</strong>
+      <span data-stream-countdown>&nbsp;</span>
     </p>
-    <p data-stream-countdown class={bodyClass}>
-      &nbsp;
-    </p>
-    <a href={stream.href} rel={externalLinkTokens()} class={buttonClass}>
+
+    <a
+      href={stream.href}
+      rel={externalLinkTokens()}
+      class="stream-cta"
+      data-show="coming-soon scheduled unavailable"
+    >
       <svg
         viewBox="0 0 24 24"
         class="size-4"
@@ -113,11 +138,12 @@ const TWITCH_GLYPH =
       </svg>
       {stream.follow}
     </a>
-  </div>
-
-  <div data-stream-panel="live" hidden class={panelClass}>
-    <p data-stream-title class={titleClass}></p>
-    <a href={stream.href} rel={externalLinkTokens()} class={buttonClass}>
+    <a
+      href={stream.href}
+      rel={externalLinkTokens()}
+      class="stream-cta"
+      data-show="live"
+    >
       <svg
         viewBox="0 0 24 24"
         class="size-4"
@@ -129,29 +155,23 @@ const TWITCH_GLYPH =
       {stream.watch}
     </a>
   </div>
-
-  <div data-stream-panel="unavailable" hidden class={panelClass}>
-    <p class={bodyClass}>{stream.unavailable}</p>
-    <a href={stream.href} rel={externalLinkTokens()} class={buttonClass}>
-      <svg
-        viewBox="0 0 24 24"
-        class="size-4"
-        fill="currentColor"
-        aria-hidden="true"
-      >
-        <path d={TWITCH_GLYPH}></path>
-      </svg>
-      {stream.follow}
-    </a>
-  </div>
 </article>
 
 <script>
-  import { mountStreamTile } from '../scripts/stream-tile'
+  import {
+    COUNTDOWN_INTERVAL_MS,
+    mountStreamTile,
+    refreshCountdown,
+  } from '../scripts/stream-tile'
 
   for (const tile of document.querySelectorAll<HTMLElement>(
     '[data-stream-tile]',
   )) {
-    void mountStreamTile(tile)
+    void mountStreamTile(tile).then(() => {
+      if (tile.dataset.state !== 'scheduled') return
+      setInterval(() => {
+        refreshCountdown(tile, new Date())
+      }, COUNTDOWN_INTERVAL_MS)
+    })
   }
 </script>
