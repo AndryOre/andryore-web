@@ -119,7 +119,11 @@ const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
           <CvSplitButton client:load locale={locale} copy={copy} />
           <a
             href={localePath(locale, '/') + '#find-me'}
-            class={buttonClassName('neutral', 'cta')}
+            class={buttonClassName(
+              'neutral',
+              'cta',
+              'h-auto min-h-11 max-w-full py-2 text-left whitespace-normal',
+            )}
           >
             <Briefcase aria-hidden="true" className="size-4.5!" />
             {copy.openTo}

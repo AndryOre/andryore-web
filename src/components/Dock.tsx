@@ -226,9 +226,11 @@ function DockItem({
 function MenuPanel({
   children,
   label,
+  edge = false,
 }: {
   children: ReactNode
   label: string
+  edge?: boolean
 }) {
   return (
     <div
@@ -237,7 +239,9 @@ function MenuPanel({
       aria-label={label}
       className={cn(
         'absolute bottom-full z-10 mb-3 grid min-w-35 origin-bottom gap-0 rounded-card border border-border bg-popover p-1.5 text-popover-foreground transition duration-150 ease-out motion-reduce:transition-none starting:scale-95 starting:opacity-0',
-        'left-1/2 -translate-x-1/2',
+        edge
+          ? 'right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2'
+          : 'left-1/2 -translate-x-1/2',
       )}
     >
       {children}
@@ -306,7 +310,7 @@ export function ThemeMenu({
   onChoose: (option: ThemePreference) => void
 }) {
   return (
-    <MenuPanel label={copy.label}>
+    <MenuPanel label={copy.label} edge>
       <div data-dock-menu="theme" className="contents">
         {THEME_PREFERENCES.map((option) => (
           <button
@@ -429,7 +433,7 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
       data-dock-nav
-      className="pointer-events-auto relative inline-flex items-center gap-1 rounded-pill border border-border bg-card/92 p-2"
+      className="pointer-events-auto relative inline-flex items-center gap-0 rounded-pill border border-border bg-card/92 p-1 sm:gap-1 sm:p-2"
     >
       {DOCK_PAGES.map((page) => {
         const active = activeKey === page.key
@@ -459,7 +463,7 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
         )
       })}
 
-      <span aria-hidden="true" className="mx-1 h-6 w-px bg-border" />
+      <span aria-hidden="true" className="mx-0.5 h-6 w-px bg-border sm:mx-1" />
 
       <DockItem label={copy.language.label} menuOpen={openMenu === 'language'}>
         <Button
