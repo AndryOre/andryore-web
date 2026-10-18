@@ -10,32 +10,40 @@ const { locale } = Astro.props
 const copy = chrome[locale].dock.language
 
 const labelClass =
-  'text-muted-foreground flex items-center gap-2 font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase'
+  'text-muted-foreground font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase'
 ---
 
 <article
   data-language-tile
-  class="bg-card border-border relative flex h-full min-w-0 flex-col justify-between gap-2.5 overflow-hidden rounded-[1.25rem] border p-5 shadow-[inset_0_1px_0_var(--hl),0_10px_28px_-16px_rgb(0_0_0/0.28)]"
+  class="bg-card border-border relative flex h-full min-w-0 flex-col justify-between gap-2.5 overflow-hidden rounded-[1.25rem] border p-4 shadow-[inset_0_1px_0_var(--hl),0_10px_28px_-16px_rgb(0_0_0/0.28)]"
 >
-  <svg
-    viewBox="0 0 24 24"
-    class="text-foreground size-7"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <circle cx="12" cy="12" r="10"></circle>
-    <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
-    <path d="M2 12h20"></path>
-  </svg>
-  <p class={labelClass}>{copy.label}</p>
+  <div class="flex items-center gap-2.5">
+    <svg
+      viewBox="0 0 24 24"
+      class="text-foreground size-5.5 shrink-0"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="10"></circle>
+      <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+      <path d="M2 12h20"></path>
+    </svg>
+    <p class={labelClass}>{copy.label}</p>
+  </div>
   <nav
     aria-label={copy.label}
-    class="bg-secondary border-border rounded-pill flex w-fit items-center border p-0.5 font-mono text-xs font-medium"
+    data-language-tabs
+    data-locale={locale}
+    class="language-tabs bg-muted rounded-pill relative mt-auto grid grid-cols-2 p-1 font-mono"
   >
+    <span
+      aria-hidden="true"
+      class="language-indicator bg-foreground rounded-pill absolute top-1 left-1"
+    ></span>
     {LOCALES.map((target) => (
       <a
         href={homePath(target)}
@@ -44,10 +52,8 @@ const labelClass =
         aria-label={`${copy.codes[target]} ${copy[target]}`}
         aria-current={target === locale ? 'true' : undefined}
         class:list={[
-          'rounded-pill inline-flex min-h-11 min-w-11 items-center justify-center px-3 no-underline',
-          target === locale
-            ? 'bg-foreground text-background'
-            : 'text-muted-foreground',
+          'language-tab rounded-pill relative z-10 grid min-h-11 place-items-center text-[13px] font-bold no-underline',
+          target === locale ? 'text-background' : 'text-muted-foreground',
         ]}
       >
         {copy.codes[target]}
