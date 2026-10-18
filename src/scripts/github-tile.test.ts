@@ -12,10 +12,14 @@ const element = (): TileElement => {
   const dataset: Record<string, string | undefined> = {}
   return {
     textContent: 'initial',
-    innerHTML: 'initial',
     dataset,
     setAttribute: (name, value) => {
       dataset[`attr:${name}`] = value
+    },
+    replaceChildren: (...cells) => {
+      dataset.cells = cells
+        .map((cell) => `${cell.dataset.level ?? ''}|${cell.title}`)
+        .join(',')
     },
   }
 }
@@ -57,12 +61,13 @@ describe('mountGithubTile', () => {
     const shown = await mountGithubTile(root, {
       fetcher: () => Promise.resolve(Response.json(live)),
       now: () => NOW,
+      createCell: () => ({ dataset: {}, title: '' }),
     })
     expect(shown).toBe(true)
     expect(text('[data-count-total]')?.textContent).toBe('1,234')
     expect(text('[data-count-total]')?.dataset.countTotal).toBe('1234')
-    expect(Reflect.get(text('[data-gh-grid]') ?? {}, 'innerHTML')).toContain(
-      'data-level="4"',
+    expect(text('[data-gh-grid]')?.dataset.cells).toBe(
+      '2|2026-10-16: 2,4|2026-10-17: 5',
     )
     expect(text('[data-gh-stat="longest"]')?.textContent).toBe('2 days')
     expect(text('[data-gh-stat="best"]')?.textContent).toBe('5')
@@ -75,6 +80,7 @@ describe('mountGithubTile', () => {
     await mountGithubTile(root, {
       fetcher: () => Promise.resolve(Response.json(live)),
       now: () => NOW,
+      createCell: () => ({ dataset: {}, title: '' }),
     })
     expect(text('[data-gh-updated]')?.textContent).toBe(
       'Actualizado hace 3 horas',
@@ -86,6 +92,7 @@ describe('mountGithubTile', () => {
     const shown = await mountGithubTile(root, {
       fetcher: () => Promise.resolve(new Response('x', { status: 503 })),
       now: () => NOW,
+      createCell: () => ({ dataset: {}, title: '' }),
     })
     expect(shown).toBe(false)
     expect(text('[data-gh-grid]')).toBeUndefined()

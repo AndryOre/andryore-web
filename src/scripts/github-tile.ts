@@ -1,6 +1,5 @@
 import {
   computeStats,
-  gridCellsHtml,
   loadLiveSnapshot,
   statsView,
   updatedLabel,
@@ -11,9 +10,15 @@ type Fetcher = (url: string) => Promise<Response>
 /** The parts of an element the script writes, so tests can fake them. */
 export interface TileElement {
   textContent: string | null
-  innerHTML: string
   dataset: Record<string, string | undefined>
   setAttribute: (name: string, value: string) => void
+  replaceChildren: (...cells: TileCell[]) => void
+}
+
+/** One contribution cell, built with DOM APIs so Trusted Types stay satisfied. */
+interface TileCell {
+  dataset: Record<string, string | undefined>
+  title: string
 }
 
 /** The tile root: its configuration and the elements to refresh. */
@@ -26,6 +31,7 @@ export interface GithubTileRoot {
 export interface MountOptions {
   fetcher?: Fetcher
   now?: () => Date
+  createCell?: () => TileCell
 }
 
 const write = (root: GithubTileRoot, selector: string, text: string): void => {
@@ -75,7 +81,16 @@ export async function mountGithubTile(
   }
   const grid = root.querySelector('[data-gh-grid]')
   if (grid) {
-    grid.innerHTML = gridCellsHtml(live.weeks)
+    const createCell =
+      options.createCell ?? ((): TileCell => document.createElement('i'))
+    grid.replaceChildren(
+      ...live.weeks.flat().map((day) => {
+        const cell = createCell()
+        cell.dataset.level = String(day.level)
+        cell.title = `${day.date}: ${String(day.count)}`
+        return cell
+      }),
+    )
     grid.setAttribute('aria-label', `${root.dataset.gridLabel ?? ''}: ${total}`)
   }
   const view = statsView(computeStats(live), locale, {
