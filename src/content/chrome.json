@@ -47,7 +47,7 @@
     "skipLink": "Saltar al contenido",
     "theme": {
       "label": "Tema",
-      "auto": "Automático",
+      "auto": "Auto",
       "light": "Claro",
       "dark": "Oscuro"
     },
@@ -58,7 +58,7 @@
         "products": "Productos",
         "about": "Sobre mí",
         "uses": "Setup",
-        "findMe": "Contacto"
+        "findMe": "Encuéntrame"
       },
       "language": {
         "label": "Idioma",
@@ -72,7 +72,7 @@
       "sound": {
         "label": "Sonido",
         "on": "Sonido activado",
-        "off": "Sonido desactivado"
+        "off": "Sonido apagado"
       }
     },
     "ogImageAlt": "AndryOre: Construyendo, explorando, contando.",

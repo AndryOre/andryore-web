@@ -84,14 +84,18 @@ const PAGE_ICONS: Record<Exclude<DockPageKey, 'home'>, ReactElement> = {
 
 function AoMark() {
   return (
-    <svg viewBox="112 169 288 174" className="h-auto! w-4!" aria-hidden="true">
+    <svg viewBox="118 170 276 172" className="h-4! w-auto!" aria-hidden="true">
       <path
         fill="currentColor"
-        d="M112.64 339.2 157.27 169.4H213.06L257.7 339.2H224.71L215.49 301.85H154.85L145.63 339.2H112.64ZM162.37 272.25H207.97L187.35 189.54H182.99L162.37 272.25Z"
+        d="M122.88 333.26 164.33 175.59H216.13L257.58 333.26H226.94L218.38 298.57H162.07L153.51 333.26H122.88ZM169.06 271.09H211.4L192.26 194.28H188.2L169.06 271.09Z"
       />
-      <path
-        className="fill-primary"
-        d="M336.29 342.6Q318.34 342.6 304.03 335.32Q289.72 328.04 281.47 314.22Q273.22 300.39 273.22 280.98V277.1Q273.22 257.7 281.47 243.87Q289.72 230.04 304.03 222.77Q318.34 215.49 336.29 215.49Q354.24 215.49 368.55 222.77Q382.87 230.04 391.11 243.87Q399.36 257.7 399.36 277.1V280.98Q399.36 300.39 391.11 314.22Q382.87 328.04 368.55 335.32Q354.24 342.6 336.29 342.6ZM336.29 315.43Q350.36 315.43 359.58 306.33Q368.8 297.24 368.8 280.26V277.83Q368.8 260.85 359.7 251.75Q350.6 242.66 336.29 242.66Q322.22 242.66 313 251.75Q303.79 260.85 303.79 277.83V280.26Q303.79 297.24 313 306.33Q322.22 315.43 336.29 315.43Z"
+      <circle
+        cx="330.56"
+        cy="277.4"
+        r="40"
+        fill="none"
+        className="stroke-primary"
+        strokeWidth="25.5"
       />
     </svg>
   )
@@ -178,7 +182,7 @@ export function SoundSwitch({
           <span
             data-dock-sound-dot
             aria-hidden="true"
-            className="absolute right-2 bottom-2 size-1.5 rounded-full bg-primary"
+            className="absolute top-2.25 right-2.25 size-1.5 rounded-full bg-foreground"
           />
         )}
       </Button>
@@ -190,7 +194,7 @@ function Tooltip({ children }: { children: ReactNode }) {
   return (
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute bottom-full left-1/2 mb-5 -translate-x-1/2 translate-y-1 rounded-lg bg-foreground px-2.5 py-1 text-xs font-medium whitespace-nowrap text-background opacity-0 transition duration-150 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-has-focus-visible:translate-y-0 group-has-focus-visible:opacity-100 group-data-[menu-open]:hidden motion-reduce:transition-none"
+      className="pointer-events-none absolute bottom-full left-1/2 mb-2.5 -translate-x-1/2 translate-y-1 rounded-lg bg-foreground px-2.5 py-1 text-xs font-medium whitespace-nowrap text-background opacity-0 transition duration-160 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-has-focus-visible:translate-y-0 group-has-focus-visible:opacity-100 group-data-[menu-open]:hidden motion-reduce:transition-none"
     >
       {children}
     </span>
@@ -222,21 +226,18 @@ function DockItem({
 function MenuPanel({
   children,
   label,
-  edge = false,
 }: {
   children: ReactNode
   label: string
-  edge?: boolean
 }) {
   return (
     <div
       role="menu"
+      data-dock-panel
       aria-label={label}
       className={cn(
-        'absolute bottom-full z-10 mb-3 grid min-w-36 origin-bottom gap-0.5 rounded-card border border-border bg-popover p-1.5 text-popover-foreground shadow-lg transition duration-150 ease-out motion-reduce:transition-none starting:scale-95 starting:opacity-0',
-        edge
-          ? 'right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2'
-          : 'left-1/2 -translate-x-1/2',
+        'absolute bottom-full z-10 mb-3 grid min-w-35 origin-bottom gap-0 rounded-card border border-border bg-popover p-1.5 text-popover-foreground transition duration-150 ease-out motion-reduce:transition-none starting:scale-95 starting:opacity-0',
+        'left-1/2 -translate-x-1/2',
       )}
     >
       {children}
@@ -268,6 +269,7 @@ export function LanguageMenu({
           <a
             key={code}
             role="menuitem"
+            data-dock-item
             href={localePath(code, path)}
             hrefLang={code}
             lang={code}
@@ -304,13 +306,14 @@ export function ThemeMenu({
   onChoose: (option: ThemePreference) => void
 }) {
   return (
-    <MenuPanel label={copy.label} edge>
+    <MenuPanel label={copy.label}>
       <div data-dock-menu="theme" className="contents">
         {THEME_PREFERENCES.map((option) => (
           <button
             key={option}
             type="button"
             role="menuitemradio"
+            data-dock-item
             aria-checked={preference === option}
             {...analyticsAttributes(ANALYTICS_EVENTS.themeSwitch, {
               theme: option,
@@ -330,7 +333,7 @@ export function ThemeMenu({
 
 const menuItemClass = (selected: boolean): string =>
   cn(
-    'rounded-xl px-3 py-2 text-left text-sm no-underline outline-none focus-visible:ring-2 focus-visible:ring-ring',
+    'px-3 py-2 text-left text-sm no-underline outline-none focus-visible:ring-2 focus-visible:ring-ring',
     selected
       ? 'bg-muted text-foreground'
       : 'text-muted-foreground hover:text-foreground',
@@ -425,7 +428,8 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
       aria-label={copy.label}
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
-      className="pointer-events-auto relative inline-flex items-center gap-0 rounded-pill border border-border bg-card/92 p-1 shadow-lg shadow-black/10 sm:gap-1 sm:p-2"
+      data-dock-nav
+      className="pointer-events-auto relative inline-flex items-center gap-1 rounded-pill border border-border bg-card/92 p-2"
     >
       {DOCK_PAGES.map((page) => {
         const active = activeKey === page.key
@@ -455,13 +459,13 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
         )
       })}
 
-      <span aria-hidden="true" className="mx-0.5 h-6 w-px bg-border sm:mx-1" />
+      <span aria-hidden="true" className="mx-1 h-6 w-px bg-border" />
 
       <DockItem label={copy.language.label} menuOpen={openMenu === 'language'}>
         <Button
           variant="dock"
           size="dock"
-          aria-label={`${locale.toUpperCase()} ${copy.language.label}`}
+          aria-label={copy.language.label}
           aria-haspopup="menu"
           aria-expanded={openMenu === 'language'}
           data-dock-trigger="language"
@@ -469,7 +473,7 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
             toggleMenu('language')
           }}
         >
-          <span className="font-mono text-xs font-bold tracking-wide uppercase">
+          <span data-dock-lang className="font-mono font-bold uppercase">
             {locale}
           </span>
         </Button>

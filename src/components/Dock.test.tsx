@@ -25,13 +25,21 @@ describe('Dock', () => {
       'About',
       'Uses',
       'Find me',
-      'EN Language',
+      'Language',
       'Theme',
       'Sound',
     ]) {
       expect(html).toContain(`aria-label="${name}"`)
     }
     expect(html).toContain('aria-label="Main"')
+  })
+
+  test('uses the canvas dock geometry at every width', () => {
+    const html = render('en', '/')
+    expect(html).toContain('gap-1')
+    expect(html).toContain('p-2')
+    expect(html).not.toContain('sm:p-2')
+    expect(html).toContain('data-dock-nav')
   })
 
   test('orders the items as the canvas does', () => {
@@ -42,7 +50,7 @@ describe('Dock', () => {
       'Products',
       'Uses',
       'Find me',
-      'EN Language',
+      'Language',
       'Theme',
       'Sound',
     ]
@@ -66,7 +74,7 @@ describe('Dock', () => {
   test('localises names and links in Spanish', () => {
     const html = render('es', '/about/')
     expect(html).toContain('aria-label="Inicio"')
-    expect(html).toContain('aria-label="ES Idioma"')
+    expect(html).toContain('aria-label="Idioma"')
     expect(html).toContain('href="/es/about/"')
     expect(html).toContain('href="/es/#products"')
   })
