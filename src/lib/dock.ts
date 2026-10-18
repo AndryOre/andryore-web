@@ -3,9 +3,10 @@ import { localePath, type Locale } from '../i18n/locales'
 /** The pages the dock links to, in display order. */
 export const DOCK_PAGES = [
   { key: 'home', path: '/', section: '' },
-  { key: 'products', path: '/#products', section: 'products' },
   { key: 'about', path: '/about/', section: 'about' },
+  { key: 'products', path: '/#products', section: 'products' },
   { key: 'uses', path: '/uses/', section: 'uses' },
+  { key: 'findMe', path: '/#find-me', section: 'find-me' },
 ] as const
 
 export type DockPageKey = (typeof DOCK_PAGES)[number]['key']

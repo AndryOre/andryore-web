@@ -2,6 +2,7 @@ import {
   useCallback,
   useEffect,
   useState,
+  useSyncExternalStore,
   type PointerEvent,
   type ReactElement,
   type ReactNode,
@@ -23,6 +24,7 @@ import {
   shouldMagnify,
   type DockMenuName,
 } from '@/lib/dock-dom'
+import { getFxStorage, readFx, subscribeFx, writeFx } from '@/lib/fx-store'
 import { THEME_PREFERENCES, type ThemePreference } from '@/lib/theme'
 import { chooseTheme } from '@/lib/theme-store'
 import { cn } from '@/lib/utils'
@@ -38,6 +40,7 @@ interface DockCopy {
   label: string
   pages: Record<DockPageKey, string>
   language: { label: string } & Record<Locale, string>
+  sound: { label: string; on: string; off: string }
 }
 
 interface DockProps {
@@ -63,6 +66,12 @@ const PAGE_ICONS: Record<Exclude<DockPageKey, 'home'>, ReactElement> = {
     <>
       <circle cx="12" cy="8" r="4" />
       <path d="M4 21c1-4 4-6 8-6s7 2 8 6" />
+    </>
+  ),
+  findMe: (
+    <>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8" />
     </>
   ),
   uses: (
@@ -102,6 +111,78 @@ function PageIcon({ page }: { page: DockPageKey }) {
     >
       {PAGE_ICONS[page]}
     </svg>
+  )
+}
+
+const getSoundSnapshot = (): boolean => readFx(getFxStorage())
+const getServerSoundSnapshot = (): boolean => false
+
+function SoundIcon({ enabled }: { enabled: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z" />
+      {enabled ? (
+        <>
+          <path d="M16 9a5 5 0 0 1 0 6" />
+          <path d="M19.364 18.364a9 9 0 0 0 0-12.728" />
+        </>
+      ) : (
+        <>
+          <line x1="22" x2="16" y1="9" y2="15" />
+          <line x1="16" x2="22" y1="9" y2="15" />
+        </>
+      )}
+    </svg>
+  )
+}
+
+/**
+ * The Sound switch: shares the stored choice with the Sound tile and shows a
+ * dot while it is on. No audio plays here.
+ * @param props Component props.
+ * @param props.copy Sound labels.
+ * @param props.enabled Whether Sound is on.
+ * @param props.onToggle Called when the switch is pressed.
+ * @returns The switch inside a dock item.
+ */
+export function SoundSwitch({
+  copy,
+  enabled,
+  onToggle,
+}: {
+  copy: DockCopy['sound']
+  enabled: boolean
+  onToggle: () => void
+}) {
+  return (
+    <DockItem label={enabled ? copy.on : copy.off}>
+      <Button
+        variant="dock"
+        size="dock"
+        role="switch"
+        aria-checked={enabled}
+        aria-label={copy.label}
+        data-dock-sound
+        onClick={onToggle}
+      >
+        <SoundIcon enabled={enabled} />
+        {enabled && (
+          <span
+            data-dock-sound-dot
+            aria-hidden="true"
+            className="absolute right-2 bottom-2 size-1.5 rounded-full bg-primary"
+          />
+        )}
+      </Button>
+    </DockItem>
   )
 }
 
@@ -300,8 +381,8 @@ function useMenuBehaviour(
 }
 
 /**
- * The floating pill navigation: the five pages, then the language and theme
- * menus. Neighbours of the pointer magnify on fine pointers when motion is
+ * The floating pill navigation: the pages and Find me, then the language and
+ * theme menus and the Sound switch. Neighbours of the pointer magnify on fine pointers when motion is
  * allowed, the active page carries a pill that morphs between routes through
  * view transitions, and both menus open upward.
  * @param props Component props.
@@ -315,6 +396,11 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
   const [nav, setNav] = useState<HTMLElement | null>(null)
   const [openMenu, setOpenMenu] = useState<DockMenuName | undefined>()
   const preference = useThemePreference()
+  const soundEnabled = useSyncExternalStore(
+    subscribeFx,
+    getSoundSnapshot,
+    getServerSoundSnapshot,
+  )
   const activeKey = activePageKey(path)
 
   const closeMenu = useCallback(() => {
@@ -414,6 +500,14 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
           />
         )}
       </DockItem>
+
+      <SoundSwitch
+        copy={copy.sound}
+        enabled={soundEnabled}
+        onToggle={() => {
+          writeFx(getFxStorage(), !soundEnabled)
+        }}
+      />
     </nav>
   )
 }
