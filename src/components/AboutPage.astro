@@ -4,7 +4,6 @@ import type { Locale } from '../i18n/locales'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import { ANALYTICS_EVENTS, analyticsAttributes } from '../lib/analytics'
 import { CV_PATHS } from '../lib/contact'
-import ContactBlock from './ContactBlock.astro'
 
 interface Props {
   locale: Locale
@@ -40,9 +39,8 @@ const downloads = [
       </h1>
       <p class="m-0 text-lg font-medium">{copy.introLead}</p>
       <p class="text-muted-foreground m-0">{copy.introBody}</p>
+      <p class="m-0 text-sm">{copy.openTo}</p>
     </section>
-
-    <ContactBlock locale={locale} idSuffix="about" showOpenTo />
 
     <section aria-labelledby="cv-heading" class="flex flex-col gap-3">
       <h2 id="cv-heading" class="m-0 text-base font-semibold">

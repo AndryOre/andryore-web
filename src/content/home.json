@@ -24,7 +24,7 @@
     },
     "about": {
       "label": "About me",
-      "body": "Builder who tests things. Software, hardware and whatever comes next.",
+      "body": "Builder who tests things. Software, hardware and whatever comes next. Open to full-time and contract roles.",
       "path": "/about/"
     },
     "products": {
@@ -79,19 +79,6 @@
       "href": "https://www.twitch.tv/andryoredev",
       "sample": true
     },
-    "links": {
-      "label": "Find me",
-      "items": [
-        {
-          "label": "GitHub",
-          "href": "https://github.com/AndryOre"
-        },
-        {
-          "label": "Twitch",
-          "href": "https://www.twitch.tv/andryoredev"
-        }
-      ]
-    },
     "theme": {
       "label": "Theme"
     }
@@ -121,7 +108,7 @@
     },
     "about": {
       "label": "Sobre mí",
-      "body": "Alguien que construye y prueba cosas. Software, hardware y lo que venga.",
+      "body": "Alguien que construye y prueba cosas. Software, hardware y lo que venga. Disponible para roles de tiempo completo y contratos.",
       "path": "/about/"
     },
     "products": {
@@ -175,19 +162,6 @@
       "open": "Abrir Twitch",
       "href": "https://www.twitch.tv/andryoredev",
       "sample": true
-    },
-    "links": {
-      "label": "Encuéntrame",
-      "items": [
-        {
-          "label": "GitHub",
-          "href": "https://github.com/AndryOre"
-        },
-        {
-          "label": "Twitch",
-          "href": "https://www.twitch.tv/andryoredev"
-        }
-      ]
     },
     "theme": {
       "label": "Tema"

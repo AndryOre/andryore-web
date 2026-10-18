@@ -1,0 +1,104 @@
+---
+import findMe from '../content/find-me.json'
+import type { Locale } from '../i18n/locales'
+import { CONTACT_EMAIL } from '../lib/contact'
+import { externalLinkTokens } from '../lib/external-link'
+import type { IconId } from '../lib/icons'
+import { resolveIcon } from '../lib/icons'
+import BrandIcon from './BrandIcon.astro'
+import CopyEmailButton from './CopyEmailButton'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const copy = findMe[locale]
+const emailId = 'find-me-email'
+
+const hasDarkMark = (icon: string): boolean => {
+  const { light, dark } = resolveIcon(icon as IconId)
+  return light !== dark
+}
+---
+
+<article class="bg-card border-border relative flex min-w-0 flex-col gap-4 rounded-[1.25rem] border p-5 shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)]">
+  <p class="text-muted-foreground m-0 flex items-center justify-between gap-3 font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase">
+    {copy.label}
+  </p>
+  <ul class="m-0 flex list-none flex-wrap gap-3 p-0">
+    {copy.items.map((item) => (
+      <li class="group relative">
+        <a
+          href={item.href}
+          rel={externalLinkTokens()}
+          aria-label={item.label}
+          style={`--glow: ${item.glow}`}
+          class="find-me-link bg-secondary border-border rounded-pill inline-flex size-11 items-center justify-center border outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          {hasDarkMark(item.icon) ? (
+            <>
+              <BrandIcon id={item.icon as IconId} class="size-5 dark:hidden" />
+              <BrandIcon
+                id={item.icon as IconId}
+                variant="dark"
+                class="hidden size-5 dark:block"
+              />
+            </>
+          ) : (
+            <BrandIcon id={item.icon as IconId} class="size-5" />
+          )}
+        </a>
+        <span
+          aria-hidden="true"
+          class="bg-foreground text-background pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 translate-y-1 rounded-lg px-2.5 py-1 text-xs font-medium whitespace-nowrap opacity-0 transition duration-150 ease-out group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:transition-none"
+        >
+          {item.label}
+        </span>
+      </li>
+    ))}
+  </ul>
+  <div
+    data-email-chip
+    class="bg-secondary border-border rounded-pill flex w-fit max-w-full items-center gap-1 border py-0.5 pr-0.5 pl-4"
+  >
+    <span class="sr-only">{copy.emailLabel}</span>
+    <span
+      id={emailId}
+      class="min-w-0 font-mono text-sm [overflow-wrap:anywhere] select-all"
+    >
+      {CONTACT_EMAIL}
+    </span>
+    <CopyEmailButton
+      client:visible
+      email={CONTACT_EMAIL}
+      targetId={emailId}
+      copy={{
+        copyLabel: copy.copyLabel,
+        copiedMessage: copy.copiedMessage,
+        selectedMessage: copy.selectedMessage,
+      }}
+    />
+    <a
+      href={`mailto:${CONTACT_EMAIL}`}
+      aria-label={copy.sendLabel}
+      data-send-email
+      class="text-muted-foreground hover:text-foreground rounded-pill inline-flex size-11 shrink-0 items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="m22 2-7 20-4-9-9-4Z"></path>
+        <path d="M22 2 11 13"></path>
+      </svg>
+    </a>
+  </div>
+</article>

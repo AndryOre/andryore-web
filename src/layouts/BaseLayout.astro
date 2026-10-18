@@ -1,7 +1,6 @@
 ---
 import '../styles/global.css'
 
-import ContactBlock from '../components/ContactBlock.astro'
 import Dock from '../components/Dock'
 import chrome from '../content/chrome.json'
 import home from '../content/home.json'
@@ -10,14 +9,11 @@ import {
   alternatesFor,
   DEFAULT_LOCALE,
   localePath,
-  otherLocale,
   splitLocalePath,
   type Locale,
 } from '../i18n/locales'
 import {
   ANALYTICS_DOMAIN,
-  ANALYTICS_EVENTS,
-  analyticsAttributes,
   UMAMI_SCRIPT_URL,
   UMAMI_WEBSITE_ID,
 } from '../lib/analytics'
@@ -161,38 +157,19 @@ const socialTags = [
       id="main"
       tabindex="-1"
       class:list={[
-        'mx-auto w-full flex-1 px-4 py-8 focus:outline-none sm:px-6',
+        'mx-auto w-full flex-1 px-4 pt-8 pb-[calc(var(--dock-height)+1rem)] focus:outline-none sm:px-6',
         wide ? 'max-w-[75rem]' : 'max-w-reading',
       ]}
     >
       <slot />
     </main>
 
-    <footer class="border-border text-muted-foreground mx-auto w-full max-w-reading border-t px-4 py-6 pb-32 font-mono text-xs sm:px-6">
-      <div class="mb-6">
-        <ContactBlock locale={locale} idSuffix="footer" />
-      </div>
-      <nav aria-label={copy.footerNavLabel} class="mb-4 flex flex-wrap gap-x-4">
-        <a
-          href={localePath(locale, '/uses/')}
-          class="inline-flex min-h-11 min-w-11 items-center justify-center underline underline-offset-4"
-        >
-          {copy.usesLabel}
-        </a>
-        <a
-          href={localePath(otherLocale(locale), path)}
-          lang={otherLocale(locale)}
-          hreflang={otherLocale(locale)}
-          aria-label={copy.switchAria}
-          data-locale-switch={otherLocale(locale)}
-          {...analyticsAttributes(ANALYTICS_EVENTS.languageSwitch, {
-            to: otherLocale(locale),
-          })}
-          class="inline-flex min-h-11 min-w-11 items-center justify-center underline underline-offset-4"
-        >
-          {copy.switchLabel}
-        </a>
-      </nav>
+    <footer
+      class:list={[
+        'border-border text-muted-foreground mx-auto w-full border-t px-4 pt-6 pb-[calc(var(--dock-height)+2rem)] font-mono text-xs sm:px-6',
+        wide ? 'max-w-[75rem]' : 'max-w-reading',
+      ]}
+    >
       <small>
         © {year} {copy.footerNote}
       </small>

@@ -6,9 +6,9 @@ import memoji from '../../docs/brand/avatar/memoji.webp'
 import chrome from '../content/chrome.json'
 import home from '../content/home.json'
 import { localePath, type Locale } from '../i18n/locales'
-import { tokensForHref } from '../lib/external-link'
 import { formatProofDate, type ProductEntry } from '../lib/products'
 import { spriteClass } from '../lib/sprites'
+import FindMe from './FindMe.astro'
 import ThemeToggle from './ThemeToggle'
 
 interface Props {
@@ -293,22 +293,7 @@ const installsFigure = new Intl.NumberFormat(locale).format(
   </div>
 
   <div data-slot="find-me" class="empty:hidden">
-    <article class:list={[tileClass, 'scroll-reveal']}>
-      <p class={labelClass}>{copy.links.label}</p>
-      <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
-        {copy.links.items.map((link) => (
-          <li>
-            <a
-              href={link.href}
-              rel={tokensForHref(link.href)}
-              class="border-border bg-secondary text-foreground rounded-pill inline-flex min-h-11 items-center border px-3 font-mono text-[0.6875rem] font-medium tracking-[0.06em] uppercase no-underline"
-            >
-              {link.label}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </article>
+    <FindMe locale={locale} />
   </div>
 
   <div data-slot="stack-scene" class="empty:hidden"></div>

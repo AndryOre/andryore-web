@@ -395,3 +395,39 @@
     }
   }
 }
+
+:root {
+  --dock-height: 3.875rem;
+}
+
+.find-me-link {
+  transition:
+    box-shadow 160ms var(--ease-out),
+    transform 160ms var(--ease-out);
+}
+
+.find-me-link:hover,
+.find-me-link:focus-visible {
+  box-shadow: 0 0 1.125rem color-mix(in srgb, var(--glow) 55%, transparent);
+}
+
+.particle {
+  animation: particle-burst 600ms var(--ease-out) forwards;
+}
+
+@keyframes particle-burst {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateX(1.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .particle {
+    display: none;
+  }
+}

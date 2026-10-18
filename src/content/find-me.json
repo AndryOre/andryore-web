@@ -1,0 +1,118 @@
+{
+  "en": {
+    "label": "Find me",
+    "emailLabel": "Email",
+    "copyLabel": "Copy email",
+    "sendLabel": "Send email",
+    "copiedMessage": "Copied",
+    "selectedMessage": "Selected, press Ctrl+C to copy",
+    "items": [
+      {
+        "icon": "github",
+        "label": "GitHub",
+        "href": "https://github.com/AndryOre",
+        "glow": "#8b949e"
+      },
+      {
+        "icon": "x",
+        "label": "X",
+        "href": "https://x.com/andryore",
+        "glow": "#9aa0a6"
+      },
+      {
+        "icon": "youtube",
+        "label": "YouTube",
+        "href": "https://youtube.com/@andryore",
+        "glow": "#ff0033"
+      },
+      {
+        "icon": "tiktok",
+        "label": "TikTok",
+        "href": "https://tiktok.com/@andryoredev",
+        "glow": "#25f4ee"
+      },
+      {
+        "icon": "instagram",
+        "label": "Instagram",
+        "href": "https://instagram.com/andryore",
+        "glow": "#e1306c"
+      },
+      {
+        "icon": "twitch",
+        "label": "Twitch",
+        "href": "https://twitch.tv/andryoredev",
+        "glow": "#9146ff"
+      },
+      {
+        "icon": "discord",
+        "label": "Discord",
+        "href": "https://discord.com/invite/gWacXydAX9",
+        "glow": "#5865f2"
+      },
+      {
+        "icon": "linkedin",
+        "label": "LinkedIn",
+        "href": "https://linkedin.com/in/AndryOre",
+        "glow": "#0a66c2"
+      }
+    ]
+  },
+  "es": {
+    "label": "Encuéntrame",
+    "emailLabel": "Correo",
+    "copyLabel": "Copiar correo",
+    "sendLabel": "Enviar correo",
+    "copiedMessage": "Copiado",
+    "selectedMessage": "Seleccionado, presiona Ctrl+C para copiar",
+    "items": [
+      {
+        "icon": "github",
+        "label": "GitHub",
+        "href": "https://github.com/AndryOre",
+        "glow": "#8b949e"
+      },
+      {
+        "icon": "x",
+        "label": "X",
+        "href": "https://x.com/andryore",
+        "glow": "#9aa0a6"
+      },
+      {
+        "icon": "youtube",
+        "label": "YouTube",
+        "href": "https://youtube.com/@andryore",
+        "glow": "#ff0033"
+      },
+      {
+        "icon": "tiktok",
+        "label": "TikTok",
+        "href": "https://tiktok.com/@andryoredev",
+        "glow": "#25f4ee"
+      },
+      {
+        "icon": "instagram",
+        "label": "Instagram",
+        "href": "https://instagram.com/andryore",
+        "glow": "#e1306c"
+      },
+      {
+        "icon": "twitch",
+        "label": "Twitch",
+        "href": "https://twitch.tv/andryoredev",
+        "glow": "#9146ff"
+      },
+      {
+        "icon": "discord",
+        "label": "Discord",
+        "href": "https://discord.com/invite/gWacXydAX9",
+        "glow": "#5865f2"
+      },
+      {
+        "icon": "linkedin",
+        "label": "LinkedIn",
+        "href": "https://linkedin.com/in/AndryOre",
+        "glow": "#0a66c2"
+      }
+    ]
+  }
+}

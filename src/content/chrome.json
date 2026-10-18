@@ -3,8 +3,6 @@
     "wordmark": "AndryOre",
     "skipLink": "Skip to content",
     "footerNote": "AndryOre",
-    "footerNavLabel": "More about this site",
-    "usesLabel": "Uses",
     "theme": {
       "label": "Theme",
       "auto": "Auto",
@@ -25,8 +23,6 @@
         "es": "Español"
       }
     },
-    "switchLabel": "Español",
-    "switchAria": "Leer en español",
     "ogImageAlt": "AndryOre: Building, exploring, telling.",
     "wordmarkParts": ["Andry", "Ore"],
     "openToWork": "Open to work"
@@ -35,8 +31,6 @@
     "wordmark": "AndryOre",
     "skipLink": "Saltar al contenido",
     "footerNote": "AndryOre",
-    "footerNavLabel": "Más sobre este sitio",
-    "usesLabel": "Uso",
     "theme": {
       "label": "Tema",
       "auto": "Automático",
@@ -57,8 +51,6 @@
         "es": "Español"
       }
     },
-    "switchLabel": "English",
-    "switchAria": "Read in English",
     "ogImageAlt": "AndryOre: Construyendo, explorando, contando.",
     "wordmarkParts": ["Andry", "Ore"],
     "openToWork": "Disponible"
