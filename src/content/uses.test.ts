@@ -124,6 +124,42 @@ describe('uses content', () => {
   })
 })
 
+describe('uses canvas copy', () => {
+  test('the hero subtitle follows the Uses v4 artboard', () => {
+    expect(uses.en.intro).toBe(
+      'What I build and stream with: tools on my machine, tech in my projects, my setup and how this site is made.',
+    )
+    expect(uses.es.intro).toContain('cómo está hecho este sitio')
+  })
+
+  test('the This site subline exists in both languages', () => {
+    expect(uses.en.thisSite.intro).toBe('How andryore.dev is made.')
+    expect(uses.es.thisSite.intro).toBe('Cómo está hecho andryore.dev.')
+  })
+
+  test('setup rows pair a category with a product name', () => {
+    expect(uses.en.setup.map((row) => row.role)).toEqual([
+      'Laptop',
+      'Microphone',
+      'Webcam',
+      'Mouse',
+      'Keyboard',
+      'USB-C hub',
+      'Earbuds',
+    ])
+  })
+
+  test('privacy copy stays in a card of its own', () => {
+    const source = readFileSync(
+      path.join(SOURCE_ROOT, 'components/UsesPage.astro'),
+      'utf8',
+    )
+    expect(source).toContain('aria-labelledby="uses-privacy"')
+    for (const locale of LOCALES)
+      expect(uses[locale].thisSite.privacyBody).toContain('Umami')
+  })
+})
+
 describe('colophon removal', () => {
   test('the colophon pages, component and content are gone', () => {
     for (const file of [

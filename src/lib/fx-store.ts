@@ -7,7 +7,17 @@ export interface FxStorage {
   setItem: (key: string, value: string) => void
 }
 
-const memory: { enabled: boolean } = { enabled: false }
+/** The event dispatched on the window whenever the Sound choice changes. */
+const FX_CHANGE_EVENT = 'ao-fx-change'
+
+const noop = (): void => {
+  return
+}
+
+const memory: { enabled: boolean; unsaved: boolean } = {
+  enabled: false,
+  unsaved: false,
+}
 
 /**
  * Reaches `localStorage` without throwing; merely touching it can throw when
@@ -27,12 +37,12 @@ export function getFxStorage(
 
 /**
  * Reads whether Sound is on. Off is the default, and an unreadable store
- * falls back to the choice made earlier in this page.
+ * or unsaved store falls back to the choice made earlier in this page.
  * @param storage The storage to read, if any.
  * @returns True only when the stored value is "on".
  */
 export function readFx(storage: FxStorage | undefined): boolean {
-  if (!storage) return memory.enabled
+  if (!storage || memory.unsaved) return memory.enabled
   try {
     return storage.getItem(FX_STORAGE_KEY) === 'on'
   } catch {
@@ -52,7 +62,26 @@ export function writeFx(
   memory.enabled = enabled
   try {
     storage?.setItem(FX_STORAGE_KEY, enabled ? 'on' : 'off')
+    memory.unsaved = false
   } catch {
-    return
+    memory.unsaved = true
+  } finally {
+    if (typeof globalThis.dispatchEvent === 'function')
+      globalThis.dispatchEvent(new Event(FX_CHANGE_EVENT))
+  }
+}
+
+/**
+ * Subscribes to Sound changes made in this page or in another tab.
+ * @param onChange Called after every change.
+ * @returns A function that removes the subscription.
+ */
+export function subscribeFx(onChange: () => void): () => void {
+  if (typeof globalThis.addEventListener !== 'function') return noop
+  globalThis.addEventListener(FX_CHANGE_EVENT, onChange)
+  globalThis.addEventListener('storage', onChange)
+  return () => {
+    globalThis.removeEventListener(FX_CHANGE_EVENT, onChange)
+    globalThis.removeEventListener('storage', onChange)
   }
 }

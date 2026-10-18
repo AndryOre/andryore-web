@@ -2,127 +2,227 @@
   "en": {
     "pageTitle": "About",
     "pageDescription": "I build web apps, auth flows, APIs and self-hosted infra for startups and small teams. Full-stack engineer, independent since 2024.",
-    "headline": "I build web apps, auth flows, APIs and self-hosted infra for startups and small teams.",
-    "intro": "I'm Andry Orellana, a full-stack engineer from Venezuela, living in Colombia. I've worked as a freelancer since 2024, shipping my own products and contributing to open source. I use AI tools every day and read every line they write before it ships.",
-    "openTo": "Open to full-time and contract roles.",
-    "whatIDo": {
-      "heading": "What I do",
-      "items": [
-        {
-          "key": "frontends",
-          "icon": "layout-template",
-          "title": "Product frontends",
-          "body": "Fast, accessible interfaces in React and Astro, built to ship and easy to maintain."
-        },
-        {
-          "key": "auth",
-          "icon": "key-round",
-          "title": "Auth",
-          "body": "Sign-in, sessions and permissions that hold up in production."
-        },
-        {
-          "key": "infra",
-          "icon": "server",
-          "title": "Self-hosted infrastructure",
-          "body": "Docker, reverse proxies and backups on servers I run myself."
-        }
-      ]
-    },
     "numbersHeading": "In numbers",
-    "independentLabel": "Independent since",
+    "independentLabel": "Freelance since",
     "independentValue": "2024",
-    "snugLabel": "Snug users",
+    "snugLabel": "Snug users · Chrome Web Store",
     "snugUsers": 5000,
-    "installsLabel": "JSON Flow installs",
+    "installsLabel": "JSON Flow installs · Marketplace",
     "installsAsOf": "As of",
     "contributionsLabel": "GitHub contributions, last year",
     "timelineHeading": "Timeline",
-    "timeline": [
-      { "date": "2024-08", "title": "Snug 0.1.0" },
-      { "date": "2024-08", "title": "Animated Fluent Emojis 0.1.0" },
-      { "date": "2024", "title": "Started working independently" },
-      { "date": "2025", "title": "JSON Flow site and webview" },
-      { "date": "2026-10", "title": "Snug 2.2.0" },
-      { "date": "2026-10", "title": "andryore.dev" }
-    ],
-    "stackHeading": "Stack",
     "stack": [
-      { "name": "TypeScript", "icon": "typescript" },
-      { "name": "React", "icon": "react" },
-      { "name": "Astro", "icon": "astro" },
-      { "name": "Bun", "icon": "bun" },
-      { "name": "Docker", "icon": "docker" }
+      {
+        "name": "TypeScript",
+        "icon": "typescript"
+      },
+      {
+        "name": "Next.js",
+        "icon": "nextjs"
+      },
+      {
+        "name": "Prisma + Postgres",
+        "icon": "prisma"
+      },
+      {
+        "name": "Tailwind CSS",
+        "icon": "tailwindcss"
+      },
+      {
+        "name": "Bun",
+        "icon": "bun"
+      }
     ],
-    "stackLink": "See everything I use",
     "cvLabel": "CV",
     "cvGroupLabel": "Download my CV",
     "cvMenuLabel": "Choose the CV language",
     "cvEnglishOption": "English (PDF)",
     "cvSpanishOption": "Español (PDF)",
     "cvEnglishFile": "Andry-Orellana-CV-EN.pdf",
-    "cvSpanishFile": "Andry-Orellana-CV-ES.pdf"
-  },
-  "es": {
-    "pageTitle": "Acerca de",
-    "pageDescription": "Construyo apps web, flujos de auth, APIs e infra self-hosted para startups y equipos pequeños. Ingeniero full-stack, independiente desde 2024.",
-    "headline": "Construyo apps web, flujos de auth, APIs e infra self-hosted para startups y equipos pequeños.",
-    "intro": "Soy Andry Orellana, ingeniero full-stack de Venezuela, y vivo en Colombia. Trabajo como freelance desde 2024: lanzo mis propios productos y colaboro en código abierto. Uso herramientas de IA todos los días y leo cada línea que escriben antes de publicarla.",
-    "openTo": "Disponible para roles de tiempo completo y contratos.",
+    "cvSpanishFile": "Andry-Orellana-CV-ES.pdf",
+    "kicker": "Andry Orellana",
+    "typingPrefix": "I build ",
+    "typingPhrases": [
+      "multi-tenant apps.",
+      "auth flows.",
+      "APIs.",
+      "self-hosted infra.",
+      "products people use."
+    ],
+    "subline": "For startups and small teams. Freelance since 2024, open to contract and full-time work.",
+    "openTo": "Open to contract and full-time work",
     "whatIDo": {
-      "heading": "Qué hago",
+      "heading": "What I do",
       "items": [
         {
-          "key": "frontends",
-          "icon": "layout-template",
-          "title": "Frontends de producto",
-          "body": "Interfaces rápidas y accesibles en React y Astro, hechas para lanzarse y fáciles de mantener."
+          "key": "platforms",
+          "icon": "layers",
+          "title": "Multi-tenant platforms",
+          "body": "Tenant isolation, per-tenant keys and custom domains, running in production."
         },
         {
           "key": "auth",
           "icon": "key-round",
           "title": "Auth",
-          "body": "Inicio de sesión, sesiones y permisos que aguantan en producción."
+          "body": "Passkeys, TOTP, email OTP and role-based permissions."
         },
         {
           "key": "infra",
           "icon": "server",
-          "title": "Infraestructura self-hosted",
-          "body": "Docker, proxies inversos y copias de seguridad en servidores que administro yo mismo."
+          "title": "Self-hosted infrastructure",
+          "body": "Docker, Coolify and self-hosted CI on servers I run myself."
         }
       ]
     },
+    "timeline": [
+      {
+        "date": "2024-08",
+        "title": "Snug 0.1.0",
+        "body": "First release, then called Bookmark Import/Export."
+      },
+      {
+        "date": "2024-08",
+        "title": "Animated Fluent Emojis 0.1.0",
+        "body": "First publish on npm."
+      },
+      {
+        "date": "2024-09",
+        "title": "Went freelance",
+        "body": "Web platforms and infrastructure for small teams."
+      },
+      {
+        "date": "2025-02",
+        "title": "JSON Flow webview",
+        "body": "shadcn/ui migration, then theming and a settings dialog."
+      },
+      {
+        "date": "2025-04",
+        "title": "JSON Flow website",
+        "body": "Built the marketing site end to end."
+      },
+      {
+        "date": "2026-10",
+        "title": "Snug 2.2.0 and this site",
+        "body": "Multi-file import, scheduled backup, andryore.dev."
+      }
+    ],
+    "bio": [
+      "I’m Andry. I build production web platforms for startups and small teams, from auth and APIs to the self-hosted infrastructure under them. Freelance since 2024.",
+      "Outside client work I ship my own products, Snug and Animated Fluent Emojis, and contribute to JSON Flow, a VS Code extension with 75,000+ installs."
+    ],
+    "stackLink": "Everything I use"
+  },
+  "es": {
+    "pageTitle": "Acerca de",
+    "pageDescription": "Construyo apps web, flujos de auth, APIs e infra self-hosted para startups y equipos pequeños. Ingeniero full-stack, independiente desde 2024.",
     "numbersHeading": "En números",
-    "independentLabel": "Independiente desde",
+    "independentLabel": "Freelance desde",
     "independentValue": "2024",
-    "snugLabel": "Usuarios de Snug",
+    "snugLabel": "Usuarios de Snug · Chrome Web Store",
     "snugUsers": 5000,
-    "installsLabel": "Instalaciones de JSON Flow",
+    "installsLabel": "Instalaciones de JSON Flow · Marketplace",
     "installsAsOf": "Al",
     "contributionsLabel": "Contribuciones en GitHub, último año",
-    "timelineHeading": "Cronología",
-    "timeline": [
-      { "date": "2024-08", "title": "Snug 0.1.0" },
-      { "date": "2024-08", "title": "Animated Fluent Emojis 0.1.0" },
-      { "date": "2024", "title": "Empecé a trabajar de forma independiente" },
-      { "date": "2025", "title": "Sitio y webview de JSON Flow" },
-      { "date": "2026-10", "title": "Snug 2.2.0" },
-      { "date": "2026-10", "title": "andryore.dev" }
-    ],
-    "stackHeading": "Stack",
+    "timelineHeading": "Línea de tiempo",
     "stack": [
-      { "name": "TypeScript", "icon": "typescript" },
-      { "name": "React", "icon": "react" },
-      { "name": "Astro", "icon": "astro" },
-      { "name": "Bun", "icon": "bun" },
-      { "name": "Docker", "icon": "docker" }
+      {
+        "name": "TypeScript",
+        "icon": "typescript"
+      },
+      {
+        "name": "Next.js",
+        "icon": "nextjs"
+      },
+      {
+        "name": "Prisma + Postgres",
+        "icon": "prisma"
+      },
+      {
+        "name": "Tailwind CSS",
+        "icon": "tailwindcss"
+      },
+      {
+        "name": "Bun",
+        "icon": "bun"
+      }
     ],
-    "stackLink": "Ver mis herramientas",
     "cvLabel": "CV",
     "cvGroupLabel": "Descargar mi CV",
     "cvMenuLabel": "Elegir el idioma del CV",
     "cvEnglishOption": "English (PDF)",
     "cvSpanishOption": "Español (PDF)",
     "cvEnglishFile": "Andry-Orellana-CV-EN.pdf",
-    "cvSpanishFile": "Andry-Orellana-CV-ES.pdf"
+    "cvSpanishFile": "Andry-Orellana-CV-ES.pdf",
+    "kicker": "Andry Orellana",
+    "typingPrefix": "Construyo ",
+    "typingPhrases": [
+      "apps multi-tenant.",
+      "flujos de auth.",
+      "APIs.",
+      "infra self-hosted.",
+      "productos que la gente usa."
+    ],
+    "subline": "Para startups y equipos pequeños. Freelance desde 2024, abierto a contrato y a tiempo completo.",
+    "openTo": "Abierto a trabajo por contrato y a tiempo completo",
+    "whatIDo": {
+      "heading": "Qué hago",
+      "items": [
+        {
+          "key": "platforms",
+          "icon": "layers",
+          "title": "Plataformas multi-tenant",
+          "body": "Aislamiento por tenant, llaves por tenant y dominios propios, en producción."
+        },
+        {
+          "key": "auth",
+          "icon": "key-round",
+          "title": "Auth",
+          "body": "Passkeys, TOTP, OTP por correo y permisos por rol."
+        },
+        {
+          "key": "infra",
+          "icon": "server",
+          "title": "Infra self-hosted",
+          "body": "Docker, Coolify y CI self-hosted en servidores que administro yo."
+        }
+      ]
+    },
+    "timeline": [
+      {
+        "date": "2024-08",
+        "title": "Snug 0.1.0",
+        "body": "Primera versión, entonces llamada Bookmark Import/Export."
+      },
+      {
+        "date": "2024-08",
+        "title": "Animated Fluent Emojis 0.1.0",
+        "body": "Primera publicación en npm."
+      },
+      {
+        "date": "2024-09",
+        "title": "Me hice freelance",
+        "body": "Plataformas web e infraestructura para equipos pequeños."
+      },
+      {
+        "date": "2025-02",
+        "title": "Webview de JSON Flow",
+        "body": "Migración a shadcn/ui, luego temas y un diálogo de ajustes."
+      },
+      {
+        "date": "2025-04",
+        "title": "Sitio de JSON Flow",
+        "body": "Construí el sitio de marketing de punta a punta."
+      },
+      {
+        "date": "2026-10",
+        "title": "Snug 2.2.0 y este sitio",
+        "body": "Importación de varios archivos, respaldo programado, andryore.dev."
+      }
+    ],
+    "bio": [
+      "Soy Andry. Construyo plataformas web de producción para startups y equipos pequeños, desde auth y APIs hasta la infraestructura self-hosted que los sostiene. Freelance desde 2024.",
+      "Fuera del trabajo con clientes publico mis propios productos, Snug y Animated Fluent Emojis, y colaboro en JSON Flow, una extensión de VS Code con más de 75.000 instalaciones."
+    ],
+    "stackLink": "Todas las herramientas que uso"
   }
 }

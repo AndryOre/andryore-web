@@ -2,7 +2,6 @@
   "en": {
     "wordmark": "AndryOre",
     "skipLink": "Skip to content",
-    "footerNote": "AndryOre",
     "theme": {
       "label": "Theme",
       "auto": "Auto",
@@ -15,7 +14,8 @@
         "home": "Home",
         "products": "Products",
         "about": "About",
-        "uses": "Uses"
+        "uses": "Uses",
+        "findMe": "Find me"
       },
       "language": {
         "label": "Language",
@@ -25,6 +25,11 @@
           "en": "EN",
           "es": "ES"
         }
+      },
+      "sound": {
+        "label": "Sound",
+        "on": "Sound on",
+        "off": "Sound off"
       }
     },
     "ogImageAlt": "AndryOre: Building, exploring, telling.",
@@ -40,7 +45,6 @@
   "es": {
     "wordmark": "AndryOre",
     "skipLink": "Saltar al contenido",
-    "footerNote": "AndryOre",
     "theme": {
       "label": "Tema",
       "auto": "Automático",
@@ -53,7 +57,8 @@
         "home": "Inicio",
         "products": "Productos",
         "about": "Sobre mí",
-        "uses": "Setup"
+        "uses": "Setup",
+        "findMe": "Contacto"
       },
       "language": {
         "label": "Idioma",
@@ -63,6 +68,11 @@
           "en": "EN",
           "es": "ES"
         }
+      },
+      "sound": {
+        "label": "Sonido",
+        "on": "Sonido activado",
+        "off": "Sonido desactivado"
       }
     },
     "ogImageAlt": "AndryOre: Construyendo, explorando, contando.",

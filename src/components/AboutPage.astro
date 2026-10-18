@@ -1,15 +1,25 @@
 ---
-import { KeyRound, LayoutTemplate, Server } from 'lucide-react'
+import { Image } from 'astro:assets'
+import {
+  Activity,
+  CalendarDays,
+  Download,
+  KeyRound,
+  Layers,
+  Server,
+  Users,
+} from 'lucide-react'
 
+import memoji from '../../docs/brand/avatar/memoji.webp'
 import about from '../content/about.json'
 import home from '../content/home.json'
 import { localePath, type Locale } from '../i18n/locales'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import { buildNumberStats, formatTimelineDate } from '../lib/about'
 import { loadGridSnapshot } from '../lib/github-grid-build'
-import { badgeIconId } from '../lib/uses'
-import BrandIcon from './BrandIcon.astro'
+import type { IconId } from '../lib/icons'
 import CvSplitButton from './CvSplitButton'
+import UsesBadge from './UsesBadge.astro'
 
 interface Props {
   locale: Locale
@@ -27,64 +37,94 @@ const stats = buildNumberStats(
   },
   locale,
 )
-const icons = {
-  'layout-template': LayoutTemplate,
+const whatIcons = {
+  layers: Layers,
   'key-round': KeyRound,
   server: Server,
 } as const
+const statIcons = {
+  independent: CalendarDays,
+  snug: Users,
+  installs: Download,
+  contributions: Activity,
+} as const
+const [firstPhrase = ''] = copy.typingPhrases
+const longestPhrase = copy.typingPhrases.toSorted(
+  (a, b) => b.length - a.length,
+)[0]
 
 const tileClass =
   'bg-card border-border flex min-w-0 flex-col gap-3 rounded-[1.25rem] border p-5'
-const labelClass =
-  'text-muted-foreground m-0 flex items-center gap-2 font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase'
+const iconTileClass =
+  'bg-secondary text-primary border-border flex size-10 shrink-0 items-center justify-center rounded-xl border'
+const headingClass = 'm-0 text-2xl font-bold tracking-[-0.025em]'
 ---
 
 <BaseLayout
   title={copy.pageTitle}
   description={copy.pageDescription}
   locale={locale}
-  wide
 >
-  <div class="flex flex-col gap-12 sm:gap-16">
-    <section aria-labelledby="about-heading" class="flex flex-col gap-6 py-4">
-      <h1
-        id="about-heading"
-        aria-live="off"
-        data-typing
-        data-typing-phrase={copy.headline}
-        class="m-0 max-w-[22ch] text-4xl leading-[1.08] font-bold tracking-[-0.035em] text-balance [overflow-wrap:anywhere] sm:max-w-[28ch] sm:text-5xl lg:text-[3.5rem]"
-      >
-        <span class="sr-only">{copy.headline}</span>
-        <span class="grid" aria-hidden="true">
-          <span class="invisible col-start-1 row-start-1">
-            {copy.headline}
-            <span class="caret caret-em"></span>
+  <div class="flex flex-col gap-12 sm:gap-14">
+    <section
+      aria-labelledby="about-heading"
+      class="bg-card border-border flex flex-col items-start gap-6 rounded-[1.25rem] border p-6 sm:flex-row sm:items-center sm:gap-8 sm:p-8"
+    >
+      <Image
+        src={memoji}
+        alt=""
+        width={200}
+        height={200}
+        loading="eager"
+        class="bg-secondary border-border size-[100px] shrink-0 rounded-[22px] border object-contain p-1.5"
+      />
+      <div class="flex min-w-0 flex-col gap-3.5">
+        <p class="text-muted-foreground m-0 font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase">
+          {copy.kicker}
+        </p>
+        <h1
+          id="about-heading"
+          aria-label={`${copy.typingPrefix}${firstPhrase}`}
+          data-typing
+          data-typing-phrases={JSON.stringify(copy.typingPhrases)}
+          class="m-0 text-3xl leading-[1.1] font-bold tracking-[-0.03em] text-balance sm:text-4xl"
+        >
+          <span aria-hidden="true">
+            {copy.typingPrefix}
+            <span class="inline-grid">
+              <span class="invisible col-start-1 row-start-1 whitespace-pre-wrap">
+                {longestPhrase}
+                <span class="caret caret-em"></span>
+              </span>
+              <span class="col-start-1 row-start-1">
+                <span data-typing-text>{firstPhrase}</span>
+                <span class="caret caret-em"></span>
+              </span>
+            </span>
           </span>
-          <span class="col-start-1 row-start-1">
-            <span data-typing-text>{copy.headline}</span>
-            <span class="caret caret-em"></span>
+        </h1>
+        <p class="text-muted-foreground m-0 text-base sm:text-[1.0625rem]">
+          {copy.subline}
+        </p>
+        <div class="flex flex-wrap items-center gap-3">
+          <CvSplitButton client:load locale={locale} copy={copy} />
+          <span class="bg-secondary border-border inline-flex min-h-8 items-center rounded-full border px-3 font-mono text-[0.6875rem] font-medium tracking-[0.06em] uppercase">
+            {copy.openTo}
           </span>
-        </span>
-      </h1>
-      <p class="text-muted-foreground m-0 max-w-[60ch] text-base sm:text-lg">
-        {copy.intro}
-      </p>
-      <div class="flex flex-wrap items-center gap-x-6 gap-y-4">
-        <CvSplitButton client:load locale={locale} copy={copy} />
-        <p class="m-0 text-sm font-medium">{copy.openTo}</p>
+        </div>
       </div>
     </section>
 
     <section aria-labelledby="what-i-do-heading" class="flex flex-col gap-4">
-      <h2 id="what-i-do-heading" class={labelClass}>
+      <h2 id="what-i-do-heading" class={headingClass}>
         {copy.whatIDo.heading}
       </h2>
       <ul class="m-0 grid list-none gap-4 p-0 md:grid-cols-3">
         {copy.whatIDo.items.map((item) => {
-          const Icon = icons[item.icon as keyof typeof icons]
+          const Icon = whatIcons[item.icon as keyof typeof whatIcons]
           return (
             <li class={tileClass} data-what-i-do={item.key}>
-              <span class="bg-secondary text-primary border-border flex size-10 items-center justify-center rounded-xl border">
+              <span class={iconTileClass} aria-hidden="true">
                 <Icon aria-hidden="true" size={20} />
               </span>
               <h3 class="m-0 text-lg font-semibold tracking-tight">
@@ -98,95 +138,97 @@ const labelClass =
     </section>
 
     <section aria-labelledby="numbers-heading" class="flex flex-col gap-4">
-      <h2 id="numbers-heading" class={labelClass}>
+      <h2 id="numbers-heading" class={headingClass}>
         {copy.numbersHeading}
       </h2>
-      <dl
-        class="m-0 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
-        data-about-numbers
-      >
-        {stats.map((stat) => (
-          <div
-            class={tileClass}
-            data-stat={stat.key}
-            data-about-live={stat.key === 'contributions' ? '' : undefined}
-            data-locale={locale}
-          >
-            <dt class={labelClass}>{stat.label}</dt>
-            <dd class="m-0 flex flex-col gap-1">
-              <span class="text-4xl font-bold tracking-[-0.03em] tabular-nums">
-                {stat.count === undefined ? (
-                  stat.display
-                ) : (
-                  <span
-                    data-count-total={stat.count}
-                    data-count-locale={locale}
-                  >
-                    {stat.display}
+      <dl class="m-0 grid grid-cols-2 gap-4 md:grid-cols-4" data-about-numbers>
+        {stats.map((stat) => {
+          const Icon = statIcons[stat.key]
+          return (
+            <div
+              class={tileClass}
+              data-stat={stat.key}
+              data-about-live={stat.key === 'contributions' ? '' : undefined}
+              data-locale={locale}
+            >
+              <span class={iconTileClass} aria-hidden="true">
+                <Icon aria-hidden="true" size={20} />
+              </span>
+              <dt class="text-muted-foreground order-last text-sm">
+                {stat.label}
+              </dt>
+              <dd class="m-0 flex flex-col gap-1">
+                <span class="text-3xl font-bold tracking-[-0.03em] tabular-nums">
+                  {stat.count === undefined ? (
+                    stat.display
+                  ) : (
+                    <span
+                      data-count-total={stat.count}
+                      data-count-locale={locale}
+                    >
+                      {stat.display}
+                    </span>
+                  )}
+                  {stat.suffix}
+                </span>
+                {stat.note && (
+                  <span class="text-muted-foreground font-mono text-xs">
+                    {stat.note}
                   </span>
                 )}
-                {stat.suffix}
-              </span>
-              {stat.note && (
-                <span class="text-muted-foreground font-mono text-xs">
-                  {stat.note}
-                </span>
-              )}
-            </dd>
-          </div>
-        ))}
+              </dd>
+            </div>
+          )
+        })}
       </dl>
     </section>
 
     <section aria-labelledby="timeline-heading" class="flex flex-col gap-4">
-      <h2 id="timeline-heading" class={labelClass}>
+      <h2 id="timeline-heading" class={headingClass}>
         {copy.timelineHeading}
       </h2>
-      <ol class="border-border m-0 flex list-none flex-col gap-5 border-l p-0 pl-6">
+      <ol class="border-border m-0 flex list-none flex-col gap-6 border-l p-0 pl-6">
         {copy.timeline.map((entry) => (
-          <li class="relative flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-6">
+          <li class="relative flex flex-col gap-1">
             <span
               class="bg-primary absolute top-[0.45rem] -left-[1.8125rem] size-2 rounded-full"
               aria-hidden="true"
             />
             <time
               datetime={entry.date}
-              class="text-muted-foreground font-mono text-xs tabular-nums sm:w-24"
+              class="text-muted-foreground font-mono text-xs tabular-nums"
             >
               {formatTimelineDate(entry.date, locale)}
             </time>
-            <span class="font-medium">{entry.title}</span>
+            <span class="font-semibold">{entry.title}</span>
+            <span class="text-muted-foreground text-sm">{entry.body}</span>
           </li>
         ))}
       </ol>
     </section>
 
-    <section aria-labelledby="stack-heading" class="flex flex-col gap-4">
-      <h2 id="stack-heading" class={labelClass}>
-        {copy.stackHeading}
-      </h2>
+    <section class="flex flex-col gap-5" data-about-closing>
+      <div class="flex max-w-[65ch] flex-col gap-4">
+        {copy.bio.map((paragraph) => (
+          <p class="m-0">{paragraph}</p>
+        ))}
+      </div>
       <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
-        <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
+        <ul class="m-0 flex list-none flex-wrap gap-2.5 p-0">
           {copy.stack.map((item) => (
-            <li class="bg-secondary border-border rounded-pill inline-flex items-center gap-2 border py-1 pr-3 pl-2 text-sm">
-              <BrandIcon
-                id={badgeIconId(item.icon)}
-                class="size-5 dark:hidden"
+            <li>
+              <UsesBadge
+                badge={{ name: item.name, icon: item.icon as IconId }}
               />
-              <BrandIcon
-                id={badgeIconId(item.icon)}
-                variant="dark"
-                class="hidden size-5 dark:block"
-              />
-              {item.name}
             </li>
           ))}
         </ul>
         <a
           href={localePath(locale, '/uses/')}
-          class="inline-flex min-h-11 items-center text-sm underline underline-offset-4"
+          class="text-muted-foreground hover:text-foreground inline-flex min-h-11 items-center font-mono text-xs underline underline-offset-4"
         >
           {copy.stackLink}
+          <span aria-hidden="true">&nbsp;→</span>
         </a>
       </div>
     </section>
@@ -197,16 +239,21 @@ const labelClass =
   import { prefersReducedMotion } from '../lib/motion'
   import { startCountUp } from '../scripts/count-up'
   import { mountGithubTile } from '../scripts/github-tile'
-  import { startTyping } from '../scripts/typing-headline'
+  import { startPhraseTyping } from '../scripts/typing-headline'
 
   const reducedMotion = prefersReducedMotion(globalThis)
 
   for (const root of document.querySelectorAll<HTMLElement>('[data-typing]')) {
     const target = root.querySelector<HTMLElement>('[data-typing-text]')
-    const phrase = root.dataset.typingPhrase
-    if (target && phrase) {
-      startTyping(target, phrase, {
+    const phrases: unknown = JSON.parse(root.dataset.typingPhrases ?? '[]')
+    if (
+      target &&
+      Array.isArray(phrases) &&
+      phrases.every((phrase) => typeof phrase === 'string')
+    ) {
+      startPhraseTyping(target, phrases, {
         reducedMotion,
+        random: () => Math.random(),
         schedule: (callback, delay) => setTimeout(callback, delay),
         cancel: (handle) => {
           clearTimeout(handle)

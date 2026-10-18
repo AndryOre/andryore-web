@@ -9,7 +9,7 @@
       "lead": "I build ",
       "emphasis": "web platforms",
       "tail": " that hold up in production.",
-      "body": "Today it might be a board, a 3D-printed part or a sleep log. Tomorrow, something else. I post what worked, what didn’t and what I’d change.",
+      "body": "For startups and small teams: auth, APIs and the self-hosted infrastructure under them. Mostly TypeScript, Next.js and Postgres. Independent since 2024.",
       "primary": {
         "label": "See what I build",
         "path": "/#products"
@@ -21,13 +21,7 @@
       "annotation": "Space Grotesk 700 · 60 / 1.04",
       "availability": "Open to contract and full-time work"
     },
-    "about": {
-      "label": "About me",
-      "body": "Builder who tests things. Software, hardware and whatever comes next. Open to full-time and contract roles.",
-      "path": "/about/"
-    },
     "products": {
-      "label": "Product",
       "imagePlaceholder": "placeholder until captured",
       "items": [
         {
@@ -54,19 +48,21 @@
       "contribution": {
         "label": "Contributions",
         "name": "JSON Flow",
-        "tag": "Contribution · Collaborator",
         "description": "A VS Code extension that turns JSON, YAML, XML and CSV into interactive graphs. I built the marketing site and contributed to the React webview.",
         "meta": "75,000+ installs",
-        "metaDate": "2026-10-18",
         "action": "Visit json-flow.com",
         "key": "json-flow",
         "path": "/products/json-flow/",
         "href": "https://json-flow.com",
         "year": "2024–25",
+        "metaDate": "2026-10-18",
         "metaTotal": 75000,
         "metaSuffix": "+ installs"
       },
-      "heading": "Products"
+      "heading": "Things I shipped"
+    },
+    "live": {
+      "heading": "Live"
     },
     "stream": {
       "label": "Stream",
@@ -98,7 +94,7 @@
       "lead": "Construyo ",
       "emphasis": "plataformas web",
       "tail": " que aguantan en producción.",
-      "body": "Hoy puede ser una placa, una pieza impresa en 3D o un registro de sueño; mañana, otra cosa. Publico lo que funcionó, lo que no y qué cambiaría.",
+      "body": "Para startups y equipos pequeños: auth, APIs y la infraestructura self-hosted que los sostiene. Sobre todo TypeScript, Next.js y Postgres. Freelance desde 2024.",
       "primary": {
         "label": "Mira lo que construyo",
         "path": "/#products"
@@ -110,13 +106,7 @@
       "annotation": "Space Grotesk 700 · 60 / 1.04",
       "availability": "Disponible para contratos y tiempo completo"
     },
-    "about": {
-      "label": "Sobre mí",
-      "body": "Alguien que construye y prueba cosas. Software, hardware y lo que venga. Disponible para roles de tiempo completo y contratos.",
-      "path": "/about/"
-    },
     "products": {
-      "label": "Producto",
       "imagePlaceholder": "marcador hasta capturar",
       "items": [
         {
@@ -143,19 +133,21 @@
       "contribution": {
         "label": "Colaboraciones",
         "name": "JSON Flow",
-        "tag": "Colaboración · Colaborador",
         "description": "Una extensión de VS Code que convierte JSON, YAML, XML y CSV en grafos interactivos. Hice el sitio de marketing y colaboré en el webview de React.",
         "meta": "75.000+ instalaciones",
-        "metaDate": "2026-10-18",
         "action": "Visitar json-flow.com",
         "key": "json-flow",
         "path": "/products/json-flow/",
         "href": "https://json-flow.com",
         "year": "2024–25",
+        "metaDate": "2026-10-18",
         "metaTotal": 75000,
         "metaSuffix": "+ instalaciones"
       },
-      "heading": "Productos"
+      "heading": "Lo que publiqué"
+    },
+    "live": {
+      "heading": "En vivo"
     },
     "stream": {
       "label": "Stream",

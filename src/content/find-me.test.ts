@@ -31,6 +31,11 @@ describe('find me content', () => {
     })
   }
 
+  test('both languages carry the canvas subline', () => {
+    expect(findMe.en.subline).toBe('Say hi wherever you like.')
+    expect(findMe.es.subline).toBe('Salúdame donde prefieras.')
+  })
+
   test('every profile has a glow rule in the global stylesheet', () => {
     const stylesheet = readFileSync('src/styles/global.css', 'utf8')
     for (const item of findMe.en.items) {

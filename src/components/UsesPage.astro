@@ -37,6 +37,7 @@ const sections = [
 const tile = 'border-border bg-card flex flex-col gap-3 rounded-card border p-5'
 const tileTitle = 'text-muted-foreground m-0 font-mono text-xs uppercase'
 const logo = 'size-8'
+const card = 'border-border bg-card rounded-card flex flex-col gap-4 border p-6'
 ---
 
 <BaseLayout
@@ -47,7 +48,7 @@ const logo = 'size-8'
   <div class="flex flex-col gap-12">
     <section
       aria-labelledby="uses-heading"
-      class="relative isolate flex min-h-64 flex-col justify-center gap-3 py-10 sm:min-h-80"
+      class="border-border bg-card/40 rounded-card relative isolate flex min-h-96 flex-col items-center justify-center gap-3 overflow-hidden border px-6 py-36 text-center sm:min-h-[26rem] sm:px-[26%] sm:py-16"
     >
       <UsesIconField />
       <h1
@@ -56,15 +57,12 @@ const logo = 'size-8'
       >
         {copy.heading}
       </h1>
-      <p class="text-muted-foreground m-0 text-lg">{copy.intro}</p>
+      <p class="text-muted-foreground m-0 text-lg text-balance">{copy.intro}</p>
     </section>
 
     {sections.map((section) => (
-      <section
-        aria-labelledby={`uses-${section.id}`}
-        class="flex flex-col gap-3"
-      >
-        <h2 id={`uses-${section.id}`} class="m-0 text-base font-semibold">
+      <section aria-labelledby={`uses-${section.id}`} class={card}>
+        <h2 id={`uses-${section.id}`} class="m-0 text-xl font-semibold">
           {section.heading}
         </h2>
         <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
@@ -82,47 +80,32 @@ const logo = 'size-8'
       </section>
     ))}
 
-    <section aria-labelledby="uses-setup" class="flex flex-col gap-3">
-      <h2 id="uses-setup" class="m-0 text-base font-semibold">
+    <section aria-labelledby="uses-setup" class={card}>
+      <h2 id="uses-setup" class="m-0 text-xl font-semibold">
         {copy.setupHeading}
       </h2>
-      <ul class="m-0 flex list-none flex-col gap-2 p-0">
+      <ul class="m-0 flex list-none flex-col p-0">
         {copy.setup.map((row) => (
-          <li>
-            {row.url ? (
-              <a
-                href={row.url}
-                rel="noopener noreferrer"
-                class="border-border bg-card hover:border-primary flex min-h-11 items-center gap-3 rounded-lg border px-4 py-2"
-              >
-                <span
-                  aria-hidden="true"
-                  class="text-muted-foreground shrink-0"
-                  set:html={glyphSvg(row.glyph as GlyphName, 20)}
-                />
-                <span class="flex-1">{row.label}</span>
-                <span class="text-muted-foreground hidden font-mono text-xs sm:inline">
-                  {row.role}
-                </span>
-                <span
-                  aria-hidden="true"
-                  class="text-muted-foreground shrink-0"
-                  set:html={glyphSvg('external-link', 14)}
-                />
-              </a>
-            ) : (
-              <div class="border-border bg-card flex min-h-11 items-center gap-3 rounded-lg border px-4 py-2">
-                <span
-                  aria-hidden="true"
-                  class="text-muted-foreground shrink-0"
-                  set:html={glyphSvg(row.glyph as GlyphName, 20)}
-                />
-                <span class="flex-1">{row.label}</span>
-                <span class="text-muted-foreground hidden font-mono text-xs sm:inline">
-                  {row.role}
-                </span>
-              </div>
-            )}
+          <li class="border-border flex min-h-11 items-center justify-between gap-4 border-b py-3 last:border-b-0">
+            <span class="text-muted-foreground flex shrink-0 items-center gap-3 text-sm">
+              <span
+                aria-hidden="true"
+                set:html={glyphSvg(row.glyph as GlyphName, 20)}
+              />
+              {row.role}
+            </span>
+            <a
+              href={row.url}
+              rel="noopener noreferrer"
+              class="inline-flex min-w-0 items-center gap-2 text-right font-medium underline underline-offset-4"
+            >
+              <span class="min-w-0 break-words">{row.label}</span>
+              <span
+                aria-hidden="true"
+                class="text-muted-foreground shrink-0"
+                set:html={glyphSvg('external-link', 14)}
+              />
+            </a>
           </li>
         ))}
       </ul>
@@ -131,10 +114,10 @@ const logo = 'size-8'
     <section
       id="this-site"
       aria-labelledby="this-site-heading"
-      class="flex scroll-mt-4 flex-col gap-4"
+      class={`${card} scroll-mt-4`}
     >
       <div class="flex flex-col gap-1">
-        <h2 id="this-site-heading" class="m-0 text-2xl font-bold">
+        <h2 id="this-site-heading" class="m-0 text-xl font-semibold">
           {site.heading}
         </h2>
         <p class="text-muted-foreground m-0">{site.intro}</p>
@@ -242,11 +225,13 @@ const logo = 'size-8'
           {site.sourceLinkLabel}
         </a>
       </p>
+    </section>
 
-      <div class="flex flex-col gap-1">
-        <h3 class="m-0 text-base font-semibold">{site.privacyHeading}</h3>
-        <p class="text-muted-foreground m-0 text-sm">{site.privacyBody}</p>
-      </div>
+    <section aria-labelledby="uses-privacy" class={card}>
+      <h2 id="uses-privacy" class="m-0 text-xl font-semibold">
+        {site.privacyHeading}
+      </h2>
+      <p class="text-muted-foreground m-0 text-sm">{site.privacyBody}</p>
     </section>
   </div>
 </BaseLayout>

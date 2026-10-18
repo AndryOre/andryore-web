@@ -32,11 +32,10 @@ describe('home content', () => {
       )
     })
 
-    test(`${locale} contribution row is JSON Flow with a dated figure`, () => {
+    test(`${locale} contribution row is JSON Flow with an installs figure`, () => {
       const row = home[locale].products.contribution
       expect(row.key).toBe('json-flow')
-      expect(row.tag).toMatch(/ · /)
-      expect(row.metaDate).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+      expect(Object.keys(row)).not.toContain('tag')
       expect(row.meta).toMatch(/^75[.,]000\+/)
       expect(row.href).toStartWith('https://')
       expect(row.year).toBe('2024–25')
@@ -68,6 +67,25 @@ describe('home content', () => {
       expect(Object.keys(home[locale])).not.toContain('status')
       expect(Object.keys(home[locale])).not.toContain('recent')
     }
+  })
+
+  test('the About me tile is gone and the section headings are canvas copy', () => {
+    for (const locale of LOCALES) {
+      expect(Object.keys(home[locale])).not.toContain('about')
+    }
+    expect(home.en.products.heading).toBe('Things I shipped')
+    expect(home.es.products.heading).toBe('Lo que publiqué')
+    expect(home.en.live.heading).toBe('Live')
+    expect(home.es.live.heading).toBe('En vivo')
+  })
+
+  test('the hero body is the canvas copy', () => {
+    expect(home.en.hero.body).toBe(
+      'For startups and small teams: auth, APIs and the self-hosted infrastructure under them. Mostly TypeScript, Next.js and Postgres. Independent since 2024.',
+    )
+    expect(home.es.hero.body).toBe(
+      'Para startups y equipos pequeños: auth, APIs y la infraestructura self-hosted que los sostiene. Sobre todo TypeScript, Next.js y Postgres. Freelance desde 2024.',
+    )
   })
 
   test('StreamBoss is not shown', () => {
@@ -125,6 +143,21 @@ describe('home markup', () => {
 
   test('the products section carries the anchor id', () => {
     expect(bento).toContain('id="products"')
+  })
+
+  test('sections run hero, products, stack scene, live, find me', () => {
+    const order = [
+      'id="products"',
+      'data-slot="stack-scene"',
+      'data-slot="live-strip"',
+      'data-slot="find-me"',
+    ].map((marker) => bento.indexOf(marker))
+    expect(order.every((index) => index >= 0)).toBe(true)
+    expect(order).toEqual(order.toSorted((a, b) => a - b))
+  })
+
+  test('it has no About me tile', () => {
+    expect(bento).not.toContain('copy.about')
   })
 
   test('it adds no inline script', () => {

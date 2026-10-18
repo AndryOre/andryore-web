@@ -2,94 +2,83 @@ import { describe, expect, test } from 'bun:test'
 
 import {
   DELETE_DELAY_MS,
-  HOLD_DELAY_MS,
-  nextTypingStep,
-  PAUSE_DELAY_MS,
-  startTyping,
-  TYPE_DELAY_MS,
-  type TypingState,
+  nextPhraseStep,
+  PHRASE_HOLD_MS,
+  PHRASE_PAUSE_MS,
+  PHRASE_TYPE_MAX_MS,
+  PHRASE_TYPE_MIN_MS,
+  startPhraseTyping,
+  type PhraseState,
 } from './typing-headline'
 
 function noop(): void {
   return
 }
 
-const PHRASE = 'abc'
+describe('nextPhraseStep', () => {
+  const phrases = ['ab', 'c']
+  const start: PhraseState = { index: 0, length: 0, mode: 'typing' }
 
-const run = (steps: number): { lengths: number[]; delays: number[] } => {
-  let state: TypingState = { length: 0, mode: 'typing' }
-  const lengths: number[] = []
-  const delays: number[] = []
-  for (let index = 0; index < steps; index += 1) {
-    const step = nextTypingStep(state, PHRASE.length)
-    state = step.state
-    lengths.push(state.length)
-    delays.push(step.delay)
-  }
-  return { lengths, delays }
-}
-
-describe('nextTypingStep', () => {
-  test('types one character at a time and holds when the phrase is full', () => {
-    const { lengths, delays } = run(3)
-    expect(lengths).toEqual([1, 2, 3])
-    expect(delays).toEqual([TYPE_DELAY_MS, TYPE_DELAY_MS, HOLD_DELAY_MS])
+  test('types with a per-letter delay between the minimum and the maximum', () => {
+    const low = nextPhraseStep(start, phrases, () => 0)
+    const high = nextPhraseStep(start, phrases, () => 0.999)
+    expect(low.state.length).toBe(1)
+    expect(low.delay).toBe(PHRASE_TYPE_MIN_MS)
+    expect(high.delay).toBeLessThanOrEqual(PHRASE_TYPE_MAX_MS)
+    expect(high.delay).toBeGreaterThan(PHRASE_TYPE_MIN_MS)
   })
 
-  test('deletes after the hold and pauses once empty', () => {
-    const { lengths, delays } = run(6)
-    expect(lengths).toEqual([1, 2, 3, 2, 1, 0])
-    expect(delays.slice(3)).toEqual([
-      DELETE_DELAY_MS,
-      DELETE_DELAY_MS,
-      PAUSE_DELAY_MS,
-    ])
+  test('holds a full phrase, deletes it, pauses, then moves to the next one', () => {
+    const full = nextPhraseStep({ ...start, length: 1 }, phrases, () => 0)
+    expect(full.state).toEqual({ index: 0, length: 2, mode: 'deleting' })
+    expect(full.delay).toBe(PHRASE_HOLD_MS)
+    const deleting = nextPhraseStep(full.state, phrases, () => 0)
+    expect(deleting.state.length).toBe(1)
+    expect(deleting.delay).toBe(DELETE_DELAY_MS)
+    const empty = nextPhraseStep(deleting.state, phrases, () => 0)
+    expect(empty.state).toEqual({ index: 1, length: 0, mode: 'typing' })
+    expect(empty.delay).toBe(PHRASE_PAUSE_MS)
   })
 
-  test('starts typing again after the pause', () => {
-    expect(run(7).lengths.at(-1)).toBe(1)
+  test('wraps to the first phrase after the last one', () => {
+    const empty = nextPhraseStep(
+      { index: 1, length: 1, mode: 'deleting' },
+      phrases,
+      () => 0,
+    )
+    expect(empty.state.index).toBe(0)
   })
 })
 
-describe('startTyping', () => {
-  const phrase = 'I build things'
+const options = (reducedMotion: boolean, queue: (() => void)[]) => ({
+  reducedMotion,
+  random: () => 0,
+  schedule: (callback: () => void) => {
+    queue.push(callback)
+    return queue.length
+  },
+  cancel: noop,
+})
 
-  test('under reduced motion it shows the whole phrase and schedules nothing', () => {
+describe('startPhraseTyping', () => {
+  test('shows the first phrase and schedules nothing under reduced motion', () => {
     const target = { textContent: '' }
-    let scheduled = 0
-    const stop = startTyping(target, phrase, {
-      reducedMotion: true,
-      schedule: () => {
-        scheduled += 1
-        return 0
-      },
-      cancel: noop,
-    })
-    expect(target.textContent).toBe(phrase)
-    expect(scheduled).toBe(0)
-    stop()
+    const queue: (() => void)[] = []
+    startPhraseTyping(target, ['one.', 'two.'], options(true, queue))
+    expect(target.textContent).toBe('one.')
+    expect(queue).toHaveLength(0)
   })
 
-  test('types from empty, one prefix at a time, until stopped', () => {
-    const target = { textContent: phrase }
+  test('types the first phrase, then rotates to the second', () => {
+    const target = { textContent: 'one.' }
     const queue: (() => void)[] = []
-    const cancelled: number[] = []
-    const stop = startTyping(target, phrase, {
-      reducedMotion: false,
-      schedule: (callback) => {
-        queue.push(callback)
-        return queue.length
-      },
-      cancel: (handle) => {
-        cancelled.push(handle)
-      },
-    })
+    startPhraseTyping(target, ['ab', 'c'], options(false, queue))
     expect(target.textContent).toBe('')
-    queue.shift()?.()
-    expect(target.textContent).toBe('I')
-    queue.shift()?.()
-    expect(target.textContent).toBe('I ')
-    stop()
-    expect(cancelled).toHaveLength(1)
+    const seen: string[] = []
+    for (let step = 0; step < 6; step += 1) {
+      queue.shift()?.()
+      seen.push(target.textContent)
+    }
+    expect(seen).toEqual(['a', 'ab', 'a', '', 'c', ''])
   })
 })

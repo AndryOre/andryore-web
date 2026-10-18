@@ -1,6 +1,12 @@
 import { describe, expect, test } from 'bun:test'
 
-import { FX_STORAGE_KEY, readFx, writeFx, type FxStorage } from './fx-store'
+import {
+  FX_STORAGE_KEY,
+  readFx,
+  subscribeFx,
+  writeFx,
+  type FxStorage,
+} from './fx-store'
 
 const fakeStorage = (): FxStorage & { values: Map<string, string> } => {
   const values = new Map<string, string>()
@@ -21,6 +27,46 @@ const brokenStorage: FxStorage = {
     throw new Error('blocked')
   },
 }
+
+describe('subscribeFx', () => {
+  test('notifies on writes until unsubscribed', () => {
+    const listeners = new Set<() => void>()
+    const stubs = {
+      addEventListener: (_type: string, listener: () => void) =>
+        listeners.add(listener),
+      removeEventListener: (_type: string, listener: () => void) =>
+        listeners.delete(listener),
+      dispatchEvent: () => {
+        for (const listener of listeners) listener()
+        return true
+      },
+    }
+    const previous = Object.fromEntries(
+      Object.keys(stubs)
+        .filter((key) => Object.hasOwn(globalThis, key))
+        .map((key) => [key, Reflect.get(globalThis, key) as unknown]),
+    )
+    Object.assign(globalThis, stubs)
+    try {
+      let calls = 0
+      const unsubscribe = subscribeFx(() => {
+        calls += 1
+      })
+      writeFx(undefined, true)
+      expect(calls).toBe(1)
+      unsubscribe()
+      writeFx(undefined, false)
+      expect(calls).toBe(1)
+    } finally {
+      Object.assign(globalThis, previous)
+      for (const key of Object.keys(stubs)) {
+        if (!Object.hasOwn(previous, key)) {
+          Reflect.deleteProperty(globalThis, key)
+        }
+      }
+    }
+  })
+})
 
 describe('fx store', () => {
   test('defaults to off', () => {
@@ -48,5 +94,18 @@ describe('fx store', () => {
     expect(readFx(undefined)).toBe(true)
     writeFx(undefined, false)
     expect(readFx(undefined)).toBe(false)
+  })
+
+  test('keeps the new choice when only the write fails', () => {
+    const readOnly: FxStorage = {
+      getItem: () => 'off',
+      setItem: () => {
+        throw new Error('quota')
+      },
+    }
+    writeFx(readOnly, true)
+    expect(readFx(readOnly)).toBe(true)
+    writeFx(fakeStorage(), false)
+    expect(readFx(readOnly)).toBe(false)
   })
 })

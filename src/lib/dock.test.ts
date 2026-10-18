@@ -64,12 +64,13 @@ describe('magnificationScale', () => {
 })
 
 describe('DOCK_PAGES', () => {
-  test('lists the four pages in order', () => {
+  test('lists the pages in order, ending with Find me', () => {
     expect(DOCK_PAGES.map((page) => page.key)).toEqual([
       'home',
-      'products',
       'about',
+      'products',
       'uses',
+      'findMe',
     ])
   })
 })

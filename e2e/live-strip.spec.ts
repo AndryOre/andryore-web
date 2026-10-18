@@ -54,10 +54,12 @@ test.describe('live strip', () => {
     await preparePage(page, 'light')
     await page.goto('/')
     await settlePage(page)
-    const fx = page.getByRole('switch')
+    const fx = page.locator('[data-fx-switch]')
+    const dockSwitch = page.getByRole('navigation').getByRole('switch')
     await expect(fx).toHaveAttribute('aria-checked', 'false')
     await fx.click()
     await expect(fx).toHaveAttribute('aria-checked', 'true')
+    await expect(dockSwitch).toHaveAttribute('aria-checked', 'true')
     expect(
       await page.evaluate(
         (key) => globalThis.localStorage.getItem(key),
@@ -66,7 +68,7 @@ test.describe('live strip', () => {
     ).toBe('on')
     await page.reload()
     await settlePage(page)
-    await expect(page.getByRole('switch')).toHaveAttribute(
+    await expect(page.locator('[data-fx-switch]')).toHaveAttribute(
       'aria-checked',
       'true',
     )
