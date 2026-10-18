@@ -12,7 +12,6 @@ description:
   installs, and built its marketing site.'
 state: contribution
 kind: contribution
-tag: 'Contribution · Collaborator'
 year: '2024–25'
 url: https://json-flow.com
 links:
@@ -39,6 +38,7 @@ proof:
 platforms:
   - icon: 'monitor'
     label: 'VS Code'
+    href: 'https://marketplace.visualstudio.com/items?itemName=ManuelGil.vscode-json-flow'
 platformNote: 'Free on the Visual Studio Marketplace.'
 importsFrom: []
 exportFormats:

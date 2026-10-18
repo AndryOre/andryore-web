@@ -15,6 +15,7 @@ import productUi from '../content/product-ui.json'
 import { runParityCheck } from '../i18n/parity-check'
 import {
   classifyIcon,
+  countableStat,
   createProductSchema,
   englishProductKeys,
   fillPlaceholder,
@@ -24,6 +25,7 @@ import {
   SKIN_TONE_CLASSES,
   stackBadgeClass,
   stackIconId,
+  statLabel,
   visibleProof,
 } from './products'
 
@@ -257,7 +259,7 @@ describe('real product data', () => {
       const data = realSchema.parse(parse(`json-flow.${lang}.md`))
       expect(data.kind).toBe('contribution')
       expect(data.state).toBe('contribution')
-      expect(data.tag).toMatch(/^(Contribution|Colaboración) · /)
+      expect(data).not.toHaveProperty('tag')
       expect(data.year).toBe('2024–25')
       expect(data.stats[0]?.date).toBe('2026-10-18')
       expect(data.stats[0]?.value).toMatch(/^75[.,]000\+$/)
@@ -323,15 +325,49 @@ describe('headerLinks', () => {
     ])
   })
 
-  test('adds npm and the marketplace only when present', () => {
+  test('orders website, npm, marketplace, then the source', () => {
     const ids = headerLinks({
       ...base,
       links: {
+        source: 'https://github.com/a/b',
         npm: 'https://npm.example/p',
         marketplace: 'https://market.example/p',
       },
     }).map((link) => link.id)
-    expect(ids).toEqual(['website', 'npm', 'marketplace'])
+    expect(ids).toEqual(['website', 'npm', 'marketplace', 'source'])
+  })
+})
+
+describe('statLabel', () => {
+  test('joins a plain label and its date with a middle dot', () => {
+    expect(statLabel('Version', '2026-10-10')).toBe('Version · 2026-10-10')
+  })
+
+  test('joins a label that already has a dot with a comma', () => {
+    expect(statLabel('Users · Chrome Web Store', '2026-10-05')).toBe(
+      'Users · Chrome Web Store, 2026-10-05',
+    )
+  })
+
+  test('leaves an undated label alone', () => {
+    expect(statLabel('Languages', undefined)).toBe('Languages')
+  })
+})
+
+describe('countableStat', () => {
+  test('reads grouped English and Spanish integers', () => {
+    expect(countableStat('5,000')).toEqual({ total: 5000, suffix: '' })
+    expect(countableStat('5.000')).toEqual({ total: 5000, suffix: '' })
+    expect(countableStat('3,310')).toEqual({ total: 3310, suffix: '' })
+    expect(countableStat('75,000+')).toEqual({ total: 75_000, suffix: '+' })
+    expect(countableStat('75.000+')).toEqual({ total: 75_000, suffix: '+' })
+    expect(countableStat('10')).toEqual({ total: 10, suffix: '' })
+  })
+
+  test('refuses versions, decimals, words and year ranges', () => {
+    for (const value of ['v2.2.0', '4.8', '4,8', 'MIT', '2024–25']) {
+      expect(countableStat(value)).toBeUndefined()
+    }
   })
 })
 
@@ -349,6 +385,17 @@ describe('stackIconId', () => {
 })
 
 describe('SKIN_TONE_CLASSES', () => {
+  test('uses the canvas swatch colours', () => {
+    expect(SKIN_TONE_CLASSES).toEqual([
+      'bg-[#ffc83d]',
+      'bg-[#f7dfc4]',
+      'bg-[#e3b98d]',
+      'bg-[#c69260]',
+      'bg-[#946239]',
+      'bg-[#5f4130]',
+    ])
+  })
+
   test('has one distinct swatch per UI label', () => {
     expect(new Set(SKIN_TONE_CLASSES).size).toBe(6)
     expect(productUi.en.skinTones).toHaveLength(6)
@@ -410,6 +457,12 @@ describe('stackBadgeClass', () => {
 describe('product page copy', () => {
   test('uses the canvas wording for state, sections and back link', () => {
     expect(productUi.en.state.live).toBe('Shipped')
+    expect(productUi.en.worksWith).toBe('Works with')
+    expect(productUi.es.worksWith).toBe('Funciona con')
+    expect(productUi.es.exportFormats).toBe('Exportar')
+    expect(productUi.es.importFormats).toBe('Importar')
+    expect(productUi.en).not.toHaveProperty('proofAsOf')
+    expect(productUi.en).not.toHaveProperty('frameworks')
     expect(productUi.es.state.live).toBe('Publicado')
     expect(productUi.en.backLink).toBe('Products')
     expect(productUi.en.builtWithHeading).toBe('Built with')
@@ -428,5 +481,39 @@ describe('product page copy', () => {
       const shots = source.match(/^ {2}- src: '.*\/\d\d-.*'$/gm) ?? []
       expect(shots.length).toBeLessThanOrEqual(3)
     }
+  })
+})
+
+describe('store links', () => {
+  const parse = (file: string): Record<string, unknown> => {
+    const raw = readFileSync(path.join(PRODUCTS_DIRECTORY, file), 'utf8')
+    const frontmatter = /^---\r?\n([\s\S]*?)\r?\n---/.exec(raw)?.[1] ?? ''
+    const data: unknown = Bun.YAML.parse(frontmatter)
+    return z.record(z.string(), z.unknown()).parse(data)
+  }
+  const realSchema = createProductSchema(z.string())
+  test('Snug store chips link to their listings and JSON Flow to its Marketplace page', () => {
+    const snug = realSchema.parse(parse('snug.en.md'))
+    const hrefOf = (label: string) =>
+      snug.platforms.find((platform) => platform.label === label)?.href
+    expect(hrefOf('Chrome')).toBe(
+      'https://chromewebstore.google.com/detail/gdhpeilfkeeajillmcncaelnppiakjhn',
+    )
+    expect(hrefOf('Edge')).toBe(
+      'https://microsoftedge.microsoft.com/addons/detail/efknehclgcncocgochoibgiiagklcnho',
+    )
+    for (const lang of ['en', 'es']) {
+      const flow = realSchema.parse(parse(`json-flow.${lang}.md`))
+      expect(flow.platforms[0]?.href).toBe(flow.links.marketplace)
+    }
+  })
+
+  test('Snug platform note names the missing Firefox and Safari builds', () => {
+    expect(realSchema.parse(parse('snug.en.md')).platformNote).toEndWith(
+      'listing. No Firefox or Safari build.',
+    )
+    expect(realSchema.parse(parse('snug.es.md')).platformNote).toEndWith(
+      'Chrome Web Store. Sin versión para Firefox ni Safari.',
+    )
   })
 })
