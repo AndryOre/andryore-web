@@ -147,10 +147,16 @@ const valueClass = 'm-0 min-w-0 [overflow-wrap:anywhere]'
         </dd>
       </div>
     </dl>
-    <p class="border-border m-0 border-t pt-4">
-      <a href={data.changelog} rel={externalLinkTokens()} class="text-primary">
-        {ui.changelogLink}
-      </a>
-    </p>
+    {data.changelog && (
+      <p class="border-border m-0 border-t pt-4">
+        <a
+          href={data.changelog}
+          rel={externalLinkTokens()}
+          class="text-primary"
+        >
+          {ui.changelogLink}
+        </a>
+      </p>
+    )}
   </article>
 </BaseLayout>

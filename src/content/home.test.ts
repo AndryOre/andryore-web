@@ -32,12 +32,26 @@ describe('home content', () => {
       for (const date of dates) expect(date).toMatch(ISO_DATE)
     })
 
-    test(`${locale} sample rows and products are flagged for review`, () => {
+    test(`${locale} status rows are flagged and products are real`, () => {
       const rows = home[locale].status.rows
       const products = home[locale].products.items
       expect(rows.every((row) => row.sample)).toBe(true)
-      expect(products.every((product) => product.sample)).toBe(true)
-      expect(products.every((product) => product.year !== '')).toBe(true)
+      expect(products.every((product) => !product.sample)).toBe(true)
+      expect(products.every((product) => product.year === '2024')).toBe(true)
+      expect(products.every((product) => product.stateKind === 'shipped')).toBe(
+        true,
+      )
+    })
+
+    test(`${locale} contribution row is JSON Flow with a dated figure`, () => {
+      const row = home[locale].products.contribution
+      expect(row.key).toBe('json-flow')
+      expect(row.tag).toMatch(/ · /)
+      expect(row.metaDate).toMatch(ISO_DATE)
+      expect(row.meta).toMatch(/^75[.,]000\+/)
+      expect(row.href).toStartWith('https://')
+      expect(row.year).toBe('2024–25')
+      expect(row.description).not.toMatch(/commit/i)
     })
 
     test(`${locale} meta text stays within the limits`, () => {
@@ -50,6 +64,13 @@ describe('home content', () => {
   test('both languages list the same products in the same order', () => {
     expect(productKeys('es')).toEqual(productKeys('en'))
     expect(productKeys('en')).toEqual(['snug', 'animated-fluent-emojis'])
+  })
+
+  test('the contribution row is the same in both languages', () => {
+    const { en, es } = home
+    expect(es.products.contribution.key).toBe(en.products.contribution.key)
+    expect(es.products.contribution.href).toBe(en.products.contribution.href)
+    expect(es.products.contribution.path).toBe(en.products.contribution.path)
   })
 
   test('both languages list the same status rows by date', () => {

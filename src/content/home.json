@@ -11,8 +11,14 @@
       "emphasis": "stuff",
       "tail": " and tell you how it went.",
       "body": "Today it might be a board, a 3D-printed part or a sleep log. Tomorrow, something else. I post what worked, what didn’t and what I’d change.",
-      "primary": { "label": "See what I tried last", "path": "/log/" },
-      "secondary": { "label": "About me", "path": "/about/" },
+      "primary": {
+        "label": "See what I tried last",
+        "path": "/log/"
+      },
+      "secondary": {
+        "label": "About me",
+        "path": "/about/"
+      },
       "annotation": "Space Grotesk 700 · 60 / 1.04"
     },
     "about": {
@@ -26,24 +32,37 @@
         {
           "key": "snug",
           "name": "Snug",
-          "description": "Export and import your bookmarks from the browser.",
+          "description": "Back up and move your bookmarks between browsers, exactly as you left them.",
           "state": "Shipped",
           "stateKind": "shipped",
-          "year": "20··",
+          "year": "2024",
           "path": "/products/snug/",
-          "sample": true
+          "sample": false
         },
         {
           "key": "animated-fluent-emojis",
           "name": "Animated Fluent Emojis",
-          "description": "Animated Fluent emoji as an npm component library.",
-          "state": "Beta",
-          "stateKind": "beta",
-          "year": "20··",
+          "description": "Microsoft’s animated Fluent emojis as one component: one import, one tag, for React, Vue, Svelte, Astro or plain HTML.",
+          "state": "Shipped",
+          "stateKind": "shipped",
+          "year": "2024",
           "path": "/products/animated-fluent-emojis/",
-          "sample": true
+          "sample": false
         }
-      ]
+      ],
+      "contribution": {
+        "label": "Contributions",
+        "name": "JSON Flow",
+        "tag": "Contribution · Collaborator",
+        "description": "A VS Code extension that turns JSON, YAML, XML and CSV into interactive graphs. I built the marketing site and contributed to the React webview.",
+        "meta": "75,000+ installs",
+        "metaDate": "2026-10-18",
+        "action": "Visit json-flow.com",
+        "key": "json-flow",
+        "path": "/products/json-flow/",
+        "href": "https://json-flow.com",
+        "year": "2024–25"
+      }
     },
     "status": {
       "label": "Status",
@@ -94,8 +113,14 @@
     "links": {
       "label": "Find me",
       "items": [
-        { "label": "GitHub", "href": "https://github.com/AndryOre" },
-        { "label": "Twitch", "href": "https://www.twitch.tv/andryoredev" }
+        {
+          "label": "GitHub",
+          "href": "https://github.com/AndryOre"
+        },
+        {
+          "label": "Twitch",
+          "href": "https://www.twitch.tv/andryoredev"
+        }
       ]
     },
     "theme": {
@@ -114,8 +139,14 @@
       "emphasis": "cosas",
       "tail": ", las pruebo y te cuento cómo me fue.",
       "body": "Hoy puede ser una placa, una pieza impresa en 3D o un registro de sueño; mañana, otra cosa. Publico lo que funcionó, lo que no y qué cambiaría.",
-      "primary": { "label": "Ver lo último que probé", "path": "/log/" },
-      "secondary": { "label": "Sobre mí", "path": "/about/" },
+      "primary": {
+        "label": "Ver lo último que probé",
+        "path": "/log/"
+      },
+      "secondary": {
+        "label": "Sobre mí",
+        "path": "/about/"
+      },
       "annotation": "Space Grotesk 700 · 60 / 1.04"
     },
     "about": {
@@ -129,24 +160,37 @@
         {
           "key": "snug",
           "name": "Snug",
-          "description": "Exporta e importa tus marcadores desde el navegador.",
+          "description": "Respalda y mueve tus marcadores entre navegadores, tal como los dejaste.",
           "state": "Publicado",
           "stateKind": "shipped",
-          "year": "20··",
+          "year": "2024",
           "path": "/products/snug/",
-          "sample": true
+          "sample": false
         },
         {
           "key": "animated-fluent-emojis",
           "name": "Animated Fluent Emojis",
-          "description": "Emojis Fluent animados como librería de componentes npm.",
-          "state": "Beta",
-          "stateKind": "beta",
-          "year": "20··",
+          "description": "Los emojis Fluent animados de Microsoft como un componente: un import, una etiqueta, para React, Vue, Svelte, Astro o HTML plano.",
+          "state": "Publicado",
+          "stateKind": "shipped",
+          "year": "2024",
           "path": "/products/animated-fluent-emojis/",
-          "sample": true
+          "sample": false
         }
-      ]
+      ],
+      "contribution": {
+        "label": "Colaboraciones",
+        "name": "JSON Flow",
+        "tag": "Colaboración · Colaborador",
+        "description": "Una extensión de VS Code que convierte JSON, YAML, XML y CSV en grafos interactivos. Hice el sitio de marketing y colaboré en el webview de React.",
+        "meta": "75.000+ instalaciones",
+        "metaDate": "2026-10-18",
+        "action": "Visitar json-flow.com",
+        "key": "json-flow",
+        "path": "/products/json-flow/",
+        "href": "https://json-flow.com",
+        "year": "2024–25"
+      }
     },
     "status": {
       "label": "Estado",
@@ -197,8 +241,14 @@
     "links": {
       "label": "Encuéntrame",
       "items": [
-        { "label": "GitHub", "href": "https://github.com/AndryOre" },
-        { "label": "Twitch", "href": "https://www.twitch.tv/andryoredev" }
+        {
+          "label": "GitHub",
+          "href": "https://github.com/AndryOre"
+        },
+        {
+          "label": "Twitch",
+          "href": "https://www.twitch.tv/andryoredev"
+        }
       ]
     },
     "theme": {
