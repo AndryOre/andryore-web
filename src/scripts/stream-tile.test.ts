@@ -18,7 +18,6 @@ const respond =
 const createRoot = (started: boolean) => {
   const title = { hidden: false, textContent: '' }
   const next = { hidden: false, textContent: '' }
-  const countdown = { hidden: false, textContent: '' }
   const days = new Map<string, StreamTileElement>(
     Array.from({ length: 7 }, (_, column) => [
       String(column),
@@ -38,12 +37,11 @@ const createRoot = (started: boolean) => {
     querySelector: (selector: string) => {
       if (selector === '[data-stream-title]') return title
       if (selector === '[data-stream-next]') return next
-      if (selector === '[data-stream-countdown]') return countdown
       const match = /\[data-stream-day="(\d)"\]/.exec(selector)
       return days.get(match?.[1] ?? '') ?? null
     },
   }
-  return { root, title, next, countdown, days }
+  return { root, title, next, days }
 }
 
 describe('loadStreamStatus', () => {
@@ -97,6 +95,14 @@ describe('mountStreamTile', () => {
     expect(title.textContent).toBe('On air')
   })
 
+  test('keeps the fallback caption when the live title is empty', async () => {
+    const { root, title } = createRoot(false)
+    title.textContent = 'Fallback'
+    await mountStreamTile(root, respond({ state: 'live', title: '' }), now)
+    expect(root.dataset.state).toBe('live')
+    expect(title.textContent).toBe('Fallback')
+  })
+
   test('keeps coming soon before streams start', async () => {
     const { root, next } = createRoot(false)
     await mountStreamTile(root, respond({ state: 'offline' }), now)
@@ -105,11 +111,10 @@ describe('mountStreamTile', () => {
   })
 
   test('shows the next session and the live countdown once started', async () => {
-    const { root, next, countdown } = createRoot(true)
+    const { root, next } = createRoot(true)
     await mountStreamTile(root, respond({ state: 'offline' }), now)
     expect(root.dataset.state).toBe('scheduled')
-    expect(next.textContent).toBe('Tuesday 19:00 UTC')
-    expect(countdown.textContent).toBe('in 2 d 3 h')
+    expect(next.textContent).toBe('Tue 19:00 UTC · in 2 d 3 h')
   })
 
   test('outlines only today in the week row', async () => {
@@ -128,10 +133,10 @@ describe('mountStreamTile', () => {
 
 describe('refreshCountdown', () => {
   test('moves the countdown forward with the clock', () => {
-    const { root, countdown } = createRoot(true)
+    const { root, next } = createRoot(true)
     refreshCountdown(root, new Date('2026-10-20T15:40:00Z'))
-    expect(countdown.textContent).toBe('in 3 h 20 min')
+    expect(next.textContent).toBe('Tue 19:00 UTC · in 3 h 20 min')
     refreshCountdown(root, new Date('2026-10-20T15:41:00Z'))
-    expect(countdown.textContent).toBe('in 3 h 19 min')
+    expect(next.textContent).toBe('Tue 19:00 UTC · in 3 h 19 min')
   })
 })

@@ -38,7 +38,28 @@ for (const route of HOME_ROUTES) {
       const tile = page.locator('[data-stream-tile]')
       await expect(tile.getByText(copy.comingSoon)).toBeVisible()
       await expect(tile.getByText(copy.planned)).toBeVisible()
-      await expect(tile.getByText(copy.plannedLine)).toBeVisible()
+      await expect(
+        tile.getByText(copy.plannedLabel, { exact: true }),
+      ).toBeVisible()
+      await expect(
+        tile.getByText(copy.plannedValue, { exact: true }),
+      ).toBeVisible()
+      await expect(
+        tile.getByRole('list', { name: copy.weekLabel }),
+      ).toBeVisible()
+    })
+
+    test('shows the fallback caption and no week strip when live without a title', async ({
+      page,
+    }) => {
+      await page.route('**/api/stream-status', (handler) =>
+        handler.fulfill({ json: { state: 'live', title: '' } }),
+      )
+      await page.goto(route)
+      await settlePage(page)
+      const tile = page.locator('[data-stream-tile]')
+      await expect(tile.getByText(copy.liveCaption)).toBeVisible()
+      await expect(tile.locator('.stream-week')).toBeHidden()
     })
 
     test('outlines today in the week row', async ({ page }) => {
