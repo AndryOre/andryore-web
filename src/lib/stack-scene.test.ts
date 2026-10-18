@@ -44,6 +44,14 @@ describe('STACK_TILES', () => {
   })
 })
 
+describe('NOT_FOUND_TILES', () => {
+  test('spreads 12 unique tiles, each tipped at its own angle', () => {
+    expect(NOT_FOUND_TILES).toHaveLength(12)
+    expect(new Set(NOT_FOUND_TILES.map((tile) => tile.id)).size).toBe(12)
+    expect(new Set(NOT_FOUND_TILES.map((tile) => tile.placement)).size).toBe(12)
+  })
+})
+
 describe('stackToolCount', () => {
   test('matches the tools and tech listed on the Uses page', () => {
     for (const locale of LOCALES) {

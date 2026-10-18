@@ -34,3 +34,15 @@ describe('page metadata', () => {
     })
   }
 })
+
+describe('404 copy', () => {
+  test('carries the canvas copy in both languages', () => {
+    expect(notFound.en.heading).toBe('This page wandered off.')
+    expect(notFound.en.message).toBe('I tested it. It is not here.')
+    expect(notFound.en.home).toBe('Go to the home page')
+    expect(notFound.en.products).toBe('See what I build')
+    for (const locale of ['en', 'es'] as const) {
+      expect(notFound[locale].code).toBe('404')
+    }
+  })
+})
