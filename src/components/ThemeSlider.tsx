@@ -1,19 +1,7 @@
-import {
-  useRef,
-  useState,
-  type CSSProperties,
-  type KeyboardEvent,
-  type PointerEvent,
-} from 'react'
+import { useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
 
 import type { ThemePreference } from '@/lib/theme'
-import {
-  stopAfterKey,
-  stopFromRatio,
-  stopLevel,
-  stopStrength,
-  THEME_STOPS,
-} from '@/lib/theme-stops'
+import { stopAfterKey, stopFromRatio, THEME_STOPS } from '@/lib/theme-stops'
 import { chooseTheme } from '@/lib/theme-store'
 import { cn } from '@/lib/utils'
 
@@ -130,7 +118,7 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
           aria-hidden="true"
           data-theme-indicator
           className="theme-indicator absolute inset-x-1 top-1 bg-foreground"
-          style={{ '--stop-index': index } as CSSProperties}
+          data-stop={preference}
         />
         {THEME_STOPS.map((stop) => (
           <button
@@ -170,12 +158,7 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
         className="theme-bar relative w-19 shrink-0 cursor-ns-resize touch-none overflow-hidden bg-muted"
-        style={
-          {
-            '--strength': stopStrength(preference),
-            '--level': stopLevel(preference),
-          } as CSSProperties
-        }
+        data-stop={preference}
       >
         <span
           aria-hidden="true"
