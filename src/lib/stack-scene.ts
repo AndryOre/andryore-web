@@ -3,7 +3,7 @@ import type { Locale } from '../i18n/locales'
 import type { IconId } from './icons'
 
 /** Pixel size of the three tile boxes at the canvas scale. */
-export type TileSize = 96 | 72 | 56
+export type TileSize = 96 | 84 | 72 | 60 | 56 | 48 | 44
 
 /** One decorative tile of a scattered field. */
 export interface StackTile {
@@ -11,6 +11,14 @@ export interface StackTile {
   size: TileSize
   mobile: boolean
   placement: string
+}
+
+/** One tile of the 404 panel. */
+export interface NotFoundTile {
+  id: GlowIconId
+  size: TileSize
+  placement: string
+  delay: number
 }
 
 /** One tile of the end card. */
@@ -69,7 +77,11 @@ export function glowHex(id: GlowIconId): string {
 const SIZE_CLASSES: Readonly<Record<TileSize, string>> = {
   96: '[--s:96]',
   72: '[--s:72]',
+  84: '[--s:84]',
+  60: '[--s:60]',
   56: '[--s:56]',
+  48: '[--s:48]',
+  44: '[--s:44]',
 }
 
 /**
@@ -243,81 +255,91 @@ export const END_CARD_TILES: readonly EndCardTile[] = [
   { id: 'shadcn-ui', tilt: '-rotate-[5deg]' },
 ]
 
-/** The 12 tiles spread around the 404 panel, each tipped at its own angle. */
-export const NOT_FOUND_TILES: readonly StackTile[] = [
+/**
+ * The 12 tiles of the 404 panel, as in the design canvas: each is placed by the
+ * top-left corner in percent of the panel, tipped at its own angle, and bobs
+ * after its own delay in seconds. `delay` also names the `data-nf-delay` value
+ * the stylesheet maps to `--d`, so it must be one of `NOT_FOUND_DELAYS`.
+ */
+export const NOT_FOUND_TILES: readonly NotFoundTile[] = [
   {
     id: 'typescript',
-    size: 72,
-    mobile: true,
-    placement: '[--x:-36cqw] [--y:-26cqh] [--r:-18deg]',
+    size: 84,
+    placement: 'left-[8%] top-[14%] [--r:-14deg]',
+    delay: 0.5,
   },
   {
     id: 'react',
-    size: 56,
-    mobile: true,
-    placement: '[--x:35cqw] [--y:-30cqh] [--r:14deg]',
+    size: 84,
+    placement: 'left-[82%] top-[20%] [--r:12deg]',
+    delay: 1.5,
   },
   {
-    id: 'bun',
-    size: 56,
-    mobile: true,
-    placement: '[--x:-42cqw] [--y:10cqh] [--r:22deg]',
-  },
-  {
-    id: 'tailwindcss',
+    id: 'astro',
     size: 72,
-    mobile: true,
-    placement: '[--x:40cqw] [--y:8cqh] [--r:-20deg]',
+    placement: 'left-[20%] top-[68%] [--r:160deg]',
+    delay: 2.5,
   },
   {
     id: 'nextjs',
-    size: 56,
-    mobile: false,
-    placement: '[--x:-16cqw] [--y:38cqh] [--r:-27deg]',
-  },
-  {
-    id: 'prisma',
     size: 72,
-    mobile: true,
-    placement: '[--x:18cqw] [--y:38cqh] [--r:19deg]',
+    placement: 'left-[76%] top-[72%] [--r:-150deg]',
+    delay: 3.5,
   },
   {
-    id: 'claude',
-    size: 56,
-    mobile: false,
-    placement: '[--x:-30cqw] [--y:-6cqh] [--r:11deg]',
+    id: 'bun',
+    size: 60,
+    placement: 'left-[6%] top-[56%] [--r:70deg]',
+    delay: 0.8,
   },
   {
-    id: 'playwright',
-    size: 56,
-    mobile: false,
-    placement: '[--x:28cqw] [--y:26cqh] [--r:-24deg]',
-  },
-  {
-    id: 'zod',
-    size: 56,
-    mobile: true,
-    placement: '[--x:-10cqw] [--y:-40cqh] [--r:16deg]',
-  },
-  {
-    id: 'supabase',
-    size: 72,
-    mobile: false,
-    placement: '[--x:12cqw] [--y:-38cqh] [--r:-13deg]',
+    id: 'shadcn-ui',
+    size: 60,
+    placement: 'left-[90%] top-[52%] [--r:-100deg]',
+    delay: 2,
   },
   {
     id: 'docker',
     size: 56,
-    mobile: true,
-    placement: '[--x:-40cqw] [--y:32cqh] [--r:-15deg]',
+    placement: 'left-[36%] top-[84%] [--r:200deg]',
+    delay: 3,
   },
   {
-    id: 'git',
+    id: 'tailwindcss',
     size: 56,
-    mobile: true,
-    placement: '[--x:40cqw] [--y:36cqh] [--r:21deg]',
+    placement: 'left-[62%] top-[86%] [--r:120deg]',
+    delay: 1,
+  },
+  {
+    id: 'claude',
+    size: 48,
+    placement: 'left-[14%] top-[36%] [--r:-30deg]',
+    delay: 2.2,
+  },
+  {
+    id: 'linear',
+    size: 48,
+    placement: 'left-[70%] top-[10%] [--r:25deg]',
+    delay: 3.3,
+  },
+  {
+    id: 'playwright',
+    size: 48,
+    placement: 'left-[48%] top-[6%] [--r:-20deg]',
+    delay: 1.2,
+  },
+  {
+    id: 'prisma',
+    size: 44,
+    placement: 'left-[92%] top-[82%] [--r:40deg]',
+    delay: 0.3,
   },
 ]
+
+/** Every bob delay the 404 tiles use, in seconds. */
+export const NOT_FOUND_DELAYS: readonly number[] = [
+  ...new Set(NOT_FOUND_TILES.map((tile) => tile.delay)),
+].toSorted((a, b) => a - b)
 
 /**
  * Count of tools and tech the Uses page lists.
