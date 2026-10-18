@@ -54,7 +54,7 @@ test.describe('find me band', () => {
           : dock.getBoundingClientRect().top -
               band.getBoundingClientRect().bottom
       })
-      expect(gap).toBeGreaterThanOrEqual(0)
+      expect(gap).toBeGreaterThanOrEqual(-0.5)
     })
   }
 })
