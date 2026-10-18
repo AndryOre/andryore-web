@@ -53,4 +53,11 @@ test('with reduced motion the Stack CTA is visible without scrolling the stage',
     page.locator('.stack-tile[aria-hidden="true"]').first(),
   ).toBeAttached()
   await expect(page.locator('.stack-scene a')).toHaveCount(1)
+  await expect(page.locator('.stack-stage')).toHaveCSS('height', '760px')
+  await expect(page.locator('.stack-scene')).not.toHaveCSS('height', '2000px')
+  await expect(page.locator('.stack-tile-scatter').first()).toHaveCSS(
+    'rotate',
+    '-8deg',
+  )
+  await expect(page.locator('.stack-title')).toHaveCSS('opacity', '1')
 })
