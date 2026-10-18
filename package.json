@@ -29,7 +29,8 @@
     "fix": "bun run format:write && bun run lint:fix",
     "cache:clear": "rm -rf /tmp/node-compile-cache .eslintcache node_modules/.cache",
     "prepare": "bunx --bun husky",
-    "grid:update": "bun scripts/update-github-grid.ts"
+    "grid:update": "bun scripts/update-github-grid.ts",
+    "audit:fidelity": "bun scripts/fidelity-audit.ts"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

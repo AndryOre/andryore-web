@@ -28,18 +28,18 @@ export function stopStrength(stop: ThemePreference): number {
 }
 
 /**
- * Moves a stop index by a key press. Down and right go towards Dark, up and
- * left towards Light.
+ * Moves a stop index by a key press. Down and left go towards Dark, up and
+ * right towards Light, as on the canvas brightness bar.
  * @param index The current stop index.
  * @param key The pressed key.
  * @returns The new index, or null when the key does not move the slider.
  */
 export function stopAfterKey(index: number, key: string): number | null {
   const last = THEME_STOPS.length - 1
-  if (key === 'ArrowDown' || key === 'ArrowRight') {
+  if (key === 'ArrowDown' || key === 'ArrowLeft') {
     return Math.min(last, index + 1)
   }
-  if (key === 'ArrowUp' || key === 'ArrowLeft') return Math.max(0, index - 1)
+  if (key === 'ArrowUp' || key === 'ArrowRight') return Math.max(0, index - 1)
   if (key === 'Home') return 0
   return key === 'End' ? last : null
 }

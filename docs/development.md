@@ -12,28 +12,29 @@ the git hooks on `bun install` through the `prepare` script. `bunfig.toml` sets
 
 ## Scripts
 
-| Script                    | What it does                                                                                       |
-| ------------------------- | -------------------------------------------------------------------------------------------------- |
-| `bun run check`           | Aggregate gate: `format:check`, `lint`, `typecheck` and `knip`.                                    |
-| `bun run fix`             | Formats the repository with Prettier, then autofixes ESLint findings (`format:write`, `lint:fix`). |
-| `bun run cache:clear`     | Removes `/tmp/node-compile-cache`, `.eslintcache` and `node_modules/.cache`.                       |
-| `bun run format:check`    | Checks formatting with Prettier (no writes).                                                       |
-| `bun run format:write`    | Formats the repository with Prettier.                                                              |
-| `bun run lint`            | ESLint with zero warnings allowed, using `--cache --cache-strategy content`.                       |
-| `bun run lint:fix`        | ESLint with autofix.                                                                               |
-| `bun run typecheck`       | `astro check && tsc --noEmit`.                                                                     |
-| `bun run knip`            | Finds unused files, exports and dependencies.                                                      |
-| `bun run test`            | Runs `bun test` with coverage and the `bunfig.toml` threshold.                                     |
-| `bun run lint:docs`       | Offline link and anchor check of the Markdown with lychee.                                         |
-| `bun run lint:lighthouse` | Lighthouse budget over the built `dist/`; see [Lighthouse budget](#lighthouse-budget).             |
-| `bun run lint:commits`    | Runs commitlint over the commits of the current branch.                                            |
-| `bun run ci:local`        | Frozen install, `lint:commits`, `check`, `lint:docs` and `test`: the PR gates that need no build.  |
-| `bun run brand:export`    | Regenerates the brand rasters from the logo SVGs. Never edit the generated rasters by hand.        |
-| `bun run test:e2e`        | Playwright axe, layout and hydration specs against `astro preview` of a built `dist/`.             |
-| `bun run test:visual`     | Visual snapshots inside the pinned Playwright image; `-- --update` regenerates them.               |
-| `bun run test:browsers`   | Layout specs in WebKit and Firefox inside the pinned Playwright image.                             |
-| `bun run test:smoke`      | Builds the nginx image and checks status codes, `/es/`, both 404s, headers and the sitemap.        |
-| `bun run audit:dist`      | Scans a build directory (default `dist`) for third-party requests and unsafe external links.       |
+| Script                    | What it does                                                                                                                                                          |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bun run check`           | Aggregate gate: `format:check`, `lint`, `typecheck` and `knip`.                                                                                                       |
+| `bun run fix`             | Formats the repository with Prettier, then autofixes ESLint findings (`format:write`, `lint:fix`).                                                                    |
+| `bun run cache:clear`     | Removes `/tmp/node-compile-cache`, `.eslintcache` and `node_modules/.cache`.                                                                                          |
+| `bun run format:check`    | Checks formatting with Prettier (no writes).                                                                                                                          |
+| `bun run format:write`    | Formats the repository with Prettier.                                                                                                                                 |
+| `bun run lint`            | ESLint with zero warnings allowed, using `--cache --cache-strategy content`.                                                                                          |
+| `bun run lint:fix`        | ESLint with autofix.                                                                                                                                                  |
+| `bun run typecheck`       | `astro check && tsc --noEmit`.                                                                                                                                        |
+| `bun run knip`            | Finds unused files, exports and dependencies.                                                                                                                         |
+| `bun run test`            | Runs `bun test` with coverage and the `bunfig.toml` threshold.                                                                                                        |
+| `bun run lint:docs`       | Offline link and anchor check of the Markdown with lychee.                                                                                                            |
+| `bun run lint:lighthouse` | Lighthouse budget over the built `dist/`; see [Lighthouse budget](#lighthouse-budget).                                                                                |
+| `bun run lint:commits`    | Runs commitlint over the commits of the current branch.                                                                                                               |
+| `bun run ci:local`        | Frozen install, `lint:commits`, `check`, `lint:docs` and `test`: the PR gates that need no build.                                                                     |
+| `bun run brand:export`    | Regenerates the brand rasters from the logo SVGs. Never edit the generated rasters by hand.                                                                           |
+| `bun run test:e2e`        | Playwright axe, layout and hydration specs against `astro preview` of a built `dist/`.                                                                                |
+| `bun run test:visual`     | Visual snapshots inside the pinned Playwright image; `-- --update` regenerates them.                                                                                  |
+| `bun run test:browsers`   | Layout specs in WebKit and Firefox inside the pinned Playwright image.                                                                                                |
+| `bun run test:smoke`      | Builds the nginx image and checks status codes, `/es/`, both 404s, headers and the sitemap.                                                                           |
+| `bun run audit:dist`      | Scans a build directory (default `dist`) for third-party requests and unsafe external links.                                                                          |
+| `bun run audit:fidelity`  | Compares a built `astro preview` with the saved design canvas (pass its path or set `FIDELITY_CANVAS`, for example `~/canvas.html`). Writes `audit-output/report.md`. |
 
 When a command crashes inside `typescript.js`, see
 [Troubleshooting](troubleshooting.md). `eslint` and `tsc` run without `--bun`.
