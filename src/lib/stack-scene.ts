@@ -243,7 +243,7 @@ export const END_CARD_TILES: readonly EndCardTile[] = [
   { id: 'shadcn-ui', tilt: '-rotate-[5deg]' },
 ]
 
-/** The tiles lying around the 404, slightly fallen. */
+/** The 12 tiles spread around the 404 panel, each tipped at its own angle. */
 export const NOT_FOUND_TILES: readonly StackTile[] = [
   {
     id: 'typescript',
@@ -292,6 +292,30 @@ export const NOT_FOUND_TILES: readonly StackTile[] = [
     size: 56,
     mobile: false,
     placement: '[--x:28cqw] [--y:26cqh] [--r:-24deg]',
+  },
+  {
+    id: 'zod',
+    size: 56,
+    mobile: true,
+    placement: '[--x:-10cqw] [--y:-40cqh] [--r:16deg]',
+  },
+  {
+    id: 'supabase',
+    size: 72,
+    mobile: false,
+    placement: '[--x:12cqw] [--y:-38cqh] [--r:-13deg]',
+  },
+  {
+    id: 'docker',
+    size: 56,
+    mobile: true,
+    placement: '[--x:-40cqw] [--y:32cqh] [--r:-15deg]',
+  },
+  {
+    id: 'git',
+    size: 56,
+    mobile: true,
+    placement: '[--x:40cqw] [--y:36cqh] [--r:21deg]',
   },
 ]
 
