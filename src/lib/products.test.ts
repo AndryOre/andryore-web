@@ -465,7 +465,9 @@ describe('stackBadgeClass', () => {
     expect(stackBadgeClass('TypeScript')).toBe('bg-[#3178C6] text-white')
     expect(stackBadgeClass('Tailwind CSS')).toBe('bg-[#06B6D4] text-[#111]')
     expect(stackBadgeClass('shadcn/ui')).toBe('bg-[#000] text-white')
-    expect(stackBadgeClass('Astro + Starlight')).toBe('bg-[#BC52EE] text-white')
+    expect(stackBadgeClass('Astro + Starlight')).toBe(
+      'bg-[#BC52EE] text-[#111]',
+    )
   })
 
   test('falls back to a neutral badge for an unknown stack', () => {

@@ -312,8 +312,8 @@ const STACK_BADGE_CLASSES: Readonly<Record<string, string>> = {
   typescript: 'bg-[#3178C6] text-white',
   'tailwind css': 'bg-[#06B6D4] text-[#111]',
   'shadcn/ui': 'bg-[#000] text-white',
-  astro: 'bg-[#BC52EE] text-white',
-  'astro + starlight': 'bg-[#BC52EE] text-white',
+  astro: 'bg-[#BC52EE] text-[#111]',
+  'astro + starlight': 'bg-[#BC52EE] text-[#111]',
 }
 
 const STACK_HREFS: Readonly<Record<string, string>> = {
