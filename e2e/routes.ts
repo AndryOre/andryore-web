@@ -3,7 +3,6 @@ const LANGUAGES = ['en', 'es'] as const
 const PAGE_PATHS = [
   '/',
   '/about/',
-  '/colophon/',
   '/uses/',
   '/products/snug/',
   '/products/animated-fluent-emojis/',

@@ -2,8 +2,14 @@
 import uses from '../content/uses.json'
 import type { Locale } from '../i18n/locales'
 import BaseLayout from '../layouts/BaseLayout.astro'
-import { externalLinkTokens } from '../lib/external-link'
-import { hasAffiliateRows, type UsesCategory } from '../lib/uses'
+import { glyphSvg, type GlyphName } from '../lib/glyphs'
+import {
+  badgeIconId,
+  SWATCH_TOKENS,
+  type UsesBadge as Badge,
+} from '../lib/uses'
+import BrandIcon from './BrandIcon.astro'
+import UsesBadge from './UsesBadge.astro'
 import UsesIconField from './UsesIconField.astro'
 
 interface Props {
@@ -12,11 +18,25 @@ interface Props {
 
 const { locale } = Astro.props
 const copy = uses[locale]
-const categories: readonly UsesCategory[] = copy.categories
-const showAffiliateNote = hasAffiliateRows(categories)
-const showSampleNote = categories.some((category) =>
-  category.rows.some((row) => row.sample),
-)
+const site = copy.thisSite
+
+const toBadges = (
+  rows: readonly { name: string; icon: string; url?: string }[],
+): Badge[] =>
+  rows.map((row) => ({
+    name: row.name,
+    icon: badgeIconId(row.icon),
+    ...(row.url !== undefined && { url: row.url }),
+  }))
+
+const sections = [
+  { id: 'tools', heading: copy.toolsHeading, badges: toBadges(copy.tools) },
+  { id: 'tech', heading: copy.techHeading, badges: toBadges(copy.tech) },
+]
+
+const tile = 'border-border bg-card flex flex-col gap-3 rounded-card border p-5'
+const tileTitle = 'text-muted-foreground m-0 font-mono text-xs uppercase'
+const logo = 'size-8'
 ---
 
 <BaseLayout
@@ -24,7 +44,7 @@ const showSampleNote = categories.some((category) =>
   description={copy.meta.description}
   locale={locale}
 >
-  <div class="flex flex-col gap-10">
+  <div class="flex flex-col gap-12">
     <section
       aria-labelledby="uses-heading"
       class="relative isolate flex min-h-64 flex-col justify-center gap-3 py-10 sm:min-h-80"
@@ -39,58 +59,194 @@ const showSampleNote = categories.some((category) =>
       <p class="text-muted-foreground m-0 text-lg">{copy.intro}</p>
     </section>
 
-    {showSampleNote && (
-      <p class="text-muted-foreground m-0 font-mono text-xs">
-        {copy.sampleNote}
-      </p>
-    )}
-    {showAffiliateNote && (
-      <p class="text-muted-foreground m-0 font-mono text-xs">
-        {copy.affiliateNote}
-      </p>
-    )}
-
-    {categories.map((category, index) => (
+    {sections.map((section) => (
       <section
-        aria-labelledby={`uses-category-${index}`}
+        aria-labelledby={`uses-${section.id}`}
         class="flex flex-col gap-3"
       >
-        <h2 id={`uses-category-${index}`} class="m-0 text-base font-semibold">
-          {category.name}
+        <h2 id={`uses-${section.id}`} class="m-0 text-base font-semibold">
+          {section.heading}
         </h2>
-        <ul class="m-0 flex list-none flex-col gap-2 p-0">
-          {category.rows.map((row) => (
-            <li class="flex items-baseline gap-2">
-              <span class="shrink-0">{row.label}</span>
-              <span
-                aria-hidden="true"
-                class="border-border min-w-4 flex-1 border-b border-dotted"
-              />
-              <span class="text-muted-foreground text-right">
-                {row.url ? (
-                  <a
-                    href={row.url}
-                    rel={externalLinkTokens({ sponsored: row.affiliate })}
-                    class="underline underline-offset-4"
-                  >
-                    {row.value}
-                  </a>
-                ) : (
-                  row.value
-                )}
-                {row.affiliate && (
-                  <span class="ml-2 font-mono text-xs">
-                    ({copy.affiliateTag})
-                  </span>
-                )}
-                {row.sample && (
-                  <span class="ml-2 font-mono text-xs">({copy.sampleTag})</span>
-                )}
-              </span>
+        <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
+          {section.badges.map((badge) => (
+            <li>
+              <UsesBadge badge={badge} />
             </li>
           ))}
         </ul>
+        {section.id === 'tech' && (
+          <p class="text-muted-foreground m-0 font-mono text-xs">
+            {copy.techClosing}
+          </p>
+        )}
       </section>
     ))}
+
+    <section aria-labelledby="uses-setup" class="flex flex-col gap-3">
+      <h2 id="uses-setup" class="m-0 text-base font-semibold">
+        {copy.setupHeading}
+      </h2>
+      <ul class="m-0 flex list-none flex-col gap-2 p-0">
+        {copy.setup.map((row) => (
+          <li>
+            {row.url ? (
+              <a
+                href={row.url}
+                rel="noopener noreferrer"
+                class="border-border bg-card hover:border-primary flex min-h-11 items-center gap-3 rounded-lg border px-4 py-2"
+              >
+                <span
+                  aria-hidden="true"
+                  class="text-muted-foreground shrink-0"
+                  set:html={glyphSvg(row.glyph as GlyphName, 20)}
+                />
+                <span class="flex-1">{row.label}</span>
+                <span class="text-muted-foreground hidden font-mono text-xs sm:inline">
+                  {row.role}
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="text-muted-foreground shrink-0"
+                  set:html={glyphSvg('external-link', 14)}
+                />
+              </a>
+            ) : (
+              <div class="border-border bg-card flex min-h-11 items-center gap-3 rounded-lg border px-4 py-2">
+                <span
+                  aria-hidden="true"
+                  class="text-muted-foreground shrink-0"
+                  set:html={glyphSvg(row.glyph as GlyphName, 20)}
+                />
+                <span class="flex-1">{row.label}</span>
+                <span class="text-muted-foreground hidden font-mono text-xs sm:inline">
+                  {row.role}
+                </span>
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section
+      id="this-site"
+      aria-labelledby="this-site-heading"
+      class="flex scroll-mt-4 flex-col gap-4"
+    >
+      <div class="flex flex-col gap-1">
+        <h2 id="this-site-heading" class="m-0 text-2xl font-bold">
+          {site.heading}
+        </h2>
+        <p class="text-muted-foreground m-0">{site.intro}</p>
+      </div>
+
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div class={tile}>
+          <h3 class={tileTitle}>{site.framework.title}</h3>
+          <BrandIcon id="astro" class={`${logo} dark:hidden`} />
+          <BrandIcon
+            id="astro"
+            variant="dark"
+            class={`${logo} hidden dark:block`}
+          />
+          <p class="m-0 text-sm">{site.framework.body}</p>
+        </div>
+
+        <div class={tile}>
+          <h3 class={tileTitle}>{site.styling.title}</h3>
+          <div class="flex items-center gap-3">
+            <BrandIcon id="tailwindcss" class={logo} />
+            <BrandIcon id="shadcn-ui" class={`${logo} dark:hidden`} />
+            <BrandIcon
+              id="shadcn-ui"
+              variant="dark"
+              class={`${logo} hidden dark:block`}
+            />
+          </div>
+          <p class="m-0 text-sm">{site.styling.body}</p>
+        </div>
+
+        <div class={tile}>
+          <h3 class={tileTitle}>{site.type.title}</h3>
+          <div class="flex items-baseline gap-4">
+            <span
+              class="font-sans text-6xl leading-none font-bold"
+              title={site.type.specimens[0]?.font}
+            >
+              {site.type.specimens[0]?.text}
+            </span>
+            <span
+              class="font-mono text-base"
+              title={site.type.specimens[1]?.font}
+            >
+              {site.type.specimens[1]?.text}
+            </span>
+          </div>
+          <p class="text-muted-foreground m-0 text-sm">
+            {site.type.specimens.map((specimen) => specimen.font).join(' · ')}
+          </p>
+          <p class="text-muted-foreground m-0 flex items-center gap-2 font-mono text-[10px]">
+            <span aria-hidden="true" class="bg-primary h-px flex-1"></span>
+            {site.type.readout}
+            <span aria-hidden="true" class="bg-primary h-px flex-1"></span>
+          </p>
+        </div>
+
+        <div class={tile}>
+          <h3 class={tileTitle}>{site.color.title}</h3>
+          <ul class="m-0 grid list-none grid-cols-6 gap-2 p-0">
+            {SWATCH_TOKENS.map((swatch) => (
+              <li>
+                <span
+                  role="img"
+                  aria-label={swatch.token}
+                  title={swatch.token}
+                  class:list={[
+                    'border-border block aspect-square rounded-md border',
+                    swatch.bg,
+                  ]}
+                />
+              </li>
+            ))}
+          </ul>
+          <p class="m-0 text-sm">{site.color.body}</p>
+        </div>
+
+        <div class={tile}>
+          <h3 class={tileTitle}>{site.hosting.title}</h3>
+          <div class="flex items-center gap-3">
+            <BrandIcon id="docker" class={logo} />
+            <BrandIcon id="coolify" class={logo} />
+          </div>
+          <p class="m-0 text-sm">{site.hosting.body}</p>
+        </div>
+
+        <div class={tile}>
+          <h3 class={tileTitle}>{site.source.title}</h3>
+          <BrandIcon id="github" class={`${logo} dark:hidden`} />
+          <BrandIcon
+            id="github"
+            variant="dark"
+            class={`${logo} hidden dark:block`}
+          />
+          <p class="m-0 text-sm">{site.source.body}</p>
+        </div>
+      </div>
+
+      <p class="m-0">
+        <a
+          href={site.sourceUrl}
+          rel="noopener noreferrer"
+          class="inline-flex min-h-11 items-center underline underline-offset-4"
+        >
+          {site.sourceLinkLabel}
+        </a>
+      </p>
+
+      <div class="flex flex-col gap-1">
+        <h3 class="m-0 text-base font-semibold">{site.privacyHeading}</h3>
+        <p class="text-muted-foreground m-0 text-sm">{site.privacyBody}</p>
+      </div>
+    </section>
   </div>
 </BaseLayout>

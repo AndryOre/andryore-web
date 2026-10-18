@@ -1,0 +1,38 @@
+---
+import { glyphSvg } from '../lib/glyphs'
+import { badgeStyle, type UsesBadge } from '../lib/uses'
+import BrandIcon from './BrandIcon.astro'
+
+interface Props {
+  badge: UsesBadge
+}
+
+const { badge } = Astro.props
+const style = badgeStyle(badge.icon)
+const tone = [
+  'inline-flex h-8 items-center gap-2 rounded-md px-2.5 font-mono text-[11px] font-medium tracking-wide uppercase ring-1 ring-black/10 ring-inset dark:ring-white/15',
+  style.bg,
+  style.text,
+]
+---
+
+{badge.url ? (
+  <a
+    href={badge.url}
+    rel="noopener noreferrer"
+    class:list={[tone, 'group focus-visible:outline-ring hover:brightness-110']}
+  >
+    <BrandIcon id={badge.icon} class:list={['size-4', style.logo]} />
+    <span>{badge.name}</span>
+    <span
+      aria-hidden="true"
+      class="hidden size-3 group-hover:inline-block group-focus-visible:inline-block"
+      set:html={glyphSvg('external-link', 12)}
+    />
+  </a>
+) : (
+  <span class:list={tone}>
+    <BrandIcon id={badge.icon} class:list={['size-4', style.logo]} />
+    <span>{badge.name}</span>
+  </span>
+)}
