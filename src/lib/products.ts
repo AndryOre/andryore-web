@@ -3,7 +3,7 @@ import { z } from 'astro/zod'
 import { localePath, type Locale } from '../i18n/locales'
 
 /** Lifecycle states a product pill can show. */
-const PRODUCT_STATES = ['live', 'beta'] as const
+const PRODUCT_STATES = ['live', 'beta', 'contribution'] as const
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
 
@@ -22,6 +22,56 @@ const proofRowSchema = z.object({
 })
 
 export type ProofRow = z.infer<typeof proofRowSchema>
+
+const iconLabelSchema = z.object({
+  icon: z.string().min(1),
+  label: z.string().min(1),
+})
+
+const statSchema = z.object({
+  icon: z.string().min(1),
+  value: z.string().min(1),
+  label: z.string().min(1),
+  date: z
+    .string()
+    .refine(isRealDate, 'A dated stat needs a real YYYY-MM-DD date')
+    .optional(),
+})
+
+const platformSchema = iconLabelSchema.extend({
+  href: z.url().optional(),
+})
+
+const cardSchema = z.object({
+  icon: z.string().min(1),
+  title: z.string().min(1),
+  body: z.string().min(1),
+})
+
+const linksSchema = z.object({
+  npm: z.url().optional(),
+  source: z.url().optional(),
+  marketplace: z.url().optional(),
+})
+
+const createSpriteSchema = <Source extends z.ZodType>(imageSource: Source) =>
+  z.object({
+    src: imageSource,
+    alt: z.string().min(1),
+    frames: z.number().int().positive(),
+    fps: z.number().int().positive(),
+  })
+
+const createWebsiteSchema = <Source extends z.ZodType>(imageSource: Source) =>
+  z.object({
+    src: imageSource,
+    alt: z.string().min(1),
+    host: z.string().min(1),
+  })
+
+const createGalleryItemSchema = <Source extends z.ZodType>(
+  imageSource: Source,
+) => z.object({ src: imageSource, alt: z.string().min(1) })
 
 /**
  * Schema of one product file. A proof row cannot exist without its date, so a
@@ -42,7 +92,24 @@ export function createProductSchema<Source extends z.ZodType>(
     description: z.string().min(1).max(160),
     state: z.enum(PRODUCT_STATES),
     url: z.url(),
-    changelog: z.url(),
+    changelog: z.url().optional(),
+    kind: z.enum(['product', 'contribution']).default('product'),
+    tag: z.string().min(1).optional(),
+    version: z.string().min(1).optional(),
+    year: z.string().regex(/^\d{4}(?:–\d{2})?$/),
+    stats: z.array(statSchema).default([]),
+    platforms: z.array(platformSchema).default([]),
+    platformNote: z.string().min(1).optional(),
+    importsFrom: z.array(iconLabelSchema).default([]),
+    exportFormats: z.array(iconLabelSchema).default([]),
+    importFormats: z.array(iconLabelSchema).default([]),
+    cards: z.array(cardSchema).default([]),
+    callout: cardSchema.optional(),
+    skinTones: z.boolean().default(false),
+    links: linksSchema.default({}),
+    sprites: z.array(createSpriteSchema(imageSource)).default([]),
+    website: createWebsiteSchema(imageSource).optional(),
+    gallery: z.array(createGalleryItemSchema(imageSource)).default([]),
     stack: z.array(z.string().min(1)).min(1),
     proof: z.array(proofRowSchema).default([]),
     image: z.object({
