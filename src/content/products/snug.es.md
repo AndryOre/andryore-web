@@ -101,6 +101,7 @@ cards:
       Desactivado por defecto.'
 callout:
   icon: 'shield-check'
+  title: 'Sin llamadas de red'
   body:
     'Todo se queda en tu dispositivo. Sin cuenta, código abierto con licencia
     MIT.'
