@@ -1,7 +1,7 @@
 {
   "en": {
     "state": {
-      "live": "Live",
+      "live": "Shipped",
       "beta": "Beta",
       "contribution": "Contribution"
     },
@@ -16,8 +16,8 @@
     "worksWith": "Works with",
     "importsFrom": "Imports from",
     "frameworks": "Works in",
-    "exportFormats": "Exports",
-    "importFormats": "Imports",
+    "exportFormats": "Export",
+    "importFormats": "Import",
     "skinTonesHeading": "Skin tones",
     "skinTones": [
       "Default",
@@ -29,17 +29,18 @@
     ],
     "highlightsHeading": "What it does",
     "contributionHeading": "What I did",
-    "websiteHeading": "The website",
+    "websiteHeading": "Website",
     "websiteCaption": "Open {host}",
-    "galleryHeading": "Inside the extension",
+    "galleryHeading": "The real interface",
     "whyHeading": "Why I built it",
     "contributionWhyHeading": "How it came about",
-    "stackHeading": "Stack",
-    "changelogLink": "Read the changelog"
+    "backLink": "Products",
+    "builtWithHeading": "Built with",
+    "heroLabel": "Overview"
   },
   "es": {
     "state": {
-      "live": "Activo",
+      "live": "Publicado",
       "beta": "Beta",
       "contribution": "Colaboración"
     },
@@ -67,12 +68,13 @@
     ],
     "highlightsHeading": "Qué hace",
     "contributionHeading": "Qué hice",
-    "websiteHeading": "El sitio web",
+    "websiteHeading": "Sitio web",
     "websiteCaption": "Abrir {host}",
-    "galleryHeading": "Dentro de la extensión",
+    "galleryHeading": "La interfaz real",
     "whyHeading": "Por qué lo construí",
     "contributionWhyHeading": "Cómo surgió",
-    "stackHeading": "Stack",
-    "changelogLink": "Leer el registro de cambios"
+    "backLink": "Productos",
+    "builtWithHeading": "Construido con",
+    "heroLabel": "Resumen"
   }
 }

@@ -272,6 +272,26 @@ export function stackIconId(label: string): IconId | undefined {
   return STACK_ICONS[label.toLowerCase()]
 }
 
+const STACK_BADGE_CLASSES: Readonly<Record<string, string>> = {
+  wxt: 'bg-[#067a43] text-white',
+  react: 'bg-[#087ea4] text-white',
+  typescript: 'bg-[#3178c6] text-white',
+  'tailwind css': 'bg-[#0e7490] text-white',
+  'shadcn/ui': 'bg-[#18181b] text-white',
+  astro: 'bg-[#6d28d9] text-white',
+  'astro + starlight': 'bg-[#6d28d9] text-white',
+}
+
+/**
+ * The coloured badge classes of a stack item. They are literal so the Tailwind
+ * scanner sees them, and every pair keeps AA contrast for white text.
+ * @param label The stack name as written in the product file.
+ * @returns Background and text classes, neutral when the stack is unknown.
+ */
+export function stackBadgeClass(label: string): string {
+  return STACK_BADGE_CLASSES[label.toLowerCase()] ?? 'bg-muted text-foreground'
+}
+
 /**
  * Background classes of the six emoji skin-tone swatches, default first. They
  * are literal so the Tailwind scanner sees them and no inline style is needed.
