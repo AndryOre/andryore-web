@@ -1,30 +1,128 @@
 {
   "en": {
     "pageTitle": "About",
-    "pageDescription": "I build stuff and tell you how it went. What worked, what didn't, and what I'd change.",
-    "aboutHeading": "About",
-    "introLead": "I build stuff and tell you how it went.",
-    "introBody": "What worked, what didn't, and what I'd change. I'm Andry Orellana, from Venezuela and living in Colombia. I publish in Spanish, with English subtitles.",
-    "cvHeading": "CV",
-    "cvIntro": "The same CV, as a PDF, in either language.",
-    "cvEnglishLabel": "Download the CV in English (PDF)",
-    "cvSpanishLabel": "Descargar el CV en español (PDF)",
+    "pageDescription": "I build web apps, auth flows, APIs and self-hosted infra for startups and small teams. Full-stack engineer, independent since 2024.",
+    "headline": "I build web apps, auth flows, APIs and self-hosted infra for startups and small teams.",
+    "intro": "I'm Andry Orellana, a full-stack engineer from Venezuela, living in Colombia. I've worked as a freelancer since 2024, shipping my own products and contributing to open source. I use AI tools every day and read every line they write before it ships.",
+    "openTo": "Open to full-time and contract roles.",
+    "whatIDo": {
+      "heading": "What I do",
+      "items": [
+        {
+          "key": "frontends",
+          "icon": "layout-template",
+          "title": "Product frontends",
+          "body": "Fast, accessible interfaces in React and Astro, built to ship and easy to maintain."
+        },
+        {
+          "key": "auth",
+          "icon": "key-round",
+          "title": "Auth",
+          "body": "Sign-in, sessions and permissions that hold up in production."
+        },
+        {
+          "key": "infra",
+          "icon": "server",
+          "title": "Self-hosted infrastructure",
+          "body": "Docker, reverse proxies and backups on servers I run myself."
+        }
+      ]
+    },
+    "numbersHeading": "In numbers",
+    "independentLabel": "Independent since",
+    "independentValue": "2024",
+    "snugLabel": "Snug users",
+    "snugUsers": 5000,
+    "installsLabel": "JSON Flow installs",
+    "installsAsOf": "As of",
+    "contributionsLabel": "GitHub contributions, last year",
+    "timelineHeading": "Timeline",
+    "timeline": [
+      { "date": "2024-08", "title": "Snug 0.1.0" },
+      { "date": "2024-08", "title": "Animated Fluent Emojis 0.1.0" },
+      { "date": "2024", "title": "Started working independently" },
+      { "date": "2025", "title": "JSON Flow site and webview" },
+      { "date": "2026-10", "title": "Snug 2.2.0" },
+      { "date": "2026-10", "title": "andryore.dev" }
+    ],
+    "stackHeading": "Stack",
+    "stack": [
+      { "name": "TypeScript", "icon": "typescript" },
+      { "name": "React", "icon": "react" },
+      { "name": "Astro", "icon": "astro" },
+      { "name": "Bun", "icon": "bun" },
+      { "name": "Docker", "icon": "docker" }
+    ],
+    "stackLink": "See everything I use",
+    "cvLabel": "CV",
+    "cvGroupLabel": "Download my CV",
+    "cvMenuLabel": "Choose the CV language",
+    "cvEnglishOption": "English (PDF)",
+    "cvSpanishOption": "Español (PDF)",
     "cvEnglishFile": "Andry-Orellana-CV-EN.pdf",
-    "cvSpanishFile": "Andry-Orellana-CV-ES.pdf",
-    "openTo": "Open to full-time and contract roles."
+    "cvSpanishFile": "Andry-Orellana-CV-ES.pdf"
   },
   "es": {
     "pageTitle": "Acerca de",
-    "pageDescription": "Construyo cosas y te cuento cómo me fue. Qué funcionó, qué no y qué cambiaría.",
-    "aboutHeading": "Acerca de",
-    "introLead": "Construyo cosas y te cuento cómo me fue.",
-    "introBody": "Qué funcionó, qué no y qué cambiaría. Soy Andry Orellana, de Venezuela y vivo en Colombia. Publico en español, con subtítulos en inglés.",
-    "cvHeading": "CV",
-    "cvIntro": "El mismo CV, en PDF, en cualquiera de los dos idiomas.",
-    "cvEnglishLabel": "Download the CV in English (PDF)",
-    "cvSpanishLabel": "Descargar el CV en español (PDF)",
+    "pageDescription": "Construyo apps web, flujos de auth, APIs e infra self-hosted para startups y equipos pequeños. Ingeniero full-stack, independiente desde 2024.",
+    "headline": "Construyo apps web, flujos de auth, APIs e infra self-hosted para startups y equipos pequeños.",
+    "intro": "Soy Andry Orellana, ingeniero full-stack de Venezuela, y vivo en Colombia. Trabajo como freelance desde 2024: lanzo mis propios productos y colaboro en código abierto. Uso herramientas de IA todos los días y leo cada línea que escriben antes de publicarla.",
+    "openTo": "Disponible para roles de tiempo completo y contratos.",
+    "whatIDo": {
+      "heading": "Qué hago",
+      "items": [
+        {
+          "key": "frontends",
+          "icon": "layout-template",
+          "title": "Frontends de producto",
+          "body": "Interfaces rápidas y accesibles en React y Astro, hechas para lanzarse y fáciles de mantener."
+        },
+        {
+          "key": "auth",
+          "icon": "key-round",
+          "title": "Auth",
+          "body": "Inicio de sesión, sesiones y permisos que aguantan en producción."
+        },
+        {
+          "key": "infra",
+          "icon": "server",
+          "title": "Infraestructura self-hosted",
+          "body": "Docker, proxies inversos y copias de seguridad en servidores que administro yo mismo."
+        }
+      ]
+    },
+    "numbersHeading": "En números",
+    "independentLabel": "Independiente desde",
+    "independentValue": "2024",
+    "snugLabel": "Usuarios de Snug",
+    "snugUsers": 5000,
+    "installsLabel": "Instalaciones de JSON Flow",
+    "installsAsOf": "Al",
+    "contributionsLabel": "Contribuciones en GitHub, último año",
+    "timelineHeading": "Cronología",
+    "timeline": [
+      { "date": "2024-08", "title": "Snug 0.1.0" },
+      { "date": "2024-08", "title": "Animated Fluent Emojis 0.1.0" },
+      { "date": "2024", "title": "Empecé a trabajar de forma independiente" },
+      { "date": "2025", "title": "Sitio y webview de JSON Flow" },
+      { "date": "2026-10", "title": "Snug 2.2.0" },
+      { "date": "2026-10", "title": "andryore.dev" }
+    ],
+    "stackHeading": "Stack",
+    "stack": [
+      { "name": "TypeScript", "icon": "typescript" },
+      { "name": "React", "icon": "react" },
+      { "name": "Astro", "icon": "astro" },
+      { "name": "Bun", "icon": "bun" },
+      { "name": "Docker", "icon": "docker" }
+    ],
+    "stackLink": "Ver mis herramientas",
+    "cvLabel": "CV",
+    "cvGroupLabel": "Descargar mi CV",
+    "cvMenuLabel": "Elegir el idioma del CV",
+    "cvEnglishOption": "English (PDF)",
+    "cvSpanishOption": "Español (PDF)",
     "cvEnglishFile": "Andry-Orellana-CV-EN.pdf",
-    "cvSpanishFile": "Andry-Orellana-CV-ES.pdf",
-    "openTo": "Disponible para roles de tiempo completo y contratos."
+    "cvSpanishFile": "Andry-Orellana-CV-ES.pdf"
   }
 }
