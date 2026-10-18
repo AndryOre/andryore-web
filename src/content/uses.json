@@ -244,7 +244,8 @@
       {
         "label": "Redmi Buds 4 Active",
         "role": "Earbuds",
-        "glyph": "headphones"
+        "glyph": "headphones",
+        "url": "https://www.amazon.com/dp/B0C6K7VGCN"
       }
     ],
     "thisSite": {
@@ -535,7 +536,8 @@
       {
         "label": "Redmi Buds 4 Active",
         "role": "Audífonos",
-        "glyph": "headphones"
+        "glyph": "headphones",
+        "url": "https://www.amazon.com/dp/B0C6K7VGCN"
       }
     ],
     "thisSite": {
