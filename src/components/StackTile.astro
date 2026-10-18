@@ -12,15 +12,17 @@ interface Props {
   id: GlowIconId
   size: TileSize
   class?: string
+  'data-nf-delay'?: number
 }
 
-const { id, size, class: className } = Astro.props
+const { id, size, class: className, 'data-nf-delay': nfDelay } = Astro.props
 const { light, dark } = resolveIcon(id)
 const hasDarkMark = light !== dark
 ---
 
 <span
   class:list={['stack-tile', sizeClass(size), GLOW_CLASSES[id], className]}
+  data-nf-delay={nfDelay}
   aria-hidden="true"
 >
   <BrandIcon id={id} class:list={[hasDarkMark && 'dark:hidden']} />

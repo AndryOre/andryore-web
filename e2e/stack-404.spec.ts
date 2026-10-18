@@ -12,7 +12,7 @@ const NOT_FOUND_PAGES = [
   },
   {
     path: '/es/404/',
-    heading: /se fue por su cuenta/,
+    heading: /se fue por ahí/,
     message: /No está aquí/,
     home: '/es/',
     products: '/es/#products',
@@ -61,3 +61,63 @@ test('with reduced motion the Stack CTA is visible without scrolling the stage',
   )
   await expect(page.locator('.stack-title')).toHaveCSS('opacity', '1')
 })
+
+for (const route of ['/does-not-exist/', '/es/404/']) {
+  test(`${route} keeps the 12 tiles at their canvas spots and off the content at 390px`, async ({
+    page,
+  }) => {
+    await preparePage(page, 'light')
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto(route)
+    await settlePage(page)
+    await expect(page.locator('.nf-tile')).toHaveCount(12)
+    await expect(page.locator('.nf-tile').first()).toHaveCSS('left', /^28\./)
+    await expect(page.locator('.nf-stage')).toHaveCSS('height', '560px')
+    await expect(page.locator('.nf-title')).toHaveCSS('font-size', '30px')
+
+    const layout = await page.evaluate(() => {
+      const [primary, secondary] = [
+        ...globalThis.document.querySelectorAll('.nf-button'),
+      ].map((element) => element.getBoundingClientRect())
+      const title = globalThis.document
+        .querySelector('.nf-title')
+        ?.getBoundingClientRect()
+      return {
+        sideBySide: primary?.top === secondary?.top,
+        titleHeight: title?.height,
+      }
+    })
+    expect(layout.sideBySide).toBe(true)
+    expect(layout.titleHeight).toBeLessThan(40)
+    await expect(page.locator('.nf-tile').first()).toHaveCSS('z-index', '0')
+    for (const selector of [
+      '.nf-code',
+      '.nf-title',
+      '.nf-message',
+      '.nf-actions',
+    ])
+      await expect(page.locator(selector)).toHaveCSS('z-index', '2')
+    const covered = await page.evaluate(() => {
+      const doc = globalThis.document
+      return [
+        ...doc.querySelectorAll('h1'),
+        ...doc.querySelectorAll('p'),
+        ...doc.querySelectorAll('.nf-button'),
+        ...doc
+          .querySelectorAll('.nf-code')
+          .values()
+          .flatMap((code) => code.querySelectorAll(':scope > span')),
+      ]
+        .map((element) => {
+          const rect = element.getBoundingClientRect()
+          const top = doc.elementFromPoint(
+            rect.left + rect.width / 2,
+            rect.top + rect.height / 2,
+          )
+          return element.contains(top)
+        })
+        .every(Boolean)
+    })
+    expect(covered).toBe(true)
+  })
+}

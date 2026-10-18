@@ -8,6 +8,7 @@ import {
   END_CARD_TILES,
   GLOW_CLASSES,
   glowHex,
+  NOT_FOUND_DELAYS,
   NOT_FOUND_TILES,
   sizeClass,
   STACK_TILES,
@@ -68,10 +69,39 @@ describe('STACK_TILES', () => {
 })
 
 describe('NOT_FOUND_TILES', () => {
-  test('spreads 12 unique tiles, each tipped at its own angle', () => {
-    expect(NOT_FOUND_TILES).toHaveLength(12)
-    expect(new Set(NOT_FOUND_TILES.map((tile) => tile.id)).size).toBe(12)
+  test('places the 12 canvas tiles by top-left percent, each at its own angle', () => {
+    expect(NOT_FOUND_TILES.map((tile) => tile.id)).toEqual([
+      'typescript',
+      'react',
+      'astro',
+      'nextjs',
+      'bun',
+      'shadcn-ui',
+      'docker',
+      'tailwindcss',
+      'claude',
+      'linear',
+      'playwright',
+      'prisma',
+    ])
     expect(new Set(NOT_FOUND_TILES.map((tile) => tile.placement)).size).toBe(12)
+    expect(NOT_FOUND_TILES[0]).toMatchObject({
+      size: 84,
+      placement: 'left-[8%] top-[14%] [--r:-14deg]',
+      delay: 0.5,
+    })
+    expect(NOT_FOUND_TILES[11]).toMatchObject({
+      size: 44,
+      placement: 'left-[92%] top-[82%] [--r:40deg]',
+      delay: 0.3,
+    })
+  })
+
+  test('lists every distinct delay once, ascending', () => {
+    expect(NOT_FOUND_DELAYS).toHaveLength(12)
+    expect(NOT_FOUND_DELAYS).toEqual(
+      [...NOT_FOUND_DELAYS].toSorted((a, b) => a - b),
+    )
   })
 })
 
