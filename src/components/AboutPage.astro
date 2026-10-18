@@ -234,11 +234,24 @@ const labelClass =
   for (const root of document.querySelectorAll<HTMLElement>(
     '[data-about-live]',
   )) {
+    const targets = [
+      ...root.querySelectorAll<HTMLElement>('[data-count-total]'),
+    ]
+    const countedTotals = targets.map((target) => {
+      countUp(target)
+      return target.dataset.countTotal
+    })
     void mountGithubTile(root).then(() => {
-      for (const target of root.querySelectorAll<HTMLElement>(
-        '[data-count-total]',
-      )) {
-        countUp(target)
+      for (const [index, target] of targets.entries()) {
+        const total = Number(target.dataset.countTotal)
+        if (
+          target.dataset.countTotal === countedTotals[index] ||
+          !Number.isFinite(total)
+        )
+          continue
+        target.textContent = new Intl.NumberFormat(
+          target.dataset.countLocale ?? 'en',
+        ).format(total)
       }
     })
   }
