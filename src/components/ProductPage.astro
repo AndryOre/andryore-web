@@ -90,8 +90,9 @@ const backHref = localePath(locale, '/#products')
   title={`${data.name} · AndryOre`}
   locale={locale}
   description={data.description}
+  wide
 >
-  <article class="flex flex-col gap-10">
+  <article class="mx-auto flex w-full max-w-[712px] flex-col gap-10">
     <header class:list={['reveal', revealClass(0), 'flex flex-col gap-4']}>
       <a
         href={backHref}

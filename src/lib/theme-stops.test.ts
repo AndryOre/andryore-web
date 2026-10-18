@@ -29,10 +29,11 @@ describe('theme stops', () => {
 
   test('arrow keys step and clamp at the ends', () => {
     expect(stopAfterKey(0, 'ArrowDown')).toBe(1)
-    expect(stopAfterKey(1, 'ArrowRight')).toBe(2)
+    expect(stopAfterKey(1, 'ArrowLeft')).toBe(2)
     expect(stopAfterKey(2, 'ArrowDown')).toBe(2)
     expect(stopAfterKey(1, 'ArrowUp')).toBe(0)
-    expect(stopAfterKey(0, 'ArrowLeft')).toBe(0)
+    expect(stopAfterKey(1, 'ArrowRight')).toBe(0)
+    expect(stopAfterKey(0, 'ArrowRight')).toBe(0)
   })
 
   test('Home and End jump, other keys do nothing', () => {

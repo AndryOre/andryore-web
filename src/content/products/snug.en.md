@@ -98,6 +98,7 @@ cards:
       'Hourly to weekly, to Downloads or a folder you choose. Off by default.'
 callout:
   icon: 'shield-check'
+  title: 'No network calls'
   body: 'Everything stays on your device. No account, open source under MIT.'
 skinTones: false
 website:

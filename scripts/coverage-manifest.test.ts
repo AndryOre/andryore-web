@@ -12,6 +12,8 @@ const SOURCE_ROOTS = [
 ] as const
 
 const EXEMPTIONS: Readonly<Record<string, string>> = {
+  'scripts/fidelity-audit.ts':
+    'Playwright runner that needs a built preview and the local canvas file; its pure logic lives in fidelity-audit-core.ts, which is tested.',
   'scripts/workflow-files.ts':
     'Workflow loader used by workflows-invariants.test.ts, which exercises it against the real workflows.',
   'src/content.config.ts':
