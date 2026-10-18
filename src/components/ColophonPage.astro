@@ -38,6 +38,13 @@ const copy = colophon[locale]
       ))}
     </ul>
 
+    <section aria-labelledby="privacy-heading" class="flex flex-col gap-2">
+      <h2 id="privacy-heading" class="m-0 text-base font-semibold">
+        {copy.privacyHeading}
+      </h2>
+      <p class="text-muted-foreground m-0 text-sm">{copy.privacyBody}</p>
+    </section>
+
     <p class="m-0">
       <a
         href={copy.sourceUrl}
