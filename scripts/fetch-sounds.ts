@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 
+import { usableCredential } from '../src/lib/credential'
 import { isSoundManifest, SOUND_FILES } from '../src/lib/sound-engine'
 
 const DEFAULT_SECRET_PATH = '/run/secrets/sounds_token'
@@ -118,7 +119,7 @@ export async function main(environment: MainEnvironment): Promise<number> {
   const error = environment.error ?? console.error
   const secretPath = environment.secretPath ?? DEFAULT_SECRET_PATH
   const token = (
-    environment.env.SOUNDS_TOKEN ??
+    usableCredential(environment.env.SOUNDS_TOKEN) ??
     (existsSync(secretPath) ? readFileSync(secretPath, 'utf8') : '')
   ).trim()
   if (!token) {

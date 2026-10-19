@@ -92,6 +92,21 @@ describe('main', () => {
     expect(code).toBe(0)
   })
 
+  test('treats dotenvx ciphertext as no token', async () => {
+    const logs: string[] = []
+    const code = await main({
+      env: { SOUNDS_TOKEN: 'encrypted:BOwI3k' },
+      secretPath: path.join(workspace.directory, 'absent'),
+      outputDirectory: path.join(workspace.directory, 'out'),
+      log: (message) => {
+        logs.push(message)
+      },
+    })
+    expect(code).toBe(0)
+    expect(existsSync(path.join(workspace.directory, 'out'))).toBe(false)
+    expect(logs.join('')).toContain('without sound')
+  })
+
   test('downloads with the secret file token and never logs it', async () => {
     const secret = path.join(workspace.directory, 'secret')
     writeFileSync(secret, `${TOKEN}\n`)

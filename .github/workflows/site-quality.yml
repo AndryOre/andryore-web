@@ -73,7 +73,7 @@ jobs:
 
       - name: Build and start the nginx image
         run: |
-          docker build --build-arg SITE_LASTMOD="$(date -u +%F)" -t andryore-site-csp .
+          docker build -t andryore-site-csp .
           docker run -d --rm --name andryore-site-csp -p 127.0.0.1:8080:80 andryore-site-csp
           for _ in $(seq 1 30); do curl -fs -o /dev/null http://127.0.0.1:8080/ && break; sleep 1; done
 

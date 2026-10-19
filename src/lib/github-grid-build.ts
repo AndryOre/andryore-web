@@ -1,3 +1,4 @@
+import { usableCredential } from './credential'
 import { GITHUB_LOGIN } from './github-contributions'
 import { resolveGridSnapshot, type GridSnapshot } from './github-grid'
 
@@ -15,7 +16,7 @@ const committedSnapshots = import.meta.glob<GridSnapshot>(
  */
 export function loadGridSnapshot(): Promise<GridSnapshot | null> {
   return resolveGridSnapshot({
-    token: process.env.GITHUB_TOKEN,
+    token: usableCredential(process.env.GITHUB_TOKEN),
     login: GITHUB_LOGIN,
     now: new Date(),
     fetchImpl: (url, init) => fetch(url, init),
