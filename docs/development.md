@@ -40,6 +40,24 @@ When a command crashes inside `typescript.js`, see
 [Troubleshooting](troubleshooting.md). `eslint` and `tsc` run without `--bun`.
 Agents do not run a `build` script unless explicitly asked.
 
+### Fidelity audit exceptions
+
+`audit:fidelity` does not report these accepted deviations (the list is
+`DOCUMENTED_EXCEPTIONS` in `scripts/fidelity-audit-core.ts`):
+
+- The `← Home` link on About and Uses.
+- The Chrome Web Store button in the Snug header.
+- The header blurred surface after scroll.
+- The hero art border and shadow where the canvas differs.
+- The Epidemic sound files being absent (404 on `/sounds/`) in local and CI
+  builds.
+- The Astro badge dark text, JSON Flow without a website tile, the 404 tiles
+  behind the content at 390 px, and the 404 tiles keeping their positions with
+  reduced motion.
+
+The audit starts `astro preview` on port 4418; if another process holds it, run
+your own preview and pass `AUDIT_BASE_URL`.
+
 ## Coverage
 
 `bunfig.toml` turns coverage on for `bun test` and sets

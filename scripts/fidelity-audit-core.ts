@@ -148,3 +148,66 @@ export function resolveCanvasPath(
     environment.FIDELITY_CANVAS
   )
 }
+
+/** A deviation the audit does not report because the owner accepted it. */
+export interface DocumentedException {
+  readonly id: string
+  readonly reason: string
+}
+
+/** Every accepted deviation from the canvas, mirrored in docs/development.md. */
+export const DOCUMENTED_EXCEPTIONS: readonly DocumentedException[] = [
+  {
+    id: 'about-uses-home-link',
+    reason:
+      'The Home link on About and Uses is Site navigation the canvas lacks.',
+  },
+  {
+    id: 'snug-store-button',
+    reason: 'The Snug header has a Chrome Web Store button the canvas lacks.',
+  },
+  {
+    id: 'header-blurred-surface',
+    reason:
+      'The header gains a blurred surface after scroll; the canvas stays flat.',
+  },
+  {
+    id: 'hero-art-border-shadow',
+    reason:
+      'The hero art border and shadow follow the Site tokens, not the canvas.',
+  },
+  {
+    id: 'epidemic-sound-files',
+    reason: 'The licensed sound files are absent from local and CI builds.',
+  },
+  {
+    id: 'astro-badge-dark-text',
+    reason: 'The Astro badge keeps dark text in both themes.',
+  },
+  {
+    id: 'json-flow-no-website-tile',
+    reason: 'JSON Flow has no website tile.',
+  },
+  {
+    id: '404-tiles-behind-content-390',
+    reason: 'The 404 tiles sit behind the content at 390 px.',
+  },
+  {
+    id: '404-reduced-motion-positions',
+    reason: 'With reduced motion the 404 tiles keep their positions.',
+  },
+]
+
+/**
+ * Tells whether a console error is the 404 of a sound file, a documented
+ * exception because the licensed files are absent from local and CI builds.
+ * @param text The console message text.
+ * @param url The URL that produced the message.
+ * @returns True when the message is a missing sound asset.
+ */
+export function isMissingSoundAsset(text: string, url: string): boolean {
+  return (
+    text.includes('status of 404') &&
+    new URL(url).pathname.startsWith('/sounds/')
+  )
+}
