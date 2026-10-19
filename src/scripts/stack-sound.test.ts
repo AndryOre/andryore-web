@@ -148,6 +148,16 @@ describe('mountStackSound', () => {
     ).toHaveLength(2)
   })
 
+  test('a jump past the settle point plays only the pop, never a tick before it', () => {
+    const harness = mounted()
+    harness.scrollTo(0.5)
+    const before = harness.played.length
+    harness.scrollTo(0.8)
+    expect(harness.played.slice(before).map((entry) => entry.event)).toEqual([
+      'stackSettle',
+    ])
+  })
+
   const gates: [string, Partial<StackSoundDependencies>][] = [
     ['sound is off', { isSoundOn: () => false }],
     ['the audio is locked', { isUnlocked: () => false }],

@@ -79,9 +79,12 @@ export function mountStackSound(
 
   const playCue = (cue: StackSoundCue): void => {
     if (!canPlay()) return
+    if (cue.settle) {
+      dependencies.play('stackSettle')
+      return
+    }
     if (cue.tickRate !== undefined)
       dependencies.play('stackTick', { rate: cue.tickRate })
-    if (cue.settle) dependencies.play('stackSettle')
   }
 
   const measure = (): void => {
