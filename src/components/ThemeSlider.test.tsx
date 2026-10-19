@@ -3,10 +3,42 @@ import { renderToStaticMarkup } from 'react-dom/server'
 
 import chrome from '../content/chrome.json'
 import type { Locale } from '../i18n/locales'
-import ThemeSlider from './ThemeSlider'
+import ThemeSlider, { chooseWithSound } from './ThemeSlider'
 
 const render = (locale: Locale): string =>
   renderToStaticMarkup(<ThemeSlider copy={chrome[locale].theme} />)
+
+const run = (stop: 'light' | 'auto' | 'dark' | undefined) => {
+  const played: string[] = []
+  const stored: string[] = []
+  chooseWithSound(
+    stop,
+    'auto',
+    {
+      play: (event) => {
+        played.push(event)
+      },
+    },
+    (picked) => {
+      stored.push(picked)
+    },
+  )
+  return { played, stored }
+}
+
+describe('chooseWithSound', () => {
+  test('stores the stop and plays theme once when it changes', () => {
+    expect(run('dark')).toEqual({ played: ['theme'], stored: ['dark'] })
+  })
+
+  test('stores but stays silent when the stop is the current one', () => {
+    expect(run('auto')).toEqual({ played: [], stored: ['auto'] })
+  })
+
+  test('does nothing without a stop', () => {
+    expect(run(undefined)).toEqual({ played: [], stored: [] })
+  })
+})
 
 describe('ThemeSlider', () => {
   test('exposes the bar as a vertical slider over the three stops', () => {
@@ -27,6 +59,11 @@ describe('ThemeSlider', () => {
     expect(positions.every((position) => position > -1)).toBe(true)
     expect(positions).toEqual(positions.toSorted((a, b) => a - b))
     expect(html.match(/aria-pressed="true"/g)).toHaveLength(1)
+  })
+
+  test('names the theme sound on each tab and leaves the bar to its own calls', () => {
+    const html = render('en')
+    expect(html.match(/data-sound="theme"/g)).toHaveLength(3)
   })
 
   test('stacks each tab icon above its centred label', () => {

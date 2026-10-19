@@ -25,6 +25,7 @@ import {
   type DockMenuName,
 } from '@/lib/dock-dom'
 import { getFxStorage, readFx, subscribeFx, writeFx } from '@/lib/fx-store'
+import { soundEngine, type SoundAvailability } from '@/lib/sound-engine'
 import { THEME_PREFERENCES, type ThemePreference } from '@/lib/theme'
 import { chooseTheme } from '@/lib/theme-store'
 import { cn } from '@/lib/utils'
@@ -120,6 +121,7 @@ function PageIcon({ page }: { page: DockPageKey }) {
 
 const getSoundSnapshot = (): boolean => readFx(getFxStorage())
 const getServerSoundSnapshot = (): boolean => false
+const getServerAvailability = (): SoundAvailability => 'unknown'
 
 function SoundIcon({ enabled }: { enabled: boolean }) {
   return (
@@ -150,22 +152,28 @@ function SoundIcon({ enabled }: { enabled: boolean }) {
 
 /**
  * The Sound switch: shares the stored choice with the Sound tile and shows a
- * dot while it is on. No audio plays here.
+ * dot while it is on. The switch sound comes from the page-level sound
+ * triggers through `data-sound`. It renders nothing once the audio files are
+ * known to be missing.
  * @param props Component props.
  * @param props.copy Sound labels.
  * @param props.enabled Whether Sound is on.
+ * @param props.availability Whether the audio files are known to be served.
  * @param props.onToggle Called when the switch is pressed.
- * @returns The switch inside a dock item.
+ * @returns The switch inside a dock item, or nothing.
  */
 export function SoundSwitch({
   copy,
   enabled,
+  availability = 'unknown',
   onToggle,
 }: {
   copy: DockCopy['sound']
   enabled: boolean
+  availability?: SoundAvailability
   onToggle: () => void
 }) {
+  if (availability === 'unavailable') return null
   return (
     <DockItem label={enabled ? copy.on : copy.off}>
       <Button
@@ -175,6 +183,7 @@ export function SoundSwitch({
         aria-checked={enabled}
         aria-label={copy.label}
         data-dock-sound
+        data-sound="switch"
         onClick={onToggle}
       >
         <SoundIcon enabled={enabled} />
@@ -319,6 +328,7 @@ export function ThemeMenu({
             role="menuitemradio"
             data-dock-item
             aria-checked={preference === option}
+            data-sound="theme"
             {...analyticsAttributes(ANALYTICS_EVENTS.themeSwitch, {
               theme: option,
             })}
@@ -407,6 +417,11 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
     subscribeFx,
     getSoundSnapshot,
     getServerSoundSnapshot,
+  )
+  const soundAvailability = useSyncExternalStore(
+    soundEngine.subscribeAvailability,
+    soundEngine.getAvailability,
+    getServerAvailability,
   )
   const activeKey = activePageKey(path)
 
@@ -512,6 +527,7 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
       <SoundSwitch
         copy={copy.sound}
         enabled={soundEnabled}
+        availability={soundAvailability}
         onToggle={() => {
           writeFx(getFxStorage(), !soundEnabled)
         }}

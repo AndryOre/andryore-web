@@ -102,6 +102,7 @@ export default function CopyEmailButton({
         className="size-11 sm:size-10"
         aria-label={copy.copyLabel}
         data-copy-email
+        data-sound="copy"
         onClick={() => {
           void handleClick()
         }}

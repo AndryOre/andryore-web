@@ -1363,6 +1363,9 @@ html:not(.dark) .stream-tile {
 [data-fx-switch][aria-checked='true'] .fx-knob {
   transform: translateX(24px);
 }
+[data-fx-switch][data-sound-unavailable] {
+  visibility: hidden;
+}
 @media (prefers-reduced-motion: reduce) {
   .fx-switch,
   .fx-knob {

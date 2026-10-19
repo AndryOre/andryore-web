@@ -95,6 +95,28 @@ describe('mountStreamTile', () => {
     expect(title.textContent).toBe('On air')
   })
 
+  test('calls onLive once when live and never otherwise', async () => {
+    const live = createRoot(false)
+    let calls = 0
+    const onLive = (): void => {
+      calls += 1
+    }
+    await mountStreamTile(
+      live.root,
+      respond({ state: 'live', title: 'On air' }),
+      now,
+      onLive,
+    )
+    expect(calls).toBe(1)
+    await mountStreamTile(
+      createRoot(false).root,
+      respond({ state: 'offline' }),
+      now,
+      onLive,
+    )
+    expect(calls).toBe(1)
+  })
+
   test('keeps the fallback caption when the live title is empty', async () => {
     const { root, title } = createRoot(false)
     title.textContent = 'Fallback'

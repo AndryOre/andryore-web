@@ -6,6 +6,7 @@ import {
   type PointerEvent,
 } from 'react'
 
+import { soundEngine, type SoundEngine } from '@/lib/sound-engine'
 import type { ThemePreference } from '@/lib/theme'
 import { stopAfterKey, stopFromRatio, THEME_STOPS } from '@/lib/theme-stops'
 import { chooseTheme } from '@/lib/theme-store'
@@ -74,6 +75,25 @@ function BarSun() {
 }
 
 /**
+ * Stores a stop picked with the bar or the keys and plays the theme sound when
+ * it differs from the current one. The tabs name their sound in markup.
+ * @param stop The picked stop, if any.
+ * @param current The stop in force before the pick.
+ * @param engine The sound engine to play through.
+ * @param apply Stores the stop; defaults to the theme store.
+ */
+export function chooseWithSound(
+  stop: ThemePreference | undefined,
+  current: ThemePreference,
+  engine: Pick<SoundEngine, 'play'> = soundEngine,
+  apply: (stop: ThemePreference) => void = chooseTheme,
+): void {
+  if (!stop) return
+  apply(stop)
+  if (stop !== current) engine.play('theme')
+}
+
+/**
  * Theme control: vertical sliding tabs for Light, Auto and Dark next to a
  * brightness bar. The bar is one `slider`; arrow keys step between the stops
  * and a press or drag on it picks the nearest one. Tabs and bar always agree
@@ -93,19 +113,21 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
   const [dragging, setDragging] = useState(false)
   const index = THEME_STOPS.indexOf(preference)
 
+  const choose = (stop: ThemePreference | undefined): void => {
+    chooseWithSound(stop, preference)
+  }
+
   const pick = (clientY: number): void => {
     const box = barRef.current?.getBoundingClientRect()
     if (!box || box.height === 0) return
-    const stop = THEME_STOPS[stopFromRatio((clientY - box.top) / box.height)]
-    if (stop) chooseTheme(stop)
+    choose(THEME_STOPS[stopFromRatio((clientY - box.top) / box.height)])
   }
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>): void => {
     const next = stopAfterKey(index, event.key)
     if (next === null) return
     event.preventDefault()
-    const stop = THEME_STOPS[next]
-    if (stop) chooseTheme(stop)
+    choose(THEME_STOPS[next])
   }
 
   const onPointerDown = (event: PointerEvent<HTMLDivElement>): void => {
@@ -143,6 +165,7 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
             key={stop}
             type="button"
             data-tab={stop}
+            data-sound="theme"
             aria-pressed={stop === preference}
             onClick={() => {
               chooseTheme(stop)

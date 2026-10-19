@@ -187,6 +187,7 @@ const TWITCH_GLYPH =
 </article>
 
 <script>
+  import { soundTriggers } from '../scripts/sound-triggers'
   import {
     COUNTDOWN_INTERVAL_MS,
     mountStreamTile,
@@ -196,7 +197,9 @@ const TWITCH_GLYPH =
   for (const tile of document.querySelectorAll<HTMLElement>(
     '[data-stream-tile]',
   )) {
-    void mountStreamTile(tile).then(() => {
+    void mountStreamTile(tile, undefined, new Date(), () => {
+      soundTriggers.playUnlocked('live')
+    }).then(() => {
       if (tile.dataset.state !== 'scheduled') return
       setInterval(() => {
         refreshCountdown(tile, new Date())

@@ -101,12 +101,14 @@ function markToday(root: StreamTileRoot, now: Date): void {
  * @param root The tile element holding the state-specific parts.
  * @param fetcher The `fetch` to use; defaults to the platform one.
  * @param now The current moment, injectable for tests.
+ * @param onLive Called once when the answer is that the stream is live.
  * @returns Resolves once the tile shows the answer.
  */
 export async function mountStreamTile(
   root: StreamTileRoot,
   fetcher?: Fetcher,
   now: Date = new Date(),
+  onLive?: () => void,
 ): Promise<void> {
   const status = await loadStreamStatus(fetcher)
   const view = selectStreamView(status, root.dataset.started === 'true')
@@ -115,6 +117,7 @@ export async function mountStreamTile(
   if (status.state === 'live') {
     const title = root.querySelector('[data-stream-title]')
     if (title && status.title) title.textContent = status.title
+    onLive?.()
   }
   if (view === 'scheduled') refreshCountdown(root, now)
 }
