@@ -27,9 +27,11 @@ with the next build.
 
 ## Scope
 
-The Site is static, apart from the live status endpoint. Reports about the
-source code, the build and deploy pipeline, and the status endpoint are in
-scope.
+The Site is static, apart from one runtime endpoint that serves the live Twitch
+status and the GitHub contribution grid. Reports about the source code, the
+build and deploy pipeline, and the runtime endpoint are in scope. The design
+behind the policy, the headers and the secrets is in
+[`docs/security.md`](../docs/security.md).
 
 ## Credit
 
