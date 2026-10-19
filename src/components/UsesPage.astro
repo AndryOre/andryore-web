@@ -141,7 +141,7 @@ const tileSub = 'text-muted-foreground m-0 text-[13px]'
                   class="inline-flex items-center gap-1.5 underline underline-offset-[3px]"
                 >
                   {row.label}
-                  <span class="sr-only">{newTabNote}</span>
+                  <span class="sr-only">. {newTabNote}</span>
                   <span
                     aria-hidden="true"
                     class="inline-flex size-[14px]"
@@ -289,7 +289,7 @@ const tileSub = 'text-muted-foreground m-0 text-[13px]'
             </div>
             <strong class="inline-flex items-center gap-1.5">
               {site.source.name}
-              <span class="sr-only">{newTabNote}</span>
+              <span class="sr-only">. {newTabNote}</span>
               <span
                 aria-hidden="true"
                 class="inline-flex size-[14px]"
@@ -305,7 +305,7 @@ const tileSub = 'text-muted-foreground m-0 text-[13px]'
           {...sourceLink}
           class={`${footnote} inline-flex min-h-11 items-center underline underline-offset-[3px]`}
         >
-          {site.sourceLinkLabel} →<span class="sr-only">{newTabNote}</span>
+          {site.sourceLinkLabel} →<span class="sr-only">. {newTabNote}</span>
         </a>
       </section>
 
