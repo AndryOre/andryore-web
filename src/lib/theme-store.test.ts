@@ -17,6 +17,7 @@ function stubBrowser(options: { storage: boolean; dark: boolean }) {
   const stored = new Map<string, string>()
   globals.document = {
     documentElement: {
+      dataset: {} as Record<string, string>,
       classList: {
         add: (name: string) => classes.add(name),
         remove: (name: string) => classes.delete(name),
@@ -82,6 +83,32 @@ describe('theme store', () => {
     chooseTheme('auto')
     expect(notified).toBe(1)
     expect(getThemeSnapshot()).toBe('auto')
+  })
+
+  test('ignores a choice that is already in effect', () => {
+    const { classes, stored } = stubBrowser({ storage: true, dark: false })
+    chooseTheme('dark')
+    classes.delete('theme-fade')
+    let notified = 0
+    const unsubscribe = subscribeToTheme(() => {
+      notified += 1
+    })
+    stored.set('theme', 'dark')
+    chooseTheme('dark')
+    unsubscribe()
+    expect(notified).toBe(0)
+    expect(classes.has('theme-fade')).toBe(false)
+    chooseTheme('auto')
+  })
+
+  test('mirrors the choice on the root for the pre-hydration tile', () => {
+    stubBrowser({ storage: true, dark: false })
+    chooseTheme('light')
+    expect(
+      (globals.document as { documentElement: { dataset: unknown } })
+        .documentElement.dataset,
+    ).toEqual({ themePref: 'light' })
+    chooseTheme('auto')
   })
 
   test('keeps the choice in memory when storage is blocked', () => {

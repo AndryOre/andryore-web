@@ -6,7 +6,7 @@ import { createHash } from 'node:crypto'
  * stored choice, and keeps Auto live by re-applying on a system change or a
  * change from another tab.
  */
-export const THEME_INIT_SCRIPT = `(function(){var key='theme',root=document.documentElement,query=matchMedia('(prefers-color-scheme: dark)');function read(){try{var value=localStorage.getItem(key);return value==='light'||value==='dark'?value:'auto'}catch(error){return'auto'}}function apply(){var preference=read(),theme=preference==='auto'?(query.matches?'dark':'light'):preference,metas=document.querySelectorAll('meta[name="theme-color"][data-theme-color]');root.classList.toggle('dark',theme==='dark');for(var index=0;index<metas.length;index++){metas[index].media=metas[index].dataset.themeColor===theme?'all':'not all'}}apply();query.addEventListener('change',apply);addEventListener('storage',apply)})()`
+export const THEME_INIT_SCRIPT = `(function(){var key='theme',root=document.documentElement,query=matchMedia('(prefers-color-scheme: dark)');function read(){try{var value=localStorage.getItem(key);return value==='light'||value==='dark'?value:'auto'}catch(error){return'auto'}}function apply(){var preference=read(),theme=preference==='auto'?(query.matches?'dark':'light'):preference,metas=document.querySelectorAll('meta[name="theme-color"][data-theme-color]');root.classList.toggle('dark',theme==='dark');root.dataset.themePref=preference;for(var index=0;index<metas.length;index++){metas[index].media=metas[index].dataset.themeColor===theme?'all':'not all'}}apply();query.addEventListener('change',apply);addEventListener('storage',apply)})()`
 
 /**
  * The CSP source expression for an inline script (ADR 0010, ADR 0012).

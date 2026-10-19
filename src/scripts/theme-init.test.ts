@@ -24,6 +24,7 @@ function createFakePage(options: {
   systemDark: boolean
 }) {
   const classes = new Set<string>()
+  const dataset: Record<string, string> = {}
   const metas = ['light', 'dark'].map((themeColor) => ({
     media: `(prefers-color-scheme: ${themeColor})`,
     dataset: { themeColor },
@@ -34,6 +35,7 @@ function createFakePage(options: {
 
   const document = {
     documentElement: {
+      dataset,
       classList: {
         toggle: (name: string, force: boolean) =>
           force ? classes.add(name) : classes.delete(name),
@@ -67,6 +69,7 @@ function createFakePage(options: {
 
   return {
     isDark: () => classes.has('dark'),
+    pref: () => dataset.themePref,
     metaMedia: () => metas.map((meta) => meta.media),
     changeSystem: (systemDark: boolean) => {
       state.systemDark = systemDark
@@ -88,6 +91,18 @@ describe('theme init script', () => {
     expect(createFakePage({ stored: null, systemDark: false }).isDark()).toBe(
       false,
     )
+  })
+
+  test('mirrors the stored preference on the root for the tile', () => {
+    expect(createFakePage({ stored: 'dark', systemDark: false }).pref()).toBe(
+      'dark',
+    )
+    expect(createFakePage({ stored: null, systemDark: true }).pref()).toBe(
+      'auto',
+    )
+    const page = createFakePage({ stored: 'light', systemDark: false })
+    page.changeStored('dark')
+    expect(page.pref()).toBe('dark')
   })
 
   test('a stored light or dark overrides the system', () => {
