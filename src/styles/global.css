@@ -1327,11 +1327,6 @@ html:not(.dark) .stream-tile {
   scale: var(--drag-squeeze, 1) 1;
   transition: scale var(--duration-spring) var(--ease-spring);
 }
-.theme-bar[data-dragging='true'] {
-  --level: var(--drag-level, 62);
-  --strength: calc(var(--drag-level, 62) / 100);
-  transition: none;
-}
 .theme-bar[data-stop='light'] {
   --strength: 1;
   --level: 100;
@@ -1343,6 +1338,11 @@ html:not(.dark) .stream-tile {
 .theme-bar[data-stop='dark'] {
   --strength: 0.24;
   --level: 24;
+}
+.theme-bar[data-dragging='true'] {
+  --level: var(--drag-level, 62);
+  --strength: calc(var(--drag-level, 62) / 100);
+  transition: none;
 }
 .theme-tab {
   border-radius: 1.125rem;

@@ -93,7 +93,14 @@ test.describe('theme tile motion', () => {
     expect([24, 62, 100]).not.toContain(Math.round(level))
     expect(level).toBeGreaterThan(60)
     expect(level).toBeLessThan(80)
-    await expect(slider).toHaveAttribute('aria-valuenow', '1')
+    const fillScale = await page
+      .locator('.theme-fill')
+      .evaluate(
+        (element) => new DOMMatrix(getComputedStyle(element).transform).d,
+      )
+    expect(fillScale).toBeCloseTo(level / 100, 1)
+    await expect(slider).toHaveAttribute('aria-valuenow', '0')
+    await expect(slider).toHaveAttribute('data-stop', 'light')
     await page.mouse.up()
     await expect(slider).toHaveAttribute('data-dragging', 'false')
     await expect(slider).toHaveAttribute('aria-valuenow', '1')
