@@ -8,14 +8,8 @@ import {
 
 import { soundEngine, type SoundEngine } from '@/lib/sound-engine'
 import type { ThemePreference } from '@/lib/theme'
-import {
-  levelFromRatio,
-  squeezeForLevel,
-  stopAfterKey,
-  stopFromLevel,
-  stopFromRatio,
-  THEME_STOPS,
-} from '@/lib/theme-stops'
+import { followPointer, pickAtPointer, releaseDrag } from '@/lib/theme-drag'
+import { stopAfterKey, THEME_STOPS } from '@/lib/theme-stops'
 import { chooseTheme } from '@/lib/theme-store'
 import { cn } from '@/lib/utils'
 
@@ -25,10 +19,6 @@ const unsubscribeNothing = (): void => undefined
 const subscribeToNothing = (): (() => void) => unsubscribeNothing
 const readHydrated = (): boolean => true
 const readNotHydrated = (): boolean => false
-
-const prefersReducedMotion = (): boolean =>
-  typeof globalThis.matchMedia === 'function' &&
-  globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const RAY_PATH =
   'M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4'
@@ -129,52 +119,29 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
   const dragLevelRef = useRef(0)
   const index = THEME_STOPS.indexOf(preference)
 
-  const choose = (stop: ThemePreference | undefined): void => {
-    chooseWithSound(stop, preference)
-  }
-
-  const pick = (clientY: number): void => {
-    const box = barRef.current?.getBoundingClientRect()
-    if (!box || box.height === 0) return
-    choose(THEME_STOPS[stopFromRatio((clientY - box.top) / box.height)])
-  }
-
-  const follow = (clientY: number): void => {
-    const bar = barRef.current
-    const box = bar?.getBoundingClientRect()
-    if (!bar || !box || box.height === 0) return
-    const banded = levelFromRatio((clientY - box.top) / box.height)
-    const level = prefersReducedMotion()
-      ? Math.min(100, Math.max(0, banded))
-      : banded
-    dragLevelRef.current = level
-    bar.style.setProperty('--drag-level', String(level))
-    bar.style.setProperty('--drag-squeeze', String(squeezeForLevel(level)))
-  }
-
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>): void => {
     const next = stopAfterKey(index, event.key)
     if (next === null) return
     event.preventDefault()
-    choose(THEME_STOPS[next])
+    chooseWithSound(THEME_STOPS[next], preference)
   }
 
   const onPointerDown = (event: PointerEvent<HTMLDivElement>): void => {
     if (event.nativeEvent.isTrusted) {
       event.currentTarget.setPointerCapture(event.pointerId)
-      follow(event.clientY)
+      followPointer(barRef.current, event.clientY, dragLevelRef)
       setDragging(true)
     } else {
       replayedPressRef.current = true
-      pick(event.clientY)
+      chooseWithSound(pickAtPointer(barRef.current, event.clientY), preference)
     }
   }
 
   const onPointerMove = (event: PointerEvent<HTMLDivElement>): void => {
     if (dragging) {
-      follow(event.clientY)
+      followPointer(barRef.current, event.clientY, dragLevelRef)
     } else if (replayedPressRef.current && event.buttons === 1) {
-      pick(event.clientY)
+      chooseWithSound(pickAtPointer(barRef.current, event.clientY), preference)
     }
   }
 
@@ -182,10 +149,10 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
     replayedPressRef.current = false
     if (!dragging) return
     setDragging(false)
-    const bar = barRef.current
-    bar?.style.removeProperty('--drag-level')
-    bar?.style.removeProperty('--drag-squeeze')
-    choose(THEME_STOPS[stopFromLevel(dragLevelRef.current)])
+    chooseWithSound(
+      releaseDrag(barRef.current, dragLevelRef.current),
+      preference,
+    )
   }
 
   return (
