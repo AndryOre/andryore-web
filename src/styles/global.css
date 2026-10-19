@@ -1274,6 +1274,34 @@ html:not(.dark) .stream-tile {
 }
 
 /* Theme tile: sliding tab indicator, brightness bar and its sun. */
+:root {
+  --duration-spring: 520ms;
+  --ease-spring: linear(
+    0,
+    0.071,
+    0.231,
+    0.417,
+    0.595,
+    0.745,
+    0.86,
+    0.941,
+    0.993,
+    1.023,
+    1.036,
+    1.038,
+    1.035,
+    1.028,
+    1.021,
+    1.014,
+    1.009,
+    1.005,
+    1.002,
+    1,
+    0.999,
+    0.999,
+    1
+  );
+}
 .theme-tabs {
   border-radius: 1.375rem;
 }
@@ -1282,7 +1310,7 @@ html:not(.dark) .stream-tile {
   border-radius: 1.125rem;
   transform: translateY(calc(var(--stop-index, 0) * 100%));
   transition:
-    transform var(--duration-base) var(--ease-out),
+    transform var(--duration-spring) var(--ease-spring),
     background-color var(--duration-base) var(--ease-out);
 }
 .theme-indicator[data-stop='light'] {
@@ -1296,6 +1324,13 @@ html:not(.dark) .stream-tile {
 }
 .theme-bar {
   border-radius: 1.625rem;
+  scale: var(--drag-squeeze, 1) 1;
+  transition: scale var(--duration-spring) var(--ease-spring);
+}
+.theme-bar[data-dragging='true'] {
+  --level: var(--drag-level, 62);
+  --strength: calc(var(--drag-level, 62) / 100);
+  transition: none;
 }
 .theme-bar[data-stop='light'] {
   --strength: 1;
@@ -1322,9 +1357,9 @@ html:not(.dark) .stream-tile {
 }
 .theme-fill {
   transform-origin: bottom;
-  transform: scaleY(calc(var(--level, 62) / 100));
+  transform: scaleY(calc(max(var(--level, 62), 0) / 100));
   transition:
-    transform var(--duration-base) var(--ease-out),
+    transform var(--duration-spring) var(--ease-spring),
     background-color var(--duration-base) var(--ease-out);
 }
 .theme-sun {
@@ -1332,15 +1367,21 @@ html:not(.dark) .stream-tile {
   rotate: calc(var(--strength, 0.62) * 140deg);
   scale: calc(0.8 + var(--strength, 0.62) * 0.35);
   transition:
-    rotate var(--duration-base) var(--ease-out),
-    scale var(--duration-base) var(--ease-out),
+    rotate var(--duration-spring) var(--ease-spring),
+    scale var(--duration-spring) var(--ease-spring),
     color var(--duration-base) var(--ease-out);
 }
 .theme-sun-rays {
   opacity: calc(0.25 + var(--strength, 0.62) * 0.75);
   transition: opacity var(--duration-base) var(--ease-out);
 }
+.theme-bar[data-dragging='true'] .theme-fill,
+.theme-bar[data-dragging='true'] .theme-sun,
+.theme-bar[data-dragging='true'] .theme-sun-rays {
+  transition: none;
+}
 @media (prefers-reduced-motion: reduce) {
+  .theme-bar,
   .theme-indicator,
   .theme-tab,
   .theme-fill,
@@ -1349,6 +1390,9 @@ html:not(.dark) .stream-tile {
     transition: none;
   }
   .theme-tab:active {
+    scale: none;
+  }
+  .theme-bar {
     scale: none;
   }
   .theme-sun {
