@@ -36,7 +36,7 @@ for (const route of ROUTES) {
 }
 
 for (const reducedMotion of ['reduce', 'no-preference'] as const) {
-  test(`header gets a surface after scrolling with ${reducedMotion} motion`, async ({
+  test(`header is plain at rest and a floating pill after scrolling with ${reducedMotion} motion`, async ({
     page,
   }) => {
     await page.emulateMedia({ reducedMotion })
@@ -45,15 +45,47 @@ for (const reducedMotion of ['reduce', 'no-preference'] as const) {
     )
     await page.goto('/')
     const header = page.locator('.site-header')
-    const background = () =>
-      header.evaluate((element) => getComputedStyle(element).backgroundColor)
-    expect(await background()).toBe('rgba(0, 0, 0, 0)')
+    const row = page.locator('.site-header-row')
+    const readRow = () =>
+      row.evaluate((element) => {
+        const style = getComputedStyle(element)
+        const box = element.getBoundingClientRect()
+        return {
+          background: style.backgroundColor,
+          shadow: style.boxShadow,
+          top: Math.round(box.top),
+          height: Math.round(box.height),
+        }
+      })
+    const headerHeight = () =>
+      header.evaluate((element) => element.getBoundingClientRect().height)
+    const restingHeaderHeight = await headerHeight()
+    const rest = await readRow()
+    expect(rest.background).toBe('rgba(0, 0, 0, 0)')
+    expect(rest.shadow).toBe('none')
     await page.evaluate(() => {
       globalThis.scrollTo(0, 400)
     })
     await expect
-      .poll(background)
-      .not.toMatch(/^rgba\(0, 0, 0, 0\)$|^transparent$/)
+      .poll(() =>
+        row.evaluate((element) =>
+          Math.round(element.getBoundingClientRect().top),
+        ),
+      )
+      .toBe(16)
+    const pill = await readRow()
+    expect(pill.height).toBe(56)
+    expect(pill.background).not.toMatch(/^rgba\(0, 0, 0, 0\)$|^transparent$/)
+    expect(pill.shadow).not.toBe('none')
+    expect(await headerHeight()).toBe(restingHeaderHeight)
+    await page.evaluate(() => {
+      globalThis.scrollTo(0, 0)
+    })
+    await expect
+      .poll(() =>
+        row.evaluate((element) => getComputedStyle(element).boxShadow),
+      )
+      .toBe('none')
   })
 }
 
