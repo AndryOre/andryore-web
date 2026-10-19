@@ -326,16 +326,23 @@ describe('headerLinks', () => {
     ])
   })
 
-  test('orders website, npm, marketplace, then the source', () => {
+  test('orders website, npm, marketplace, Chrome Web Store, then the source', () => {
     const ids = headerLinks({
       ...base,
       links: {
         source: 'https://github.com/a/b',
         npm: 'https://npm.example/p',
         marketplace: 'https://market.example/p',
+        chromeWebStore: 'https://store.example/p',
       },
     }).map((link) => link.id)
-    expect(ids).toEqual(['website', 'npm', 'marketplace', 'source'])
+    expect(ids).toEqual([
+      'website',
+      'npm',
+      'marketplace',
+      'chromeWebStore',
+      'source',
+    ])
   })
 })
 
@@ -519,6 +526,21 @@ describe('store links', () => {
     return z.record(z.string(), z.unknown()).parse(data)
   }
   const realSchema = createProductSchema(z.string())
+  test('Snug header shows website, Chrome Web Store, then source in both locales', () => {
+    for (const lang of ['en', 'es']) {
+      const snug = realSchema.parse(parse(`snug.${lang}.md`))
+      const links = headerLinks(snug)
+      expect(links.map((link) => link.id)).toEqual([
+        'website',
+        'chromeWebStore',
+        'source',
+      ])
+      expect(links[1]?.href).toBe(
+        'https://chromewebstore.google.com/detail/gdhpeilfkeeajillmcncaelnppiakjhn',
+      )
+    }
+  })
+
   test('Snug store chips link to their listings and JSON Flow to its Marketplace page', () => {
     const snug = realSchema.parse(parse('snug.en.md'))
     const hrefOf = (label: string) =>

@@ -58,6 +58,7 @@ const calloutSchema = z.object({
 
 const linksSchema = z.object({
   npm: z.url().optional(),
+  chromeWebStore: z.url().optional(),
   source: z.url().optional(),
   marketplace: z.url().optional(),
 })
@@ -203,7 +204,8 @@ export function productPath(locale: Locale, key: string): string {
 }
 
 /** The kinds of call to action a product header can carry. */
-export type HeaderLinkId = 'website' | 'source' | 'npm' | 'marketplace'
+export type HeaderLinkId =
+  'website' | 'source' | 'npm' | 'marketplace' | 'chromeWebStore'
 
 export interface HeaderLink {
   id: HeaderLinkId
@@ -213,6 +215,7 @@ export interface HeaderLink {
 /** The links a product can carry, as the schema defines them. */
 export interface ProductLinkSet {
   npm?: string | undefined
+  chromeWebStore?: string | undefined
   source?: string | undefined
   marketplace?: string | undefined
 }
@@ -221,8 +224,8 @@ export interface ProductLinkSet {
  * The header calls to action of a product, in display order.
  * @param product The product's website and optional link set.
  * @param product.url The product website.
- * @param product.links Source, npm and marketplace links, when they exist.
- * @returns The website first, then npm, marketplace and source when present.
+ * @param product.links Source, npm, marketplace and Chrome Web Store links, when they exist.
+ * @returns The website first, then npm, marketplace, Chrome Web Store and source when present.
  */
 export function headerLinks(product: {
   url: string
@@ -232,6 +235,7 @@ export function headerLinks(product: {
   const candidates: { id: HeaderLinkId; href: string | undefined }[] = [
     { id: 'npm', href: links.npm },
     { id: 'marketplace', href: links.marketplace },
+    { id: 'chromeWebStore', href: links.chromeWebStore },
     { id: 'source', href: links.source },
   ]
   const present = candidates.filter(
