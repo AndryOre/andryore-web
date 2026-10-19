@@ -69,11 +69,11 @@ key (`DOTENV_PRIVATE_KEY`) lives in `.env.keys`, which Git ignores, so a fresh
 clone does not have it. The key has to come from Andry's backup; it cannot be
 derived.
 
-**Symptom**: a command run under `dotenvx run` (the Docker build, for example)
-exits with an error shaped like
-`[MISSING_PRIVATE_KEY] could not decrypt ... using private key 'DOTENV_PRIVATE_KEY=undefined'`.
-In the running image, the live status and GitHub endpoints return their
-unavailable state instead of failing.
+**Symptom**: dotenvx prints an error shaped like
+`[MISSING_PRIVATE_KEY] could not decrypt ... using private key 'DOTENV_PRIVATE_KEY=undefined'`
+and carries on. The Docker build does not fail: it finishes and produces an
+image with no credentials, so the live status and GitHub endpoints return their
+unavailable state and the Sound switch is hidden.
 
 `dev`, `build`, `preview`, `test` and `check` never need the key: without it the
 Site builds with the committed grid snapshot and no Sound switch
