@@ -1,5 +1,6 @@
 import {
   soundEngine,
+  type PlayOptions,
   type SoundEngine,
   type SoundEvent,
 } from '../lib/sound-engine'
@@ -20,6 +21,8 @@ const NAMED_EVENTS: Readonly<Record<SoundEvent, true>> = {
   cv: true,
   live: true,
   pop: true,
+  stackTick: true,
+  stackSettle: true,
 }
 
 /** The parts of an element the triggers read, so tests can fake it. */
@@ -100,7 +103,8 @@ export function entersControl(event: TriggerEvent): boolean {
 /** What the page script holds: mount once, play after a gesture. */
 export interface SoundTriggers {
   mount: (root: TriggerRoot) => void
-  playUnlocked: (event: SoundEvent) => void
+  playUnlocked: (event: SoundEvent, options?: PlayOptions) => void
+  isUnlocked: () => boolean
 }
 
 /**
@@ -129,9 +133,10 @@ export function createSoundTriggers(engine: TriggerEngine): SoundTriggers {
         if (unlocked && entersControl(event)) engine.play('hover')
       })
     },
-    playUnlocked: (event) => {
-      if (unlocked) engine.play(event)
+    playUnlocked: (event, options) => {
+      if (unlocked) engine.play(event, options)
     },
+    isUnlocked: () => unlocked,
   }
 }
 
