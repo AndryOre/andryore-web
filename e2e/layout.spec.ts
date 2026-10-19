@@ -3,8 +3,10 @@ import { expect, test } from '@playwright/test'
 import {
   assertNoHorizontalOverflow,
   findClippedText,
+  findCroppedHeroImage,
   findDockOutsideViewport,
   findSmallTouchTargets,
+  findUsesHeroIconProblems,
   preparePage,
   settlePage,
 } from './helpers'
@@ -170,3 +172,32 @@ test('header height and pill style both use the compact values below 640 px', as
   )
   expect({ header, pill }).toEqual({ header: 64, pill: 52 })
 })
+
+for (const path of ['/uses/', '/es/uses/']) {
+  for (const width of [320, 375, 430]) {
+    test(`uses hero icons stay clear of the text and inside the card on ${path} at ${String(width)}px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: 800 })
+      await preparePage(page, 'light')
+      await page.goto(path)
+      await settlePage(page)
+      expect(await findUsesHeroIconProblems(page)).toEqual([])
+    })
+  }
+}
+
+for (const product of ['snug', 'animated-fluent-emojis', 'json-flow']) {
+  test(`product hero shows the full image on /products/${product}/ at 360px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 360, height: 800 })
+    await preparePage(page, 'light')
+    await page.goto(`/products/${product}/`)
+    await settlePage(page)
+    await page
+      .locator('[data-product-hero] picture img')
+      .evaluate((image: HTMLImageElement) => image.decode())
+    expect(await findCroppedHeroImage(page)).toEqual([])
+  })
+}
