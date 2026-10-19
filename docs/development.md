@@ -1,19 +1,59 @@
 # Development
 
-## Setup
+## Prerequisites
+
+- **Bun `1.4.2`**, pinned by `packageManager` and `engines` in `package.json`.
+  This repository uses Bun only; never another package manager.
+- **Docker**, only for the visual, cross-browser and smoke tests (`test:visual`,
+  `test:browsers`, `test:smoke`) and to run the production image.
+- **Chrome or Chromium**, only for `lint:lighthouse`; set `CHROME_PATH` when it
+  is not on the default path.
+
+No key is needed to work on the Site: `dev`, `build`, `test` and `check` run on
+a fresh clone ([Configuration](configuration.md#keyless-clones)).
+
+## Running locally
 
 ```sh
 bun install --frozen-lockfile
+bun run dev
 ```
 
-Bun `1.4.2` is required (see `packageManager` in `package.json`). Husky installs
-the git hooks on `bun install` through the `prepare` script. `bunfig.toml` sets
-`linker = "isolated"`.
+Husky installs the hooks on install through the `prepare` script. `bunfig.toml`
+sets `linker = "isolated"`.
+
+- `bun run dev` serves the Site with hot reload at `http://localhost:4321`, the
+  Astro default.
+- `bun run preview` serves a built `dist/` on the same port. It needs
+  `bun run build` first, which stays opt-in for agents. The Playwright suites
+  start their own preview on port 4417 (`E2E_PORT`) and `audit:fidelity` on 4418
+  (`AUDIT_BASE_URL`).
+- Neither command serves `/api/stream-status` or `/api/github-contributions`;
+  those endpoints exist only in the production image.
+
+To run the production image (nginx on port 80, with the endpoint server behind
+it on an internal port 3000):
+
+```sh
+docker build -t andryore-web .
+docker run --rm -p 8080:80 andryore-web
+```
+
+Then open `http://localhost:8080`. Without a key the image builds with the
+committed grid snapshot and no credentials ([Configuration](configuration.md)).
 
 ## Scripts
 
 | Script                    | What it does                                                                                                                                                          |
 | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bun run dev`             | Starts the Astro dev server at `http://localhost:4321`.                                                                                                               |
+| `bun run build`           | `astro build` into `dist/`. Opt-in for agents; CI runs it.                                                                                                            |
+| `bun run preview`         | Serves the built `dist/` with `astro preview`.                                                                                                                        |
+| `bun run astro`           | Runs the Astro CLI, for example `bun run astro -- check`.                                                                                                             |
+| `bun run i18n:status`     | Fails when a Spanish entry no longer matches its English source.                                                                                                      |
+| `bun run grid:update`     | Refreshes `src/content/github-grid.json` from the GitHub API; needs `GITHUB_TOKEN`. The `grid-snapshot.yml` workflow runs it weekly.                                  |
+| `bun run env:encrypt`     | `dotenvx encrypt`: encrypts the plaintext values of the env files ([Configuration](configuration.md#dotenvx-workflow)).                                               |
+| `bun run prepare`         | Installs the Husky hooks; runs on `bun install`.                                                                                                                      |
 | `bun run check`           | Aggregate gate: `format:check`, `lint`, `typecheck` and `knip`.                                                                                                       |
 | `bun run fix`             | Formats the repository with Prettier, then autofixes ESLint findings (`format:write`, `lint:fix`).                                                                    |
 | `bun run cache:clear`     | Removes `/tmp/node-compile-cache`, `.eslintcache` and `node_modules/.cache`.                                                                                          |
@@ -38,7 +78,8 @@ the git hooks on `bun install` through the `prepare` script. `bunfig.toml` sets
 
 When a command crashes inside `typescript.js`, see
 [Troubleshooting](troubleshooting.md). `eslint` and `tsc` run without `--bun`.
-Agents do not run a `build` script unless explicitly asked.
+Agents do not run a `build` script unless explicitly asked. Never print or
+decrypt env values while running any script.
 
 ### Fidelity audit exceptions
 
@@ -154,14 +195,18 @@ lowercase kebab-case, for example `feat/add-log-page`.
 
 `main` and `develop` are the two long-lived branches. Feature branches open PRs
 against `develop`, and a promotion PR from `develop` to `main` ships a finished
-spec ([ADR 0015](adr/0015-develop-as-integration-branch.md)).
+spec ([ADR 0015](adr/0015-develop-as-integration-branch.md)). Both keep a linear
+history and take squash merges only, as the rulesets enforce
+([Merging](#merging)). This section, [Commit format](#commit-format) and
+[Merging](#merging) are the single home of the branch, commit and merge rules;
+other docs link here.
 
 ## Commit format
 
 `type: emoji lowercase subject`, for example `feat: ✨ add log page`, in
 English, with a bulleted body when it helps. PRs are squash-merged, so the PR
-title follows the same format. The hook does not enforce the emoji; it is a
-convention.
+title follows the same format and becomes the commit message on `develop` or
+`main`. The hook does not enforce the emoji; it is a convention.
 
 ## Code documentation
 
@@ -241,13 +286,23 @@ it too. Job names:
 - **CI passed**: aggregates the jobs above; it is the single required status
   check, and the release gate reads it (see [Releasing](#releasing)).
 
-Other workflows: `lint-pr.yml` (PR title), `lint-docs.yml` (offline link and
-anchor check with lychee), `lint-workflows.yml` (workflow linting), `codeql.yml`
-(CodeQL analysis, skipped while the repository is private because code scanning
-is unavailable on GitHub Free), `scorecard.yml` (OpenSSF Scorecard) and
-`labels.yml` (label sync) and `grid-snapshot.yml` (weekly refresh of
-`src/content/github-grid.json`, opened as a PR against `develop`). All
-third-party actions are pinned to a commit SHA, and
+Other workflows:
+
+- `lighthouse.yml`: the Lighthouse budget on PRs
+  ([Lighthouse budget](#lighthouse-budget)).
+- `site-quality.yml`: e2e, mobile, visual, browser and smoke checks on PRs that
+  touch the Site ([Browser checks](#browser-checks)).
+- `release.yml`: creates the GitHub Release when a `v*` tag is pushed
+  ([Releasing](#releasing)).
+- `lint-pr.yml` (PR title), `lint-docs.yml` (offline link and anchor check with
+  lychee) and `lint-workflows.yml` (workflow linting).
+- `codeql.yml` (CodeQL analysis, skipped while the repository is private because
+  code scanning is unavailable on GitHub Free) and `scorecard.yml` (OpenSSF
+  Scorecard).
+- `labels.yml` (label sync) and `grid-snapshot.yml` (weekly refresh of
+  `src/content/github-grid.json`, opened as a PR against `develop`).
+
+All third-party actions are pinned to a commit SHA, and
 `scripts/workflows-invariants.test.ts` asserts the workflow invariants: every
 `uses:` pinned to a 40-character SHA, explicit permissions (top-level
 `contents: read` or stricter), `timeout-minutes` on every job,
@@ -312,21 +367,33 @@ application's Coolify GitHub webhook endpoint; the secret lives only in the
 webhook and in Coolify. PR preview deployments stay off so a fork PR can never
 run on the server; the CI gates cover pre-merge checks.
 
-### Sound files
+### The `docker/` folder
+
+The `Dockerfile` builds the Site in a Bun stage and serves it from nginx:
+
+- `docker/nginx.conf`: the main nginx config (gzip and shared settings).
+- `docker/site.conf`: the two server blocks (the `www` redirect to the apex and
+  the Site), the 404 pages and the proxy of `/api/` to the endpoint server on
+  `127.0.0.1:3000`.
+- `docker/security-headers.conf.template`: the header template that
+  `scripts/render-csp.ts` fills with the CSP script and style hashes at build
+  time ([ADR 0012](adr/0012-csp-delivered-as-an-nginx-header.md)).
+- `docker/entrypoint.sh`: starts the compiled endpoint server as the `nginx`
+  user, then nginx in the foreground.
+
+### Sound files and credentials
 
 The Glass sound set is a private build input
 ([ADR 0019](adr/0019-optional-interface-sound.md)). The Dockerfile defaults
-`SOUNDS_REPO` to `AndryOre/andryore-web-private` and `SOUNDS_REF` to `main`;
-override them with build arguments only to try another source. In the Coolify
-application, turn on Docker Build Secrets and add a build-time-only variable
-named exactly `sounds_token` (lowercase: Coolify uses the variable name as the
-BuildKit secret id) holding a read-only fine-grained GitHub token with Contents
-read access to that repository. Do not add `SOUNDS_REPO` or `SOUNDS_REF` as
-Coolify variables: with build secrets on, Coolify does not inject build
-arguments, so they would arrive empty. The Dockerfile mounts the secret with
-`RUN --mount=type=secret`, so it never lands in a layer. Without the secret the
-build succeeds and the Site hides the Sound switch. To try it locally:
-`docker build --secret id=sounds_token,env=SOUNDS_TOKEN --build-arg SOUNDS_REPO=owner/repo .`
+`SOUNDS_REPO` to `AndryOre/andryore-web-private` and `SOUNDS_REF` to `main`.
+`SOUNDS_TOKEN` and the other credentials come from the encrypted `.env`, which
+the build decrypts with the `DOTENV_PRIVATE_KEY` BuildKit secret
+([ADR 0022](adr/0022-secrets-in-dotenvx-encrypted-env-files.md)). In the Coolify
+application, turn on Docker Build Secrets and keep one variable, named exactly
+`DOTENV_PRIVATE_KEY`; the full list of variables and the key workflow are in
+[Configuration](configuration.md). Without the key the build succeeds and the
+Site hides the Sound switch. To try it locally:
+`docker build --secret id=DOTENV_PRIVATE_KEY,env=DOTENV_PRIVATE_KEY .`
 
 To roll back, redeploy the previous good commit from the Coolify application
 page (Deployments, then Redeploy on the earlier entry), or revert the commit on
@@ -335,7 +402,8 @@ page (Deployments, then Redeploy on the earlier entry), or revert the commit on
 ## Merging
 
 This repository merges pull requests via squash merge only, keeping a linear
-history on `main`. Individual commits in a PR need not follow the commit format,
+history on `develop` and `main`. A promotion PR from `develop` to `main` is
+squash-merged too. Individual commits in a PR need not follow the commit format,
 but the PR title does, since it becomes the squashed commit message. The
 `CI passed` check must be green. The branch and tag rulesets are committed in
 [`.github/rulesets`](../.github/rulesets) (`main.json`, `develop.json`,

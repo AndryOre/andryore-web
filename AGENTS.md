@@ -12,6 +12,8 @@ and the documentation:
 - [`docs/adr`](docs/adr): architecture decision records.
 - [`docs/brand`](docs/brand): the public brand assets and their export tooling.
 - [`docs/agents`](docs/agents): the tracker and `/forge` specifics for agents.
+- [`docs/configuration.md`](docs/configuration.md): every environment variable
+  and the dotenvx workflow.
 - [`eslint-rules`](eslint-rules): local ESLint rules, such as the TSDoc-only
   comment rule.
 - [`scripts`](scripts): repo scripts (commit lint, docs link check) and their
@@ -135,6 +137,9 @@ never disable the rule file-wide or project-wide:
 
 ## Quirks and gotchas
 
+- Never print or decrypt env values (`.env`, `.env.development`, `.env.keys`),
+  in output, logs, commits or tickets. Variables and workflow:
+  [`docs/configuration.md`](docs/configuration.md).
 - Run `eslint` and `tsc` without `--bun`; the scripts already do. ESLint uses
   `--cache --cache-strategy content`, so a stale cache is never a reason to
   delete files: run `bun run lint` again.
