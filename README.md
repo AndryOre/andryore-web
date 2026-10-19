@@ -30,13 +30,14 @@ Built with [Astro](https://astro.build) 7 ·
 
 andryore.dev is a static Astro site in English and Spanish where Andry writes
 down what he builds, what worked and what did not. It holds a page for each
-product, plus the tools and setup he uses day to day:
+product and contribution, plus the tools and setup he uses day to day:
 
 - **Snug**: a browser extension to export, import and back up bookmarks.
 - **Animated Fluent Emojis**: Microsoft's animated Fluent emojis as one
   component.
 - **JSON Flow**: a VS Code extension that turns JSON, YAML, XML and CSV into
-  interactive graphs.
+  interactive graphs. A contribution: Andry built its marketing site and parts
+  of the webview.
 - **Uses**: the tools, tech and setup behind what he builds and streams.
 
 ## Quick start
@@ -95,7 +96,7 @@ docker/         Production image files
 | [Governance](GOVERNANCE.md)                | Who decides what and how                       |
 | [Decisions](docs/adr/README.md)            | Architecture decision records                  |
 | [Brand kit](docs/brand/README.md)          | Public logo, tokens, OG and avatar assets      |
-| [Agent docs](docs/agents/domain.md)        | Rules and conventions for coding agents        |
+| [Agent rules](AGENTS.md)                   | Rules and conventions for coding agents        |
 
 ## Contributing
 
