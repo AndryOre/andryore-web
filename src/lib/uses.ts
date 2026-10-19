@@ -19,14 +19,46 @@ export interface FieldIcon {
  * positions are literal classes because the CSP forbids inline styles.
  */
 export const FIELD_ICONS: readonly FieldIcon[] = [
-  { id: 'typescript', placement: 'left-[8%] top-[12%] size-[84px]' },
-  { id: 'bun', placement: 'left-[20%] top-[62%] size-[64px]' },
-  { id: 'astro', placement: 'left-[30%] top-[18%] size-[72px]' },
-  { id: 'react', placement: 'left-[44%] top-[70%] size-[96px]' },
-  { id: 'nextjs', placement: 'left-[58%] top-[8%] size-[60px]' },
-  { id: 'tailwindcss', placement: 'left-[66%] top-[66%] size-[72px]' },
-  { id: 'claude', placement: 'left-[78%] top-[20%] size-[84px]' },
-  { id: 'docker', placement: 'left-[88%] top-[58%] size-[64px]' },
+  {
+    id: 'typescript',
+    placement:
+      'left-[8%] top-[12%] size-[84px] max-[639px]:top-4 max-[639px]:left-[6%] max-[639px]:size-11',
+  },
+  {
+    id: 'bun',
+    placement:
+      'left-[20%] top-[62%] size-[64px] max-[639px]:top-auto max-[639px]:bottom-4 max-[639px]:left-[6%] max-[639px]:size-11',
+  },
+  {
+    id: 'astro',
+    placement:
+      'left-[30%] top-[18%] size-[72px] max-[639px]:top-4 max-[639px]:left-[28%] max-[639px]:size-11',
+  },
+  {
+    id: 'react',
+    placement:
+      'left-[44%] top-[70%] size-[96px] max-[639px]:top-auto max-[639px]:bottom-4 max-[639px]:left-[28%] max-[639px]:size-12',
+  },
+  {
+    id: 'nextjs',
+    placement:
+      'left-[58%] top-[8%] size-[60px] max-[639px]:top-4 max-[639px]:left-[50%] max-[639px]:size-11',
+  },
+  {
+    id: 'tailwindcss',
+    placement:
+      'left-[66%] top-[66%] size-[72px] max-[639px]:top-auto max-[639px]:bottom-4 max-[639px]:left-[50%] max-[639px]:size-11',
+  },
+  {
+    id: 'claude',
+    placement:
+      'left-[78%] top-[20%] size-[84px] max-[639px]:top-4 max-[639px]:left-[72%] max-[639px]:size-12',
+  },
+  {
+    id: 'docker',
+    placement:
+      'left-[88%] top-[58%] size-[64px] max-[639px]:top-auto max-[639px]:bottom-4 max-[639px]:left-[72%] max-[639px]:size-11',
+  },
 ]
 
 /** The Lucide glyphs of the Setup rows, in row order. */

@@ -247,3 +247,68 @@ export async function findClippedText(page: Page): Promise<string[]> {
     return clipped
   })
 }
+
+/**
+ * Finds Uses hero icons that overlap the title or intro, or stick out of the
+ * hero card.
+ * @param page The Uses page, already settled.
+ * @returns A description of each icon that overlaps text or is clipped.
+ */
+export async function findUsesHeroIconProblems(page: Page): Promise<string[]> {
+  return page.evaluate(() => {
+    const doc = globalThis.document
+    const card = doc.querySelector('section[aria-labelledby="uses-heading"]')
+    const heading = doc.querySelector('#uses-heading')
+    const intro = heading?.nextElementSibling
+    if (!card || !heading || !intro) return ['uses hero is missing']
+    const cardBox = card.getBoundingClientRect()
+    const textBoxes = [heading, intro].map((node) =>
+      node.getBoundingClientRect(),
+    )
+    const problems: string[] = []
+    const icons = card.querySelectorAll(':scope [data-uses-field] > span')
+    icons.forEach((icon, index) => {
+      const box = icon.getBoundingClientRect()
+      const hitsText = textBoxes.some(
+        (text) =>
+          box.left < text.right &&
+          box.right > text.left &&
+          box.top < text.bottom &&
+          box.bottom > text.top,
+      )
+      if (hitsText) problems.push(`icon ${String(index)} overlaps the text`)
+      const clipped =
+        box.left < cardBox.left ||
+        box.right > cardBox.right ||
+        box.top < cardBox.top ||
+        box.bottom > cardBox.bottom
+      if (clipped) problems.push(`icon ${String(index)} is clipped by the card`)
+    })
+    if (icons.length === 0) problems.push('no icons found')
+    return problems
+  })
+}
+
+/**
+ * Finds a product hero image that is cropped instead of showing the full
+ * frame.
+ * @param page A product page, already settled.
+ * @returns A description of the hero image when its box does not match the
+ * image's own aspect ratio.
+ */
+export async function findCroppedHeroImage(page: Page): Promise<string[]> {
+  return page.evaluate(() => {
+    const image = globalThis.document.querySelector<HTMLImageElement>(
+      '[data-product-hero] picture img',
+    )
+    if (!image) return ['hero image is missing']
+    const box = image.getBoundingClientRect()
+    const natural = image.naturalWidth / image.naturalHeight
+    const shown = box.width / box.height
+    if (Math.abs(natural - shown) / natural > 0.02)
+      return [
+        `hero shows ${shown.toFixed(2)} for a ${natural.toFixed(2)} image`,
+      ]
+    return []
+  })
+}

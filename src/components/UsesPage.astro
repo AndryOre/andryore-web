@@ -73,11 +73,11 @@ const tileSub = 'text-muted-foreground m-0 text-[13px]'
       class:list={[
         'reveal',
         revealClass(0),
-        'bg-card border-border relative isolate h-[360px] overflow-hidden rounded-[20px] border min-[700px]:h-[420px]',
+        'bg-card border-border relative isolate h-[360px] overflow-hidden rounded-[20px] border max-[639px]:h-auto max-[639px]:min-h-[360px] max-[639px]:py-[88px] min-[700px]:h-[420px]',
       ]}
     >
       <UsesIconField />
-      <div class="pointer-events-none absolute inset-0 z-10 grid place-items-center text-center max-[699px]:px-6">
+      <div class="pointer-events-none absolute inset-0 z-10 grid place-items-center text-center max-[639px]:relative max-[639px]:inset-auto max-[699px]:px-6">
         <div>
           <h1
             id="uses-heading"
