@@ -9,6 +9,8 @@ nginx header, not only a meta tag.
 
 Date: 2026-10-17
 
+Revised: 2026-10-19, `script-src` also lists `'self'` and the Umami origin
+
 ## Context
 
 The Site is static and serves no third-party content (0009), so a strict Content
@@ -20,9 +22,9 @@ container smoke test.
 ## Decision
 
 - **Astro's `security.csp` emits a hash-based policy.** `script-src` lists
-  hashes only; there is no `unsafe-inline`, no `unsafe-eval` and no
-  `wasm-unsafe-eval`. `default-src` is `'none'`, with `base-uri` and
-  `form-action` set to `'none'`.
+  `'self'`, `https://cloud.umami.is` (0014) and the hashes; there is no
+  `unsafe-inline`, no `unsafe-eval` and no `wasm-unsafe-eval`. `default-src` is
+  `'none'`, with `base-uri` and `form-action` set to `'none'`.
 - **Inline scripts carry a computed hash.** The theme-init script's sha256 is
   derived from its source string at build time and covered by a test, so editing
   the script cannot silently break the policy.
@@ -41,4 +43,4 @@ container smoke test.
 ## Consequences
 
 - Every new inline script needs a hash; the build fails if it drifts.
-- The deploy ticket ships the nginx header config and the smoke test.
+- The nginx header config and the smoke test ship with the image.

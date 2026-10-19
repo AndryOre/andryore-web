@@ -6,6 +6,8 @@ Accepted. Amends [0003](0003-static-astro-on-coolify.md).
 
 Date: 2026-10-16
 
+Revised: 2026-10-19, the island list is now an example, not exhaustive.
+
 ## Context
 
 The Site is a static Astro build (0003). Snug's site and Andry's other projects
@@ -18,8 +20,8 @@ costly to hand-roll.
 - **Tailwind CSS v4 styles the Site**, with the brand tokens from
   `docs/brand/tokens.css` mapped into `@theme` unchanged.
 - **shadcn/ui components are React islands**, used only where interaction needs
-  them (the Dock, the theme toggle). Everything else is plain Astro and ships no
-  JavaScript.
+  them (for example the Dock, the theme toggle, the CV split button and the
+  copy-email button). Everything else is plain Astro and ships no JavaScript.
 - **`@shadcn/lint` is on**, with Snug's escalation ladder: use an existing
   variant, add a variant, add a contract, and only then a one-line disable with
   a reason.

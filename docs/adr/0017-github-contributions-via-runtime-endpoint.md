@@ -2,9 +2,13 @@
 
 ## Status
 
-Accepted. Amends [0004](0004-live-status-endpoint.md).
+Accepted. Amends [0004](0004-live-status-endpoint.md) and
+[0009](0009-no-third-party-requests.md): the contribution grid is fetched at
+runtime, no longer generated at build time only.
 
 Date: 2026-10-18
+
+Revised: 2026-10-19, Status records that it also changes 0009
 
 ## Context
 

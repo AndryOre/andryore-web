@@ -154,8 +154,7 @@ lowercase kebab-case, for example `feat/add-log-page`.
 
 `main` and `develop` are the two long-lived branches. Feature branches open PRs
 against `develop`, and a promotion PR from `develop` to `main` ships a finished
-spec ([ADR 0015](adr/0015-develop-as-integration-branch.md),
-[ADR 0016](adr/0016-forge-trunk-moves-to-develop.md)).
+spec ([ADR 0015](adr/0015-develop-as-integration-branch.md)).
 
 ## Commit format
 
@@ -226,7 +225,7 @@ API).
 ## ADR index
 
 `docs/adr/README.md` indexes every ADR. A new ADR adds its row there, and
-`docs/adr/adr-invariants.test.ts` enforces the header format, unique sequential
+`docs/adr/adr-invariants.test.ts` enforces the header format, unique, ascending
 numbers, an allowed status and that the index lists every file.
 
 ## CI
@@ -303,22 +302,22 @@ GitHub Release. Nothing is published to npm.
 ## Deploying
 
 Coolify builds the `Dockerfile` and serves the image behind its proxy. The
-`andryore-web` application tracks `main` and serves `andryore.dev`;
-`andryore-web-develop` tracks `develop` and serves `dev.andryore.dev`. Both DNS
-records are DNS-only A records. `www.andryore.dev` resolves to the same server,
-and nginx answers it with a `301` to the apex, keeping the path and query.
+`andryore-web` application tracks `main` and serves `andryore.dev`; `develop`
+has no deployment, so it ships only through a promotion PR. The DNS record is a
+DNS-only A record. `www.andryore.dev` resolves to the same server, and nginx
+answers it with a `301` to the apex, keeping the path and query.
 
 A push to `main` triggers a deploy through a GitHub push webhook that calls the
 application's Coolify GitHub webhook endpoint; the secret lives only in the
 webhook and in Coolify. PR preview deployments stay off so a fork PR can never
-run on the server; `dev.andryore.dev` covers pre-merge checks.
+run on the server; the CI gates cover pre-merge checks.
 
 ### Sound files
 
 The Glass sound set is a private build input
 ([ADR 0019](adr/0019-optional-interface-sound.md)). The Dockerfile defaults
 `SOUNDS_REPO` to `AndryOre/andryore-web-private` and `SOUNDS_REF` to `main`;
-override them with build arguments only to try another source. In each Coolify
+override them with build arguments only to try another source. In the Coolify
 application, turn on Docker Build Secrets and add a build-time-only variable
 named exactly `sounds_token` (lowercase: Coolify uses the variable name as the
 BuildKit secret id) holding a read-only fine-grained GitHub token with Contents

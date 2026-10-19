@@ -18,13 +18,18 @@ on the Site's content.
 1. **Issue first.** Most changes start as a GitHub issue (bug report, feature
    request, or proposal) so the "why" is on the record before any code is
    written.
-2. **Pull request.** Implementation happens in a pull request against `main`.
-   Every PR must pass CI before it can be merged. Pull requests are merged via
-   **squash merge only**, keeping a linear history on `main`.
+2. **Pull request.** Implementation happens in a pull request against `develop`;
+   a promotion pull request then ships `develop` to `main` (see
+   [ADR 0015](docs/adr/0015-develop-as-integration-branch.md)). Every PR must
+   pass CI before it can be merged. Pull requests are merged via **squash merge
+   only**, keeping a linear history.
 3. **ADR for hard-to-reverse choices.** Decisions that are expensive to reverse
    (architecture, hosting, licensing, or anything that changes how contributors
    work) are recorded as an Architecture Decision Record under `docs/adr/`, not
-   only discussed in a PR description.
+   only discussed in a PR description. ADRs are living documents: edit one in
+   place to keep it true and add a `Revised: YYYY-MM-DD, what changed` line
+   under its `Date:`. A reversed or replaced decision gets a new ADR. Numbers
+   are unique and ascending.
 
 ## Roles and responsibilities
 
