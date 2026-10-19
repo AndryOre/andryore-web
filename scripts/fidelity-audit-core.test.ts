@@ -154,8 +154,15 @@ describe('describeOverflow', () => {
 
 describe('isDocumentedMeasurement', () => {
   test('accepts the compact dock button on phones only', () => {
-    expect(isDocumentedMeasurement('dock button width @390')).toBe(true)
-    expect(isDocumentedMeasurement('dock button width @1440')).toBe(false)
-    expect(isDocumentedMeasurement('Find me button width @390')).toBe(false)
+    expect(isDocumentedMeasurement('dock button width @390', 36)).toBe(true)
+    expect(isDocumentedMeasurement('dock button width @320', 34)).toBe(true)
+    expect(isDocumentedMeasurement('dock button width @1440', 36)).toBe(false)
+    expect(isDocumentedMeasurement('Find me button width @390', 36)).toBe(false)
+  })
+
+  test('still fails a missing or out-of-band dock button', () => {
+    expect(isDocumentedMeasurement('dock button width @390')).toBe(false)
+    expect(isDocumentedMeasurement('dock button width @390', 20)).toBe(false)
+    expect(isDocumentedMeasurement('dock button width @390', 44)).toBe(false)
   })
 })

@@ -228,14 +228,26 @@ export const DOCUMENTED_EXCEPTIONS: readonly DocumentedException[] = [
   },
 ]
 
+const COMPACT_DOCK_BUTTON_TOLERANCE = 2
+
 /**
- * Tells whether a failed measurement is a documented exception.
+ * Tells whether a failed measurement is a documented exception. The compact
+ * dock button only counts when it really measures 36 px (34 px under 360 px),
+ * so a hidden or broken dock still fails.
  * @param measurementId The measurement id with its viewport, e.g. `x @390`.
+ * @param actual The measured value, or undefined when nothing matched.
  * @returns True when the owner accepted the deviation.
  */
-export function isDocumentedMeasurement(measurementId: string): boolean {
+export function isDocumentedMeasurement(
+  measurementId: string,
+  actual?: number,
+): boolean {
   const match = /^dock button width @(\d+)$/.exec(measurementId)
-  return match !== null && Number(match[1]) < 400
+  if (match === null || actual === undefined) return false
+  const width = Number(match[1])
+  if (width >= 400) return false
+  const compact = width < 360 ? 34 : 36
+  return Math.abs(actual - compact) <= COMPACT_DOCK_BUTTON_TOLERANCE
 }
 
 /**

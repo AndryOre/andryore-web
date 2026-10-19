@@ -858,7 +858,7 @@ async function auditMeasurements(
     await context.close()
   }
   return failedMeasurements(results, TOLERANCE)
-    .filter((result) => !isDocumentedMeasurement(result.id))
+    .filter((result) => !isDocumentedMeasurement(result.id, result.actual))
     .map(
       (result) =>
         `${result.scene}: ${result.id} is ${result.actual?.toFixed(1) ?? 'missing'}, expected ${result.expected.toFixed(1)} (${notes.get(result.id) ?? ''})`,
