@@ -23,7 +23,7 @@ const RELATION_LIST_PATTERN = new RegExp(
 const RELATION_LINK_PATTERN = /\[(\d{4})\]\(([^)]+)\)/g
 const VALID_REVISED_LINE_PATTERN = /^Revised: \d{4}-\d{2}-\d{2}, \S/
 const INDEX_ROW_PATTERN =
-  /^\| (\d{4}) \| \[([^\]]+)\]\(([^)]+)\) \| [^|]*? \| ([^|]*?) \|$/gm
+  /^\|\s*(\d{4})\s*\|\s*\[([^\]]+)\]\(([^)]+)\)\s*\|[^|]*\|([^|]*)\|\s*$/gm
 
 const RELATION_KINDS = {
   Amends: { inverse: 'Amended by', partly: false },
@@ -445,6 +445,14 @@ describe('findAdrViolations', () => {
       expect(
         findAdrViolations([fixtureAdr('0001')], fixtureRow('Fixture', '-')),
       ).toEqual([])
+    })
+
+    it('reads rows padded by Prettier', () => {
+      const paddedRow =
+        '| 0001   | [Other](0001-fixture.md)                  | Accepted | -             |'
+      expect(findAdrViolations([fixtureAdr('0001')], paddedRow)).toContain(
+        '0001-fixture.md: README title "Other" differs from "Fixture"',
+      )
     })
 
     it('flags a title mismatch', () => {
