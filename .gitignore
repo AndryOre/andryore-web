@@ -31,3 +31,6 @@ docs/brand/brandbook/index.html
 
 # Fidelity audit output (AO-2101)
 audit-output/
+
+# Private sound files fetched at build time (ADR 0019)
+public/sounds/
