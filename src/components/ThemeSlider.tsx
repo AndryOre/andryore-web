@@ -96,7 +96,8 @@ export function chooseWithSound(
 /**
  * Theme control: vertical sliding tabs for Light, Auto and Dark next to a
  * brightness bar. The bar is one `slider`; arrow keys step between the stops
- * and a press or drag on it picks the nearest one. Tabs and bar always agree
+ * and a press or drag on it picks the nearest one. A press replayed after
+ * hydration is untrusted: it picks a stop but starts no drag. Tabs and bar always agree
  * because both read and write the same stored preference.
  * @param props Component props.
  * @param props.copy Localised labels.
@@ -131,13 +132,15 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
   }
 
   const onPointerDown = (event: PointerEvent<HTMLDivElement>): void => {
-    event.currentTarget.setPointerCapture(event.pointerId)
-    setDragging(true)
+    if (event.nativeEvent.isTrusted) {
+      event.currentTarget.setPointerCapture(event.pointerId)
+      setDragging(true)
+    }
     pick(event.clientY)
   }
 
   const onPointerMove = (event: PointerEvent<HTMLDivElement>): void => {
-    if (dragging) pick(event.clientY)
+    if (dragging || event.buttons === 1) pick(event.clientY)
   }
 
   const endDrag = (): void => {
@@ -205,7 +208,7 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
       >
         <span
           aria-hidden="true"
-          className="theme-fill absolute inset-x-0 bottom-0 bg-foreground"
+          className="theme-fill absolute inset-0 bg-foreground"
         />
         <BarSun />
       </div>

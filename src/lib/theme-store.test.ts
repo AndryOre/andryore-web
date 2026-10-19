@@ -1,7 +1,9 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
+import { readFileSync } from 'node:fs'
 
 import {
   chooseTheme,
+  FADE_DURATION_MS,
   getServerThemeSnapshot,
   getThemeSnapshot,
   paintTheme,
@@ -118,5 +120,22 @@ describe('theme store', () => {
     stubBrowser({ storage: true, dark: false })
     chooseTheme('auto')
     expect(getThemeSnapshot()).toBe('auto')
+  })
+})
+
+describe('fade timing', () => {
+  test('matches the shared base duration the Theme tile transitions use', () => {
+    const tokens = readFileSync('docs/brand/tokens.css', 'utf8')
+    const base = /--duration-base:\s*(\d+)ms/.exec(tokens)
+    expect(Number(base?.[1])).toBe(FADE_DURATION_MS)
+  })
+
+  test('the tile transitions use the shared tokens and no layout property', () => {
+    const css = readFileSync('src/styles/global.css', 'utf8')
+    const tile = css.slice(css.indexOf('.theme-indicator {'))
+    const rules = tile.slice(0, tile.indexOf('/* Language tile'))
+    expect(rules).not.toMatch(/transition:[^;]*\b(height|width|top)\b/)
+    expect(rules).not.toMatch(/cubic-bezier/)
+    expect(css).not.toMatch(/html\.theme-fade[^{]*\{[^}]*!important/)
   })
 })
