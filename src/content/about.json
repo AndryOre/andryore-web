@@ -1,6 +1,7 @@
 {
   "en": {
     "pageTitle": "About",
+    "backLink": "Home",
     "pageDescription": "I build web apps, auth flows, APIs and self-hosted infra for startups and small teams. Full-stack engineer, independent since 2024.",
     "numbersHeading": "In numbers",
     "independentLabel": "Freelance since",
@@ -114,6 +115,7 @@
   },
   "es": {
     "pageTitle": "Acerca de",
+    "backLink": "Inicio",
     "pageDescription": "Construyo apps web, flujos de auth, APIs e infra self-hosted para startups y equipos pequeños. Ingeniero full-stack, independiente desde 2024.",
     "numbersHeading": "En números",
     "independentLabel": "Freelance desde",
