@@ -33,3 +33,25 @@ for (const route of ROUTES) {
     expect(await findClippedText(page)).toEqual([])
   })
 }
+
+for (const reducedMotion of ['reduce', 'no-preference'] as const) {
+  test(`header gets a surface after scrolling with ${reducedMotion} motion`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion })
+    await page.route('**/api/stream-status', (handler) =>
+      handler.fulfill({ json: { state: 'offline' } }),
+    )
+    await page.goto('/')
+    const header = page.locator('.site-header')
+    const background = () =>
+      header.evaluate((element) => getComputedStyle(element).backgroundColor)
+    expect(await background()).toBe('rgba(0, 0, 0, 0)')
+    await page.evaluate(() => {
+      globalThis.scrollTo(0, 400)
+    })
+    await expect
+      .poll(background)
+      .not.toMatch(/^rgba\(0, 0, 0, 0\)$|^transparent$/)
+  })
+}

@@ -418,22 +418,18 @@ body {
   }
 }
 
-@keyframes header-surface {
-  to {
-    background-color: color-mix(in oklab, var(--background) 82%, transparent);
-    border-bottom-color: var(--border);
-    backdrop-filter: blur(12px);
-  }
+.site-header[data-scrolled] {
+  background-color: color-mix(in oklab, var(--background) 90%, transparent);
+  box-shadow: 0 1px 0 var(--border);
+  backdrop-filter: blur(16px);
 }
 
-@supports (animation-timeline: scroll()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .site-header {
-      border-bottom: 1px solid transparent;
-      animation: header-surface linear both;
-      animation-timeline: scroll(root);
-      animation-range: 0 4rem;
-    }
+@media (prefers-reduced-motion: no-preference) {
+  .site-header {
+    transition:
+      background-color 200ms cubic-bezier(0.23, 1, 0.32, 1),
+      box-shadow 200ms cubic-bezier(0.23, 1, 0.32, 1),
+      backdrop-filter 200ms cubic-bezier(0.23, 1, 0.32, 1);
   }
 }
 
