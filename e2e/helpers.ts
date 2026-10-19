@@ -94,7 +94,7 @@ export async function settlePage(page: Page): Promise<void> {
  * @param page The page to measure.
  * @returns A description of each overflow found.
  */
-async function findHorizontalOverflow(page: Page): Promise<string[]> {
+export async function findHorizontalOverflow(page: Page): Promise<string[]> {
   return page.evaluate(() => {
     const root = globalThis.document.documentElement
     const width = root.clientWidth

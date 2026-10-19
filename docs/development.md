@@ -47,10 +47,13 @@ Agents do not run a `build` script unless explicitly asked.
 
 - The `← Home` link on About and Uses.
 - The Chrome Web Store button in the Snug header.
-- The header blurred surface after scroll.
+- The header floating as a blurred pill after scroll, which canvas v29 shows and
+  the audit's top-of-page canvas capture does not.
 - The hero art border and shadow where the canvas differs.
 - The Epidemic sound files being absent (404 on `/sounds/`) in local and CI
   builds.
+- The dock buttons shrinking to 36 px (34 px under 360 px) below 400 px, so the
+  dock fits phones.
 - The Astro badge dark text, JSON Flow without a website tile, the 404 tiles
   behind the content at 390 px, and the 404 tiles keeping their positions with
   reduced motion.
