@@ -4,9 +4,16 @@
 
 Accepted. Extends [0003](0003-static-astro-on-coolify.md). Partly superseded by
 [0014](0014-umami-cloud-cookieless-analytics.md): one cookieless analytics
-script is allowed.
+script is allowed. Amended by
+[0017](0017-github-contributions-via-runtime-endpoint.md): the contribution grid
+is fetched same-origin at runtime. Amended by
+[0020](0020-external-links-open-in-a-new-tab.md): external links also carry
+`target`.
 
 Date: 2026-10-17
+
+Revised: 2026-10-19, runtime exceptions, same-origin grid fetch and the `target`
+rule (0017, 0020).
 
 ## Context
 
@@ -23,12 +30,13 @@ personal site does not need.
   (`@fontsource-variable/*`), images and icons are local, and there are no
   third-party scripts, embeds or analytics.
 - **Outbound links are links, not loads.** Every external `<a>` carries
-  `rel="noopener noreferrer"`.
+  `rel="noopener noreferrer"` and `target="_blank"` (0020).
 - **A build-output audit enforces it.** The browser quality gates scan `dist/`
   for third-party URLs in `src`, `href` (stylesheets, preloads) and inline CSS,
   and for external links missing `rel`.
-- **The one runtime exception is the Twitch live status endpoint** (0004), which
-  is called by the Site's own server, never by the browser.
+- **The runtime exceptions are server-side only.** The Twitch live status (0004)
+  and the GitHub contribution grid (0017) are served by the Site's own endpoint;
+  the browser calls only the Site's own origin, never Twitch or GitHub.
 
 ### Rejected alternatives
 
@@ -39,6 +47,7 @@ personal site does not need.
 
 ## Consequences
 
-- Open Graph images and the contribution grid are generated at build time from
-  local or build-fetched data, never loaded by the browser.
+- Open Graph images are generated at build time. The contribution grid is
+  fetched same-origin from the runtime endpoint (0017); the build copy is only
+  the fallback. Neither is loaded from another origin by the browser.
 - A new dependency that loads remote assets fails the audit and needs a new ADR.

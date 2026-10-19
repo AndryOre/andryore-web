@@ -2,16 +2,19 @@
 
 ## Status
 
-Accepted
+Accepted. Amended by [0018](0018-the-site-has-no-log.md): the Log is gone.
 
 Date: 2026-10-16
+
+Revised: 2026-10-19, the Site no longer has a Log.
 
 ## Context
 
 The repository will become public. It holds the Site's source code and also
 Andry's brand kit (logos, banners, voice, copy) and the Site's written content
-(the Log, the About text, the product pages). Publishing all of it under one
-open license would let others reuse the brand and the writing.
+(the About text, the product pages; the Log existed when this was decided, see
+0018). Publishing all of it under one open license would let others reuse the
+brand and the writing.
 
 ## Decision
 

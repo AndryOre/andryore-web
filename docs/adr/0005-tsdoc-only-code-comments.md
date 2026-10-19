@@ -6,6 +6,9 @@ Accepted
 
 Date: 2026-10-16
 
+Revised: 2026-10-19, removed the vendored-code exemption, which the lint config
+never applied.
+
 ## Context
 
 Andry's other repos (Animated Fluent Emojis, Snug) enforce one comment policy by
@@ -23,7 +26,6 @@ policy needs a local rule to hold.
 - **It is enforced by lint**: a local `no-non-doc-comments` ESLint rule, copied
   from Animated Fluent Emojis with its tests, plus `eslint-plugin-jsdoc`'s
   `informative-docs`.
-- **Vendored code is exempt**: shadcn/ui generated components.
 
 ### Rejected alternatives
 
