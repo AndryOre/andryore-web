@@ -5,15 +5,21 @@ import type { Theme } from './routes'
 const THEME_STORAGE_KEY = 'theme'
 
 /**
- * Pins the theme before any page script runs, forces reduced motion and
+ * Pins the theme before any page script runs, sets the motion preference
+ * (reduced by default) and
  * answers the runtime endpoints that only the production server serves. The
  * contributions answer is not a valid snapshot, so the tile keeps its build
  * data without a network error.
  * @param page The page to configure.
  * @param theme The theme to paint.
+ * @param reducedMotion The motion preference to emulate.
  */
-export async function preparePage(page: Page, theme: Theme): Promise<void> {
-  await page.emulateMedia({ colorScheme: theme, reducedMotion: 'reduce' })
+export async function preparePage(
+  page: Page,
+  theme: Theme,
+  reducedMotion: 'reduce' | 'no-preference' = 'reduce',
+): Promise<void> {
+  await page.emulateMedia({ colorScheme: theme, reducedMotion })
   await page.route('**/api/stream-status', (route) =>
     route.fulfill({ json: { state: 'offline' } }),
   )
@@ -81,16 +87,69 @@ export async function settlePage(page: Page): Promise<void> {
 }
 
 /**
- * Asserts the page has no horizontal scrollbar.
+ * Lists every sign of horizontal overflow: a document wider than the viewport
+ * and any element, fixed ones included, whose right edge passes the viewport.
+ * An element clipped on purpose by an ancestor with `overflow: hidden` or
+ * `clip` that sits inside the viewport is ignored.
+ * @param page The page to measure.
+ * @returns A description of each overflow found.
+ */
+async function findHorizontalOverflow(page: Page): Promise<string[]> {
+  return page.evaluate(() => {
+    const root = globalThis.document.documentElement
+    const width = root.clientWidth
+    const found: string[] = []
+    if (root.scrollWidth > width) {
+      found.push(
+        `document scrollWidth ${String(root.scrollWidth)} > clientWidth ${String(width)}`,
+      )
+    }
+    const isClipped = (element: Element): boolean => {
+      for (
+        let ancestor = element.parentElement;
+        ancestor && ancestor !== globalThis.document.body;
+        ancestor = ancestor.parentElement
+      ) {
+        const style = globalThis.getComputedStyle(ancestor)
+        if (style.position === 'fixed') return false
+        const clips = ['hidden', 'clip'].includes(style.overflowX)
+        if (!clips) continue
+        const bounds = ancestor.getBoundingClientRect()
+        if (bounds.left >= -0.5 && bounds.right <= width + 0.5) return true
+      }
+      return false
+    }
+    for (const element of globalThis.document.body.querySelectorAll('*')) {
+      const bounds = element.getBoundingClientRect()
+      if (
+        bounds.width === 0 ||
+        bounds.height === 0 ||
+        bounds.right <= width + 0.5
+      )
+        continue
+      const style = globalThis.getComputedStyle(element)
+      if (
+        style.visibility === 'hidden' ||
+        style.display === 'contents' ||
+        element.closest('.sr-only, [hidden]') ||
+        isClipped(element)
+      )
+        continue
+      const label = `${element.tagName.toLowerCase()}${element.className && typeof element.className === 'string' ? `.${element.className.trim().split(/\s+/).slice(0, 2).join('.')}` : ''}`
+      found.push(
+        `${label} right ${String(Math.round(bounds.right))} > ${String(width)}`,
+      )
+    }
+    return found.slice(0, 20)
+  })
+}
+
+/**
+ * Asserts the page has no horizontal overflow, hidden or visible.
  * @param page The page to measure.
  */
 export async function assertNoHorizontalOverflow(page: Page): Promise<void> {
-  const overflow = await page.evaluate(
-    () =>
-      globalThis.document.documentElement.scrollWidth -
-      globalThis.document.documentElement.clientWidth,
-  )
-  expect(overflow).toBeLessThanOrEqual(0)
+  expect(await findHorizontalOverflow(page)).toEqual([])
 }
 
 const TOUCH_TARGET_LIMITS = {
