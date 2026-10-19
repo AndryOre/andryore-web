@@ -477,6 +477,20 @@ html:not(.dark) .stack-tile-end {
   }
 }
 
+@media (max-width: 389.98px) {
+  .nf-title {
+    padding-inline: 16px;
+    font-size: 26px;
+    white-space: normal;
+    text-wrap: balance;
+  }
+
+  .nf-actions {
+    flex-wrap: wrap;
+    padding-inline: 16px;
+  }
+}
+
 .nf-message {
   max-width: 56ch;
   margin: 0;
