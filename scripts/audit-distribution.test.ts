@@ -31,6 +31,22 @@ describe('auditHtml', () => {
       <a href="https://andryore.dev/about/">w</a>`
     expect(auditHtml(html)).toEqual([
       'external link without noopener noreferrer: https://github.com/AndryOre',
+      'external link without target="_blank": https://github.com/AndryOre',
+      'external link without target="_blank": https://github.com/AndryOre',
+    ])
+  })
+
+  test('requires target="_blank" on cross-origin http(s) anchors', () => {
+    const safe = 'rel="noopener noreferrer"'
+    const html = `
+      <a href="https://github.com/AndryOre" ${safe}>x</a>
+      <a href="//other.example/" ${safe} target="_self">y</a>
+      <a href="https://github.com/AndryOre" ${safe} target="_blank">ok</a>
+      <a href="mailto:hi@andryore.dev">mail</a>
+      <a href="/about/">local</a>`
+    expect(auditHtml(html)).toEqual([
+      'external link without target="_blank": https://github.com/AndryOre',
+      'external link without target="_blank": //other.example/',
     ])
   })
 })

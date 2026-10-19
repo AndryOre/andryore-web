@@ -1,14 +1,22 @@
 import {
+  useEffect,
   useRef,
   useState,
   useSyncExternalStore,
   type KeyboardEvent,
   type PointerEvent,
+  type RefObject,
 } from 'react'
 
 import { soundEngine, type SoundEngine } from '@/lib/sound-engine'
 import type { ThemePreference } from '@/lib/theme'
-import { stopAfterKey, stopFromRatio, THEME_STOPS } from '@/lib/theme-stops'
+import {
+  followPointer,
+  pickAtPointer,
+  releaseDrag,
+  type ThemeOrientation,
+} from '@/lib/theme-drag'
+import { stopAfterKey, THEME_STOPS } from '@/lib/theme-stops'
 import { chooseTheme } from '@/lib/theme-store'
 import { cn } from '@/lib/utils'
 
@@ -66,12 +74,53 @@ function BarSun() {
       strokeWidth="1.7"
       strokeLinecap="round"
       aria-hidden="true"
-      className="theme-sun pointer-events-none absolute bottom-3.5 left-1/2 size-6.5 -translate-x-1/2 text-background"
+      className="theme-sun pointer-events-none absolute size-6.5"
     >
       <circle cx="12" cy="12" r="4" />
       <path className="theme-sun-rays" d={RAY_PATH} />
     </svg>
   )
+}
+
+/**
+ * The orientation the tile's media query chose, read from the control's
+ * flex direction: a row puts the tabs beside a vertical bar, a column stacks a
+ * horizontal bar under the tabs.
+ * @param flexDirection The computed `flex-direction` of the control.
+ * @returns `vertical` for a row, `horizontal` otherwise.
+ */
+export function orientationFromFlexDirection(
+  flexDirection: string,
+): ThemeOrientation {
+  return flexDirection.startsWith('row') ? 'vertical' : 'horizontal'
+}
+
+/**
+ * Follows the visible orientation of the control as its media query flips.
+ * Starts horizontal, the layout the pre-hydration CSS renders.
+ * @param controlRef The element whose flex direction carries the orientation.
+ * @returns The current orientation.
+ */
+function useOrientation(
+  controlRef: RefObject<HTMLElement | null>,
+): ThemeOrientation {
+  const [orientation, setOrientation] = useState<ThemeOrientation>('horizontal')
+  useEffect(() => {
+    const control = controlRef.current
+    if (!control) return
+    const read = (): void => {
+      setOrientation(
+        orientationFromFlexDirection(getComputedStyle(control).flexDirection),
+      )
+    }
+    read()
+    const observer = new ResizeObserver(read)
+    observer.observe(control)
+    return () => {
+      observer.disconnect()
+    }
+  }, [controlRef])
+  return orientation
 }
 
 /**
@@ -94,10 +143,14 @@ export function chooseWithSound(
 }
 
 /**
- * Theme control: vertical sliding tabs for Light, Auto and Dark next to a
- * brightness bar. The bar is one `slider`; arrow keys step between the stops
- * and a press or drag on it picks the nearest one. Tabs and bar always agree
- * because both read and write the same stored preference.
+ * Theme control: sliding tabs for Light, Auto and Dark with a brightness bar.
+ * Below `lg` the tabs sit in one row over a horizontal bar; from `lg` up they
+ * are a column beside a vertical bar. The bar is one `slider`; arrow keys step between the stops
+ * and a press or drag on it picks the nearest one. A press replayed after
+ * hydration is untrusted: it picks a stop but starts no drag. A real drag only
+ * moves the fill, through `--drag-level`, and the stop is stored on release.
+ * Tabs and bar always agree because both read and write the same stored
+ * preference.
  * @param props Component props.
  * @param props.copy Localised labels.
  * @returns The control.
@@ -110,53 +163,89 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
     readNotHydrated,
   )
   const barRef = useRef<HTMLDivElement>(null)
+  const controlRef = useRef<HTMLDivElement>(null)
+  const orientation = useOrientation(controlRef)
+  const axisPosition = (event: PointerEvent<HTMLDivElement>): number =>
+    orientation === 'horizontal' ? event.clientX : event.clientY
   const [dragging, setDragging] = useState(false)
+  const replayedPressRef = useRef(false)
+  const dragLevelRef = useRef(0)
   const index = THEME_STOPS.indexOf(preference)
-
-  const choose = (stop: ThemePreference | undefined): void => {
-    chooseWithSound(stop, preference)
-  }
-
-  const pick = (clientY: number): void => {
-    const box = barRef.current?.getBoundingClientRect()
-    if (!box || box.height === 0) return
-    choose(THEME_STOPS[stopFromRatio((clientY - box.top) / box.height)])
-  }
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>): void => {
     const next = stopAfterKey(index, event.key)
     if (next === null) return
     event.preventDefault()
-    choose(THEME_STOPS[next])
+    chooseWithSound(THEME_STOPS[next], preference)
   }
 
   const onPointerDown = (event: PointerEvent<HTMLDivElement>): void => {
-    event.currentTarget.setPointerCapture(event.pointerId)
-    setDragging(true)
-    pick(event.clientY)
+    if (event.nativeEvent.isTrusted) {
+      event.currentTarget.setPointerCapture(event.pointerId)
+      followPointer(
+        barRef.current,
+        axisPosition(event),
+        dragLevelRef,
+        undefined,
+        orientation,
+      )
+      setDragging(true)
+    } else {
+      replayedPressRef.current = true
+      chooseWithSound(
+        pickAtPointer(barRef.current, axisPosition(event), orientation),
+        preference,
+      )
+    }
   }
 
   const onPointerMove = (event: PointerEvent<HTMLDivElement>): void => {
-    if (dragging) pick(event.clientY)
+    if (dragging) {
+      followPointer(
+        barRef.current,
+        axisPosition(event),
+        dragLevelRef,
+        undefined,
+        orientation,
+      )
+    } else if (replayedPressRef.current && event.buttons === 1) {
+      chooseWithSound(
+        pickAtPointer(barRef.current, axisPosition(event), orientation),
+        preference,
+      )
+    }
   }
 
   const endDrag = (): void => {
+    replayedPressRef.current = false
+    if (!dragging) return
     setDragging(false)
+    chooseWithSound(
+      releaseDrag(barRef.current, dragLevelRef.current),
+      preference,
+    )
+  }
+
+  const cancelDrag = (): void => {
+    replayedPressRef.current = false
+    if (!dragging) return
+    setDragging(false)
+    releaseDrag(barRef.current, dragLevelRef.current)
   }
 
   return (
-    <div className="flex min-h-35 flex-1 gap-3 self-stretch">
+    <div ref={controlRef} className="theme-control">
       <div
         role="group"
         aria-label={copy.label}
         data-theme-tabs
         data-ready={hydrated ? '' : undefined}
-        className="theme-tabs relative grid flex-1 grid-rows-3 bg-muted p-1"
+        className="theme-tabs relative bg-muted"
       >
         <span
           aria-hidden="true"
           data-theme-indicator
-          className="theme-indicator absolute inset-x-1 top-1 bg-foreground"
+          className="theme-indicator absolute bg-foreground"
           data-ready={hydrated ? '' : undefined}
           data-stop={preference}
         />
@@ -171,11 +260,11 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
               chooseTheme(stop)
             }}
             className={cn(
-              'theme-tab relative z-10 flex min-h-11 flex-col items-center justify-center gap-2 px-3 text-center font-mono font-bold',
+              'theme-tab relative z-10 flex items-center justify-center text-center font-mono font-bold',
               stop === preference ? 'text-background' : 'text-muted-foreground',
             )}
           >
-            <span className="size-5 shrink-0 [&>svg]:size-5">
+            <span className="theme-tab-icon shrink-0">
               <StopIcon stop={stop} />
             </span>
             {copy[stop]}
@@ -187,7 +276,7 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
         role="slider"
         tabIndex={0}
         aria-label={copy.label}
-        aria-orientation="vertical"
+        aria-orientation={orientation}
         aria-valuemin={0}
         aria-valuemax={THEME_STOPS.length - 1}
         aria-valuenow={index}
@@ -199,13 +288,13 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
-        onPointerCancel={endDrag}
-        className="theme-bar relative w-19 shrink-0 cursor-ns-resize touch-none overflow-hidden bg-muted"
+        onPointerCancel={cancelDrag}
+        className="theme-bar relative overflow-hidden bg-muted"
         data-stop={preference}
       >
         <span
           aria-hidden="true"
-          className="theme-fill absolute inset-x-0 bottom-0 bg-foreground"
+          className="theme-fill absolute inset-0 bg-foreground"
         />
         <BarSun />
       </div>

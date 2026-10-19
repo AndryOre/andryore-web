@@ -9,7 +9,11 @@ import {
 } from './theme'
 
 const FADE_CLASS = 'theme-fade'
-const FADE_DURATION_MS = 400
+/**
+ * How long the fade class stays on the root. It equals `--duration-base`, the
+ * one duration every Theme tile transition and the colour fade share.
+ */
+export const FADE_DURATION_MS = 320
 
 const listeners = new Set<() => void>()
 const memory: { preference: ThemePreference | null } = { preference: null }

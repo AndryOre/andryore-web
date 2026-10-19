@@ -1,8 +1,12 @@
 ---
+import chrome from '../content/chrome.json'
 import findMe from '../content/find-me.json'
 import type { Locale } from '../i18n/locales'
 import { CONTACT_EMAIL } from '../lib/contact'
-import { externalLinkTokens } from '../lib/external-link'
+import {
+  externalLinkAttributes,
+  labelWithNewTabNote,
+} from '../lib/external-link'
 import type { IconId } from '../lib/icons'
 import { resolveIcon } from '../lib/icons'
 import BrandIcon from './BrandIcon.astro'
@@ -14,6 +18,7 @@ interface Props {
 
 const { locale } = Astro.props
 const copy = findMe[locale]
+const chromeCopy = chrome[locale]
 const emailId = 'find-me-email'
 
 const hasDarkMark = (icon: string): boolean => {
@@ -24,7 +29,7 @@ const hasDarkMark = (icon: string): boolean => {
 
 <section
   id="find-me"
-  class="flex scroll-mt-4 flex-col items-center gap-5.5 px-2 pt-9 pb-2 text-center"
+  class="flex scroll-mt-[88px] flex-col items-center gap-5.5 px-2 pt-9 pb-2 text-center"
   aria-labelledby="find-me-heading"
 >
   <h2 id="find-me-heading" class="m-0 text-[2rem] font-bold tracking-[-0.03em]">
@@ -36,8 +41,8 @@ const hasDarkMark = (icon: string): boolean => {
       <li class="group relative">
         <a
           href={item.href}
-          rel={externalLinkTokens()}
-          aria-label={item.label}
+          {...externalLinkAttributes(item.href)}
+          aria-label={labelWithNewTabNote(item.label, chromeCopy)}
           data-icon={item.icon}
           class="find-me-link bg-card border-border rounded-pill inline-flex size-[52px] items-center justify-center border outline-none sm:size-[60px] focus-visible:ring-2 focus-visible:ring-ring"
         >

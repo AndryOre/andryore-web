@@ -34,6 +34,8 @@ const SOUND_PACK = {
   cv: { file: 'cv', gain: 1, rate: 1 },
   live: { file: 'live', gain: 1, rate: 1 },
   pop: { file: 'pop', gain: 1, rate: 1 },
+  stackTick: { file: 'click', gain: 0.12, rate: 1 },
+  stackSettle: { file: 'pop', gain: 0.8, rate: 0.85 },
 } as const satisfies Record<string, SoundDefinition>
 
 /**
@@ -63,13 +65,18 @@ export interface SoundEngineDependencies {
   supportsHover: () => boolean
 }
 
+/** Per-call overrides of how an event plays. */
+export interface PlayOptions {
+  rate?: number
+}
+
 /** The public surface of the sound engine. */
 export interface SoundEngine {
   getAvailability: () => SoundAvailability
   isAvailable: () => boolean
   loadAvailability: () => Promise<boolean>
   subscribeAvailability: (onChange: () => void) => () => void
-  play: (event: SoundEvent) => void
+  play: (event: SoundEvent, options?: PlayOptions) => void
 }
 
 const MANIFEST_URL = '/sounds/manifest.json'
@@ -175,6 +182,7 @@ export function createSoundEngine(
     audio: AudioContext,
     output: GainNode,
     definition: SoundDefinition,
+    rate: number,
   ): Promise<void> => {
     try {
       const [buffer] = await Promise.all([
@@ -184,7 +192,7 @@ export function createSoundEngine(
       const source = audio.createBufferSource()
       const level = audio.createGain()
       source.buffer = buffer
-      source.playbackRate.value = definition.rate
+      source.playbackRate.value = rate
       level.gain.value = definition.gain
       source.connect(level)
       level.connect(output)
@@ -194,7 +202,7 @@ export function createSoundEngine(
     }
   }
 
-  const play = (event: SoundEvent): void => {
+  const play = (event: SoundEvent, options?: PlayOptions): void => {
     if (
       availability !== 'available' ||
       !dependencies.isEnabled() ||
@@ -209,7 +217,7 @@ export function createSoundEngine(
     lastPlayedAt = now
     const audio = ensureContext()
     if (!audio || !master) return
-    void start(audio, master, definition)
+    void start(audio, master, definition, options?.rate ?? definition.rate)
   }
 
   return {

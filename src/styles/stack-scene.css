@@ -371,11 +371,43 @@ html:not(.dark) .stack-tile-end {
   }
 }
 
-@media (max-width: 40rem) {
+@media (max-width: 48rem) {
   @supports ((animation-timeline: view()) and (animation-range: entry)) {
     @media (prefers-reduced-motion: no-preference) {
       .stack-scene {
-        height: 180svh;
+        --kx: 0.3;
+        --ky: 0.55;
+        --sz: 0.72;
+        --field-top: 62%;
+        height: calc(640px + 60svh);
+      }
+
+      .stack-stage {
+        height: 640px;
+        justify-content: flex-start;
+        padding-top: 2.5rem;
+      }
+
+      .stack-tile-scatter {
+        top: var(--field-top);
+      }
+
+      .stack-cta {
+        top: var(--field-top);
+      }
+    }
+  }
+}
+
+@media (min-width: 40.0625rem) and (max-width: 48rem) {
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+    @media (prefers-reduced-motion: no-preference) {
+      .stack-scene {
+        --kx: 0.5;
+      }
+
+      .stack-tile-extra {
+        display: none;
       }
     }
   }
@@ -474,6 +506,20 @@ html:not(.dark) .stack-tile-end {
   .nf-title {
     font-size: 40px;
     letter-spacing: -0.03em;
+  }
+}
+
+@media (max-width: 389.98px) {
+  .nf-title {
+    padding-inline: 16px;
+    font-size: 26px;
+    white-space: normal;
+    text-wrap: balance;
+  }
+
+  .nf-actions {
+    flex-wrap: wrap;
+    padding-inline: 16px;
   }
 }
 

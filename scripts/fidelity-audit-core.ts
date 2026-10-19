@@ -149,6 +149,31 @@ export function resolveCanvasPath(
   )
 }
 
+/**
+ * Labels one overflow finding with the page state that produced it.
+ * @param state The route, language, theme, width and scroll of the page.
+ * @param state.route The route path.
+ * @param state.language The page language.
+ * @param state.theme The color theme.
+ * @param state.width The viewport width in pixels.
+ * @param state.scrolled Whether the page was scrolled before measuring.
+ * @param finding One line from `findHorizontalOverflow`.
+ * @returns The report line.
+ */
+export function describeOverflow(
+  state: {
+    readonly route: string
+    readonly language: string
+    readonly theme: string
+    readonly width: number
+    readonly scrolled: boolean
+  },
+  finding: string,
+): string {
+  const scroll = state.scrolled ? 'scrolled' : 'top'
+  return `${state.route} ${state.language} ${state.theme} @${String(state.width)} ${scroll}: ${finding}`
+}
+
 /** A deviation the audit does not report because the owner accepted it. */
 export interface DocumentedException {
   readonly id: string
@@ -169,7 +194,7 @@ export const DOCUMENTED_EXCEPTIONS: readonly DocumentedException[] = [
   {
     id: 'header-blurred-surface',
     reason:
-      'The header gains a blurred surface after scroll; the canvas stays flat.',
+      'The header floats as a blurred pill after scroll, as canvas v29 shows; the canvas stays plain at the top.',
   },
   {
     id: 'hero-art-border-shadow',
@@ -193,10 +218,37 @@ export const DOCUMENTED_EXCEPTIONS: readonly DocumentedException[] = [
     reason: 'The 404 tiles sit behind the content at 390 px.',
   },
   {
+    id: 'dock-compact-buttons-phones',
+    reason:
+      'Below 400 px the dock buttons shrink to 36 px (34 px under 360 px) so the dock fits phones.',
+  },
+  {
     id: '404-reduced-motion-positions',
     reason: 'With reduced motion the 404 tiles keep their positions.',
   },
 ]
+
+const COMPACT_DOCK_BUTTON_TOLERANCE = 2
+
+/**
+ * Tells whether a failed measurement is a documented exception. The compact
+ * dock button only counts when it really measures 36 px (34 px under 360 px),
+ * so a hidden or broken dock still fails.
+ * @param measurementId The measurement id with its viewport, e.g. `x @390`.
+ * @param actual The measured value, or undefined when nothing matched.
+ * @returns True when the owner accepted the deviation.
+ */
+export function isDocumentedMeasurement(
+  measurementId: string,
+  actual?: number,
+): boolean {
+  const match = /^dock button width @(\d+)$/.exec(measurementId)
+  if (match === null || actual === undefined) return false
+  const width = Number(match[1])
+  if (width >= 400) return false
+  const compact = width < 360 ? 34 : 36
+  return Math.abs(actual - compact) <= COMPACT_DOCK_BUTTON_TOLERANCE
+}
 
 /**
  * Tells whether a console error is the 404 of a sound file, a documented

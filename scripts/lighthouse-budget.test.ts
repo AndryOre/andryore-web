@@ -17,6 +17,7 @@ import {
   median,
   parseReport,
   resolveStaticFile,
+  respondWithFile,
   runLighthouseOnce,
   RUNS_PER_PAGE,
   summarizeRuns,
@@ -221,5 +222,40 @@ describe('resolveStaticFile', () => {
     expect(
       resolveStaticFile(distribution, '/..%2Fdist-other/secret.txt'),
     ).toBeNull()
+  })
+})
+
+describe('respondWithFile', () => {
+  const largeText = 'body { color: red; }\n'.repeat(40)
+
+  test('gzips a text asset when the client accepts gzip', async () => {
+    const directory = makeTemporaryDirectory()
+    const file = path.join(directory, 'site.css')
+    writeFileSync(file, largeText)
+    const response = await respondWithFile(file, 'gzip, deflate, br')
+    expect(response.headers.get('content-encoding')).toBe('gzip')
+    expect(response.headers.get('vary')).toBe('Accept-Encoding')
+    const body = new Uint8Array(await response.arrayBuffer())
+    expect(body.length).toBeLessThan(largeText.length)
+    expect(new TextDecoder().decode(Bun.gunzipSync(body))).toBe(largeText)
+  })
+
+  test('serves raw bytes without gzip support, below 256 bytes or for binaries', async () => {
+    const directory = makeTemporaryDirectory()
+    const stylesheet = path.join(directory, 'site.css')
+    const tiny = path.join(directory, 'tiny.css')
+    const font = path.join(directory, 'font.woff2')
+    writeFileSync(stylesheet, largeText)
+    writeFileSync(tiny, 'a{}')
+    writeFileSync(font, largeText)
+    for (const [file, acceptEncoding] of [
+      [stylesheet, undefined],
+      [stylesheet, 'identity'],
+      [tiny, 'gzip'],
+      [font, 'gzip'],
+    ] as const) {
+      const response = await respondWithFile(file, acceptEncoding)
+      expect(response.headers.get('content-encoding')).toBeNull()
+    }
   })
 })

@@ -232,6 +232,35 @@ describe('play', () => {
     }
   })
 
+  test('maps stackTick to a soft click', async () => {
+    const state = setup()
+    await state.engine.loadAvailability()
+    state.engine.play('stackTick')
+    await flush()
+    expect(state.requested).toContain('/sounds/click.mp3')
+    expect(state.fake.sources[0]?.playbackRate.value).toBe(1)
+    expect(state.fake.gains[1]?.gain.value).toBe(0.12)
+  })
+
+  test('maps stackSettle to a slowed pop', async () => {
+    const state = setup()
+    await state.engine.loadAvailability()
+    state.engine.play('stackSettle')
+    await flush()
+    expect(state.requested).toContain('/sounds/pop.mp3')
+    expect(state.fake.sources[0]?.playbackRate.value).toBe(0.85)
+    expect(state.fake.gains[1]?.gain.value).toBe(0.8)
+  })
+
+  test('lets a call override the playback rate', async () => {
+    const state = setup()
+    await state.engine.loadAvailability()
+    state.engine.play('stackTick', { rate: 1.4 })
+    await flush()
+    expect(state.fake.sources[0]?.playbackRate.value).toBe(1.4)
+    expect(state.fake.gains[1]?.gain.value).toBe(0.12)
+  })
+
   test('creates one context and decodes each file once', async () => {
     const state = setup()
     await state.engine.loadAvailability()

@@ -52,7 +52,7 @@ interface DockProps {
 }
 
 const ITEM_CLASS =
-  'relative inline-flex size-11 items-center justify-center rounded-pill text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring [&_svg]:size-5 [&_svg]:shrink-0'
+  'relative inline-flex size-8.5 min-[360px]:size-9 min-[400px]:size-11 items-center justify-center rounded-pill text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring [&_svg]:size-5 [&_svg]:shrink-0'
 
 const PAGE_ICONS: Record<Exclude<DockPageKey, 'home'>, ReactElement> = {
   products: (
@@ -177,6 +177,7 @@ export function SoundSwitch({
     <DockItem
       label={enabled ? copy.on : copy.off}
       hidden={availability === 'unavailable'}
+      align="end"
     >
       <Button
         variant="dock"
@@ -201,11 +202,28 @@ export function SoundSwitch({
   )
 }
 
-function Tooltip({ children }: { children: ReactNode }) {
+const TOOLTIP_ALIGN_CLASS = {
+  start: 'left-0 sm:left-1/2 sm:-translate-x-1/2',
+  center: 'left-1/2 -translate-x-1/2',
+  end: 'right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2',
+} as const
+
+type TooltipAlign = keyof typeof TOOLTIP_ALIGN_CLASS
+
+function Tooltip({
+  children,
+  align,
+}: {
+  children: ReactNode
+  align: TooltipAlign
+}) {
   return (
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute bottom-full left-1/2 mb-2.5 -translate-x-1/2 translate-y-1 rounded-lg bg-foreground px-2.5 py-1 text-xs font-medium whitespace-nowrap text-background opacity-0 transition duration-160 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-has-focus-visible:translate-y-0 group-has-focus-visible:opacity-100 group-data-[menu-open]:hidden motion-reduce:transition-none"
+      className={cn(
+        TOOLTIP_ALIGN_CLASS[align],
+        'pointer-events-none absolute bottom-full mb-2.5 translate-y-1 rounded-lg bg-foreground px-2.5 py-1 text-xs font-medium whitespace-nowrap text-background opacity-0 transition duration-160 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-has-focus-visible:translate-y-0 group-has-focus-visible:opacity-100 group-data-[menu-open]:hidden motion-reduce:transition-none',
+      )}
     >
       {children}
     </span>
@@ -216,16 +234,18 @@ function DockItem({
   label,
   menuOpen = false,
   hidden = false,
+  align = 'center',
   children,
 }: {
   label: string
   menuOpen?: boolean
   hidden?: boolean
+  align?: TooltipAlign
   children: ReactNode
 }) {
   return (
     <div
-      className={cn('group relative', hidden && 'invisible')}
+      className={cn('group relative', hidden && 'hidden')}
       data-menu-open={menuOpen ? '' : undefined}
       data-sound-unavailable={hidden ? '' : undefined}
     >
@@ -235,7 +255,7 @@ function DockItem({
       >
         {children}
       </div>
-      <Tooltip>{label}</Tooltip>
+      <Tooltip align={align}>{label}</Tooltip>
     </div>
   )
 }
@@ -456,12 +476,16 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
       data-dock-nav
-      className="pointer-events-auto relative inline-flex items-center gap-0 rounded-pill border border-border bg-card/92 p-1 sm:gap-1 sm:p-2"
+      className="pointer-events-auto relative inline-flex items-center gap-0 rounded-pill border border-border bg-card/92 p-0.5 backdrop-blur-lg min-[360px]:p-1 sm:gap-1 sm:p-2"
     >
       {DOCK_PAGES.map((page) => {
         const active = activeKey === page.key
         return (
-          <DockItem key={page.key} label={copy.pages[page.key]}>
+          <DockItem
+            key={page.key}
+            label={copy.pages[page.key]}
+            align={page.key === 'home' ? 'start' : 'center'}
+          >
             <a
               href={pageHref(locale, page.path)}
               aria-label={copy.pages[page.key]}
@@ -486,7 +510,10 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
         )
       })}
 
-      <span aria-hidden="true" className="mx-0.5 h-6 w-px bg-border sm:mx-1" />
+      <span
+        aria-hidden="true"
+        className="h-5 w-px bg-border min-[360px]:mx-0.5 min-[360px]:h-6 sm:mx-1"
+      />
 
       <DockItem label={copy.language.label} menuOpen={openMenu === 'language'}>
         <Button

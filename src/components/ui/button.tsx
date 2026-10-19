@@ -15,7 +15,7 @@ const SIZE_CLASSES = {
   default: 'min-h-11 px-4 py-2',
   cta: 'h-11 px-[18px]',
   icon: 'size-11',
-  dock: 'size-11',
+  dock: 'size-8.5 min-[360px]:size-9 min-[400px]:size-11',
 } as const
 
 type ButtonProps = ComponentProps<'button'> & {

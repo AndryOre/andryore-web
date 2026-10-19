@@ -34,7 +34,64 @@ function createLoader() {
   return { state, load }
 }
 
+class FakePointerEvent extends Event {
+  clientY: number
+  constructor(type: string, init: PointerEventInit = {}) {
+    super(type, init)
+    this.clientY = init.clientY ?? 0
+  }
+}
+
+Object.defineProperty(globalThis, 'PointerEvent', {
+  value: FakePointerEvent,
+  configurable: true,
+})
+
+function pressOn(target: EventTarget, clientY: number): Event {
+  const press = new Event('pointerdown') as Event & { clientY: number }
+  press.clientY = clientY
+  Object.defineProperty(press, 'target', { value: target })
+  return press
+}
+
 describe('hydrateOnInteraction', () => {
+  test('replays a press that arrived before hydration finished', async () => {
+    const root = createRoot()
+    const { state, load } = createLoader()
+    const done = hydrateOnInteraction(root, load)
+    const target = createRoot()
+    const replayed: { type: string; clientY: number; trusted: boolean }[] = []
+    target.addEventListener('pointerdown', (event) => {
+      replayed.push({
+        type: event.type,
+        clientY: (event as FakePointerEvent).clientY,
+        trusted: event.isTrusted,
+      })
+    })
+    root.dispatchEvent(pressOn(target, 42))
+    state.release()
+    await done
+    expect(replayed).toEqual([
+      { type: 'pointerdown', clientY: 42, trusted: false },
+    ])
+  })
+
+  test('does not replay a press onto a detached target', async () => {
+    const root = createRoot()
+    const { state, load } = createLoader()
+    const done = hydrateOnInteraction(root, load)
+    const target = createRoot()
+    target.isConnected = false
+    let replays = 0
+    target.addEventListener('pointerdown', () => {
+      replays += 1
+    })
+    root.dispatchEvent(pressOn(target, 1))
+    state.release()
+    await done
+    expect(replays).toBe(0)
+  })
+
   test('waits for an interaction before loading', () => {
     const root = createRoot()
     const { state, load } = createLoader()

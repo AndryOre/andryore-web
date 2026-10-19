@@ -67,3 +67,72 @@ for (const route of HOME_ROUTES) {
     })
   })
 }
+
+test.describe('github tile touch and keyboard access', () => {
+  test.use({ hasTouch: true, viewport: { width: 375, height: 812 } })
+
+  test('tapping a cell shows its tip and tapping elsewhere hides it', async ({
+    page,
+  }) => {
+    await page.route('**/api/github-contributions', (handler) =>
+      handler.fulfill({ json: liveGrid }),
+    )
+    await page.goto('/')
+    await settlePage(page)
+    const cells = page.locator('[data-github-grid] [data-gh-grid] i')
+    await expect(cells).toHaveCount(4)
+    const cell = cells.nth(2)
+    await cell.scrollIntoViewIfNeeded()
+    await cell.tap()
+    await expect(cell).toHaveAttribute('data-active')
+    const tip = await cell.evaluate(
+      (element) => getComputedStyle(element, '::after').content,
+    )
+    expect(tip).toContain('9')
+    await page.locator('h1').first().tap()
+    await expect(cell).not.toHaveAttribute('data-active')
+  })
+
+  test('keyboard focus shows a tip and arrows move it', async ({ page }) => {
+    await page.route('**/api/github-contributions', (handler) =>
+      handler.fulfill({ json: liveGrid }),
+    )
+    await page.goto('/')
+    await settlePage(page)
+    const grid = page.locator('[data-github-grid] [data-gh-grid]')
+    const cells = grid.locator('i')
+    await expect(cells).toHaveCount(4)
+    await grid.focus()
+    await expect(cells.nth(0)).toHaveAttribute('data-active')
+    await page.keyboard.press('ArrowDown')
+    await expect(cells.nth(1)).toHaveAttribute('data-active')
+    await expect(cells.nth(0)).not.toHaveAttribute('data-active')
+    await grid.blur()
+    await expect(cells.nth(1)).not.toHaveAttribute('data-active')
+  })
+})
+
+test.describe('github month labels on phones', () => {
+  for (const width of [320, 375, 430]) {
+    test(`do not overlap at ${String(width)} px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 })
+      await page.goto('/')
+      await settlePage(page)
+      const boxes = await page
+        .locator('.github-months li:visible')
+        .evaluateAll((items) =>
+          items.map((item) => {
+            const range = document.createRange()
+            range.selectNodeContents(item)
+            const { left, right } = range.getBoundingClientRect()
+            return { left, right }
+          }),
+        )
+      expect(boxes.length).toBeGreaterThan(2)
+      for (const [index, box] of boxes.entries()) {
+        const next = boxes[index + 1]
+        if (next) expect(box.right).toBeLessThanOrEqual(next.left)
+      }
+    })
+  }
+})

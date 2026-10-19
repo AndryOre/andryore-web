@@ -47,10 +47,13 @@ Agents do not run a `build` script unless explicitly asked.
 
 - The `← Home` link on About and Uses.
 - The Chrome Web Store button in the Snug header.
-- The header blurred surface after scroll.
+- The header floating as a blurred pill after scroll, which canvas v29 shows and
+  the audit's top-of-page canvas capture does not.
 - The hero art border and shadow where the canvas differs.
 - The Epidemic sound files being absent (404 on `/sounds/`) in local and CI
   builds.
+- The dock buttons shrinking to 36 px (34 px under 360 px) below 400 px, so the
+  dock fits phones.
 - The Astro badge dark text, JSON Flow without a website tile, the 404 tiles
   behind the content at 390 px, and the 404 tiles keeping their positions with
   reduced motion.
@@ -94,6 +97,15 @@ agents.
   `e2e/messages.ts`. Use `--project=chromium` for the default run. Set
   `E2E_BASE_URL` to run the specs against a server that is already up, such as
   the nginx image, so the real header CSP applies instead of the meta policy.
+- **Mobile**: the `mobile-android` (Pixel 7) and `mobile-ios` (iPhone 14)
+  projects use Playwright device descriptors, so `isMobile` and `hasTouch` are
+  on. Both run in Chromium, because CI installs only Chromium; the iPhone
+  project covers its viewport, user agent and touch, not WebKit rendering. They
+  run the layout, overflow and Theme tile orientation specs, plus
+  `e2e/landscape.spec.ts`: every route at 844x390 with no horizontal overflow,
+  the first heading in view and no interactive element under the Dock. Run them
+  with `bun run test:e2e --project='mobile-*'`; CI runs them next to `chromium`.
+  Set `E2E_PORT` when port 4417 is taken by another server.
 - **Other browsers**: `bun run test:browsers` runs the layout spec in `webkit`
   and `firefox` inside the pinned Playwright image (Docker required), because
   the host libraries those browsers need are not installed on a server.
@@ -159,6 +171,20 @@ Comments are TSDoc blocks only, on non-obvious exports. A local ESLint rule
 are directive comments a tool reads, such as `eslint-disable`,
 `@ts-expect-error` and `prettier-ignore`. Rationale:
 [ADR 0005](adr/0005-tsdoc-only-code-comments.md).
+
+## External links
+
+`externalLinkAttributes(href)` in `src/lib/external-link.ts` is the only place
+that decides how a link opens. It returns `{ target: '_blank', rel }` for a
+cross-origin `http(s)` href and `undefined` for `mailto:`, `tel:`, `#` anchors,
+relative and same-origin links and the language switch. Spread it on the anchor:
+`<a href={href} {...externalLinkAttributes(href)}>`. Never write `target` or
+`rel` by hand.
+
+Announce the new tab with `chrome[locale].opensInNewTab`
+(`src/content/chrome.json`): as visually hidden text on a link with visible
+text, and appended inside the `aria-label` of an icon-only link. Rationale:
+[ADR 0020](adr/0020-external-links-open-in-a-new-tab.md).
 
 ## Adding a `@shadcn/lint` contract
 
@@ -233,18 +259,18 @@ those tests.
 
 ## Lighthouse budget
 
-`bun run lint:lighthouse` serves `dist/` locally and audits the home page and
-the Snug product page in English and Spanish, five runs each, with the
-Lighthouse version pinned in `scripts/lighthouse-budget.ts`. It prints a table
-with the median performance, accessibility, best practices and SEO scores plus
-the page weight. It exits non-zero when any median is below 90 or any score is
-null; weight is reported and never fails. It needs a built site
-(`bun run build`, opt-in locally) and a Chrome binary: set `CHROME_PATH` when
-Chrome is not on the default path. The local server answers `/api/stream-status`
-with the offline state, as the nginx image's upstream does, so the missing
-endpoint does not log a console error. CI runs it in
-`.github/workflows/lighthouse.yml`. Renovate bumps the pinned version through a
-custom manager in `renovate.json5`.
+`bun run lint:lighthouse` serves `dist/` locally, gzipping text assets the way
+`docker/nginx.conf` does, and audits the home page and the Snug product page in
+English and Spanish, five runs each, with the Lighthouse version pinned in
+`scripts/lighthouse-budget.ts`. It prints a table with the median performance,
+accessibility, best practices and SEO scores plus the page weight. It exits
+non-zero when any median is below 90 or any score is null; weight is reported
+and never fails. It needs a built site (`bun run build`, opt-in locally) and a
+Chrome binary: set `CHROME_PATH` when Chrome is not on the default path. The
+local server answers `/api/stream-status` with the offline state, as the nginx
+image's upstream does, so the missing endpoint does not log a console error. CI
+runs it in `.github/workflows/lighthouse.yml`. Renovate bumps the pinned version
+through a custom manager in `renovate.json5`.
 
 ## Renovate
 

@@ -13,6 +13,7 @@ import {
 
 import memoji from '../../docs/brand/avatar/memoji.webp'
 import about from '../content/about.json'
+import chrome from '../content/chrome.json'
 import home from '../content/home.json'
 import uses from '../content/uses.json'
 import { localePath, type Locale } from '../i18n/locales'
@@ -197,7 +198,7 @@ const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
               <dt class="text-muted-foreground order-last font-mono text-[11px] leading-[1.4]">
                 {stat.label}
               </dt>
-              <dd class="m-0 text-[28px] leading-[1.1] font-bold tracking-[-0.03em] tabular-nums">
+              <dd class="m-0 text-[28px] leading-[1.1] [overflow-wrap:anywhere] font-bold tracking-[-0.03em] tabular-nums">
                 {stat.count === undefined ? (
                   stat.display
                 ) : (
@@ -260,6 +261,7 @@ const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
                 icon: item.icon as IconId,
                 url: officialSites.get(item.icon),
               }}
+              newTabNote={chrome[locale].opensInNewTab}
             />
           </li>
         ))}
