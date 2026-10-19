@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 
+import { SOUND_FILES } from '../src/lib/sound-engine'
 import { preparePage, settlePage } from './helpers'
 import { chromeMessages, languageOf, streamMessages } from './messages'
 
@@ -82,6 +83,9 @@ test.describe('live strip', () => {
   test('sound switch toggles aria-checked and persists across reload', async ({
     page,
   }) => {
+    await page.route('**/sounds/manifest.json', (route) =>
+      route.fulfill({ json: { sounds: [...SOUND_FILES] } }),
+    )
     await preparePage(page, 'light')
     await page.goto('/')
     await settlePage(page)
