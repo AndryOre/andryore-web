@@ -290,13 +290,17 @@ run on the server; `dev.andryore.dev` covers pre-merge checks.
 ### Sound files
 
 The Glass sound set is a private build input
-([ADR 0019](adr/0019-optional-interface-sound.md)). In each Coolify application,
-add the build arguments `SOUNDS_REPO` (`owner/repository`) and `SOUNDS_REF`
-(branch, tag or commit), and a build secret named `sounds_token` holding a
-read-only fine-grained GitHub token with Contents read access to that
-repository. The Dockerfile mounts it with `RUN --mount=type=secret`, so it never
-lands in a layer. Without the secret the build succeeds and the Site hides the
-Sound switch. To try it locally:
+([ADR 0019](adr/0019-optional-interface-sound.md)). The Dockerfile defaults
+`SOUNDS_REPO` to `AndryOre/andryore-web-private` and `SOUNDS_REF` to `main`;
+override them with build arguments only to try another source. In each Coolify
+application, turn on Docker Build Secrets and add a build-time-only variable
+named exactly `sounds_token` (lowercase: Coolify uses the variable name as the
+BuildKit secret id) holding a read-only fine-grained GitHub token with Contents
+read access to that repository. Do not add `SOUNDS_REPO` or `SOUNDS_REF` as
+Coolify variables: with build secrets on, Coolify does not inject build
+arguments, so they would arrive empty. The Dockerfile mounts the secret with
+`RUN --mount=type=secret`, so it never lands in a layer. Without the secret the
+build succeeds and the Site hides the Sound switch. To try it locally:
 `docker build --secret id=sounds_token,env=SOUNDS_TOKEN --build-arg SOUNDS_REPO=owner/repo .`
 
 To roll back, redeploy the previous good commit from the Coolify application
