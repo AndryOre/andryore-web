@@ -42,10 +42,10 @@ test.describe('about CV split button', () => {
 
 test.describe('about and uses back link', () => {
   const cases = [
-    { path: '/about/', home: '/', label: '← Home' },
-    { path: '/uses/', home: '/', label: '← Home' },
-    { path: '/es/about/', home: '/es/', label: '← Inicio' },
-    { path: '/es/uses/', home: '/es/', label: '← Inicio' },
+    { path: '/about/', home: '/', label: '←Home' },
+    { path: '/uses/', home: '/', label: '←Home' },
+    { path: '/es/about/', home: '/es/', label: '←Inicio' },
+    { path: '/es/uses/', home: '/es/', label: '←Inicio' },
   ]
 
   for (const { path, home, label } of cases) {
