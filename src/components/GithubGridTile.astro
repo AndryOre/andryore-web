@@ -97,7 +97,7 @@ const stats = [
     </span>
   </p>
   <div
-    role="img"
+    role="group"
     aria-label={`${copy.gridLabel}: ${total}`}
     data-gh-grid
     class="github-grid mt-1 grid auto-cols-fr grid-flow-col grid-rows-7 gap-[3px]"
@@ -169,13 +169,51 @@ const stats = [
 </article>
 
 <script>
+  import { nextCellIndex } from '../lib/github-grid-nav'
   import { prefersReducedMotion } from '../lib/motion'
   import { startCountUp } from '../scripts/count-up'
   import { mountGithubTile } from '../scripts/github-tile'
 
+  function wireGridTips(root: HTMLElement): void {
+    const grid = root.querySelector<HTMLElement>('[data-gh-grid]')
+    if (!grid) return
+    grid.tabIndex = 0
+    let active: HTMLElement | null = null
+    const cells = () => [...grid.querySelectorAll<HTMLElement>('i')]
+    const show = (cell: HTMLElement | null): void => {
+      if (active === cell) return
+      active?.removeAttribute('data-active')
+      active = cell
+      active?.setAttribute('data-active', '')
+    }
+    grid.addEventListener('pointerdown', (event) => {
+      if (event.pointerType === 'mouse') return
+      const cell = (event.target as Element).closest<HTMLElement>('i')
+      show(cell && grid.contains(cell) ? cell : null)
+    })
+    document.addEventListener('pointerdown', (event) => {
+      if (!grid.contains(event.target as Node)) show(null)
+    })
+    grid.addEventListener('focus', () => {
+      show(active ?? cells()[0] ?? null)
+    })
+    grid.addEventListener('blur', () => {
+      show(null)
+    })
+    grid.addEventListener('keydown', (event) => {
+      const all = cells()
+      const current = active ? all.indexOf(active) : 0
+      const next = nextCellIndex(current, event.key, all.length)
+      if (next === null) return
+      event.preventDefault()
+      show(all[next] ?? null)
+    })
+  }
+
   for (const root of document.querySelectorAll<HTMLElement>(
     '[data-github-grid]',
   )) {
+    wireGridTips(root)
     void mountGithubTile(root).then(() => {
       for (const target of root.querySelectorAll<HTMLElement>(
         '[data-count-total]',
