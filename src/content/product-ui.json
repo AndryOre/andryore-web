@@ -9,7 +9,8 @@
       "website": "Visit website",
       "source": "View the source",
       "npm": "npm",
-      "marketplace": "Marketplace"
+      "marketplace": "Marketplace",
+      "chromeWebStore": "Chrome Web Store"
     },
     "statsHeading": "Facts",
     "worksWith": "Works with",
@@ -42,7 +43,8 @@
       "website": "Visitar el sitio",
       "source": "Ver el código",
       "npm": "npm",
-      "marketplace": "Marketplace"
+      "marketplace": "Marketplace",
+      "chromeWebStore": "Chrome Web Store"
     },
     "statsHeading": "Datos",
     "worksWith": "Funciona con",
