@@ -79,6 +79,12 @@ describe('ThemeSlider', () => {
     expect(html).not.toContain('style=')
   })
 
+  test('starts at rest: the bar is not dragging and carries no drag level', () => {
+    const html = render('en')
+    expect(html).toContain('data-dragging="false"')
+    expect(html).not.toContain('--drag-level')
+  })
+
   test('keeps decorative icons out of the accessibility tree', () => {
     const html = render('en')
     expect(html.match(/<svg[^>]*aria-hidden="true"/g)).toHaveLength(4)

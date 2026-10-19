@@ -17,12 +17,19 @@ async function openWithMotion(page: Page): Promise<void> {
 async function readTransition(
   page: Page,
   selector: string,
-): Promise<{ properties: string[]; durations: string[] }> {
+): Promise<{
+  properties: string[]
+  durations: string[]
+  easings: string[]
+}> {
   return page.locator(selector).evaluate((element) => {
     const style = globalThis.getComputedStyle(element)
     return {
       properties: style.transitionProperty.split(',').map((p) => p.trim()),
       durations: style.transitionDuration.split(',').map((d) => d.trim()),
+      easings: style.transitionTimingFunction
+        .split(/,\s*(?![^()]*\))/)
+        .map((easing) => easing.trim()),
     }
   })
 }
@@ -36,7 +43,7 @@ async function pressBar(page: Page, ratio: number): Promise<void> {
 }
 
 test.describe('theme tile motion', () => {
-  test('moves the fill and the sun with transform and one shared duration', async ({
+  test('moves the fill and the sun with transform and one spring', async ({
     page,
   }) => {
     await openWithMotion(page)
@@ -51,13 +58,75 @@ test.describe('theme tile motion', () => {
       for (const layout of ['height', 'width', 'top', 'all']) {
         expect(part.properties).not.toContain(layout)
       }
-      expect(new Set(part.durations)).toEqual(new Set(['0.32s']))
+      for (const [position, property] of part.properties.entries()) {
+        if (!['transform', 'rotate', 'scale'].includes(property)) continue
+
+        expect(part.durations[position]).toBe('0.52s')
+        expect(part.easings[position]).toContain('linear(')
+      }
     }
     expect(motion.fill.properties).toContain('transform')
     expect(motion.sun.properties).toEqual(
       expect.arrayContaining(['rotate', 'scale']),
     )
     expect(motion.indicator.properties).toContain('transform')
+  })
+
+  test('a drag follows the pointer continuously and settles on release', async ({
+    page,
+  }) => {
+    await openWithMotion(page)
+    await page.goto('/')
+    await settlePage(page)
+    const slider = page.locator('[data-theme-slider]')
+    await slider.scrollIntoViewIfNeeded()
+    const box = await slider.boundingBox()
+    if (!box) throw new Error('the theme bar has no box')
+    const x = box.x + box.width / 2
+    await page.mouse.move(x, box.y + box.height * 0.5)
+    await page.mouse.down()
+    await page.mouse.move(x, box.y + box.height * 0.3, { steps: 4 })
+    await expect(slider).toHaveAttribute('data-dragging', 'true')
+    const level = await slider.evaluate((element) =>
+      Number(element.style.getPropertyValue('--drag-level')),
+    )
+    expect([24, 62, 100]).not.toContain(Math.round(level))
+    expect(level).toBeGreaterThan(60)
+    expect(level).toBeLessThan(80)
+    await expect(slider).toHaveAttribute('aria-valuenow', '1')
+    await page.mouse.up()
+    await expect(slider).toHaveAttribute('data-dragging', 'false')
+    await expect(slider).toHaveAttribute('aria-valuenow', '1')
+    await expect(slider).toHaveAttribute('data-stop', 'auto')
+  })
+
+  test('pulling past the top overshoots by at most 8 percent and returns', async ({
+    page,
+  }) => {
+    await openWithMotion(page)
+    await page.goto('/')
+    await settlePage(page)
+    const slider = page.locator('[data-theme-slider]')
+    await slider.scrollIntoViewIfNeeded()
+    const box = await slider.boundingBox()
+    if (!box) throw new Error('the theme bar has no box')
+    const x = box.x + box.width / 2
+    await page.mouse.move(x, box.y + box.height * 0.5)
+    await page.mouse.down()
+    await page.mouse.move(x, box.y - box.height, { steps: 4 })
+    const level = await slider.evaluate((element) =>
+      Number(element.style.getPropertyValue('--drag-level')),
+    )
+    expect(level).toBeGreaterThan(100)
+    expect(level).toBeLessThanOrEqual(108)
+    await page.mouse.up()
+    await expect(slider).toHaveAttribute('data-stop', 'light')
+    await expect(slider).toHaveAttribute('data-dragging', 'false')
+    expect(
+      await slider.evaluate((element) =>
+        element.style.getPropertyValue('--drag-level'),
+      ),
+    ).toBe('')
   })
 
   test('a tab click and a bar press both change the stop', async ({ page }) => {
