@@ -296,6 +296,30 @@ html[data-theme-pref='dark']
   }
 }
 
+@media (max-height: 31.25rem) and (min-width: 40rem) and (max-width: 63.99rem) {
+  .hero-grid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 1rem;
+    padding-block: 0;
+  }
+
+  .hero-grid h1 {
+    font-size: 2.25rem;
+  }
+
+  .hero-grid [data-hero-art] {
+    order: 0;
+    align-self: start;
+    height: 180px;
+  }
+
+  .avatar-tile {
+    --tile: 120px;
+    --arm: 9px;
+    border-radius: 32px;
+  }
+}
+
 .avatar-tile::before {
   content: '';
   position: absolute;
