@@ -21,8 +21,8 @@ on the Site's content.
 2. **Pull request.** Implementation happens in a pull request against `develop`;
    a promotion pull request then ships `develop` to `main` (see
    [ADR 0015](docs/adr/0015-develop-as-integration-branch.md)). Every PR must
-   pass CI before it can be merged. Pull requests are merged via **squash merge
-   only**, keeping a linear history.
+   pass CI before it can be merged. See [Merging](docs/development.md#merging)
+   for the merge policy.
 3. **ADR for hard-to-reverse choices.** Decisions that are expensive to reverse
    (architecture, hosting, licensing, or anything that changes how contributors
    work) are recorded as an Architecture Decision Record under `docs/adr/`, not
@@ -42,9 +42,8 @@ responsible for the project's security posture (see
 Anyone who opens an issue, submits a pull request, or participates in discussion
 is a contributor. Contributors are expected to follow the repository's
 conventions and the [Code of Conduct](CODE_OF_CONDUCT.md). Contributing does not
-require any formal application or approval step. Contributions to the code are
-under the MIT license; the brand assets and the Site's content are not licensed
-to others (see [`LICENSE`](LICENSE)).
+require any formal application or approval step. Licensing is defined in
+[`LICENSE`](LICENSE).
 
 ## Becoming a maintainer
 
@@ -59,10 +58,8 @@ interest.
 
 There is currently no backup maintainer. If @AndryOre becomes unavailable for an
 extended period, the project may pause: issues and pull requests may go
-unreviewed until the maintainer returns or a successor is found. The source code
-is MIT licensed (see [`LICENSE`](LICENSE)), so anyone can fork it and continue
-independently. The brand kit and the Site's content are not part of that
-license.
+unreviewed until the maintainer returns or a successor is found. The
+[`LICENSE`](LICENSE) says what anyone may fork and continue independently.
 
 ## Code of Conduct
 

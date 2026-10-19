@@ -1,10 +1,11 @@
 import { writeFileSync } from 'node:fs'
 import path from 'node:path'
 
+import { usableCredential } from '../src/lib/credential'
 import { fetchContributionGrid } from '../src/lib/github-grid'
 
 const snapshot = await fetchContributionGrid({
-  token: process.env.GITHUB_TOKEN,
+  token: usableCredential(process.env.GITHUB_TOKEN),
   login: 'AndryOre',
   now: new Date(),
   fetchImpl: (url, init) => fetch(url, init),

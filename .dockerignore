@@ -13,3 +13,5 @@ docs/brand/*
 !docs/brand/avatar
 docs/brand/avatar/*
 !docs/brand/avatar/memoji.webp
+.env.keys
+.env.development

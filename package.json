@@ -30,6 +30,7 @@
     "cache:clear": "rm -rf /tmp/node-compile-cache .eslintcache node_modules/.cache",
     "prepare": "bunx --bun husky",
     "grid:update": "bun scripts/update-github-grid.ts",
+    "env:encrypt": "dotenvx encrypt",
     "audit:fidelity": "bun scripts/fidelity-audit.ts"
   },
   "devDependencies": {
@@ -72,6 +73,7 @@
   },
   "dependencies": {
     "@astrojs/react": "^7.1.0",
+    "@dotenvx/dotenvx": "^2.38.0",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@fontsource-variable/space-grotesk": "^5.3.0",
     "@radix-ui/react-dropdown-menu": "^2.2.1",

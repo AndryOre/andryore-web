@@ -12,15 +12,17 @@ COPY src src
 COPY scripts/fetch-sounds.ts scripts/fetch-sounds.ts
 ARG SOUNDS_REPO=AndryOre/andryore-web-private
 ARG SOUNDS_REF=main
-RUN --mount=type=secret,id=sounds_token \
-    SOUNDS_REPO="$SOUNDS_REPO" SOUNDS_REF="$SOUNDS_REF" bun scripts/fetch-sounds.ts
-ARG SITE_LASTMOD
-ENV SITE_LASTMOD=$SITE_LASTMOD
-RUN bun run build
+COPY package.json .env* ./
+RUN mkdir /env-out && if [ -f .env ]; then cp .env /env-out/.env && chmod 644 /env-out/.env; fi
+RUN --mount=type=secret,id=DOTENV_PRIVATE_KEY,env=DOTENV_PRIVATE_KEY \
+    SOUNDS_REPO="$SOUNDS_REPO" SOUNDS_REF="$SOUNDS_REF" \
+    bun --bun ./node_modules/.bin/dotenvx run -- bun scripts/fetch-sounds.ts
+RUN --mount=type=secret,id=DOTENV_PRIVATE_KEY,env=DOTENV_PRIVATE_KEY \
+    bun --bun ./node_modules/.bin/dotenvx run -- bun run build
 COPY docker/security-headers.conf.template docker/security-headers.conf.template
 COPY scripts/render-csp.ts scripts/render-csp.ts
 RUN bun scripts/render-csp.ts dist docker/security-headers.conf.template /repo/security-headers.conf
-RUN bun build --compile src/server/stream-status-server.ts --outfile /repo/stream-status-server
+RUN bun build --compile --no-compile-autoload-dotenv src/server/stream-status-server.ts --outfile /repo/stream-status-server
 
 FROM nginx:1.29-alpine
 RUN rm -f /etc/nginx/conf.d/default.conf
@@ -29,6 +31,7 @@ COPY --from=build /repo/security-headers.conf /etc/nginx/snippets/security-heade
 COPY docker/site.conf /etc/nginx/conf.d/site.conf
 COPY --from=build /repo/dist /usr/share/nginx/html
 COPY --from=build /repo/stream-status-server /usr/local/bin/stream-status-server
+COPY --from=build /env-out/ /app/
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 EXPOSE 80
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
