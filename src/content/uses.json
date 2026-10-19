@@ -1,5 +1,6 @@
 {
   "en": {
+    "backLink": "Home",
     "meta": {
       "title": "Uses",
       "description": "The tools, tech and setup behind what I build and stream, and how this site is made."
@@ -306,6 +307,7 @@
     }
   },
   "es": {
+    "backLink": "Inicio",
     "meta": {
       "title": "Uso",
       "description": "Las herramientas, la tecnología y el equipo con los que construyo y transmito, y cómo está hecho este sitio."

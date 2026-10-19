@@ -15,6 +15,7 @@ year: '2024'
 url: https://snug.andryore.dev
 changelog: https://snug.andryore.dev/changelog
 links:
+  chromeWebStore: 'https://chromewebstore.google.com/detail/gdhpeilfkeeajillmcncaelnppiakjhn'
   source: 'https://github.com/AndryOre/snug'
 stats:
   - icon: 'tag'

@@ -20,6 +20,7 @@ import BaseLayout from '../layouts/BaseLayout.astro'
 import { buildNumberStats } from '../lib/about'
 import { loadGridSnapshot } from '../lib/github-grid-build'
 import type { IconId } from '../lib/icons'
+import { revealClass } from '../lib/motion'
 import CvSplitButton from './CvSplitButton'
 import { buttonClassName } from './ui/button'
 import UsesBadge from './UsesBadge.astro'
@@ -58,9 +59,6 @@ const statIcons = {
   contributions: Activity,
 } as const
 const [firstPhrase = ''] = copy.typingPhrases
-const longestPhrase = copy.typingPhrases.toSorted(
-  (a, b) => b.length - a.length,
-)[0]
 
 const surfaceClass = 'about-surface bg-card border-border border'
 const iconBoxClass =
@@ -77,9 +75,19 @@ const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
     class="flex flex-col gap-10 max-[700px]:gap-7 min-[760px]:-mx-5"
     data-about-column
   >
+    <a
+      href={localePath(locale, '/')}
+      class="text-muted-foreground hover:text-foreground inline-flex min-h-11 w-fit items-center gap-2 font-mono text-xs tracking-wide no-underline"
+      data-page-back
+    >
+      <span aria-hidden="true">←</span>
+      {copy.backLink}
+    </a>
     <section
       aria-labelledby="about-heading"
       class:list={[
+        'reveal',
+        revealClass(0),
         surfaceClass,
         'grid gap-7 rounded-[20px] p-[22px] min-[701px]:grid-cols-[auto_1fr] min-[701px]:items-center min-[701px]:p-8',
       ]}
@@ -101,22 +109,14 @@ const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
           aria-label={`${copy.typingPrefix}${firstPhrase}`}
           data-typing
           data-typing-phrases={JSON.stringify(copy.typingPhrases)}
-          class="m-0 text-[clamp(30px,4.4vw,46px)] leading-[1.1] font-bold tracking-[-0.03em] text-balance"
+          class="m-0 text-[clamp(30px,4.4vw,46px)] leading-[1.1] font-bold tracking-[-0.03em] max-[900px]:min-h-[2.2em] max-[420px]:min-h-[3.3em]"
         >
           <span aria-hidden="true">
             {copy.typingPrefix}
-            <span class="inline-grid">
-              <span class="invisible col-start-1 row-start-1 whitespace-pre-wrap">
-                {longestPhrase}
-                <span class="caret caret-em"></span>
-              </span>
-              <span class="col-start-1 row-start-1">
-                <span data-typing-text class="text-primary">
-                  {firstPhrase}
-                </span>
-                <span class="caret caret-em"></span>
-              </span>
+            <span data-typing-text class="text-primary">
+              {firstPhrase}
             </span>
+            <span class="caret caret-em"></span>
           </span>
         </h1>
         <p class="text-muted-foreground m-0 max-w-[56ch] text-[17px]">
@@ -139,7 +139,10 @@ const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
       </div>
     </section>
 
-    <section aria-labelledby="what-i-do-heading" class="grid gap-3.5">
+    <section
+      aria-labelledby="what-i-do-heading"
+      class:list={['reveal', revealClass(1), 'grid gap-3.5']}
+    >
       <h2 id="what-i-do-heading" class={headingClass}>
         {copy.whatIDo.heading}
       </h2>
@@ -165,7 +168,10 @@ const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
       </ul>
     </section>
 
-    <section aria-labelledby="numbers-heading" class="grid gap-3.5">
+    <section
+      aria-labelledby="numbers-heading"
+      class:list={['reveal', revealClass(2), 'grid gap-3.5']}
+    >
       <h2 id="numbers-heading" class={headingClass}>
         {copy.numbersHeading}
       </h2>
@@ -210,7 +216,10 @@ const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
       </dl>
     </section>
 
-    <section aria-labelledby="timeline-heading" class="grid gap-3.5">
+    <section
+      aria-labelledby="timeline-heading"
+      class:list={['reveal', revealClass(3), 'grid gap-3.5']}
+    >
       <h2 id="timeline-heading" class={headingClass}>
         {copy.timelineHeading}
       </h2>
@@ -230,7 +239,10 @@ const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
       </ol>
     </section>
 
-    <section class="grid gap-3.5" data-about-closing>
+    <section
+      class:list={['reveal', revealClass(4), 'grid gap-3.5']}
+      data-about-closing
+    >
       <div class="grid max-w-[65ch] gap-4">
         {copy.bio.map((paragraph) => (
           <p class="m-0">{paragraph}</p>
@@ -238,7 +250,7 @@ const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
       </div>
     </section>
 
-    <section class="grid gap-3.5">
+    <section class:list={['reveal', revealClass(5), 'grid gap-3.5']}>
       <ul class="m-0 flex list-none flex-wrap gap-2.5 p-0">
         {copy.stack.map((item) => (
           <li>

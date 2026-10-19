@@ -218,7 +218,8 @@
 .hero-grid::before {
   content: '';
   position: absolute;
-  inset: -3rem -1rem -2rem;
+  inset: -3rem -1rem auto;
+  height: 980px;
   z-index: -1;
   pointer-events: none;
   background-image:
@@ -234,15 +235,16 @@
     );
   background-size: 44px 44px;
   mask-image: radial-gradient(
-    ellipse 70% 75% at 50% 45%,
-    #000 20%,
-    transparent 100%
+    ellipse 70% 80% at 40% 30%,
+    #000 0%,
+    transparent 78%
   );
 }
 
 .avatar-tile {
   --tile: 150px;
   --cross: #5c8bff;
+  --arm: 10px;
   position: relative;
   display: grid;
   place-items: center;
@@ -251,11 +253,14 @@
   overflow: hidden;
   border-radius: 32px;
   background-color: #0d1117;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
 }
 
 @media (min-width: 40rem) {
   .avatar-tile {
     --tile: 230px;
+    --arm: 12px;
     border-radius: 48px;
   }
 }
@@ -286,23 +291,23 @@
     linear-gradient(var(--cross), var(--cross)),
     linear-gradient(var(--cross), var(--cross));
   background-size:
-    12px 2px,
-    2px 12px,
-    12px 2px,
-    2px 12px,
-    12px 2px,
-    2px 12px,
-    12px 2px,
-    2px 12px;
+    var(--arm) 2px,
+    2px var(--arm),
+    var(--arm) 2px,
+    2px var(--arm),
+    var(--arm) 2px,
+    2px var(--arm),
+    var(--arm) 2px,
+    2px var(--arm);
   background-position:
-    calc(var(--tile) / 8 - 6px) calc(var(--tile) / 8 - 1px),
-    calc(var(--tile) / 8 - 1px) calc(var(--tile) / 8 - 6px),
-    calc(var(--tile) * 7 / 8 - 6px) calc(var(--tile) / 8 - 1px),
-    calc(var(--tile) * 7 / 8 - 1px) calc(var(--tile) / 8 - 6px),
-    calc(var(--tile) / 8 - 6px) calc(var(--tile) * 7 / 8 - 1px),
-    calc(var(--tile) / 8 - 1px) calc(var(--tile) * 7 / 8 - 6px),
-    calc(var(--tile) * 7 / 8 - 6px) calc(var(--tile) * 7 / 8 - 1px),
-    calc(var(--tile) * 7 / 8 - 1px) calc(var(--tile) * 7 / 8 - 6px);
+    calc(var(--tile) / 8 - var(--arm) / 2) calc(var(--tile) / 8 - 1px),
+    calc(var(--tile) / 8 - 1px) calc(var(--tile) / 8 - var(--arm) / 2),
+    calc(var(--tile) * 7 / 8 - var(--arm) / 2) calc(var(--tile) / 8 - 1px),
+    calc(var(--tile) * 7 / 8 - 1px) calc(var(--tile) / 8 - var(--arm) / 2),
+    calc(var(--tile) / 8 - var(--arm) / 2) calc(var(--tile) * 7 / 8 - 1px),
+    calc(var(--tile) / 8 - 1px) calc(var(--tile) * 7 / 8 - var(--arm) / 2),
+    calc(var(--tile) * 7 / 8 - var(--arm) / 2) calc(var(--tile) * 7 / 8 - 1px),
+    calc(var(--tile) * 7 / 8 - 1px) calc(var(--tile) * 7 / 8 - var(--arm) / 2);
 }
 
 body {
@@ -330,11 +335,15 @@ body {
 }
 
 @utility floaty {
-  animation: floaty 6s ease-in-out infinite;
+  animation: floaty 7s ease-in-out infinite;
 }
 
-@utility floaty-late {
-  animation: floaty 7s ease-in-out -3s infinite;
+@utility floaty-clock {
+  animation: floaty 6s ease-in-out -1.5s infinite;
+}
+
+@utility floaty-open {
+  animation: floaty 6s ease-in-out -3.5s infinite;
 }
 
 .hero-enter {

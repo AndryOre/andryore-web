@@ -329,19 +329,15 @@ html:not(.dark) .stack-tile-end {
     }
 
     .stack-tile-scatter {
-      animation:
-        stack-tile-move cubic-bezier(0.3333, 0, 0.6667, 1) both,
-        stack-tile-fade linear both;
-      animation-timeline: --stack, --stack;
-      animation-range:
-        entry 0% exit 40%,
-        entry 0% exit 40%;
+      animation-name: stack-tile-move, stack-tile-fade;
+      animation-timing-function: cubic-bezier(0.3333, 0, 0.6667, 1), linear;
+      animation-fill-mode: both, both;
     }
 
     .stack-title {
-      animation: stack-title-fade linear both;
-      animation-timeline: --stack;
-      animation-range: entry 0% exit 40%;
+      animation-name: stack-title-fade;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
     }
 
     .stack-cta {
@@ -349,13 +345,22 @@ html:not(.dark) .stack-tile-end {
       top: 50%;
       left: 50%;
       translate: -50% -50%;
-      animation:
-        stack-cta-move cubic-bezier(0.3333, 0, 0.6667, 1) both,
-        stack-cta-fade linear both;
+      animation-name: stack-cta-move, stack-cta-fade;
+      animation-timing-function: cubic-bezier(0.3333, 0, 0.6667, 1), linear;
+      animation-fill-mode: both, both;
+    }
+
+    .stack-scene .stack-tile-scatter,
+    .stack-scene .stack-cta {
       animation-timeline: --stack, --stack;
       animation-range:
         entry 0% exit 40%,
         entry 0% exit 40%;
+    }
+
+    .stack-scene .stack-title {
+      animation-timeline: --stack;
+      animation-range: entry 0% exit 40%;
     }
 
     .stack-cta:focus-within {

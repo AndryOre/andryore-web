@@ -121,3 +121,28 @@ for (const route of ['/does-not-exist/', '/es/404/']) {
     expect(covered).toBe(true)
   })
 }
+
+test('with motion allowed the scroll timeline drives the tiles and fades the title', async ({
+  page,
+}) => {
+  await page.emulateMedia({
+    colorScheme: 'light',
+    reducedMotion: 'no-preference',
+  })
+  await page.goto('/')
+  await page.locator('.stack-scene').evaluate((element) => {
+    const { top, height } = element.getBoundingClientRect()
+    window.scrollTo(0, top + window.scrollY + height * 0.3)
+  })
+  await expect(page.locator('.stack-tile-scatter').first()).toHaveCSS(
+    'animation-timeline',
+    '--stack, --stack',
+  )
+  await expect
+    .poll(() =>
+      page
+        .locator('.stack-title')
+        .evaluate((element) => Number(getComputedStyle(element).opacity)),
+    )
+    .toBeLessThan(1)
+})

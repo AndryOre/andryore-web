@@ -39,3 +39,42 @@ test.describe('about CV split button', () => {
     )
   })
 })
+
+test.describe('about and uses back link', () => {
+  const cases = [
+    { path: '/about/', home: '/', label: '←Home' },
+    { path: '/uses/', home: '/', label: '←Home' },
+    { path: '/es/about/', home: '/es/', label: '←Inicio' },
+    { path: '/es/uses/', home: '/es/', label: '←Inicio' },
+  ]
+
+  for (const { path, home, label } of cases) {
+    test(`${path} links back to ${home}`, async ({ page }) => {
+      await preparePage(page, 'light')
+      await page.goto(path)
+      await settlePage(page)
+      const back = page.locator('[data-page-back]')
+      await expect(back).toBeVisible()
+      await expect(back).toHaveText(label)
+      await expect(back).toHaveAttribute('href', home)
+      await back.focus()
+      await expect(back).toBeFocused()
+    })
+  }
+})
+
+test.describe('about typing headline', () => {
+  test('flows inline after the prefix on desktop', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await preparePage(page, 'light')
+    await page.goto('/about/')
+    await settlePage(page)
+    const heading = await page.locator('#about-heading').boundingBox()
+    const text = await page
+      .locator('#about-heading [data-typing-text]')
+      .boundingBox()
+    expect(heading).not.toBeNull()
+    expect(text).not.toBeNull()
+    expect((text?.y ?? 0) - (heading?.y ?? 0)).toBeLessThan(10)
+  })
+})
