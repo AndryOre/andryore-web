@@ -154,8 +154,7 @@ lowercase kebab-case, for example `feat/add-log-page`.
 
 `main` and `develop` are the two long-lived branches. Feature branches open PRs
 against `develop`, and a promotion PR from `develop` to `main` ships a finished
-spec ([ADR 0015](adr/0015-develop-as-integration-branch.md),
-[ADR 0016](adr/0016-forge-trunk-moves-to-develop.md)).
+spec ([ADR 0015](adr/0015-develop-as-integration-branch.md)).
 
 ## Commit format
 
