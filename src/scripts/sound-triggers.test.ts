@@ -122,8 +122,18 @@ describe('createSoundTriggers', () => {
     expect(harness.played).toEqual(['copy'])
   })
 
+  test('stays silent on hover before any gesture', () => {
+    const harness = createHarness()
+    harness.fire('pointerover', {
+      target: control().target,
+      pointerType: 'mouse',
+    })
+    expect(harness.played).toEqual([])
+  })
+
   test('plays hover on a pointer entering a control', () => {
     const harness = createHarness()
+    harness.fire('pointerdown', { target: control().target })
     harness.fire('pointerover', {
       target: control().target,
       pointerType: 'mouse',

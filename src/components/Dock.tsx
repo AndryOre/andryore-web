@@ -173,9 +173,11 @@ export function SoundSwitch({
   availability?: SoundAvailability
   onToggle: () => void
 }) {
-  if (availability === 'unavailable') return null
   return (
-    <DockItem label={enabled ? copy.on : copy.off}>
+    <DockItem
+      label={enabled ? copy.on : copy.off}
+      hidden={availability === 'unavailable'}
+    >
       <Button
         variant="dock"
         size="dock"
@@ -213,14 +215,20 @@ function Tooltip({ children }: { children: ReactNode }) {
 function DockItem({
   label,
   menuOpen = false,
+  hidden = false,
   children,
 }: {
   label: string
   menuOpen?: boolean
+  hidden?: boolean
   children: ReactNode
 }) {
   return (
-    <div className="group relative" data-menu-open={menuOpen ? '' : undefined}>
+    <div
+      className={cn('group relative', hidden && 'invisible')}
+      data-menu-open={menuOpen ? '' : undefined}
+      data-sound-unavailable={hidden ? '' : undefined}
+    >
       <div
         data-dock-scale
         className="origin-bottom transition-transform duration-160 ease-out motion-reduce:transition-none"

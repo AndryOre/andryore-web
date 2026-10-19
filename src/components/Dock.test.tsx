@@ -165,8 +165,11 @@ describe('SoundSwitch availability', () => {
     expect(renderSwitch('available')).toContain('data-dock-sound')
   })
 
-  test('renders nothing once the audio files are missing', () => {
-    expect(renderSwitch('unavailable')).toBe('')
+  test('keeps its slot but hides once the audio files are missing', () => {
+    const html = renderSwitch('unavailable')
+    expect(html).toContain('data-sound-unavailable')
+    expect(html).toContain('invisible')
+    expect(renderSwitch('available')).not.toContain('data-sound-unavailable')
   })
 })
 

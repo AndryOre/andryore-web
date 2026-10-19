@@ -126,7 +126,7 @@ export function createSoundTriggers(engine: TriggerEngine): SoundTriggers {
         if (sound) engine.play(sound)
       })
       root.addEventListener('pointerover', (event) => {
-        if (entersControl(event)) engine.play('hover')
+        if (unlocked && entersControl(event)) engine.play('hover')
       })
     },
     playUnlocked: (event) => {
