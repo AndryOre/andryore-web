@@ -32,7 +32,7 @@ const routeFiles = globSync('**/*.astro', { cwd: PAGES_ROOT })
 
 describe('route html structure', () => {
   test('finds the routes of both languages', () => {
-    expect(routeFiles.length).toBeGreaterThanOrEqual(14)
+    expect(routeFiles.length).toBeGreaterThanOrEqual(10)
     expect(routeFiles.some((file) => file.endsWith('404.astro'))).toBe(true)
   })
 

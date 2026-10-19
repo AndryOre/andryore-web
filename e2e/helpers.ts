@@ -5,15 +5,26 @@ import type { Theme } from './routes'
 const THEME_STORAGE_KEY = 'theme'
 
 /**
- * Pins the theme before any page script runs, forces reduced motion and
- * answers the stream status endpoint that only nginx serves in production.
+ * Pins the theme before any page script runs, sets the motion preference
+ * (reduced by default) and
+ * answers the runtime endpoints that only the production server serves. The
+ * contributions answer is not a valid snapshot, so the tile keeps its build
+ * data without a network error.
  * @param page The page to configure.
  * @param theme The theme to paint.
+ * @param reducedMotion The motion preference to emulate.
  */
-export async function preparePage(page: Page, theme: Theme): Promise<void> {
-  await page.emulateMedia({ colorScheme: theme, reducedMotion: 'reduce' })
+export async function preparePage(
+  page: Page,
+  theme: Theme,
+  reducedMotion: 'reduce' | 'no-preference' = 'reduce',
+): Promise<void> {
+  await page.emulateMedia({ colorScheme: theme, reducedMotion })
   await page.route('**/api/stream-status', (route) =>
     route.fulfill({ json: { state: 'offline' } }),
+  )
+  await page.route('**/api/github-contributions', (route) =>
+    route.fulfill({ json: {} }),
   )
   await page.addInitScript(
     ([key, value]) => {
@@ -76,19 +87,76 @@ export async function settlePage(page: Page): Promise<void> {
 }
 
 /**
- * Asserts the page has no horizontal scrollbar.
+ * Lists every sign of horizontal overflow: a document wider than the viewport
+ * and any element, fixed ones included, whose right edge passes the viewport.
+ * An element clipped on purpose by an ancestor with `overflow: hidden` or
+ * `clip` that sits inside the viewport is ignored.
+ * @param page The page to measure.
+ * @returns A description of each overflow found.
+ */
+export async function findHorizontalOverflow(page: Page): Promise<string[]> {
+  return page.evaluate(() => {
+    const root = globalThis.document.documentElement
+    const width = root.clientWidth
+    const found: string[] = []
+    if (root.scrollWidth > width) {
+      found.push(
+        `document scrollWidth ${String(root.scrollWidth)} > clientWidth ${String(width)}`,
+      )
+    }
+    const isClipped = (element: Element): boolean => {
+      for (
+        let ancestor = element.parentElement;
+        ancestor && ancestor !== globalThis.document.body;
+        ancestor = ancestor.parentElement
+      ) {
+        const style = globalThis.getComputedStyle(ancestor)
+        if (style.position === 'fixed') return false
+        const clips = ['hidden', 'clip'].includes(style.overflowX)
+        if (!clips) continue
+        const bounds = ancestor.getBoundingClientRect()
+        if (bounds.left >= -0.5 && bounds.right <= width + 0.5) return true
+      }
+      return false
+    }
+    for (const element of globalThis.document.body.querySelectorAll('*')) {
+      const bounds = element.getBoundingClientRect()
+      if (
+        bounds.width === 0 ||
+        bounds.height === 0 ||
+        bounds.right <= width + 0.5
+      )
+        continue
+      const style = globalThis.getComputedStyle(element)
+      if (
+        style.visibility === 'hidden' ||
+        style.display === 'contents' ||
+        element.closest('.sr-only, [hidden]') ||
+        isClipped(element)
+      )
+        continue
+      const label = `${element.tagName.toLowerCase()}${element.className && typeof element.className === 'string' ? `.${element.className.trim().split(/\s+/).slice(0, 2).join('.')}` : ''}`
+      found.push(
+        `${label} right ${String(Math.round(bounds.right))} > ${String(width)}`,
+      )
+    }
+    return found.slice(0, 20)
+  })
+}
+
+/**
+ * Asserts the page has no horizontal overflow, hidden or visible.
  * @param page The page to measure.
  */
 export async function assertNoHorizontalOverflow(page: Page): Promise<void> {
-  const overflow = await page.evaluate(
-    () =>
-      globalThis.document.documentElement.scrollWidth -
-      globalThis.document.documentElement.clientWidth,
-  )
-  expect(overflow).toBeLessThanOrEqual(0)
+  expect(await findHorizontalOverflow(page)).toEqual([])
 }
 
-const MINIMUM_TOUCH_TARGET = 43.5
+const TOUCH_TARGET_LIMITS = {
+  standard: 43.5,
+  compactDock: 24,
+  compactBelow: 400,
+}
 
 /**
  * Lists the standalone controls smaller than the touch target minimum. Links
@@ -97,8 +165,10 @@ const MINIMUM_TOUCH_TARGET = 43.5
  * @returns A description of each control that is too small.
  */
 export async function findSmallTouchTargets(page: Page): Promise<string[]> {
-  return page.evaluate((minimum) => {
+  return page.evaluate((limits) => {
     const small: string[] = []
+    const compact =
+      globalThis.document.documentElement.clientWidth < limits.compactBelow
     const controls = globalThis.document.querySelectorAll<HTMLElement>(
       'a[href], button, [role="button"], summary',
     )
@@ -108,6 +178,10 @@ export async function findSmallTouchTargets(page: Page): Promise<string[]> {
       if (bounds.width === 0 || bounds.height === 0) continue
       if (inline && !control.closest('nav, footer')) continue
       if (control.closest('.sr-only, [hidden], [aria-hidden="true"]')) continue
+      const minimum =
+        compact && control.closest('[data-dock-nav]')
+          ? limits.compactDock
+          : limits.standard
       if (bounds.width < minimum || bounds.height < minimum) {
         small.push(
           `${control.tagName.toLowerCase()} "${control.textContent.trim().slice(0, 30)}" ${String(Math.round(bounds.width))}x${String(Math.round(bounds.height))}`,
@@ -115,7 +189,34 @@ export async function findSmallTouchTargets(page: Page): Promise<string[]> {
       }
     }
     return small
-  }, MINIMUM_TOUCH_TARGET)
+  }, TOUCH_TARGET_LIMITS)
+}
+
+/**
+ * Lists the Dock boxes that stick out of the viewport: every control, every
+ * tooltip, and the menu panel when one is open. The Dock is fixed, so the
+ * document scroll width never sees it.
+ * @param page The page to measure.
+ * @returns A description of each box that is not fully inside the viewport.
+ */
+export async function findDockOutsideViewport(page: Page): Promise<string[]> {
+  return page.evaluate(() => {
+    const width = globalThis.document.documentElement.clientWidth
+    const outside: string[] = []
+    const boxes = globalThis.document.querySelectorAll<HTMLElement>(
+      '[data-dock-nav] a, [data-dock-nav] button, [data-dock-nav] .group > span[aria-hidden="true"], [data-dock-panel]',
+    )
+    for (const box of boxes) {
+      const bounds = box.getBoundingClientRect()
+      if (bounds.width === 0 || bounds.height === 0) continue
+      if (bounds.left >= 0 && bounds.right <= width) continue
+      const name = (box.getAttribute('aria-label') ?? box.textContent).trim()
+      outside.push(
+        `${box.tagName.toLowerCase()} "${name.slice(0, 30)}" ${String(Math.round(bounds.left))}..${String(Math.round(bounds.right))} of ${String(width)}`,
+      )
+    }
+    return outside
+  })
 }
 
 /**
@@ -132,12 +233,82 @@ export async function findClippedText(page: Page): Promise<string[]> {
     for (const element of candidates) {
       const style = globalThis.getComputedStyle(element)
       const hides = style.overflowX === 'hidden' || style.overflowX === 'clip'
-      if (hides && element.scrollWidth > element.clientWidth + 1) {
+      const visuallyHidden = element.clientWidth <= 1
+      if (
+        hides &&
+        !visuallyHidden &&
+        element.scrollWidth > element.clientWidth + 1
+      ) {
         clipped.push(
           `${element.tagName.toLowerCase()} "${element.textContent.trim().slice(0, 30)}"`,
         )
       }
     }
     return clipped
+  })
+}
+
+/**
+ * Finds Uses hero icons that overlap the title or intro, or stick out of the
+ * hero card.
+ * @param page The Uses page, already settled.
+ * @returns A description of each icon that overlaps text or is clipped.
+ */
+export async function findUsesHeroIconProblems(page: Page): Promise<string[]> {
+  return page.evaluate(() => {
+    const doc = globalThis.document
+    const card = doc.querySelector('section[aria-labelledby="uses-heading"]')
+    const heading = doc.querySelector('#uses-heading')
+    const intro = heading?.nextElementSibling
+    if (!card || !heading || !intro) return ['uses hero is missing']
+    const cardBox = card.getBoundingClientRect()
+    const textBoxes = [heading, intro].map((node) =>
+      node.getBoundingClientRect(),
+    )
+    const problems: string[] = []
+    const icons = card.querySelectorAll(':scope [data-uses-field] > span')
+    icons.forEach((icon, index) => {
+      const box = icon.getBoundingClientRect()
+      const hitsText = textBoxes.some(
+        (text) =>
+          box.left < text.right &&
+          box.right > text.left &&
+          box.top < text.bottom &&
+          box.bottom > text.top,
+      )
+      if (hitsText) problems.push(`icon ${String(index)} overlaps the text`)
+      const clipped =
+        box.left < cardBox.left ||
+        box.right > cardBox.right ||
+        box.top < cardBox.top ||
+        box.bottom > cardBox.bottom
+      if (clipped) problems.push(`icon ${String(index)} is clipped by the card`)
+    })
+    if (icons.length === 0) problems.push('no icons found')
+    return problems
+  })
+}
+
+/**
+ * Finds a product hero image that is cropped instead of showing the full
+ * frame.
+ * @param page A product page, already settled.
+ * @returns A description of the hero image when its box does not match the
+ * image's own aspect ratio.
+ */
+export async function findCroppedHeroImage(page: Page): Promise<string[]> {
+  return page.evaluate(() => {
+    const image = globalThis.document.querySelector<HTMLImageElement>(
+      '[data-product-hero] picture img',
+    )
+    if (!image) return ['hero image is missing']
+    const box = image.getBoundingClientRect()
+    const natural = image.naturalWidth / image.naturalHeight
+    const shown = box.width / box.height
+    if (Math.abs(natural - shown) / natural > 0.02)
+      return [
+        `hero shows ${shown.toFixed(2)} for a ${natural.toFixed(2)} image`,
+      ]
+    return []
   })
 }

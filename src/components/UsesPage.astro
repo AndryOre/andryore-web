@@ -1,9 +1,18 @@
 ---
+import chrome from '../content/chrome.json'
 import uses from '../content/uses.json'
-import type { Locale } from '../i18n/locales'
+import { localePath, type Locale } from '../i18n/locales'
 import BaseLayout from '../layouts/BaseLayout.astro'
-import { externalLinkTokens } from '../lib/external-link'
-import { hasAffiliateRows, type UsesCategory } from '../lib/uses'
+import { externalLinkAttributes } from '../lib/external-link'
+import { glyphSvg, type GlyphName } from '../lib/glyphs'
+import { revealClass } from '../lib/motion'
+import {
+  badgeIconId,
+  SWATCH_TOKENS,
+  type UsesBadge as Badge,
+} from '../lib/uses'
+import BrandIcon from './BrandIcon.astro'
+import UsesBadge from './UsesBadge.astro'
 import UsesIconField from './UsesIconField.astro'
 
 interface Props {
@@ -12,85 +21,303 @@ interface Props {
 
 const { locale } = Astro.props
 const copy = uses[locale]
-const categories: readonly UsesCategory[] = copy.categories
-const showAffiliateNote = hasAffiliateRows(categories)
-const showSampleNote = categories.some((category) =>
-  category.rows.some((row) => row.sample),
-)
+const site = copy.thisSite
+const newTabNote = chrome[locale].opensInNewTab
+const sourceLink = externalLinkAttributes(site.sourceUrl)
+
+const toBadges = (
+  rows: readonly { name: string; icon: string; url?: string }[],
+): Badge[] =>
+  rows.map((row) => ({
+    name: row.name,
+    icon: badgeIconId(row.icon),
+    ...(row.url !== undefined && { url: row.url }),
+  }))
+
+const sections = [
+  { id: 'tools', heading: copy.toolsHeading, badges: toBadges(copy.tools) },
+  { id: 'tech', heading: copy.techHeading, badges: toBadges(copy.tech) },
+]
+
+const card =
+  'uses-lift bg-card border-border grid gap-2.5 rounded-[20px] border p-6'
+const cardHeading = 'm-0 text-xl font-bold tracking-[-0.02em]'
+const footnote = 'text-muted-foreground m-0 font-mono text-xs'
+const tile =
+  'border-border grid content-start gap-2.5 rounded-[18px] border bg-(--card-2) p-[18px]'
+const kicker =
+  'text-muted-foreground font-mono text-[11px] font-medium tracking-[0.08em] uppercase'
+const logoBox =
+  'bg-card border-border grid size-11 place-items-center rounded-[24%] border'
+const logo = 'size-[56%]'
+const tileSub = 'text-muted-foreground m-0 text-[13px]'
 ---
 
 <BaseLayout
   title={copy.meta.title}
   description={copy.meta.description}
   locale={locale}
+  wide
 >
-  <div class="flex flex-col gap-10">
+  <div class="uses-page grid gap-10 sm:px-4">
+    <a
+      href={localePath(locale, '/')}
+      class="text-muted-foreground hover:text-foreground inline-flex min-h-11 w-fit items-center gap-2 font-mono text-xs tracking-wide no-underline"
+      data-page-back
+    >
+      <span aria-hidden="true">←</span>
+      {copy.backLink}
+    </a>
     <section
       aria-labelledby="uses-heading"
-      class="relative isolate flex min-h-64 flex-col justify-center gap-3 py-10 sm:min-h-80"
+      class:list={[
+        'reveal',
+        revealClass(0),
+        'bg-card border-border relative isolate h-[360px] overflow-hidden rounded-[20px] border max-[639px]:h-auto max-[639px]:min-h-[360px] max-[639px]:py-[88px] min-[700px]:h-[420px]',
+      ]}
     >
       <UsesIconField />
-      <h1
-        id="uses-heading"
-        class="m-0 text-5xl font-bold tracking-tight sm:text-7xl"
-      >
-        {copy.heading}
-      </h1>
-      <p class="text-muted-foreground m-0 text-lg">{copy.intro}</p>
+      <div class="pointer-events-none absolute inset-0 z-10 grid place-items-center text-center max-[639px]:relative max-[639px]:inset-auto max-[699px]:px-6">
+        <div>
+          <h1
+            id="uses-heading"
+            class="m-0 text-[54px] leading-[1.04] font-bold tracking-[-0.035em] text-balance"
+          >
+            {copy.heading}
+          </h1>
+          <p class="text-muted-foreground mx-auto mt-3 mb-0 max-w-[46ch] text-base">
+            {copy.intro}
+          </p>
+        </div>
+      </div>
     </section>
 
-    {showSampleNote && (
-      <p class="text-muted-foreground m-0 font-mono text-xs">
-        {copy.sampleNote}
-      </p>
-    )}
-    {showAffiliateNote && (
-      <p class="text-muted-foreground m-0 font-mono text-xs">
-        {copy.affiliateNote}
-      </p>
-    )}
+    <div class="mx-auto grid w-full max-w-[760px] gap-7">
+      {sections.map((section, index) => (
+        <section
+          id={section.id}
+          aria-labelledby={`uses-${section.id}`}
+          class:list={['reveal', revealClass(index + 1), card]}
+        >
+          <h2 id={`uses-${section.id}`} class={cardHeading}>
+            {section.heading}
+          </h2>
+          <ul class="m-0 flex list-none flex-wrap gap-2.5 p-0">
+            {section.badges.map((badge) => (
+              <li>
+                <UsesBadge badge={badge} newTabNote={newTabNote} />
+              </li>
+            ))}
+          </ul>
+          {section.id === 'tech' && <p class={footnote}>{copy.techClosing}</p>}
+        </section>
+      ))}
 
-    {categories.map((category, index) => (
       <section
-        aria-labelledby={`uses-category-${index}`}
-        class="flex flex-col gap-3"
+        id="setup"
+        aria-labelledby="uses-setup"
+        class:list={['reveal', revealClass(3), card]}
       >
-        <h2 id={`uses-category-${index}`} class="m-0 text-base font-semibold">
-          {category.name}
+        <h2 id="uses-setup" class={cardHeading}>
+          {copy.setupHeading}
         </h2>
-        <ul class="m-0 flex list-none flex-col gap-2 p-0">
-          {category.rows.map((row) => (
-            <li class="flex items-baseline gap-2">
-              <span class="shrink-0">{row.label}</span>
+        <ul class="m-0 grid list-none p-0">
+          {copy.setup.map((row) => (
+            <li class="border-border grid grid-cols-[auto_auto_1fr_auto] items-center gap-3 border-b py-2.5 last:border-b-0 max-[699px]:grid-cols-[auto_1fr]">
               <span
                 aria-hidden="true"
-                class="border-border min-w-4 flex-1 border-b border-dotted"
+                class="text-muted-foreground border-border grid size-9 place-items-center rounded-[10px] border bg-(--card-2)"
+                set:html={glyphSvg(row.glyph as GlyphName, 20)}
               />
-              <span class="text-muted-foreground text-right">
-                {row.url ? (
-                  <a
-                    href={row.url}
-                    rel={externalLinkTokens({ sponsored: row.affiliate })}
-                    class="underline underline-offset-4"
-                  >
-                    {row.value}
-                  </a>
-                ) : (
-                  row.value
-                )}
-                {row.affiliate && (
-                  <span class="ml-2 font-mono text-xs">
-                    ({copy.affiliateTag})
-                  </span>
-                )}
-                {row.sample && (
-                  <span class="ml-2 font-mono text-xs">({copy.sampleTag})</span>
-                )}
+              <span class="font-medium">{row.role}</span>
+              <span
+                aria-hidden="true"
+                class="border-muted-foreground -translate-y-1 border-b border-dotted opacity-50 max-[699px]:hidden"
+              />
+              <span class="text-muted-foreground text-right max-[699px]:col-span-full max-[699px]:text-left">
+                <a
+                  href={row.url}
+                  {...externalLinkAttributes(row.url)}
+                  class="inline-flex items-center gap-1.5 underline underline-offset-[3px]"
+                >
+                  {row.label}
+                  <span class="sr-only">. {newTabNote}</span>
+                  <span
+                    aria-hidden="true"
+                    class="inline-flex size-[14px]"
+                    set:html={glyphSvg('external-link', 14)}
+                  />
+                </a>
               </span>
             </li>
           ))}
         </ul>
       </section>
-    ))}
+
+      <section
+        id="this-site"
+        aria-labelledby="this-site-heading"
+        class:list={['reveal', revealClass(4), card, 'scroll-mt-[88px]']}
+      >
+        <h2 id="this-site-heading" class={cardHeading}>
+          {site.heading}
+        </h2>
+        <p class="text-muted-foreground m-0 text-[15px]">{site.intro}</p>
+
+        <div class="grid gap-3 min-[700px]:grid-cols-3">
+          <div class={tile}>
+            <span class={kicker}>{site.framework.title}</span>
+            <div class="flex gap-2">
+              <span class={logoBox}>
+                <BrandIcon id="astro" class={`${logo} dark:hidden`} />
+                <BrandIcon
+                  id="astro"
+                  variant="dark"
+                  class={`${logo} hidden dark:block`}
+                />
+              </span>
+              <span class={logoBox}>
+                <BrandIcon id="react" class={`${logo} dark:hidden`} />
+                <BrandIcon
+                  id="react"
+                  variant="dark"
+                  class={`${logo} hidden dark:block`}
+                />
+              </span>
+            </div>
+            <strong>{site.framework.name}</strong>
+            <span class={tileSub}>{site.framework.body}</span>
+          </div>
+
+          <div class={tile}>
+            <span class={kicker}>{site.styling.title}</span>
+            <div class="flex gap-2">
+              <span class={logoBox}>
+                <BrandIcon id="tailwindcss" class={logo} />
+              </span>
+              <span class={logoBox}>
+                <BrandIcon id="shadcn-ui" class={`${logo} dark:hidden`} />
+                <BrandIcon
+                  id="shadcn-ui"
+                  variant="dark"
+                  class={`${logo} hidden dark:block`}
+                />
+              </span>
+            </div>
+            <strong>{site.styling.name}</strong>
+            <span class={tileSub}>{site.styling.body}</span>
+          </div>
+
+          <div class={tile}>
+            <span class={kicker}>{site.type.title}</span>
+            <div class="flex items-baseline gap-[18px]">
+              <span
+                class="font-sans text-[46px] leading-none font-bold tracking-[-0.03em]"
+                title={site.type.specimens[0]?.font}
+              >
+                {site.type.specimens[0]?.text}
+              </span>
+              <span
+                class="font-mono text-[46px] leading-none font-medium tracking-[-0.03em]"
+                title={site.type.specimens[1]?.font}
+              >
+                {site.type.specimens[1]?.text}
+              </span>
+            </div>
+            <span class="text-muted-foreground flex items-center gap-2 font-mono text-[10px] font-medium tracking-[0.06em]">
+              <span aria-hidden="true" class="bg-primary/70 h-px flex-1"></span>
+              {site.type.readout}
+              <span aria-hidden="true" class="bg-primary/70 h-px flex-1"></span>
+            </span>
+            <span class={tileSub}>{site.type.body}</span>
+          </div>
+
+          <div class={tile}>
+            <span class={kicker}>{site.color.title}</span>
+            <ul class="m-0 flex list-none gap-1.5 p-0">
+              {SWATCH_TOKENS.map((swatch) => (
+                <li class="flex-1">
+                  <span
+                    role="img"
+                    aria-label={swatch.token}
+                    title={swatch.token}
+                    class:list={[
+                      'border-border block aspect-square rounded-[10px] border',
+                      swatch.bg,
+                    ]}
+                  />
+                </li>
+              ))}
+            </ul>
+            <span class={tileSub}>{site.color.body}</span>
+          </div>
+
+          <div class={tile}>
+            <span class={kicker}>{site.hosting.title}</span>
+            <div class="flex gap-2">
+              <span class={logoBox}>
+                <BrandIcon id="docker" class={logo} />
+              </span>
+              <span class={logoBox}>
+                <BrandIcon id="nginx" class={logo} />
+              </span>
+              <span class={logoBox}>
+                <BrandIcon id="coolify" class={logo} />
+              </span>
+            </div>
+            <span class={tileSub}>{site.hosting.body}</span>
+          </div>
+
+          <a
+            href={site.sourceUrl}
+            {...sourceLink}
+            class:list={[
+              tile,
+              'text-inherit no-underline transition-[transform,border-color] duration-150 hover:-translate-y-0.5 hover:border-[color-mix(in_oklab,var(--border)_60%,var(--foreground))]',
+            ]}
+          >
+            <span class={kicker}>{site.source.title}</span>
+            <div class="flex gap-2">
+              <span class={logoBox}>
+                <BrandIcon id="github" class={`${logo} dark:hidden`} />
+                <BrandIcon
+                  id="github"
+                  variant="dark"
+                  class={`${logo} hidden dark:block`}
+                />
+              </span>
+            </div>
+            <strong class="inline-flex items-center gap-1.5">
+              {site.source.name}
+              <span class="sr-only">. {newTabNote}</span>
+              <span
+                aria-hidden="true"
+                class="inline-flex size-[14px]"
+                set:html={glyphSvg('external-link', 14)}
+              />
+            </strong>
+            <span class={tileSub}>{site.source.body}</span>
+          </a>
+        </div>
+
+        <a
+          href={site.sourceUrl}
+          {...sourceLink}
+          class={`${footnote} inline-flex min-h-11 items-center underline underline-offset-[3px]`}
+        >
+          {site.sourceLinkLabel} →<span class="sr-only">. {newTabNote}</span>
+        </a>
+      </section>
+
+      <section
+        aria-labelledby="uses-privacy"
+        class:list={['reveal', revealClass(5), card]}
+      >
+        <h2 id="uses-privacy" class={cardHeading}>
+          {site.privacyHeading}
+        </h2>
+        <p class="text-muted-foreground m-0 text-sm">{site.privacyBody}</p>
+      </section>
+    </div>
   </div>
 </BaseLayout>

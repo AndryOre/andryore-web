@@ -1,144 +1,616 @@
 {
   "en": {
+    "backLink": "Home",
     "meta": {
       "title": "Uses",
-      "description": "The hardware, software and services behind what I build and stream, by category."
+      "description": "The tools, tech and setup behind what I build and stream, and how this site is made."
     },
     "heading": "Uses",
-    "intro": "What I build and stream with, grouped by category.",
-    "sampleTag": "Sample",
-    "sampleNote": "These rows are samples and will be replaced with the real list.",
-    "affiliateTag": "Affiliate link",
-    "affiliateNote": "Rows marked as affiliate links may earn me a commission at no cost to you.",
-    "categories": [
+    "intro": "What I build and stream with: tools on my machine, tech in my projects, my setup and how this site is made.",
+    "toolsHeading": "Tools",
+    "techHeading": "Tech",
+    "techClosing": "and many more along the way",
+    "tools": [
       {
-        "name": "Hardware",
-        "rows": [
-          {
-            "label": "Computer",
-            "value": "Sample laptop",
-            "affiliate": false,
-            "sample": true
-          },
-          {
-            "label": "Keyboard",
-            "value": "Sample keyboard",
-            "affiliate": false,
-            "sample": true
-          },
-          {
-            "label": "Microphone",
-            "value": "Sample microphone",
-            "affiliate": false,
-            "sample": true
-          }
-        ]
+        "name": "Claude Code",
+        "icon": "claude",
+        "url": "https://claude.com/product/claude-code"
       },
       {
-        "name": "Software",
-        "rows": [
-          {
-            "label": "Editor",
-            "value": "Sample editor",
-            "affiliate": false,
-            "sample": true
-          },
-          {
-            "label": "Terminal",
-            "value": "Sample terminal",
-            "affiliate": false,
-            "sample": true
-          }
-        ]
+        "name": "Orca",
+        "icon": "orca",
+        "url": "https://github.com/stablyai/orca"
       },
       {
-        "name": "Streaming",
-        "rows": [
-          {
-            "label": "Broadcast",
-            "value": "Sample broadcast software",
-            "affiliate": false,
-            "sample": true
-          },
-          {
-            "label": "Camera",
-            "value": "Sample camera",
-            "affiliate": false,
-            "sample": true
-          }
-        ]
+        "name": "Nushell",
+        "icon": "nushell",
+        "url": "https://www.nushell.sh"
+      },
+      {
+        "name": "Starship",
+        "icon": "starship",
+        "url": "https://starship.rs"
+      },
+      {
+        "name": "Git",
+        "icon": "git",
+        "url": "https://git-scm.com"
+      },
+      {
+        "name": "GitHub CLI",
+        "icon": "github",
+        "url": "https://cli.github.com"
+      },
+      {
+        "name": "Linear",
+        "icon": "linear",
+        "url": "https://linear.app"
+      },
+      {
+        "name": "Docker",
+        "icon": "docker",
+        "url": "https://www.docker.com"
+      },
+      {
+        "name": "Coolify",
+        "icon": "coolify",
+        "url": "https://coolify.io"
+      },
+      {
+        "name": "Tailscale",
+        "icon": "tailscale",
+        "url": "https://tailscale.com"
+      },
+      {
+        "name": "Cloudflare Tunnel",
+        "icon": "cloudflare",
+        "url": "https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/"
+      },
+      {
+        "name": "chezmoi + age",
+        "icon": "chezmoi",
+        "url": "https://www.chezmoi.io"
+      },
+      {
+        "name": "Bitwarden CLI",
+        "icon": "bitwarden",
+        "url": "https://bitwarden.com/help/cli/"
+      },
+      {
+        "name": "mise",
+        "icon": "mise",
+        "url": "https://mise.jdx.dev"
+      },
+      {
+        "name": "GitHub Actions",
+        "icon": "github-actions",
+        "url": "https://github.com/features/actions"
       }
-    ]
+    ],
+    "tech": [
+      {
+        "name": "TypeScript",
+        "icon": "typescript",
+        "url": "https://www.typescriptlang.org"
+      },
+      {
+        "name": "Bun",
+        "icon": "bun",
+        "url": "https://bun.sh"
+      },
+      {
+        "name": "Astro + Starlight",
+        "icon": "astro",
+        "url": "https://astro.build"
+      },
+      {
+        "name": "React",
+        "icon": "react",
+        "url": "https://react.dev"
+      },
+      {
+        "name": "Next.js",
+        "icon": "nextjs",
+        "url": "https://nextjs.org"
+      },
+      {
+        "name": "Tailwind CSS",
+        "icon": "tailwindcss",
+        "url": "https://tailwindcss.com"
+      },
+      {
+        "name": "shadcn/ui",
+        "icon": "shadcn-ui",
+        "url": "https://ui.shadcn.com"
+      },
+      {
+        "name": "Base UI",
+        "icon": "base-ui",
+        "url": "https://base-ui.com"
+      },
+      {
+        "name": "Prisma + Postgres",
+        "icon": "prisma",
+        "url": "https://www.prisma.io"
+      },
+      {
+        "name": "Supabase",
+        "icon": "supabase",
+        "url": "https://supabase.com"
+      },
+      {
+        "name": "Zod",
+        "icon": "zod",
+        "url": "https://zod.dev"
+      },
+      {
+        "name": "TanStack",
+        "icon": "tanstack",
+        "url": "https://tanstack.com"
+      },
+      {
+        "name": "Better Auth",
+        "icon": "better-auth",
+        "url": "https://www.better-auth.com"
+      },
+      {
+        "name": "Trigger.dev",
+        "icon": "trigger-dev",
+        "url": "https://trigger.dev"
+      },
+      {
+        "name": "Resend",
+        "icon": "resend",
+        "url": "https://resend.com"
+      },
+      {
+        "name": "PostHog",
+        "icon": "posthog",
+        "url": "https://posthog.com"
+      },
+      {
+        "name": "dotenvx",
+        "icon": "dotenv",
+        "url": "https://dotenvx.com"
+      },
+      {
+        "name": "WXT",
+        "icon": "wxt",
+        "url": "https://wxt.dev"
+      },
+      {
+        "name": "Remotion",
+        "icon": "remotion",
+        "url": "https://www.remotion.dev"
+      },
+      {
+        "name": "Turborepo",
+        "icon": "turborepo",
+        "url": "https://turborepo.dev"
+      },
+      {
+        "name": "Playwright",
+        "icon": "playwright",
+        "url": "https://playwright.dev"
+      },
+      {
+        "name": "ESLint",
+        "icon": "eslint",
+        "url": "https://eslint.org"
+      },
+      {
+        "name": "Prettier",
+        "icon": "prettier",
+        "url": "https://prettier.io"
+      },
+      {
+        "name": "knip",
+        "icon": "knip",
+        "url": "https://knip.dev"
+      },
+      {
+        "name": "Hono",
+        "icon": "hono",
+        "url": "https://hono.dev"
+      }
+    ],
+    "setupHeading": "Setup",
+    "setup": [
+      {
+        "label": "Lenovo Legion 7i Gen 9 (16IRX9)",
+        "role": "Laptop",
+        "glyph": "laptop",
+        "url": "https://www.lenovo.com/us/en/p/laptops/legion-laptops/legion-7-series/legion-7i-gen-9-16-inch-intel/83fd0018us"
+      },
+      {
+        "label": "RODE NT-USB Mini",
+        "role": "Microphone",
+        "glyph": "mic",
+        "url": "https://www.amazon.com/dp/B084P1CXFD"
+      },
+      {
+        "label": "Logitech C920",
+        "role": "Camera",
+        "glyph": "camera",
+        "url": "https://www.amazon.com/dp/B006JH8T3S"
+      },
+      {
+        "label": "Logitech G502 X Plus",
+        "role": "Mouse",
+        "glyph": "mouse",
+        "url": "https://www.amazon.com/dp/B092CB69Q4"
+      },
+      {
+        "label": "Nuphy Air60 V2, Cowberry switches",
+        "role": "Keyboard",
+        "glyph": "keyboard",
+        "url": "https://www.amazon.com/dp/B0CRH6JSVL"
+      },
+      {
+        "label": "Anker 575 USB-C Hub",
+        "role": "USB-C hub",
+        "glyph": "usb",
+        "url": "https://www.amazon.com/dp/B0BNZ4RY3D"
+      },
+      {
+        "label": "Redmi Buds 4 Active",
+        "role": "Earbuds",
+        "glyph": "headphones",
+        "url": "https://www.amazon.com/dp/B0C6K7VGCN"
+      }
+    ],
+    "thisSite": {
+      "heading": "This site",
+      "intro": "How andryore.dev is made.",
+      "framework": {
+        "title": "Framework",
+        "body": "Static output, a few React islands",
+        "name": "Astro"
+      },
+      "styling": {
+        "title": "Styling",
+        "body": "Tailwind CSS v4 and shadcn/ui",
+        "name": "Tailwind CSS + shadcn/ui"
+      },
+      "type": {
+        "title": "Type",
+        "specimens": [
+          {
+            "font": "Space Grotesk",
+            "text": "Aa"
+          },
+          {
+            "font": "JetBrains Mono",
+            "text": "Aa"
+          }
+        ],
+        "readout": "60 px · 16 px",
+        "body": "Space Grotesk and JetBrains Mono, self-hosted"
+      },
+      "color": {
+        "title": "Color",
+        "body": "A cool gray with a blue accent, light and dark"
+      },
+      "hosting": {
+        "title": "Hosting",
+        "body": "Docker image with nginx, deployed through Coolify"
+      },
+      "source": {
+        "title": "Source",
+        "body": "Public on GitHub",
+        "name": "AndryOre/andryore-web"
+      },
+      "sourceLinkLabel": "View the source on GitHub",
+      "sourceUrl": "https://github.com/AndryOre/andryore-web",
+      "privacyHeading": "Privacy",
+      "privacyBody": "This site uses Umami Cloud, a cookieless analytics service, as its only third party. It sets no cookies and stores nothing in your browser. It counts page views and a few clicks (navigation, language and theme switches, product and CV links) without identifying you, and it ignores visitors who send Do Not Track."
+    }
   },
   "es": {
+    "backLink": "Inicio",
     "meta": {
       "title": "Uso",
-      "description": "El hardware, el software y los servicios detrás de lo que construyo y transmito, por categoría."
+      "description": "Las herramientas, la tecnología y el equipo con los que construyo y transmito, y cómo está hecho este sitio."
     },
     "heading": "Uso",
-    "intro": "Con qué construyo y transmito, agrupado por categoría.",
-    "sampleTag": "Ejemplo",
-    "sampleNote": "Estas filas son de ejemplo y se reemplazarán con la lista real.",
-    "affiliateTag": "Enlace de afiliado",
-    "affiliateNote": "Las filas marcadas como enlaces de afiliado pueden darme una comisión sin costo para ti.",
-    "categories": [
+    "intro": "Con lo que construyo y hago stream: herramientas en mi máquina, tecnología en mis proyectos, mi setup y cómo está hecho este sitio.",
+    "toolsHeading": "Herramientas",
+    "techHeading": "Tecnología",
+    "techClosing": "y muchas más por el camino",
+    "tools": [
       {
-        "name": "Hardware",
-        "rows": [
-          {
-            "label": "Computador",
-            "value": "Portátil de ejemplo",
-            "affiliate": false,
-            "sample": true
-          },
-          {
-            "label": "Teclado",
-            "value": "Teclado de ejemplo",
-            "affiliate": false,
-            "sample": true
-          },
-          {
-            "label": "Micrófono",
-            "value": "Micrófono de ejemplo",
-            "affiliate": false,
-            "sample": true
-          }
-        ]
+        "name": "Claude Code",
+        "icon": "claude",
+        "url": "https://claude.com/product/claude-code"
       },
       {
-        "name": "Software",
-        "rows": [
-          {
-            "label": "Editor",
-            "value": "Editor de ejemplo",
-            "affiliate": false,
-            "sample": true
-          },
-          {
-            "label": "Terminal",
-            "value": "Terminal de ejemplo",
-            "affiliate": false,
-            "sample": true
-          }
-        ]
+        "name": "Orca",
+        "icon": "orca",
+        "url": "https://github.com/stablyai/orca"
       },
       {
-        "name": "Transmisión",
-        "rows": [
-          {
-            "label": "Emisión",
-            "value": "Software de emisión de ejemplo",
-            "affiliate": false,
-            "sample": true
-          },
-          {
-            "label": "Cámara",
-            "value": "Cámara de ejemplo",
-            "affiliate": false,
-            "sample": true
-          }
-        ]
+        "name": "Nushell",
+        "icon": "nushell",
+        "url": "https://www.nushell.sh"
+      },
+      {
+        "name": "Starship",
+        "icon": "starship",
+        "url": "https://starship.rs"
+      },
+      {
+        "name": "Git",
+        "icon": "git",
+        "url": "https://git-scm.com"
+      },
+      {
+        "name": "GitHub CLI",
+        "icon": "github",
+        "url": "https://cli.github.com"
+      },
+      {
+        "name": "Linear",
+        "icon": "linear",
+        "url": "https://linear.app"
+      },
+      {
+        "name": "Docker",
+        "icon": "docker",
+        "url": "https://www.docker.com"
+      },
+      {
+        "name": "Coolify",
+        "icon": "coolify",
+        "url": "https://coolify.io"
+      },
+      {
+        "name": "Tailscale",
+        "icon": "tailscale",
+        "url": "https://tailscale.com"
+      },
+      {
+        "name": "Cloudflare Tunnel",
+        "icon": "cloudflare",
+        "url": "https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/"
+      },
+      {
+        "name": "chezmoi + age",
+        "icon": "chezmoi",
+        "url": "https://www.chezmoi.io"
+      },
+      {
+        "name": "Bitwarden CLI",
+        "icon": "bitwarden",
+        "url": "https://bitwarden.com/help/cli/"
+      },
+      {
+        "name": "mise",
+        "icon": "mise",
+        "url": "https://mise.jdx.dev"
+      },
+      {
+        "name": "GitHub Actions",
+        "icon": "github-actions",
+        "url": "https://github.com/features/actions"
       }
-    ]
+    ],
+    "tech": [
+      {
+        "name": "TypeScript",
+        "icon": "typescript",
+        "url": "https://www.typescriptlang.org"
+      },
+      {
+        "name": "Bun",
+        "icon": "bun",
+        "url": "https://bun.sh"
+      },
+      {
+        "name": "Astro + Starlight",
+        "icon": "astro",
+        "url": "https://astro.build"
+      },
+      {
+        "name": "React",
+        "icon": "react",
+        "url": "https://react.dev"
+      },
+      {
+        "name": "Next.js",
+        "icon": "nextjs",
+        "url": "https://nextjs.org"
+      },
+      {
+        "name": "Tailwind CSS",
+        "icon": "tailwindcss",
+        "url": "https://tailwindcss.com"
+      },
+      {
+        "name": "shadcn/ui",
+        "icon": "shadcn-ui",
+        "url": "https://ui.shadcn.com"
+      },
+      {
+        "name": "Base UI",
+        "icon": "base-ui",
+        "url": "https://base-ui.com"
+      },
+      {
+        "name": "Prisma + Postgres",
+        "icon": "prisma",
+        "url": "https://www.prisma.io"
+      },
+      {
+        "name": "Supabase",
+        "icon": "supabase",
+        "url": "https://supabase.com"
+      },
+      {
+        "name": "Zod",
+        "icon": "zod",
+        "url": "https://zod.dev"
+      },
+      {
+        "name": "TanStack",
+        "icon": "tanstack",
+        "url": "https://tanstack.com"
+      },
+      {
+        "name": "Better Auth",
+        "icon": "better-auth",
+        "url": "https://www.better-auth.com"
+      },
+      {
+        "name": "Trigger.dev",
+        "icon": "trigger-dev",
+        "url": "https://trigger.dev"
+      },
+      {
+        "name": "Resend",
+        "icon": "resend",
+        "url": "https://resend.com"
+      },
+      {
+        "name": "PostHog",
+        "icon": "posthog",
+        "url": "https://posthog.com"
+      },
+      {
+        "name": "dotenvx",
+        "icon": "dotenv",
+        "url": "https://dotenvx.com"
+      },
+      {
+        "name": "WXT",
+        "icon": "wxt",
+        "url": "https://wxt.dev"
+      },
+      {
+        "name": "Remotion",
+        "icon": "remotion",
+        "url": "https://www.remotion.dev"
+      },
+      {
+        "name": "Turborepo",
+        "icon": "turborepo",
+        "url": "https://turborepo.dev"
+      },
+      {
+        "name": "Playwright",
+        "icon": "playwright",
+        "url": "https://playwright.dev"
+      },
+      {
+        "name": "ESLint",
+        "icon": "eslint",
+        "url": "https://eslint.org"
+      },
+      {
+        "name": "Prettier",
+        "icon": "prettier",
+        "url": "https://prettier.io"
+      },
+      {
+        "name": "knip",
+        "icon": "knip",
+        "url": "https://knip.dev"
+      },
+      {
+        "name": "Hono",
+        "icon": "hono",
+        "url": "https://hono.dev"
+      }
+    ],
+    "setupHeading": "Setup",
+    "setup": [
+      {
+        "label": "Lenovo Legion 7i Gen 9 (16IRX9)",
+        "role": "Laptop",
+        "glyph": "laptop",
+        "url": "https://www.lenovo.com/us/en/p/laptops/legion-laptops/legion-7-series/legion-7i-gen-9-16-inch-intel/83fd0018us"
+      },
+      {
+        "label": "RODE NT-USB Mini",
+        "role": "Micrófono",
+        "glyph": "mic",
+        "url": "https://www.amazon.com/dp/B084P1CXFD"
+      },
+      {
+        "label": "Logitech C920",
+        "role": "Cámara",
+        "glyph": "camera",
+        "url": "https://www.amazon.com/dp/B006JH8T3S"
+      },
+      {
+        "label": "Logitech G502 X Plus",
+        "role": "Mouse",
+        "glyph": "mouse",
+        "url": "https://www.amazon.com/dp/B092CB69Q4"
+      },
+      {
+        "label": "Nuphy Air60 V2, switches Cowberry",
+        "role": "Teclado",
+        "glyph": "keyboard",
+        "url": "https://www.amazon.com/dp/B0CRH6JSVL"
+      },
+      {
+        "label": "Anker 575 USB-C Hub",
+        "role": "Hub USB-C",
+        "glyph": "usb",
+        "url": "https://www.amazon.com/dp/B0BNZ4RY3D"
+      },
+      {
+        "label": "Redmi Buds 4 Active",
+        "role": "Audífonos",
+        "glyph": "headphones",
+        "url": "https://www.amazon.com/dp/B0C6K7VGCN"
+      }
+    ],
+    "thisSite": {
+      "heading": "Este sitio",
+      "intro": "Cómo está hecho andryore.dev.",
+      "framework": {
+        "title": "Framework",
+        "body": "Salida estática, algunas islas de React",
+        "name": "Astro"
+      },
+      "styling": {
+        "title": "Estilos",
+        "body": "Tailwind CSS v4 y shadcn/ui",
+        "name": "Tailwind CSS + shadcn/ui"
+      },
+      "type": {
+        "title": "Tipografía",
+        "specimens": [
+          {
+            "font": "Space Grotesk",
+            "text": "Aa"
+          },
+          {
+            "font": "JetBrains Mono",
+            "text": "Aa"
+          }
+        ],
+        "readout": "60 px · 16 px",
+        "body": "Space Grotesk y JetBrains Mono, auto-hospedadas"
+      },
+      "color": {
+        "title": "Color",
+        "body": "Un gris frío con acento azul, claro y oscuro"
+      },
+      "hosting": {
+        "title": "Hosting",
+        "body": "Imagen Docker con nginx, desplegada con Coolify"
+      },
+      "source": {
+        "title": "Código",
+        "body": "Público en GitHub",
+        "name": "AndryOre/andryore-web"
+      },
+      "sourceLinkLabel": "Ver el código en GitHub",
+      "sourceUrl": "https://github.com/AndryOre/andryore-web",
+      "privacyHeading": "Privacidad",
+      "privacyBody": "Este sitio usa Umami Cloud, un servicio de analítica sin cookies, como único tercero. No crea cookies ni guarda nada en tu navegador. Cuenta las visitas a las páginas y algunos clics (navegación, cambios de idioma y de tema, enlaces de productos y del CV) sin identificarte, e ignora a quienes envían No Rastrear."
+    }
   }
 }

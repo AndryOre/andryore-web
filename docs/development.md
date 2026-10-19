@@ -12,32 +12,54 @@ the git hooks on `bun install` through the `prepare` script. `bunfig.toml` sets
 
 ## Scripts
 
-| Script                    | What it does                                                                                       |
-| ------------------------- | -------------------------------------------------------------------------------------------------- |
-| `bun run check`           | Aggregate gate: `format:check`, `lint`, `typecheck` and `knip`.                                    |
-| `bun run fix`             | Formats the repository with Prettier, then autofixes ESLint findings (`format:write`, `lint:fix`). |
-| `bun run cache:clear`     | Removes `/tmp/node-compile-cache`, `.eslintcache` and `node_modules/.cache`.                       |
-| `bun run format:check`    | Checks formatting with Prettier (no writes).                                                       |
-| `bun run format:write`    | Formats the repository with Prettier.                                                              |
-| `bun run lint`            | ESLint with zero warnings allowed, using `--cache --cache-strategy content`.                       |
-| `bun run lint:fix`        | ESLint with autofix.                                                                               |
-| `bun run typecheck`       | `astro check && tsc --noEmit`.                                                                     |
-| `bun run knip`            | Finds unused files, exports and dependencies.                                                      |
-| `bun run test`            | Runs `bun test` with coverage and the `bunfig.toml` threshold.                                     |
-| `bun run lint:docs`       | Offline link and anchor check of the Markdown with lychee.                                         |
-| `bun run lint:lighthouse` | Lighthouse budget over the built `dist/`; see [Lighthouse budget](#lighthouse-budget).             |
-| `bun run lint:commits`    | Runs commitlint over the commits of the current branch.                                            |
-| `bun run ci:local`        | Frozen install, `lint:commits`, `check`, `lint:docs` and `test`: the PR gates that need no build.  |
-| `bun run brand:export`    | Regenerates the brand rasters from the logo SVGs. Never edit the generated rasters by hand.        |
-| `bun run test:e2e`        | Playwright axe, layout and hydration specs against `astro preview` of a built `dist/`.             |
-| `bun run test:visual`     | Visual snapshots inside the pinned Playwright image; `-- --update` regenerates them.               |
-| `bun run test:browsers`   | Layout specs in WebKit and Firefox inside the pinned Playwright image.                             |
-| `bun run test:smoke`      | Builds the nginx image and checks status codes, `/es/`, both 404s, headers and the sitemap.        |
-| `bun run audit:dist`      | Scans a build directory (default `dist`) for third-party requests and unsafe external links.       |
+| Script                    | What it does                                                                                                                                                          |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bun run check`           | Aggregate gate: `format:check`, `lint`, `typecheck` and `knip`.                                                                                                       |
+| `bun run fix`             | Formats the repository with Prettier, then autofixes ESLint findings (`format:write`, `lint:fix`).                                                                    |
+| `bun run cache:clear`     | Removes `/tmp/node-compile-cache`, `.eslintcache` and `node_modules/.cache`.                                                                                          |
+| `bun run format:check`    | Checks formatting with Prettier (no writes).                                                                                                                          |
+| `bun run format:write`    | Formats the repository with Prettier.                                                                                                                                 |
+| `bun run lint`            | ESLint with zero warnings allowed, using `--cache --cache-strategy content`.                                                                                          |
+| `bun run lint:fix`        | ESLint with autofix.                                                                                                                                                  |
+| `bun run typecheck`       | `astro check && tsc --noEmit`.                                                                                                                                        |
+| `bun run knip`            | Finds unused files, exports and dependencies.                                                                                                                         |
+| `bun run test`            | Runs `bun test` with coverage and the `bunfig.toml` threshold.                                                                                                        |
+| `bun run lint:docs`       | Offline link and anchor check of the Markdown with lychee.                                                                                                            |
+| `bun run lint:lighthouse` | Lighthouse budget over the built `dist/`; see [Lighthouse budget](#lighthouse-budget).                                                                                |
+| `bun run lint:commits`    | Runs commitlint over the commits of the current branch.                                                                                                               |
+| `bun run ci:local`        | Frozen install, `lint:commits`, `check`, `lint:docs` and `test`: the PR gates that need no build.                                                                     |
+| `bun run brand:export`    | Regenerates the brand rasters from the logo SVGs. Never edit the generated rasters by hand.                                                                           |
+| `bun run test:e2e`        | Playwright axe, layout and hydration specs against `astro preview` of a built `dist/`.                                                                                |
+| `bun run test:visual`     | Visual snapshots inside the pinned Playwright image; `-- --update` regenerates them.                                                                                  |
+| `bun run test:browsers`   | Layout specs in WebKit and Firefox inside the pinned Playwright image.                                                                                                |
+| `bun run test:smoke`      | Builds the nginx image and checks status codes, `/es/`, both 404s, headers and the sitemap.                                                                           |
+| `bun run audit:dist`      | Scans a build directory (default `dist`) for third-party requests and unsafe external links.                                                                          |
+| `bun run audit:fidelity`  | Compares a built `astro preview` with the saved design canvas (pass its path or set `FIDELITY_CANVAS`, for example `~/canvas.html`). Writes `audit-output/report.md`. |
 
 When a command crashes inside `typescript.js`, see
 [Troubleshooting](troubleshooting.md). `eslint` and `tsc` run without `--bun`.
 Agents do not run a `build` script unless explicitly asked.
+
+### Fidelity audit exceptions
+
+`audit:fidelity` does not report these accepted deviations (the list is
+`DOCUMENTED_EXCEPTIONS` in `scripts/fidelity-audit-core.ts`):
+
+- The `← Home` link on About and Uses.
+- The Chrome Web Store button in the Snug header.
+- The header floating as a blurred pill after scroll, which canvas v29 shows and
+  the audit's top-of-page canvas capture does not.
+- The hero art border and shadow where the canvas differs.
+- The Epidemic sound files being absent (404 on `/sounds/`) in local and CI
+  builds.
+- The dock buttons shrinking to 36 px (34 px under 360 px) below 400 px, so the
+  dock fits phones.
+- The Astro badge dark text, JSON Flow without a website tile, the 404 tiles
+  behind the content at 390 px, and the 404 tiles keeping their positions with
+  reduced motion.
+
+The audit starts `astro preview` on port 4418; if another process holds it, run
+your own preview and pass `AUDIT_BASE_URL`.
 
 ## Coverage
 
@@ -75,6 +97,15 @@ agents.
   `e2e/messages.ts`. Use `--project=chromium` for the default run. Set
   `E2E_BASE_URL` to run the specs against a server that is already up, such as
   the nginx image, so the real header CSP applies instead of the meta policy.
+- **Mobile**: the `mobile-android` (Pixel 7) and `mobile-ios` (iPhone 14)
+  projects use Playwright device descriptors, so `isMobile` and `hasTouch` are
+  on. Both run in Chromium, because CI installs only Chromium; the iPhone
+  project covers its viewport, user agent and touch, not WebKit rendering. They
+  run the layout, overflow and Theme tile orientation specs, plus
+  `e2e/landscape.spec.ts`: every route at 844x390 with no horizontal overflow,
+  the first heading in view and no interactive element under the Dock. Run them
+  with `bun run test:e2e --project='mobile-*'`; CI runs them next to `chromium`.
+  Set `E2E_PORT` when port 4417 is taken by another server.
 - **Other browsers**: `bun run test:browsers` runs the layout spec in `webkit`
   and `firefox` inside the pinned Playwright image (Docker required), because
   the host libraries those browsers need are not installed on a server.
@@ -141,6 +172,20 @@ are directive comments a tool reads, such as `eslint-disable`,
 `@ts-expect-error` and `prettier-ignore`. Rationale:
 [ADR 0005](adr/0005-tsdoc-only-code-comments.md).
 
+## External links
+
+`externalLinkAttributes(href)` in `src/lib/external-link.ts` is the only place
+that decides how a link opens. It returns `{ target: '_blank', rel }` for a
+cross-origin `http(s)` href and `undefined` for `mailto:`, `tel:`, `#` anchors,
+relative and same-origin links and the language switch. Spread it on the anchor:
+`<a href={href} {...externalLinkAttributes(href)}>`. Never write `target` or
+`rel` by hand.
+
+Announce the new tab with `chrome[locale].opensInNewTab`
+(`src/content/chrome.json`): as visually hidden text on a link with visible
+text, and appended inside the `aria-label` of an icon-only link. Rationale:
+[ADR 0020](adr/0020-external-links-open-in-a-new-tab.md).
+
 ## Adding a `@shadcn/lint` contract
 
 The `shadcn/no-restyle` rule restricts which classes a call site may pass to a
@@ -156,14 +201,12 @@ contract is new. See [ADR 0006](adr/0006-tailwind-and-shadcn-islands.md).
 first shadcn/ui component lands; the `@shadcn/lint` rules run on the React
 island files (`src/**/*.tsx`), not on `.astro` files.
 
-## Adding a Log entry
+## Adding a product page
 
-Add two Markdown files under `src/content/log/`, one in `en/` and one in `es/`.
-Both carry the same `key` (it is also the URL slug), their own `lang`, `title`,
-`description`, `date` and `readMinutes`. The Spanish file also sets `sourceHash`
-to the hash of the English body, which `bun run i18n:status` prints when it is
-missing or stale. Code blocks must stay byte-identical between the two files.
-The build fails on a missing pair, a repeated title or a changed code block
+Add two Markdown files under `src/content/products/`, `<key>.en.md` and
+`<key>.es.md`. Both carry the same `key` (it is also the URL slug) and their own
+`lang`; the front matter is validated by the product schema in
+`src/lib/products.ts`. The build fails on a missing pair or a repeated title
 ([ADR 0002](adr/0002-bilingual-parity.md)).
 
 ## Skills install and update
@@ -216,18 +259,18 @@ those tests.
 
 ## Lighthouse budget
 
-`bun run lint:lighthouse` serves `dist/` locally and audits the home page and
-the `nothing-from-other-origins` Log entry in English and Spanish, five runs
-each, with the Lighthouse version pinned in `scripts/lighthouse-budget.ts`. It
-prints a table with the median performance, accessibility, best practices and
-SEO scores plus the page weight. It exits non-zero when any median is below 90
-or any score is null; weight is reported and never fails. It needs a built site
-(`bun run build`, opt-in locally) and a Chrome binary: set `CHROME_PATH` when
-Chrome is not on the default path. The local server answers `/api/stream-status`
-with the offline state, as the nginx image's upstream does, so the missing
-endpoint does not log a console error. CI runs it in
-`.github/workflows/lighthouse.yml`. Renovate bumps the pinned version through a
-custom manager in `renovate.json5`.
+`bun run lint:lighthouse` serves `dist/` locally, gzipping text assets the way
+`docker/nginx.conf` does, and audits the home page and the Snug product page in
+English and Spanish, five runs each, with the Lighthouse version pinned in
+`scripts/lighthouse-budget.ts`. It prints a table with the median performance,
+accessibility, best practices and SEO scores plus the page weight. It exits
+non-zero when any median is below 90 or any score is null; weight is reported
+and never fails. It needs a built site (`bun run build`, opt-in locally) and a
+Chrome binary: set `CHROME_PATH` when Chrome is not on the default path. The
+local server answers `/api/stream-status` with the offline state, as the nginx
+image's upstream does, so the missing endpoint does not log a console error. CI
+runs it in `.github/workflows/lighthouse.yml`. Renovate bumps the pinned version
+through a custom manager in `renovate.json5`.
 
 ## Renovate
 
@@ -269,6 +312,22 @@ A push to `main` triggers a deploy through a GitHub push webhook that calls the
 application's Coolify GitHub webhook endpoint; the secret lives only in the
 webhook and in Coolify. PR preview deployments stay off so a fork PR can never
 run on the server; `dev.andryore.dev` covers pre-merge checks.
+
+### Sound files
+
+The Glass sound set is a private build input
+([ADR 0019](adr/0019-optional-interface-sound.md)). The Dockerfile defaults
+`SOUNDS_REPO` to `AndryOre/andryore-web-private` and `SOUNDS_REF` to `main`;
+override them with build arguments only to try another source. In each Coolify
+application, turn on Docker Build Secrets and add a build-time-only variable
+named exactly `sounds_token` (lowercase: Coolify uses the variable name as the
+BuildKit secret id) holding a read-only fine-grained GitHub token with Contents
+read access to that repository. Do not add `SOUNDS_REPO` or `SOUNDS_REF` as
+Coolify variables: with build secrets on, Coolify does not inject build
+arguments, so they would arrive empty. The Dockerfile mounts the secret with
+`RUN --mount=type=secret`, so it never lands in a layer. Without the secret the
+build succeeds and the Site hides the Sound switch. To try it locally:
+`docker build --secret id=sounds_token,env=SOUNDS_TOKEN --build-arg SOUNDS_REPO=owner/repo .`
 
 To roll back, redeploy the previous good commit from the Coolify application
 page (Deployments, then Redeploy on the earlier entry), or revert the commit on

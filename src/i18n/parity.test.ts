@@ -16,12 +16,12 @@ describe('pageRoutesFromFiles', () => {
     expect(
       pageRoutesFromFiles([
         'index.astro',
-        'log/index.astro',
+        'about/index.astro',
         'es/index.astro',
-        'es/log/index.astro',
+        'es/about/index.astro',
         'sitemap.xml.ts',
       ]),
-    ).toEqual({ en: ['/', '/log/'], es: ['/', '/log/'] })
+    ).toEqual({ en: ['/', '/about/'], es: ['/', '/about/'] })
   })
 
   test('maps flat page files to a directory path', () => {
@@ -38,8 +38,8 @@ describe('findMissingPagePairs', () => {
       findMissingPagePairs([
         'index.astro',
         'es/index.astro',
-        'log/index.astro',
-        'es/log/index.astro',
+        'about/index.astro',
+        'es/about/index.astro',
       ]),
     ).toEqual([])
   })
@@ -48,10 +48,10 @@ describe('findMissingPagePairs', () => {
     const problems = findMissingPagePairs([
       'index.astro',
       'es/index.astro',
-      'log/index.astro',
+      'about/index.astro',
     ])
     expect(problems).toHaveLength(1)
-    expect(problems[0]).toContain('/log/')
+    expect(problems[0]).toContain('/about/')
     expect(problems[0]).toContain('es')
   })
 
@@ -59,10 +59,10 @@ describe('findMissingPagePairs', () => {
     const problems = findMissingPagePairs([
       'index.astro',
       'es/index.astro',
-      'es/log/index.astro',
+      'es/about/index.astro',
     ])
     expect(problems).toHaveLength(1)
-    expect(problems[0]).toContain('/log/')
+    expect(problems[0]).toContain('/about/')
     expect(problems[0]).toContain('en')
   })
 })
@@ -146,6 +146,12 @@ describe('findUnusedKeys', () => {
 describe('lintCopy', () => {
   test('flags leaked TODOs', () => {
     expect(lintCopy('f.json', { en: { a: 'TODO translate' } })).toHaveLength(1)
+  })
+
+  test('does not mistake the Spanish word todo for a leaked TODO', () => {
+    expect(lintCopy('f.json', { es: { a: 'Sobre todo TypeScript' } })).toEqual(
+      [],
+    )
   })
 
   test('flags a long title and description', () => {

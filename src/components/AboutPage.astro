@@ -1,9 +1,30 @@
 ---
+import { Image } from 'astro:assets'
+import {
+  Activity,
+  Briefcase,
+  CalendarDays,
+  Download,
+  KeyRound,
+  Layers,
+  Server,
+  Users,
+} from 'lucide-react'
+
+import memoji from '../../docs/brand/avatar/memoji.webp'
 import about from '../content/about.json'
-import type { Locale } from '../i18n/locales'
+import chrome from '../content/chrome.json'
+import home from '../content/home.json'
+import uses from '../content/uses.json'
+import { localePath, type Locale } from '../i18n/locales'
 import BaseLayout from '../layouts/BaseLayout.astro'
-import { CV_PATHS } from '../lib/contact'
-import ContactBlock from './ContactBlock.astro'
+import { buildNumberStats } from '../lib/about'
+import { loadGridSnapshot } from '../lib/github-grid-build'
+import type { IconId } from '../lib/icons'
+import { revealClass } from '../lib/motion'
+import CvSplitButton from './CvSplitButton'
+import { buttonClassName } from './ui/button'
+import UsesBadge from './UsesBadge.astro'
 
 interface Props {
   locale: Locale
@@ -11,20 +32,39 @@ interface Props {
 
 const { locale } = Astro.props
 const copy = about[locale]
-const downloads = [
+const installs = home[locale].products.contribution
+const snapshot = await loadGridSnapshot()
+const stats = buildNumberStats(
+  copy,
   {
-    href: CV_PATHS.en,
-    file: copy.cvEnglishFile,
-    label: copy.cvEnglishLabel,
-    lang: 'en',
+    installs: { total: installs.metaTotal },
+    contributions: snapshot?.total ?? null,
   },
-  {
-    href: CV_PATHS.es,
-    file: copy.cvSpanishFile,
-    label: copy.cvSpanishLabel,
-    lang: 'es',
-  },
-]
+  locale,
+)
+const officialSites = new Map(
+  [...uses[locale].tools, ...uses[locale].tech].map((item) => [
+    item.icon,
+    item.url,
+  ]),
+)
+const whatIcons = {
+  layers: Layers,
+  'key-round': KeyRound,
+  server: Server,
+} as const
+const statIcons = {
+  independent: CalendarDays,
+  snug: Users,
+  installs: Download,
+  contributions: Activity,
+} as const
+const [firstPhrase = ''] = copy.typingPhrases
+
+const surfaceClass = 'about-surface bg-card border-border border'
+const iconBoxClass =
+  'grid size-10 place-items-center rounded-xl bg-[color-mix(in_oklab,var(--primary)_14%,var(--card-2))] text-primary'
+const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
 ---
 
 <BaseLayout
@@ -32,38 +72,277 @@ const downloads = [
   description={copy.pageDescription}
   locale={locale}
 >
-  <div class="flex flex-col gap-10">
-    <section aria-labelledby="about-heading" class="flex flex-col gap-3">
-      <h1 id="about-heading" class="m-0 text-3xl font-bold tracking-tight">
-        {copy.aboutHeading}
-      </h1>
-      <p class="m-0 text-lg font-medium">{copy.introLead}</p>
-      <p class="text-muted-foreground m-0">{copy.introBody}</p>
+  <div
+    class="flex flex-col gap-10 max-[700px]:gap-7 min-[760px]:-mx-5"
+    data-about-column
+  >
+    <a
+      href={localePath(locale, '/')}
+      class="text-muted-foreground hover:text-foreground inline-flex min-h-11 w-fit items-center gap-2 font-mono text-xs tracking-wide no-underline"
+      data-page-back
+    >
+      <span aria-hidden="true">←</span>
+      {copy.backLink}
+    </a>
+    <section
+      aria-labelledby="about-heading"
+      class:list={[
+        'reveal',
+        revealClass(0),
+        surfaceClass,
+        'grid gap-7 rounded-[20px] p-[22px] min-[701px]:grid-cols-[auto_1fr] min-[701px]:items-center min-[701px]:p-8',
+      ]}
+    >
+      <Image
+        src={memoji}
+        alt=""
+        width={240}
+        height={240}
+        loading="eager"
+        class="bg-card-2 border-border size-[120px] rounded-[26px] border object-contain"
+      />
+      <div class="grid min-w-0 gap-3.5">
+        <p class="text-muted-foreground m-0 font-mono text-[11px] font-medium tracking-[0.08em] uppercase">
+          {copy.kicker}
+        </p>
+        <h1
+          id="about-heading"
+          aria-label={`${copy.typingPrefix}${firstPhrase}`}
+          data-typing
+          data-typing-phrases={JSON.stringify(copy.typingPhrases)}
+          class="m-0 text-[clamp(30px,4.4vw,46px)] leading-[1.1] font-bold tracking-[-0.03em] max-[900px]:min-h-[2.2em] max-[420px]:min-h-[3.3em]"
+        >
+          <span aria-hidden="true">
+            {copy.typingPrefix}
+            <span data-typing-text class="text-primary">
+              {firstPhrase}
+            </span>
+            <span class="caret caret-em"></span>
+          </span>
+        </h1>
+        <p class="text-muted-foreground m-0 max-w-[56ch] text-[17px]">
+          {copy.subline}
+        </p>
+        <div class="flex flex-wrap gap-2.5">
+          <CvSplitButton client:load locale={locale} copy={copy} />
+          <a
+            href={localePath(locale, '/') + '#find-me'}
+            class={buttonClassName(
+              'neutral',
+              'cta',
+              'h-auto min-h-11 max-w-full py-2 text-left whitespace-normal',
+            )}
+          >
+            <Briefcase aria-hidden="true" className="size-4.5!" />
+            {copy.openTo}
+          </a>
+        </div>
+      </div>
     </section>
 
-    <ContactBlock locale={locale} idSuffix="about" showOpenTo />
-
-    <section aria-labelledby="cv-heading" class="flex flex-col gap-3">
-      <h2 id="cv-heading" class="m-0 text-base font-semibold">
-        {copy.cvHeading}
+    <section
+      aria-labelledby="what-i-do-heading"
+      class:list={['reveal', revealClass(1), 'grid gap-3.5']}
+    >
+      <h2 id="what-i-do-heading" class={headingClass}>
+        {copy.whatIDo.heading}
       </h2>
-      <p class="text-muted-foreground m-0 text-sm">{copy.cvIntro}</p>
-      <ul class="m-0 flex list-none flex-col gap-2 p-0">
-        {downloads.map((item) => (
-          <li>
-            <a
-              href={item.href}
-              download={item.file}
-              hreflang={item.lang}
-              lang={item.lang}
-              type="application/pdf"
-              class="underline underline-offset-4"
+      <ul class="m-0 grid list-none gap-3 p-0 min-[701px]:grid-cols-3">
+        {copy.whatIDo.items.map((item) => {
+          const Icon = whatIcons[item.icon as keyof typeof whatIcons]
+          return (
+            <li
+              class:list={[
+                surfaceClass,
+                'grid content-start gap-2.5 rounded-[18px] p-[18px]',
+              ]}
+              data-what-i-do={item.key}
             >
-              {item.label}
-            </a>
+              <span class={iconBoxClass} aria-hidden="true">
+                <Icon aria-hidden="true" size={18} />
+              </span>
+              <h3 class="m-0 text-[15px] font-bold">{item.title}</h3>
+              <p class="text-muted-foreground m-0 text-sm">{item.body}</p>
+            </li>
+          )
+        })}
+      </ul>
+    </section>
+
+    <section
+      aria-labelledby="numbers-heading"
+      class:list={['reveal', revealClass(2), 'grid gap-3.5']}
+    >
+      <h2 id="numbers-heading" class={headingClass}>
+        {copy.numbersHeading}
+      </h2>
+      <dl
+        class="m-0 grid grid-cols-2 gap-3 min-[701px]:grid-cols-4"
+        data-about-numbers
+      >
+        {stats.map((stat) => {
+          const Icon = statIcons[stat.key]
+          return (
+            <div
+              class:list={[
+                surfaceClass,
+                'grid min-w-0 gap-1 rounded-[18px] p-4',
+              ]}
+              data-stat={stat.key}
+              data-about-live={stat.key === 'contributions' ? '' : undefined}
+              data-locale={locale}
+            >
+              <span class="text-muted-foreground mb-1" aria-hidden="true">
+                <Icon aria-hidden="true" size={18} />
+              </span>
+              <dt class="text-muted-foreground order-last font-mono text-[11px] leading-[1.4]">
+                {stat.label}
+              </dt>
+              <dd class="m-0 text-[28px] leading-[1.1] [overflow-wrap:anywhere] font-bold tracking-[-0.03em] tabular-nums">
+                {stat.count === undefined ? (
+                  stat.display
+                ) : (
+                  <span
+                    data-count-total={stat.count}
+                    data-count-locale={locale}
+                  >
+                    {stat.display}
+                  </span>
+                )}
+                {stat.suffix}
+              </dd>
+            </div>
+          )
+        })}
+      </dl>
+    </section>
+
+    <section
+      aria-labelledby="timeline-heading"
+      class:list={['reveal', revealClass(3), 'grid gap-3.5']}
+    >
+      <h2 id="timeline-heading" class={headingClass}>
+        {copy.timelineHeading}
+      </h2>
+      <ol class="about-timeline border-border m-0 ml-1.5 grid list-none gap-0 border-l p-0 pl-[22px]">
+        {copy.timeline.map((entry) => (
+          <li class="relative grid gap-0.5 pb-[22px]">
+            <time
+              datetime={entry.date}
+              class="text-muted-foreground font-mono text-[11px] font-medium tracking-[0.06em] uppercase"
+            >
+              {entry.date}
+            </time>
+            <strong class="font-bold">{entry.title}</strong>
+            <span class="text-muted-foreground text-sm">{entry.body}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section
+      class:list={['reveal', revealClass(4), 'grid gap-3.5']}
+      data-about-closing
+    >
+      <div class="grid max-w-[65ch] gap-4">
+        {copy.bio.map((paragraph) => (
+          <p class="m-0">{paragraph}</p>
+        ))}
+      </div>
+    </section>
+
+    <section class:list={['reveal', revealClass(5), 'grid gap-3.5']}>
+      <ul class="m-0 flex list-none flex-wrap gap-2.5 p-0">
+        {copy.stack.map((item) => (
+          <li>
+            <UsesBadge
+              badge={{
+                name: item.name,
+                icon: item.icon as IconId,
+                url: officialSites.get(item.icon),
+              }}
+              newTabNote={chrome[locale].opensInNewTab}
+            />
           </li>
         ))}
       </ul>
+      <a
+        href={localePath(locale, '/uses/')}
+        class="text-muted-foreground hover:text-foreground inline-flex min-h-11 w-fit items-center font-mono text-xs underline underline-offset-[3px]"
+      >
+        {copy.stackLink}
+        <span aria-hidden="true">&nbsp;→</span>
+      </a>
     </section>
   </div>
 </BaseLayout>
+
+<script>
+  import { prefersReducedMotion } from '../lib/motion'
+  import { startCountUp } from '../scripts/count-up'
+  import { mountGithubTile } from '../scripts/github-tile'
+  import { startPhraseTyping } from '../scripts/typing-headline'
+
+  const reducedMotion = prefersReducedMotion(globalThis)
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-typing]')) {
+    const target = root.querySelector<HTMLElement>('[data-typing-text]')
+    const phrases: unknown = JSON.parse(root.dataset.typingPhrases ?? '[]')
+    if (
+      target &&
+      Array.isArray(phrases) &&
+      phrases.every((phrase) => typeof phrase === 'string')
+    ) {
+      startPhraseTyping(target, phrases, {
+        reducedMotion,
+        random: () => Math.random(),
+        schedule: (callback, delay) => setTimeout(callback, delay),
+        cancel: (handle) => {
+          clearTimeout(handle)
+        },
+      })
+    }
+  }
+
+  const countUp = (target: HTMLElement): void => {
+    const total = Number(target.dataset.countTotal)
+    if (!Number.isFinite(total)) return
+    startCountUp(target, total, {
+      reducedMotion,
+      locale: target.dataset.countLocale ?? 'en',
+      requestFrame: (callback) => requestAnimationFrame(callback),
+    })
+  }
+
+  for (const target of document.querySelectorAll<HTMLElement>(
+    '[data-about-numbers] [data-count-total]:not([data-about-live] *)',
+  )) {
+    countUp(target)
+  }
+
+  for (const root of document.querySelectorAll<HTMLElement>(
+    '[data-about-live]',
+  )) {
+    const targets = [
+      ...root.querySelectorAll<HTMLElement>('[data-count-total]'),
+    ]
+    const countedTotals = targets.map((target) => {
+      countUp(target)
+      return target.dataset.countTotal
+    })
+    void mountGithubTile(root).then(() => {
+      for (const [index, target] of targets.entries()) {
+        const total = Number(target.dataset.countTotal)
+        if (
+          target.dataset.countTotal === countedTotals[index] ||
+          !Number.isFinite(total)
+        )
+          continue
+        target.textContent = new Intl.NumberFormat(
+          target.dataset.countLocale ?? 'en',
+          { useGrouping: 'always' },
+        ).format(total)
+      }
+    })
+  }
+</script>

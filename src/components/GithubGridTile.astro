@@ -1,7 +1,20 @@
 ---
+import chrome from '../content/chrome.json'
 import tiles from '../content/live-tiles.json'
 import type { Locale } from '../i18n/locales'
-import type { GridLevel, GridSnapshot } from '../lib/github-grid'
+import {
+  externalLinkAttributes,
+  labelWithNewTabNote,
+} from '../lib/external-link'
+import type { GridSnapshot } from '../lib/github-grid'
+import {
+  computeStats,
+  formatContributionTip,
+  gridCellsHtml,
+  monthLabels,
+  statsView,
+  updatedLabel,
+} from '../lib/github-stats'
 
 interface Props {
   locale: Locale
@@ -11,78 +24,209 @@ interface Props {
 const { locale, snapshot } = Astro.props
 const copy = tiles[locale].github
 const total = new Intl.NumberFormat(locale).format(snapshot.total)
-
-const levelClass: Readonly<Record<GridLevel, string>> = {
-  0: 'bg-muted',
-  1: 'bg-primary/25',
-  2: 'bg-primary/50',
-  3: 'bg-primary/75',
-  4: 'bg-primary',
-}
-const legend: readonly GridLevel[] = [0, 1, 2, 3, 4]
-const cell = 'block aspect-square rounded-[2px]'
+const view = statsView(computeStats(snapshot), locale, {
+  one: copy.dayOne,
+  other: copy.dayOther,
+})
+const updated = updatedLabel(
+  copy.updatedLabel,
+  snapshot.capturedAt,
+  new Date(),
+  locale,
+)
+const legend = [0, 1, 2, 3] as const
+const tips = { one: copy.tipOne, other: copy.tipOther, none: copy.tipNone }
+const months = monthLabels(snapshot.weeks, locale)
+const statCellClass =
+  'bg-card-2 border-border grid gap-0.5 rounded-xl border px-3 py-2.5'
+const statLabelClass =
+  'text-muted-foreground font-mono text-[0.625rem] leading-[1.35] tracking-[0.04em] uppercase'
+const statValueClass =
+  'm-0 order-first text-xl leading-[1.15] font-bold tracking-[-0.02em] tabular-nums'
+const statUnitClass =
+  'text-muted-foreground ml-[3px] font-mono text-[0.6875rem] font-medium tracking-normal'
+const stats = [
+  {
+    key: 'longest',
+    label: copy.longestStreak,
+    value: view.longest,
+    unit: view.longestUnit,
+  },
+  {
+    key: 'current',
+    label: copy.currentStreak,
+    value: view.current,
+    unit: view.currentUnit,
+  },
+] as const
 ---
 
 <article
   data-github-grid
-  class="bg-card border-border flex h-full min-w-0 flex-col gap-3 overflow-hidden rounded-[1.25rem] border p-5 shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)]"
+  data-locale={locale}
+  data-captured-at={snapshot.capturedAt}
+  data-updated-prefix={copy.updatedLabel}
+  data-grid-label={copy.gridLabel}
+  data-day-one={copy.dayOne}
+  data-day-other={copy.dayOther}
+  data-tip-one={copy.tipOne}
+  data-tip-other={copy.tipOther}
+  data-tip-none={copy.tipNone}
+  class="github-tile bg-card border-border relative flex h-full min-w-0 flex-col gap-2.5 rounded-[1.25rem] border p-5"
 >
   <p class="text-muted-foreground m-0 flex items-center justify-between gap-3 font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase">
     <span>{copy.label}</span>
-    <span class="normal-case tabular-nums">
-      {copy.capturedLabel}
-      <time datetime={snapshot.capturedAt}>{snapshot.capturedAt}</time>
-    </span>
+    <time
+      class="normal-case tabular-nums"
+      data-gh-updated
+      datetime={snapshot.capturedAt}
+    >
+      {updated}
+    </time>
   </p>
-  <p class="m-0 flex flex-wrap items-baseline gap-x-2">
+  <p class="m-0 flex flex-wrap items-baseline gap-x-3">
     <span
-      class="text-4xl font-bold tracking-[-0.03em] tabular-nums"
+      class="text-[2.125rem] leading-[1.1] font-bold tracking-[-0.03em] tabular-nums"
       data-count-total={snapshot.total}
       data-count-locale={locale}
     >
       {total}
     </span>
-    <span class="text-muted-foreground text-sm">{copy.totalLabel}</span>
+    <span class="text-muted-foreground text-[0.9375rem]">
+      {copy.totalLabel}
+    </span>
   </p>
   <div
-    role="img"
+    role="group"
     aria-label={`${copy.gridLabel}: ${total}`}
-    class="grid grid-flow-col grid-rows-7 auto-cols-fr gap-[2px]"
-  >
-    {snapshot.weeks.flatMap((week) =>
-      week.map((day) => (
-        <i
-          class:list={[cell, levelClass[day.level]]}
-          title={`${day.date}: ${day.count}`}
-        />
-      )),
+    data-gh-grid
+    class="github-grid mt-1 grid auto-cols-fr grid-flow-col grid-rows-7 gap-[3px]"
+    set:html={gridCellsHtml(snapshot.weeks, (day) =>
+      formatContributionTip(day, locale, tips),
     )}
-  </div>
-  <div
-    class="text-muted-foreground flex items-center justify-end gap-1.5 font-mono text-[0.625rem] uppercase"
+  />
+  <ol
+    class="github-months m-0 grid list-none p-0"
+    data-weeks={snapshot.weeks.length}
     aria-hidden="true"
   >
-    <span>{copy.less}</span>
-    {legend.map((level) => (
-      <i class:list={['size-2.5', cell, levelClass[level]]} />
+    {months.map((month) => (
+      <li data-col={month.column}>{month.label}</li>
     ))}
-    <span>{copy.more}</span>
-  </div>
+  </ol>
+  <dl
+    class="m-0 mt-3.5 grid grid-cols-2 gap-2.5 min-[700px]:grid-cols-4"
+    aria-label={copy.statsLabel}
+  >
+    {stats.map((stat) => (
+      <div
+        class:list={[
+          statCellClass,
+          stat.key === 'current' && 'github-stat-current',
+        ]}
+      >
+        <dt class={statLabelClass}>{stat.label}</dt>
+        <dd class={statValueClass}>
+          <span data-gh-stat={stat.key}>{stat.value}</span>
+          <small class={statUnitClass} data-gh-stat={`${stat.key}-unit`}>
+            {stat.unit}
+          </small>
+        </dd>
+      </div>
+    ))}
+    <div class={statCellClass}>
+      <dt class={statLabelClass}>
+        {copy.bestDay} · <span data-gh-stat="best-date">{view.bestDate}</span>
+      </dt>
+      <dd class={statValueClass} data-gh-stat="best">
+        {view.best}
+      </dd>
+    </div>
+    <div class={statCellClass}>
+      <dt class={statLabelClass}>{copy.activeDays}</dt>
+      <dd class={statValueClass} data-gh-stat="active">
+        {view.active}
+      </dd>
+    </div>
+  </dl>
+  <p class="text-muted-foreground m-0 mt-auto flex items-center justify-between gap-3 font-mono text-[0.6875rem]">
+    <a
+      href={copy.profileHref}
+      {...externalLinkAttributes(copy.profileHref)}
+      aria-label={labelWithNewTabNote(copy.profileLabel, chrome[locale])}
+      class="github-profile"
+    >
+      {copy.profileHandle} ↗
+    </a>
+    <span class="flex items-center gap-1" aria-hidden="true">
+      <span>{copy.less}</span>
+      {legend.map((level) => (
+        <i class="github-legend" data-level={level} />
+      ))}
+      <span>{copy.more}</span>
+    </span>
+  </p>
 </article>
 
 <script>
+  import { nextCellIndex } from '../lib/github-grid-nav'
   import { prefersReducedMotion } from '../lib/motion'
   import { startCountUp } from '../scripts/count-up'
+  import { mountGithubTile } from '../scripts/github-tile'
 
-  for (const target of document.querySelectorAll<HTMLElement>(
-    '[data-count-total]',
+  function wireGridTips(root: HTMLElement): void {
+    const grid = root.querySelector<HTMLElement>('[data-gh-grid]')
+    if (!grid) return
+    grid.tabIndex = 0
+    let active: HTMLElement | null = null
+    const cells = () => [...grid.querySelectorAll<HTMLElement>('i')]
+    const show = (cell: HTMLElement | null): void => {
+      if (active === cell) return
+      active?.removeAttribute('data-active')
+      active = cell
+      active?.setAttribute('data-active', '')
+    }
+    grid.addEventListener('pointerdown', (event) => {
+      if (event.pointerType === 'mouse') return
+      const cell = (event.target as Element).closest<HTMLElement>('i')
+      show(cell && grid.contains(cell) ? cell : null)
+    })
+    document.addEventListener('pointerdown', (event) => {
+      if (!grid.contains(event.target as Node)) show(null)
+    })
+    grid.addEventListener('focus', () => {
+      if (!grid.matches(':focus-visible')) return
+      show(active ?? cells()[0] ?? null)
+    })
+    grid.addEventListener('blur', () => {
+      show(null)
+    })
+    grid.addEventListener('keydown', (event) => {
+      const all = cells()
+      const current = active ? all.indexOf(active) : 0
+      const next = nextCellIndex(current, event.key, all.length)
+      if (next === null) return
+      event.preventDefault()
+      show(all[next] ?? null)
+    })
+  }
+
+  for (const root of document.querySelectorAll<HTMLElement>(
+    '[data-github-grid]',
   )) {
-    const total = Number(target.dataset.countTotal)
-    if (!Number.isFinite(total)) continue
-    startCountUp(target, total, {
-      reducedMotion: prefersReducedMotion(globalThis),
-      locale: target.dataset.countLocale ?? 'en',
-      requestFrame: (callback) => requestAnimationFrame(callback),
+    wireGridTips(root)
+    void mountGithubTile(root).then(() => {
+      for (const target of root.querySelectorAll<HTMLElement>(
+        '[data-count-total]',
+      )) {
+        const total = Number(target.dataset.countTotal)
+        if (!Number.isFinite(total)) continue
+        startCountUp(target, total, {
+          reducedMotion: prefersReducedMotion(globalThis),
+          locale: target.dataset.countLocale ?? 'en',
+          requestFrame: (callback) => requestAnimationFrame(callback),
+        })
+      }
     })
   }
 </script>

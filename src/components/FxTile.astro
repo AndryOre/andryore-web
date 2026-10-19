@@ -1,0 +1,84 @@
+---
+import chrome from '../content/chrome.json'
+import type { Locale } from '../i18n/locales'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const copy = chrome[locale].fx
+
+const iconProps = {
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  'stroke-width': 2,
+  'stroke-linecap': 'round',
+  'stroke-linejoin': 'round',
+  'aria-hidden': 'true',
+} as const
+const SPEAKER =
+  'M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z'
+---
+
+<button
+  type="button"
+  role="switch"
+  aria-checked="false"
+  aria-labelledby="fx-label fx-sound"
+  aria-describedby="fx-hint"
+  data-fx-switch
+  data-sound="switch"
+  class="group bg-card border-border focus-visible:outline-foreground relative flex h-full w-full min-w-0 cursor-pointer flex-col justify-between gap-2.5 overflow-hidden rounded-[1.25rem] border p-4 text-left shadow-[inset_0_1px_0_var(--hl),0_10px_28px_-16px_rgb(0_0_0/0.28)] focus-visible:outline-2 focus-visible:-outline-offset-4"
+>
+  <span class="flex items-center gap-2.5">
+    <span class="text-foreground">
+      <svg {...iconProps} class="hidden size-5.5 group-aria-checked:block">
+        <path d={SPEAKER}></path>
+        <path d="M16 9a5 5 0 0 1 0 6"></path>
+        <path d="M19.364 18.364a9 9 0 0 0 0-12.728"></path>
+      </svg>
+      <svg {...iconProps} class="size-5.5 group-aria-checked:hidden">
+        <path d={SPEAKER}></path>
+        <line x1="22" x2="16" y1="9" y2="15"></line>
+        <line x1="16" x2="22" y1="9" y2="15"></line>
+      </svg>
+    </span>
+    <span
+      id="fx-label"
+      class="text-muted-foreground font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase"
+    >
+      {copy.label}
+    </span>
+  </span>
+  <span
+    id="fx-hint"
+    class="text-muted-foreground text-[13px] leading-[1.35] font-medium"
+  >
+    {copy.hint}
+  </span>
+  <span class="flex items-center justify-between gap-2.5">
+    <b id="fx-sound" class="text-[15px] font-semibold">
+      {copy.sound}
+    </b>
+    <span
+      aria-hidden="true"
+      class="fx-switch bg-muted border-border rounded-pill group-aria-checked:bg-foreground/88 pointer-events-none relative h-8 w-14 flex-none border group-aria-checked:border-transparent"
+    >
+      <span class="fx-knob bg-muted-foreground group-aria-checked:bg-background rounded-pill absolute top-[3px] left-[3px] size-6"></span>
+    </span>
+  </span>
+</button>
+
+<script>
+  import { soundEngine } from '../lib/sound-engine'
+  import { mountFxAvailability, mountFxSwitch } from '../scripts/fx-tile'
+
+  for (const element of document.querySelectorAll<HTMLElement>(
+    '[data-fx-switch]',
+  )) {
+    mountFxSwitch(element)
+    mountFxAvailability(element, soundEngine)
+  }
+</script>

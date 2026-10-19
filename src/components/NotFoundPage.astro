@@ -1,7 +1,11 @@
 ---
+import monocle from '../assets/afe/face-with-monocle.png'
 import notFound from '../content/not-found.json'
-import { homePath, type Locale } from '../i18n/locales'
+import { homePath, localePath, type Locale } from '../i18n/locales'
 import BaseLayout from '../layouts/BaseLayout.astro'
+import { NOT_FOUND_TILES } from '../lib/stack-scene'
+import stackSceneStylesheet from '../styles/stack-scene.css?url'
+import StackTile from './StackTile.astro'
 
 interface Props {
   locale: Locale
@@ -9,6 +13,7 @@ interface Props {
 
 const { locale } = Astro.props
 const copy = notFound[locale]
+const [firstDigit = '4', , lastDigit = '4'] = [...copy.code]
 ---
 
 <BaseLayout
@@ -16,17 +21,45 @@ const copy = notFound[locale]
   description={copy.meta.description}
   locale={locale}
   noindex
+  wide
 >
-  <section class="flex flex-col items-start gap-4 py-10">
-    <h1 class="text-muted-foreground m-0 font-mono text-5xl font-bold tracking-tight">
-      {copy.heading}
-    </h1>
-    <p class="m-0 text-lg">{copy.message}</p>
-    <a
-      href={homePath(locale)}
-      class="bg-primary text-primary-foreground rounded-pill inline-flex min-h-11 items-center px-5 py-2 text-sm font-medium no-underline hover:opacity-90"
-    >
-      {copy.action}
-    </a>
+  <link rel="stylesheet" href={stackSceneStylesheet} />
+  <section class="nf-stage">
+    <div class="nf-field" aria-hidden="true">
+      {NOT_FOUND_TILES.map((tile) => (
+        <StackTile
+          id={tile.id}
+          size={tile.size}
+          class:list={['nf-tile', tile.placement]}
+          data-nf-delay={tile.delay}
+        />
+      ))}
+    </div>
+    <div class="nf-code" aria-hidden="true">
+      <span>{firstDigit}</span>
+      <span class="nf-monocle" data-sound="pop">
+        <img
+          src={monocle.src}
+          alt=""
+          width="100"
+          height="6400"
+          decoding="async"
+        />
+      </span>
+      <span>{lastDigit}</span>
+    </div>
+    <h1 class="nf-title">{copy.heading}</h1>
+    <p class="nf-message">{copy.message}</p>
+    <div class="nf-actions">
+      <a href={homePath(locale)} class="nf-button nf-button-primary">
+        {copy.home}
+      </a>
+      <a
+        href={localePath(locale, '/#products')}
+        class="nf-button nf-button-secondary"
+      >
+        {copy.products}
+      </a>
+    </div>
   </section>
 </BaseLayout>

@@ -12,6 +12,8 @@ const SOURCE_ROOTS = [
 ] as const
 
 const EXEMPTIONS: Readonly<Record<string, string>> = {
+  'scripts/fidelity-audit.ts':
+    'Playwright runner that needs a built preview and the local canvas file; its pure logic lives in fidelity-audit-core.ts, which is tested.',
   'scripts/workflow-files.ts':
     'Workflow loader used by workflows-invariants.test.ts, which exercises it against the real workflows.',
   'src/content.config.ts':
@@ -30,8 +32,6 @@ const EXEMPTIONS: Readonly<Record<string, string>> = {
     'CLI that needs the live GitHub API and writes the committed snapshot; the fetch logic is tested in src/lib/github-grid.test.ts.',
   'scripts/i18n-status.ts':
     'CLI that prints findStaleTranslations over the real content; the logic is tested in src/i18n/translations.test.ts.',
-  'src/log/collection.ts':
-    'Thin wrapper over astro:content getCollection, which only resolves inside Astro; the logic lives in src/log/entries.ts, which is tested.',
   'docs/brand/tools/export.mjs':
     'Brand raster export CLI that needs a real browser and writes the committed rasters; its pure logic lives in brand-export-spec.mjs.',
 }

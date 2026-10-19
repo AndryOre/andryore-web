@@ -1,18 +1,29 @@
 ---
-import { Picture } from 'astro:assets'
+import { Image, Picture } from 'astro:assets'
 import { getCollection, render } from 'astro:content'
 
+import chrome from '../content/chrome.json'
 import productUi from '../content/product-ui.json'
 import type { Locale } from '../i18n/locales'
+import { localePath } from '../i18n/locales'
 import BaseLayout from '../layouts/BaseLayout.astro'
-import { externalLinkTokens } from '../lib/external-link'
+import { ANALYTICS_EVENTS, analyticsAttributes } from '../lib/analytics'
+import { externalLinkAttributes } from '../lib/external-link'
 import { revealClass } from '../lib/motion'
 import {
-  fillPlaceholder,
-  formatProofDate,
-  visibleProof,
+  classifyIcon,
+  countableStat,
+  headerLinks,
+  SKIN_TONE_CLASSES,
+  stackBadgeClass,
+  stackHref,
+  stackIconId,
+  statLabel,
+  type HeaderLinkId,
   type ProductEntry,
 } from '../lib/products'
+import { spriteClass } from '../lib/sprites'
+import ProductIcon from './ProductIcon.astro'
 
 interface Props {
   locale: Locale
@@ -21,6 +32,7 @@ interface Props {
 
 const { locale, productKey } = Astro.props
 const ui = productUi[locale]
+const copy = chrome[locale]
 
 const entries: ProductEntry[] = await getCollection('products')
 const entry = entries.find(
@@ -32,121 +44,546 @@ if (!entry) {
 }
 const { data } = entry
 const { Content } = await render(entry)
-const proof = visibleProof(data.proof)
+const isContribution = data.kind === 'contribution'
 
-const rowClass =
-  'border-border grid gap-1 border-t py-4 min-[700px]:grid-cols-[9rem_minmax(0,1fr)] min-[700px]:gap-6'
+const linkIcons: Record<HeaderLinkId, string> = {
+  website: 'globe',
+  source: 'code-xml',
+  npm: 'package',
+  marketplace: 'puzzle',
+  chromeWebStore: 'chrome-outline',
+}
+const links = headerLinks(data)
+
+const SPRITE_SIZE = 56
+const pillSprites = data.skinTones ? data.sprites.slice(0, 2) : []
+
+const surfaceShadow = 'shadow-[inset_0_1px_0_var(--hl),var(--shadow)]'
+const sectionClass = 'flex flex-col gap-3'
+const headingClass =
+  'text-muted-foreground m-0 font-mono text-xs font-normal tracking-widest uppercase'
 const labelClass =
-  'text-muted-foreground font-mono text-xs tracking-widest uppercase'
-const valueClass = 'm-0 min-w-0 [overflow-wrap:anywhere]'
+  'text-muted-foreground m-0 inline-flex items-center gap-2.5 font-mono text-[11px] font-medium tracking-[0.08em] uppercase'
+const chipClass =
+  'border-border bg-card-2 inline-flex min-h-9 items-center gap-2 rounded-[10px] border px-3 font-mono text-xs font-semibold no-underline'
+const iconTileClass =
+  'inline-flex size-10 shrink-0 items-center justify-center rounded-xl'
+const buttonClass =
+  'inline-flex h-11 items-center gap-2.5 rounded-pill border px-[18px] text-[15px] font-medium no-underline'
+const iconSize = (name: string): number =>
+  classifyIcon(name)?.kind === 'brand' ? 18 : 16
+const platformItems = data.platforms
+const importItems = data.importsFrom
+const formatGroups = [
+  { heading: ui.exportFormats, icon: 'upload', items: data.exportFormats },
+  { heading: ui.importFormats, icon: 'download', items: data.importFormats },
+].filter((group) => group.items.length > 0)
+const hasFormatsCard =
+  platformItems.length > 0 ||
+  importItems.length > 0 ||
+  formatGroups.length > 0 ||
+  data.skinTones ||
+  data.platformNote !== undefined
+const showFrame = isContribution && data.website !== undefined
+const showWebsiteTile = !isContribution && data.website !== undefined
+const backHref = localePath(locale, '/#products')
 ---
 
 <BaseLayout
   title={`${data.name} · AndryOre`}
   locale={locale}
   description={data.description}
+  wide
 >
-  <article class="flex flex-col gap-8">
+  <article class="mx-auto flex w-full max-w-[712px] flex-col gap-10">
     <header class:list={['reveal', revealClass(0), 'flex flex-col gap-4']}>
+      <a
+        href={backHref}
+        class="text-muted-foreground hover:text-foreground inline-flex min-h-11 w-fit items-center gap-2 font-mono text-xs tracking-wide no-underline"
+        data-product-back
+      >
+        <span aria-hidden="true">←</span>
+        {ui.backLink}
+      </a>
       <div class="flex flex-wrap items-center gap-3">
-        <h1 class="m-0 min-w-0 text-4xl font-bold tracking-tight [overflow-wrap:anywhere]">
+        <h1 class="m-0 min-w-0 text-[30px] leading-[1.08] font-bold tracking-[-0.03em] [overflow-wrap:anywhere] sm:text-[40px]">
           {data.name}
         </h1>
         <span
-          class="border-border text-muted-foreground rounded-pill shrink-0 border px-3 py-1 font-mono text-xs whitespace-nowrap"
+          class="border-border bg-card-2 text-foreground rounded-pill inline-flex shrink-0 items-center gap-2 border px-3 py-1 font-mono text-[11px] tracking-[0.06em] whitespace-nowrap uppercase"
           data-product-state={data.state}
         >
+          <span
+            class="bg-success size-[7px] rounded-full"
+            aria-hidden="true"
+          ></span>
           {ui.state[data.state]}
         </span>
       </div>
-      <p class="text-muted-foreground m-0 text-lg [overflow-wrap:anywhere]">
+      <p class="text-muted-foreground m-0 max-w-[56ch] text-base [overflow-wrap:anywhere]">
         {data.value}
       </p>
-      <p class="m-0">
-        <a
-          href={data.url}
-          rel={externalLinkTokens()}
-          class="bg-primary text-primary-foreground rounded-pill inline-flex min-h-11 items-center px-5 py-2 text-sm font-medium no-underline hover:opacity-90"
-        >
-          {fillPlaceholder(ui.tryCta, 'name', data.name)}
-        </a>
-      </p>
+      <ul class="m-0 flex list-none flex-wrap gap-2.5 p-0">
+        {links.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              {...externalLinkAttributes(link.href)}
+              {...analyticsAttributes(ANALYTICS_EVENTS.productOpen, {
+                product: data.key,
+                link: link.id,
+              })}
+              class:list={[
+                buttonClass,
+                link.id === 'website'
+                  ? 'bg-foreground border-foreground text-background hover:opacity-90'
+                  : 'border-border bg-card-2 hover:bg-muted',
+              ]}
+            >
+              <ProductIcon name={linkIcons[link.id]} />
+              {ui.links[link.id]}
+              <span class="sr-only">. {copy.opensInNewTab}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
     </header>
 
-    <figure
-      class:list={['reveal', revealClass(1), 'm-0 flex flex-col gap-2']}
-      data-product-image={data.key}
-      data-placeholder={data.image.placeholder ? '' : undefined}
+    <section
+      class:list={[
+        'reveal',
+        revealClass(1),
+        'border-border bg-card relative overflow-hidden rounded-[20px] border p-0',
+        surfaceShadow,
+      ]}
+      aria-label={ui.heroLabel}
+      data-product-hero
     >
+      {showFrame && (
+        <div
+          class="border-border bg-muted flex items-center gap-3 border-b px-4 py-2"
+          aria-hidden="true"
+          data-product-frame
+        >
+          <span class="flex gap-1.5">
+            <span class="bg-border size-2.5 rounded-full" />
+            <span class="bg-border size-2.5 rounded-full" />
+            <span class="bg-border size-2.5 rounded-full" />
+          </span>
+          <span class="bg-background text-muted-foreground rounded-pill min-w-0 flex-1 px-3 py-1 font-mono text-xs break-all">
+            {data.website?.host}
+          </span>
+        </div>
+      )}
       <Picture
         src={data.image.src}
-        alt={data.image.alt}
+        alt=""
         formats={['avif', 'webp']}
-        widths={[480, 720, 1200]}
-        sizes="(min-width: 768px) 720px, 100vw"
-        loading="lazy"
-        class="min-h-[260px] w-full rounded-[20px] object-cover"
+        widths={[480, 960, 1440]}
+        sizes="(min-width: 1024px) 960px, 100vw"
+        class="block min-h-[300px] w-full object-cover object-top max-[639px]:h-auto max-[639px]:min-h-0"
       />
-      {data.image.placeholder && (
-        <figcaption class={labelClass}>{ui.placeholderNote}</figcaption>
+      {pillSprites.length > 0 && (
+        <div
+          class="bg-card/88 border-border rounded-pill absolute right-3 bottom-3 flex gap-1.5 border px-2.5 py-1.5 backdrop-blur-sm"
+          aria-hidden="true"
+          data-product-sprites
+        >
+          {pillSprites.map((sprite) => {
+            const run = spriteClass(sprite.frames)
+            return (
+              <span class="block size-10 overflow-hidden">
+                <Image
+                  src={sprite.src}
+                  alt=""
+                  width={SPRITE_SIZE * 2}
+                  height={SPRITE_SIZE * 2 * sprite.frames}
+                  class:list={['sprite-strip block h-auto w-full', run]}
+                  data-sprite={run ? '' : undefined}
+                />
+              </span>
+            )
+          })}
+        </div>
       )}
-    </figure>
+    </section>
 
-    <dl class:list={['reveal', revealClass(2), 'm-0 flex flex-col']}>
-      {proof.length > 0 && (
-        <>
-          <div class={rowClass}>
-            <dt class={labelClass}>{ui.proofHeading}</dt>
-            <dd class={valueClass}>
-              <ul class="m-0 flex list-none flex-col gap-3 p-0">
-                {proof.map((row) => (
-                  <li class="flex flex-col gap-0.5">
-                    <span class="text-muted-foreground text-sm">
-                      {row.label}
-                    </span>
-                    <span class="font-mono text-xl tabular-nums">
-                      {row.value}
-                    </span>
-                    <time
-                      class="text-muted-foreground font-mono text-xs"
-                      datetime={row.date}
+    {data.stats.length > 0 && (
+      <section
+        class:list={['reveal', revealClass(2), sectionClass]}
+        aria-label={ui.statsHeading}
+      >
+        <ul class="m-0 grid list-none grid-cols-2 gap-3 p-0 min-[900px]:grid-cols-4">
+          {data.stats.map((stat) => {
+            const countable = countableStat(stat.value)
+            const shown = countable
+              ? stat.value.slice(0, stat.value.length - countable.suffix.length)
+              : stat.value
+            return (
+              <li
+                class:list={[
+                  'border-border bg-card flex min-w-0 flex-col gap-1 rounded-[18px] border p-4',
+                  surfaceShadow,
+                ]}
+                data-product-stat
+              >
+                <ProductIcon
+                  name={stat.icon}
+                  size={18}
+                  class="text-muted-foreground mb-1"
+                />
+                <span class="text-[28px] leading-[1.1] font-bold tracking-[-0.03em] tabular-nums [overflow-wrap:anywhere]">
+                  {countable ? (
+                    <>
+                      <span
+                        data-count-total={countable.total}
+                        data-count-locale={locale}
+                      >
+                        {shown}
+                      </span>
+                      {countable.suffix}
+                    </>
+                  ) : (
+                    stat.value
+                  )}
+                </span>
+                <span class="text-muted-foreground font-mono text-[11px] leading-[1.4]">
+                  {statLabel(stat.label, stat.date)}
+                </span>
+              </li>
+            )
+          })}
+        </ul>
+      </section>
+    )}
+
+    {hasFormatsCard && (
+      <section
+        class:list={[
+          'reveal',
+          revealClass(3),
+          'border-border bg-card flex flex-col gap-[18px] rounded-[20px] border p-6',
+          surfaceShadow,
+        ]}
+        data-product-formats
+      >
+        {platformItems.length > 0 && (
+          <div class="flex flex-col gap-2.5">
+            <h2 class={labelClass}>{ui.worksWith}</h2>
+            <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
+              {platformItems.map((item) => (
+                <li>
+                  {item.href ? (
+                    <a
+                      href={item.href}
+                      {...externalLinkAttributes(item.href)}
+                      class={chipClass}
                     >
-                      {fillPlaceholder(
-                        ui.proofAsOf,
-                        'date',
-                        formatProofDate(row.date, locale),
-                      )}
-                    </time>
-                  </li>
-                ))}
-              </ul>
-            </dd>
+                      <ProductIcon
+                        name={item.icon}
+                        size={iconSize(item.icon)}
+                        class="text-muted-foreground"
+                      />
+                      {item.label}
+                      <span class="sr-only">. {copy.opensInNewTab}</span>
+                      <ProductIcon
+                        name="external-link"
+                        size={12}
+                        class="ml-0.5 opacity-60"
+                      />
+                    </a>
+                  ) : (
+                    <span class={chipClass}>
+                      <ProductIcon
+                        name={item.icon}
+                        size={iconSize(item.icon)}
+                        class="text-muted-foreground"
+                      />
+                      {item.label}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
           </div>
-        </>
-      )}
-      <div class={rowClass}>
-        <dt class={labelClass}>{ui.whyHeading}</dt>
-        <dd class={valueClass}>
-          <Content />
-        </dd>
-      </div>
-      <div class={rowClass}>
-        <dt class={labelClass}>{ui.stackHeading}</dt>
-        <dd class={valueClass}>
-          <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
-            {data.stack.map((item) => (
-              <li class="bg-muted rounded-pill px-3 py-1 font-mono text-xs">
-                {item}
+        )}
+        {data.platformNote && (
+          <p class="text-muted-foreground m-0 font-mono text-xs">
+            {data.platformNote}
+          </p>
+        )}
+        {importItems.length > 0 && (
+          <div class="flex flex-col gap-2.5">
+            <h2 class={labelClass}>{ui.importsFrom}</h2>
+            <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
+              {importItems.map((item) => (
+                <li class={chipClass}>
+                  <ProductIcon
+                    name={item.icon}
+                    size={iconSize(item.icon)}
+                    class="text-muted-foreground"
+                  />
+                  {item.label}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {formatGroups.length > 0 && (
+          <div class="grid grid-cols-1 gap-[18px] min-[640px]:grid-cols-2">
+            {formatGroups.map((group) => (
+              <div class="flex flex-col gap-2.5">
+                <h2 class={labelClass}>
+                  <ProductIcon name={group.icon} size={18} />
+                  {group.heading}
+                </h2>
+                <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
+                  {group.items.map((item) => (
+                    <li class={chipClass}>
+                      <ProductIcon
+                        name={item.icon}
+                        size={iconSize(item.icon)}
+                        class="text-muted-foreground"
+                      />
+                      {item.label}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
+        {data.skinTones && (
+          <ul class="m-0 flex list-none flex-wrap gap-2.5 p-0">
+            {SKIN_TONE_CLASSES.map((toneClass, index) => (
+              <li>
+                <span
+                  class:list={[
+                    toneClass,
+                    'border-border block size-[30px] rounded-full border',
+                  ]}
+                  role="img"
+                  aria-label={ui.skinTones[index]}
+                />
               </li>
             ))}
           </ul>
-        </dd>
+        )}
+      </section>
+    )}
+
+    {data.cards.length > 0 && (
+      <section class:list={['reveal', revealClass(4), sectionClass]}>
+        <ul class="m-0 grid list-none grid-cols-1 gap-3 p-0 min-[800px]:grid-cols-3">
+          {data.cards.map((card) => (
+            <li
+              class:list={[
+                'border-border bg-card flex flex-col gap-2.5 rounded-[18px] border p-[18px]',
+                surfaceShadow,
+              ]}
+            >
+              <span
+                class:list={[
+                  iconTileClass,
+                  'text-primary bg-[color-mix(in_oklab,var(--primary)_14%,var(--card-2))]',
+                ]}
+              >
+                <ProductIcon name={card.icon} size={22} />
+              </span>
+              <h3 class="m-0 text-[15px] font-semibold">{card.title}</h3>
+              <p class="text-muted-foreground m-0 text-sm">{card.body}</p>
+            </li>
+          ))}
+        </ul>
+        {data.callout && (
+          <div
+            class="flex items-center justify-center gap-3.5 rounded-[18px] border border-[color-mix(in_oklab,var(--success)_35%,var(--border))] bg-[color-mix(in_oklab,var(--success)_10%,var(--card))] px-5 py-[18px] text-center"
+            data-product-callout
+          >
+            <span
+              class:list={[
+                iconTileClass,
+                'text-success bg-[color-mix(in_oklab,var(--success)_18%,var(--card-2))]',
+              ]}
+            >
+              <ProductIcon name={data.callout.icon} size={22} />
+            </span>
+            <div class="flex min-w-0 flex-col gap-1">
+              {data.callout.title && (
+                <h3 class="m-0 text-[15px] font-semibold">
+                  {data.callout.title}
+                </h3>
+              )}
+              <p class="text-muted-foreground m-0 text-sm">
+                {data.callout.body}
+              </p>
+            </div>
+          </div>
+        )}
+      </section>
+    )}
+
+    <section class:list={['reveal', revealClass(5), sectionClass]}>
+      <h2 class={headingClass}>{ui.builtWithHeading}</h2>
+      <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
+        {data.stack.map((item) => {
+          const iconId = stackIconId(item)
+          const href = stackHref(item)
+          const darkGlyph = !stackBadgeClass(item).includes('text-white')
+          const badgeClass = [
+            'group inline-flex h-[34px] items-center gap-2 rounded-md pr-3 pl-2.5 font-mono text-xs font-bold tracking-[0.06em] uppercase no-underline',
+            stackBadgeClass(item),
+          ]
+          const content = (
+            <>
+              {iconId && (
+                <ProductIcon
+                  name={iconId}
+                  size={16}
+                  class:list={[
+                    darkGlyph
+                      ? '[&_img]:brightness-0'
+                      : '[&_img]:brightness-0 [&_img]:invert',
+                  ]}
+                />
+              )}
+              {item}
+              {href && (
+                <span
+                  class="hidden group-hover:inline group-focus-visible:inline"
+                  aria-hidden="true"
+                >
+                  ↗
+                </span>
+              )}
+            </>
+          )
+          return (
+            <li data-product-badge>
+              {href ? (
+                <a
+                  href={href}
+                  {...externalLinkAttributes(href)}
+                  class:list={badgeClass}
+                >
+                  {content}
+                  <span class="sr-only">. {copy.opensInNewTab}</span>
+                </a>
+              ) : (
+                <span class:list={badgeClass}>{content}</span>
+              )}
+            </li>
+          )
+        })}
+      </ul>
+    </section>
+
+    {data.gallery.length > 0 && (
+      <section class:list={['reveal', revealClass(6), sectionClass]}>
+        <h2 class={headingClass}>{ui.galleryHeading}</h2>
+        <ul class="m-0 grid list-none grid-cols-1 gap-3 p-0 min-[640px]:grid-cols-3">
+          {data.gallery.map((shot) => (
+            <li class="border-border overflow-hidden rounded-xl border">
+              <Picture
+                src={shot.src}
+                alt={shot.alt}
+                formats={['avif', 'webp']}
+                widths={[240, 480, 720]}
+                sizes="(min-width: 640px) 33vw, 100vw"
+                loading="lazy"
+                class="h-full w-full object-cover"
+              />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {showWebsiteTile && data.website && (
+      <section class:list={['reveal', revealClass(7), sectionClass]}>
+        <h2 class={headingClass}>{ui.websiteHeading}</h2>
+        <a
+          href={data.url}
+          {...externalLinkAttributes(data.url)}
+          class="border-border bg-card block overflow-hidden rounded-2xl border no-underline"
+          data-product-browser
+          data-product-website={data.key}
+          {...analyticsAttributes(ANALYTICS_EVENTS.productOpen, {
+            product: data.key,
+            link: 'website-tile',
+          })}
+        >
+          <span class="bg-card border-border flex items-center gap-3 border-b px-3.5 py-2.5">
+            <span class="flex gap-1.5" aria-hidden="true">
+              <span class="bg-border size-[9px] rounded-full"></span>
+              <span class="bg-border size-[9px] rounded-full"></span>
+              <span class="bg-border size-[9px] rounded-full"></span>
+            </span>
+            <span class="bg-muted text-muted-foreground rounded-pill mx-auto min-w-0 px-3 py-1 text-center font-mono text-[11px] break-all">
+              {data.website.host}
+            </span>
+            <ProductIcon
+              name="external-link"
+              size={14}
+              class="text-muted-foreground"
+            />
+          </span>
+          <Picture
+            src={data.website.src}
+            alt={data.website.alt}
+            formats={['avif', 'webp']}
+            widths={[480, 720, 1200]}
+            sizes="(min-width: 768px) 720px, 100vw"
+            loading="lazy"
+            class="block aspect-[16/10] w-full object-cover object-top max-[639px]:h-auto max-[639px]:min-h-0"
+          />
+          <span class="sr-only">. {copy.opensInNewTab}</span>
+        </a>
+      </section>
+    )}
+
+    <section class:list={['reveal', revealClass(8), sectionClass]}>
+      <h2 class={headingClass}>
+        {isContribution ? ui.contributionWhyHeading : ui.whyHeading}
+      </h2>
+      <div class="flex max-w-reading flex-col gap-3 [overflow-wrap:anywhere]">
+        <Content />
       </div>
-    </dl>
-    <p class="border-border m-0 border-t pt-4">
-      <a href={data.changelog} rel={externalLinkTokens()} class="text-primary">
-        {ui.changelogLink}
-      </a>
-    </p>
+    </section>
   </article>
 </BaseLayout>
+
+<script>
+  import { prefersReducedMotion } from '../lib/motion'
+  import { startCountUp } from '../scripts/count-up'
+  import { observeVisibility } from '../scripts/in-view'
+
+  const createObserver =
+    'IntersectionObserver' in globalThis
+      ? (callback: ConstructorParameters<typeof IntersectionObserver>[0]) =>
+          new IntersectionObserver(callback)
+      : undefined
+
+  observeVisibility(
+    [...document.querySelectorAll<HTMLElement>('[data-count-total]')],
+    (target) => {
+      const total = Number(target.dataset.countTotal)
+      if (!Number.isFinite(total)) return
+      startCountUp(target, total, {
+        reducedMotion: prefersReducedMotion(globalThis),
+        locale: target.dataset.countLocale ?? 'en',
+        requestFrame: (callback) => requestAnimationFrame(callback),
+      })
+    },
+    { createObserver, once: true },
+  )
+
+  observeVisibility(
+    [...document.querySelectorAll<HTMLElement>('[data-sprite]')],
+    (target, visible) => {
+      if (visible) delete target.dataset.paused
+      else target.dataset.paused = ''
+    },
+    { createObserver },
+  )
+</script>

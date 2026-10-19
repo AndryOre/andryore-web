@@ -1,9 +1,7 @@
-import path from 'node:path'
 import type { APIRoute } from 'astro'
 
 import { pageRoutesFromFiles } from '../i18n/parity'
 import { englishProductKeys, productPath } from '../lib/products'
-import { logEntryPath } from '../log/entries'
 import { buildSitemap, readLastmod } from '../seo/sitemap'
 
 export const GET: APIRoute = () => {
@@ -13,11 +11,8 @@ export const GET: APIRoute = () => {
   const products = englishProductKeys(
     Object.keys(import.meta.glob('../content/products/*.md')),
   ).map((key) => productPath('en', key))
-  const logEntries = Object.keys(
-    import.meta.glob('../content/log/en/*.md'),
-  ).map((file) => logEntryPath('en', path.basename(file, '.md')))
   const body = buildSitemap(
-    [...pageRoutesFromFiles(files).en, ...products, ...logEntries],
+    [...pageRoutesFromFiles(files).en, ...products],
     readLastmod(import.meta.env.SITE_LASTMOD ?? process.env.SITE_LASTMOD),
   )
   return new Response(body, {

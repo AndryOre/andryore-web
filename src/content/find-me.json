@@ -1,0 +1,104 @@
+{
+  "en": {
+    "label": "Find me",
+    "emailLabel": "Email",
+    "copyLabel": "Copy email",
+    "sendLabel": "Send email",
+    "copiedMessage": "Copied",
+    "selectedMessage": "Selected, press Ctrl+C to copy",
+    "items": [
+      {
+        "icon": "github",
+        "label": "GitHub",
+        "href": "https://github.com/AndryOre"
+      },
+      {
+        "icon": "x",
+        "label": "X",
+        "href": "https://x.com/andryore"
+      },
+      {
+        "icon": "youtube",
+        "label": "YouTube",
+        "href": "https://youtube.com/@andryore"
+      },
+      {
+        "icon": "tiktok",
+        "label": "TikTok",
+        "href": "https://tiktok.com/@andryoredev"
+      },
+      {
+        "icon": "instagram",
+        "label": "Instagram",
+        "href": "https://instagram.com/andryore"
+      },
+      {
+        "icon": "twitch",
+        "label": "Twitch",
+        "href": "https://twitch.tv/andryoredev"
+      },
+      {
+        "icon": "discord",
+        "label": "Discord",
+        "href": "https://discord.com/invite/unW7WNB5NR"
+      },
+      {
+        "icon": "linkedin",
+        "label": "LinkedIn",
+        "href": "https://linkedin.com/in/AndryOre"
+      }
+    ],
+    "subline": "Say hi wherever you like."
+  },
+  "es": {
+    "label": "Encuéntrame",
+    "emailLabel": "Correo",
+    "copyLabel": "Copiar correo",
+    "sendLabel": "Enviar correo",
+    "copiedMessage": "Copiado",
+    "selectedMessage": "Seleccionado, presiona Ctrl+C para copiar",
+    "items": [
+      {
+        "icon": "github",
+        "label": "GitHub",
+        "href": "https://github.com/AndryOre"
+      },
+      {
+        "icon": "x",
+        "label": "X",
+        "href": "https://x.com/andryore"
+      },
+      {
+        "icon": "youtube",
+        "label": "YouTube",
+        "href": "https://youtube.com/@andryore"
+      },
+      {
+        "icon": "tiktok",
+        "label": "TikTok",
+        "href": "https://tiktok.com/@andryoredev"
+      },
+      {
+        "icon": "instagram",
+        "label": "Instagram",
+        "href": "https://instagram.com/andryore"
+      },
+      {
+        "icon": "twitch",
+        "label": "Twitch",
+        "href": "https://twitch.tv/andryoredev"
+      },
+      {
+        "icon": "discord",
+        "label": "Discord",
+        "href": "https://discord.com/invite/unW7WNB5NR"
+      },
+      {
+        "icon": "linkedin",
+        "label": "LinkedIn",
+        "href": "https://linkedin.com/in/AndryOre"
+      }
+    ],
+    "subline": "Salúdame donde prefieras."
+  }
+}

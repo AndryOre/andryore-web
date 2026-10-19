@@ -29,7 +29,8 @@
     "fix": "bun run format:write && bun run lint:fix",
     "cache:clear": "rm -rf /tmp/node-compile-cache .eslintcache node_modules/.cache",
     "prepare": "bunx --bun husky",
-    "grid:update": "bun scripts/update-github-grid.ts"
+    "grid:update": "bun scripts/update-github-grid.ts",
+    "audit:fidelity": "bun scripts/fidelity-audit.ts"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
@@ -73,9 +74,11 @@
     "@astrojs/react": "^7.1.0",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@fontsource-variable/space-grotesk": "^5.3.0",
+    "@radix-ui/react-dropdown-menu": "^2.2.1",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.4.0",
     "clsx": "^2.1.1",
+    "lucide-react": "^1.59.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "tailwind-merge": "^3.7.0",

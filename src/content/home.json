@@ -4,99 +4,97 @@
       "title": "AndryOre | I build stuff and tell you how it went",
       "description": "Andry builds software and hardware, tests it and writes down what worked, what did not and what he would change."
     },
-    "sample": "SAMPLE",
     "hero": {
       "kicker": "Hi, I’m Andry",
       "lead": "I build ",
-      "emphasis": "stuff",
-      "tail": " and tell you how it went.",
-      "body": "Today it might be a board, a 3D-printed part or a sleep log. Tomorrow, something else. I post what worked, what didn’t and what I’d change.",
-      "primary": { "label": "See what I tried last", "path": "/log/" },
-      "secondary": { "label": "About me", "path": "/about/" },
-      "annotation": "Space Grotesk 700 · 60 / 1.04"
-    },
-    "about": {
-      "label": "About me",
-      "body": "Builder who tests things. Software, hardware and whatever comes next."
+      "emphasis": "web platforms",
+      "tail": " that hold up in production.",
+      "body": "For startups and small teams: auth, APIs and the self-hosted infrastructure under them. Mostly TypeScript, Next.js and Postgres. Independent since 2024.",
+      "primary": {
+        "label": "See what I build",
+        "path": "/#products"
+      },
+      "secondary": {
+        "label": "About me",
+        "path": "/about/"
+      },
+      "annotation": "Space Grotesk 700 · 60 / 1.04",
+      "availability": "Open to contract and full-time work."
     },
     "products": {
-      "label": "Product",
       "imagePlaceholder": "placeholder until captured",
       "items": [
         {
           "key": "snug",
           "name": "Snug",
-          "description": "Export and import your bookmarks from the browser.",
+          "description": "Back up and move your bookmarks between browsers, exactly as you left them.",
           "state": "Shipped",
           "stateKind": "shipped",
-          "year": "20··",
+          "year": "2024",
           "path": "/products/snug/",
-          "sample": true
+          "sample": false
         },
         {
           "key": "animated-fluent-emojis",
           "name": "Animated Fluent Emojis",
-          "description": "Animated Fluent emoji as an npm component library.",
-          "state": "Beta",
-          "stateKind": "beta",
-          "year": "20··",
+          "description": "Microsoft’s animated Fluent emojis as one component: one import, one tag, for React, Vue, Svelte, Astro or plain HTML.",
+          "state": "Shipped",
+          "stateKind": "shipped",
+          "year": "2024",
           "path": "/products/animated-fluent-emojis/",
-          "sample": true
+          "sample": false
         }
-      ]
+      ],
+      "contribution": {
+        "label": "Contributions",
+        "name": "JSON Flow",
+        "description": "A VS Code extension that turns JSON, YAML, XML and CSV into interactive graphs. I built the marketing site and contributed to the React webview.",
+        "meta": "75,000+ installs",
+        "action": "Visit json-flow.com",
+        "key": "json-flow",
+        "path": "/products/json-flow/",
+        "href": "https://json-flow.com",
+        "year": "2024–25",
+        "metaDate": "2026-10-18",
+        "metaTotal": 75000,
+        "metaPrefix": "",
+        "metaSuffix": "+ installs"
+      },
+      "heading": "Things I shipped"
     },
-    "status": {
-      "label": "Status",
-      "rows": [
-        {
-          "label": "Building",
-          "value": "This site",
-          "date": "2026-10-16",
-          "sample": true
-        },
-        {
-          "label": "Testing",
-          "value": "Co-working on stream",
-          "date": "2026-10-13",
-          "sample": true
-        },
-        {
-          "label": "Next stream",
-          "value": "Schedule being set",
-          "date": "2026-10-13",
-          "sample": true
-        },
-        {
-          "label": "Shipped",
-          "value": "Brand kit",
-          "date": "2026-10-13",
-          "sample": true
-        }
-      ]
-    },
-    "recent": {
-      "label": "Recent",
-      "all": "All entries",
-      "allPath": "/log/",
-      "empty": "Nothing here yet. The first entry lands soon.",
-      "entryPath": "/log/"
+    "live": {
+      "heading": "Live"
     },
     "stream": {
       "label": "Stream",
       "live": "Live now",
-      "offline": "Offline",
-      "schedule": "Tuesdays and Thursdays, 19:00 UTC",
-      "unavailable": "Status unavailable right now",
-      "open": "Open Twitch",
+      "unavailable": "Status unavailable",
       "href": "https://www.twitch.tv/andryoredev",
-      "sample": true
-    },
-    "links": {
-      "label": "Find me",
-      "items": [
-        { "label": "GitHub", "href": "https://github.com/AndryOre" },
-        { "label": "Twitch", "href": "https://www.twitch.tv/andryoredev" }
-      ]
+      "streamsStarted": false,
+      "comingSoon": "Streams start soon",
+      "planned": "Co-working sessions, planned for Tuesdays and Thursdays",
+      "follow": "Follow on Twitch",
+      "nextLabel": "Next stream",
+      "weekdays": ["M", "T", "W", "T", "F", "S", "S"],
+      "weekLabel": "Tuesdays and Thursdays, 19:00 UTC",
+      "liveTag": "LIVE",
+      "watch": "Watch on Twitch",
+      "handle": "andryoredev",
+      "badgeComingSoon": "Coming soon",
+      "badgeOffline": "Offline",
+      "badgeUnavailable": "Status unavailable",
+      "screenOffline": "andryoredev is offline",
+      "sessionHour": "19",
+      "countdownIn": "in",
+      "countdownDay": "d",
+      "countdownHour": "h",
+      "countdownMinute": "min",
+      "unavailableSub": "We could not reach Twitch",
+      "open": "Open on Twitch",
+      "liveCaption": "Co-working session, bring your work",
+      "offlineNow": "Offline right now",
+      "plannedLabel": "Planned",
+      "plannedValue": "Tue and Thu, 19:00 UTC"
     },
     "theme": {
       "label": "Theme"
@@ -107,99 +105,97 @@
       "title": "AndryOre | Hago cosas y te cuento cómo me fue",
       "description": "Andry construye software y hardware, lo prueba y escribe qué funcionó, qué no y qué cambiaría."
     },
-    "sample": "EJEMPLO",
     "hero": {
       "kicker": "Hola, soy Andry",
-      "lead": "Hago ",
-      "emphasis": "cosas",
-      "tail": ", las pruebo y te cuento cómo me fue.",
-      "body": "Hoy puede ser una placa, una pieza impresa en 3D o un registro de sueño; mañana, otra cosa. Publico lo que funcionó, lo que no y qué cambiaría.",
-      "primary": { "label": "Ver lo último que probé", "path": "/log/" },
-      "secondary": { "label": "Sobre mí", "path": "/about/" },
-      "annotation": "Space Grotesk 700 · 60 / 1.04"
-    },
-    "about": {
-      "label": "Sobre mí",
-      "body": "Alguien que construye y prueba cosas. Software, hardware y lo que venga."
+      "lead": "Construyo ",
+      "emphasis": "plataformas web",
+      "tail": " que aguantan en producción.",
+      "body": "Para startups y equipos pequeños: auth, APIs y la infraestructura self-hosted que los sostiene. Sobre todo TypeScript, Next.js y Postgres. Freelance desde 2024.",
+      "primary": {
+        "label": "Mira lo que construyo",
+        "path": "/#products"
+      },
+      "secondary": {
+        "label": "Sobre mí",
+        "path": "/about/"
+      },
+      "annotation": "Space Grotesk 700 · 60 / 1.04",
+      "availability": "Abierto a trabajo por contrato y a tiempo completo."
     },
     "products": {
-      "label": "Producto",
       "imagePlaceholder": "marcador hasta capturar",
       "items": [
         {
           "key": "snug",
           "name": "Snug",
-          "description": "Exporta e importa tus marcadores desde el navegador.",
+          "description": "Respalda y mueve tus marcadores entre navegadores, tal como los dejaste.",
           "state": "Publicado",
           "stateKind": "shipped",
-          "year": "20··",
+          "year": "2024",
           "path": "/products/snug/",
-          "sample": true
+          "sample": false
         },
         {
           "key": "animated-fluent-emojis",
           "name": "Animated Fluent Emojis",
-          "description": "Emojis Fluent animados como librería de componentes npm.",
-          "state": "Beta",
-          "stateKind": "beta",
-          "year": "20··",
+          "description": "Los emojis Fluent animados de Microsoft como un componente: un import, una etiqueta, para React, Vue, Svelte, Astro o HTML plano.",
+          "state": "Publicado",
+          "stateKind": "shipped",
+          "year": "2024",
           "path": "/products/animated-fluent-emojis/",
-          "sample": true
+          "sample": false
         }
-      ]
+      ],
+      "contribution": {
+        "label": "Colaboraciones",
+        "name": "JSON Flow",
+        "description": "Una extensión de VS Code que convierte JSON, YAML, XML y CSV en grafos interactivos. Hice el sitio de marketing y colaboré en el webview de React.",
+        "meta": "Más de 75.000 instalaciones",
+        "action": "Visitar json-flow.com",
+        "key": "json-flow",
+        "path": "/products/json-flow/",
+        "href": "https://json-flow.com",
+        "year": "2024–25",
+        "metaDate": "2026-10-18",
+        "metaTotal": 75000,
+        "metaPrefix": "Más de ",
+        "metaSuffix": " instalaciones"
+      },
+      "heading": "Lo que publiqué"
     },
-    "status": {
-      "label": "Estado",
-      "rows": [
-        {
-          "label": "Construyendo",
-          "value": "Este sitio",
-          "date": "2026-10-16",
-          "sample": true
-        },
-        {
-          "label": "Probando",
-          "value": "Co-working en stream",
-          "date": "2026-10-13",
-          "sample": true
-        },
-        {
-          "label": "Próximo stream",
-          "value": "Horario por definir",
-          "date": "2026-10-13",
-          "sample": true
-        },
-        {
-          "label": "Publicado",
-          "value": "Kit de marca",
-          "date": "2026-10-13",
-          "sample": true
-        }
-      ]
-    },
-    "recent": {
-      "label": "Reciente",
-      "all": "Todas las entradas",
-      "allPath": "/log/",
-      "empty": "Aún no hay nada. La primera entrada llega pronto.",
-      "entryPath": "/log/"
+    "live": {
+      "heading": "En vivo"
     },
     "stream": {
       "label": "Stream",
       "live": "En vivo ahora",
-      "offline": "Sin conexión",
-      "schedule": "Martes y jueves, 19:00 UTC",
-      "unavailable": "Estado no disponible por ahora",
-      "open": "Abrir Twitch",
+      "unavailable": "Estado no disponible",
       "href": "https://www.twitch.tv/andryoredev",
-      "sample": true
-    },
-    "links": {
-      "label": "Encuéntrame",
-      "items": [
-        { "label": "GitHub", "href": "https://github.com/AndryOre" },
-        { "label": "Twitch", "href": "https://www.twitch.tv/andryoredev" }
-      ]
+      "streamsStarted": false,
+      "comingSoon": "Los streams empiezan pronto",
+      "planned": "Sesiones de co-working, planeadas para martes y jueves",
+      "follow": "Seguir en Twitch",
+      "nextLabel": "Próximo stream",
+      "weekdays": ["L", "M", "X", "J", "V", "S", "D"],
+      "weekLabel": "Martes y jueves, 19:00 UTC",
+      "liveTag": "LIVE",
+      "watch": "Ver en Twitch",
+      "handle": "andryoredev",
+      "badgeComingSoon": "Próximamente",
+      "badgeOffline": "Desconectado",
+      "badgeUnavailable": "Estado no disponible",
+      "screenOffline": "andryoredev está desconectado",
+      "sessionHour": "19",
+      "countdownIn": "en",
+      "countdownDay": "d",
+      "countdownHour": "h",
+      "countdownMinute": "min",
+      "unavailableSub": "No pudimos contactar a Twitch",
+      "open": "Abrir en Twitch",
+      "liveCaption": "Sesión de co-working, trae tu trabajo",
+      "offlineNow": "Desconectado por ahora",
+      "plannedLabel": "Planeado",
+      "plannedValue": "Mar y jue, 19:00 UTC"
     },
     "theme": {
       "label": "Tema"

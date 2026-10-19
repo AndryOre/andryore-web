@@ -5,4 +5,5 @@ linker = "isolated"
 coverage = true
 pathIgnorePatterns = ["e2e/**", ".claude/**"]
 coverageSkipTestFiles = true
+coveragePathIgnorePatterns = ["src/components/ui/dropdown-menu.tsx"]
 coverageThreshold = { lines = 0.55, functions = 0.4 }

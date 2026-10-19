@@ -9,7 +9,7 @@ for (const route of HOME_ROUTES) {
   const copy = streamMessages(languageOf(route))
 
   test.describe(`stream tile on ${route}`, () => {
-    test('shows the live panel with the stream title', async ({ page }) => {
+    test('shows the live state with the stream title', async ({ page }) => {
       await page.route('**/api/stream-status', (handler) =>
         handler.fulfill({
           json: { state: 'live', title: 'Building the site' },
@@ -18,17 +18,16 @@ for (const route of HOME_ROUTES) {
       await page.goto(route)
       await settlePage(page)
       const tile = page.locator('[data-stream-tile]')
-      await expect(tile.locator('[data-stream-panel="live"]')).toBeVisible()
-      await expect(tile.locator('[data-stream-panel="live"]')).toContainText(
-        copy.live,
-      )
+      await expect(tile).toHaveAttribute('data-state', 'live')
+      await expect(tile.getByText(copy.liveTag)).toBeVisible()
+      await expect(tile.getByRole('link', { name: copy.watch })).toBeVisible()
       await expect(tile.locator('[data-stream-title]')).toHaveText(
         'Building the site',
       )
-      await expect(tile.locator('[data-stream-panel="offline"]')).toBeHidden()
+      await expect(tile.getByText(copy.comingSoon)).toBeHidden()
     })
 
-    test('shows the offline panel when the channel is offline', async ({
+    test('shows the coming-soon slate when the channel is offline', async ({
       page,
     }) => {
       await page.route('**/api/stream-status', (handler) =>
@@ -36,12 +35,45 @@ for (const route of HOME_ROUTES) {
       )
       await page.goto(route)
       await settlePage(page)
-      const panel = page.locator('[data-stream-panel="offline"]')
-      await expect(panel).toBeVisible()
-      await expect(panel).toContainText(copy.offline)
+      const tile = page.locator('[data-stream-tile]')
+      await expect(tile.getByText(copy.comingSoon)).toBeVisible()
+      await expect(tile.getByText(copy.planned)).toBeVisible()
+      await expect(
+        tile.getByText(copy.plannedLabel, { exact: true }),
+      ).toBeVisible()
+      await expect(
+        tile.getByText(copy.plannedValue, { exact: true }),
+      ).toBeVisible()
+      await expect(
+        tile.getByRole('list', { name: copy.weekLabel }),
+      ).toBeVisible()
     })
 
-    test('falls back to unavailable when the endpoint fails', async ({
+    test('shows the fallback caption and no week strip when live without a title', async ({
+      page,
+    }) => {
+      await page.route('**/api/stream-status', (handler) =>
+        handler.fulfill({ json: { state: 'live', title: '' } }),
+      )
+      await page.goto(route)
+      await settlePage(page)
+      const tile = page.locator('[data-stream-tile]')
+      await expect(tile.getByText(copy.liveCaption)).toBeVisible()
+      await expect(tile.locator('.stream-week')).toBeHidden()
+    })
+
+    test('outlines today in the week row', async ({ page }) => {
+      await page.route('**/api/stream-status', (handler) =>
+        handler.fulfill({ json: { state: 'offline' } }),
+      )
+      await page.goto(route)
+      await settlePage(page)
+      await expect(
+        page.locator('[data-stream-day][data-today="true"]'),
+      ).toHaveCount(1)
+    })
+
+    test('keeps the coming-soon slate when the endpoint fails', async ({
       page,
     }) => {
       await page.route('**/api/stream-status', (handler) =>
@@ -49,9 +81,8 @@ for (const route of HOME_ROUTES) {
       )
       await page.goto(route)
       await settlePage(page)
-      const panel = page.locator('[data-stream-panel="unavailable"]')
-      await expect(panel).toBeVisible()
-      await expect(panel).toHaveText(copy.unavailable)
+      const tile = page.locator('[data-stream-tile]')
+      await expect(tile.getByText(copy.comingSoon)).toBeVisible()
     })
   })
 }

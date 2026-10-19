@@ -26,12 +26,12 @@ export const SCORE_THRESHOLD = 90
 /** Lighthouse runs per page; the median of them is what is judged. */
 export const RUNS_PER_PAGE = 5
 
-/** Pages audited: home and one Log entry, in English and Spanish. */
+/** Pages audited: home and one product page, in English and Spanish. */
 export const AUDITED_PATHS: readonly string[] = [
   '/',
   '/es/',
-  '/log/nothing-from-other-origins/',
-  '/es/log/nothing-from-other-origins/',
+  '/products/snug/',
+  '/es/products/snug/',
 ]
 
 export type CategoryScores = Record<Category, number | null>
@@ -252,6 +252,50 @@ export function resolveStaticFile(
   return existsSync(file) ? file : null
 }
 
+const GZIP_MIN_LENGTH = 256
+
+const GZIP_EXTENSIONS: ReadonlySet<string> = new Set([
+  '.html',
+  '.css',
+  '.js',
+  '.mjs',
+  '.json',
+  '.svg',
+  '.xml',
+  '.txt',
+  '.md',
+  '.webmanifest',
+])
+
+/**
+ * Builds the response for a built file the way `docker/nginx.conf` serves it:
+ * gzip for text assets of at least 256 bytes when the client accepts gzip,
+ * raw bytes otherwise. Auditing compressed transfer sizes scores what visitors
+ * get, not the larger uncompressed files.
+ * @param file The absolute path of the file to serve.
+ * @param acceptEncoding The request's `Accept-Encoding` header, if any.
+ * @returns The response for the file.
+ */
+export async function respondWithFile(
+  file: string,
+  acceptEncoding = '',
+): Promise<Response> {
+  const source = Bun.file(file)
+  const compressible =
+    GZIP_EXTENSIONS.has(path.extname(file)) &&
+    /\bgzip\b/.test(acceptEncoding) &&
+    source.size >= GZIP_MIN_LENGTH
+  if (!compressible) return new Response(source)
+  const body = Bun.gzipSync(new Uint8Array(await source.arrayBuffer()))
+  return new Response(body, {
+    headers: {
+      'Content-Encoding': 'gzip',
+      'Content-Type': source.type,
+      Vary: 'Accept-Encoding',
+    },
+  })
+}
+
 /**
  * Serves the built site on a free local port.
  * @param distributionDirectory The build output directory.
@@ -268,7 +312,10 @@ function serveDistribution(distributionDirectory: string) {
       }
       const file = resolveStaticFile(distributionDirectory, pathname)
       return file
-        ? new Response(Bun.file(file))
+        ? respondWithFile(
+            file,
+            request.headers.get('accept-encoding') ?? undefined,
+          )
         : new Response('Not found', { status: 404 })
     },
   })

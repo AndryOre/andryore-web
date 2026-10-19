@@ -29,10 +29,18 @@ done
 fail() { echo "FAIL: $*" >&2; exit 1; }
 status() { curl -s -o /dev/null -w '%{http_code}' "$1"; }
 
-for route in / /about/ /colophon/ /uses/ /log/ /products/snug/ \
-  /es/ /es/about/ /es/colophon/ /es/uses/ /es/log/ /es/products/snug/ \
+for route in / /about/ /uses/ /products/snug/ \
+  /es/ /es/about/ /es/uses/ /es/products/snug/ \
   /sitemap.xml /robots.txt; do
   [ "$(status "$base$route")" = 200 ] || fail "$route is not 200"
+done
+
+for legacy in colophon:/uses#this-site es/colophon:/es/uses#this-site; do
+  legacy_headers="$(curl -s -o /dev/null -D - "$base/${legacy%%:*}" | tr -d '\r')"
+  grep -qi '^HTTP/[0-9.]* 301' <<<"$legacy_headers" ||
+    fail "/${legacy%%:*} is not a 301"
+  grep -qi "^location: ${legacy#*:}\$" <<<"$legacy_headers" ||
+    fail "/${legacy%%:*} does not redirect to ${legacy#*:}"
 done
 
 [ "$(status "$base/nope/")" = 404 ] || fail "missing page is not 404"
@@ -57,11 +65,17 @@ grep -qi '^content-type: text/html; charset=utf-8' <<<"$headers" ||
   fail "html has no utf-8 charset"
 
 csp="$(grep -i '^content-security-policy:' <<<"$headers")"
-if grep -Eq 'https?://' <<<"$csp"; then
-  fail "CSP names a third-party origin"
-fi
+origins="$(grep -Eo 'https?://[^ ;]+' <<<"$csp" | sort | tr '\n' ' ')"
+[ "$origins" = "https://cloud.umami.is https://gateway.umami.is " ] ||
+  fail "CSP names an origin other than the two Umami hosts (ADR 0014): $origins"
+grep -q "script-src 'self' https://cloud.umami.is 'sha256-" <<<"$csp" ||
+  fail "Umami is not the only extra script-src origin"
+grep -q "connect-src 'self' https://gateway.umami.is;" <<<"$csp" ||
+  fail "Umami gateway is not the only extra connect-src origin"
+grep -q "manifest-src 'self';" <<<"$csp" ||
+  fail "CSP is missing manifest-src 'self'"
 case "$csp" in *"'unsafe-inline'"* | *"'unsafe-eval'"*) fail "CSP allows unsafe-inline or unsafe-eval" ;; esac
-grep -q "script-src 'self' 'sha256-" <<<"$csp" ||
+grep -q "'sha256-" <<<"$csp" ||
   fail "CSP script-src has no sha256 hashes: inline scripts are blocked (ADR 0012)"
 for directive in "default-src 'none'" "base-uri 'none'" "form-action 'none'" \
   "frame-ancestors 'none'" "require-trusted-types-for 'script'"; do

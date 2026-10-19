@@ -15,10 +15,24 @@
     "github": {
       "label": "GitHub",
       "totalLabel": "contributions in the last year",
-      "capturedLabel": "Captured",
+      "updatedLabel": "Updated",
       "gridLabel": "Contribution grid for the last year",
       "less": "Less",
-      "more": "More"
+      "more": "More",
+      "statsLabel": "Contribution stats",
+      "longestStreak": "Longest streak",
+      "currentStreak": "Current streak",
+      "bestDay": "Best day",
+      "activeDays": "Active days",
+      "dayOne": "day",
+      "dayOther": "days",
+      "profileHandle": "@AndryOre",
+      "profileHref": "https://github.com/AndryOre",
+      "profileLabel": "AndryOre on GitHub",
+      "monthsLabel": "Months",
+      "tipOne": "{count} contribution on {date}",
+      "tipOther": "{count} contributions on {date}",
+      "tipNone": "No contributions on {date}"
     }
   },
   "es": {
@@ -37,10 +51,24 @@
     "github": {
       "label": "GitHub",
       "totalLabel": "contribuciones en el último año",
-      "capturedLabel": "Capturado",
+      "updatedLabel": "Actualizado",
       "gridLabel": "Cuadrícula de contribuciones del último año",
       "less": "Menos",
-      "more": "Más"
+      "more": "Más",
+      "statsLabel": "Estadísticas de contribuciones",
+      "longestStreak": "Racha más larga",
+      "currentStreak": "Racha actual",
+      "bestDay": "Mejor día",
+      "activeDays": "Días activos",
+      "dayOne": "día",
+      "dayOther": "días",
+      "profileHandle": "@AndryOre",
+      "profileHref": "https://github.com/AndryOre",
+      "profileLabel": "AndryOre en GitHub",
+      "monthsLabel": "Meses",
+      "tipOne": "{count} contribución el {date}",
+      "tipOther": "{count} contribuciones el {date}",
+      "tipNone": "Sin contribuciones el {date}"
     }
   }
 }

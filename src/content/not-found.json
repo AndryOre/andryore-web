@@ -4,17 +4,21 @@
       "title": "Page not found",
       "description": "This page does not exist or has moved."
     },
-    "heading": "404",
-    "message": "This page does not exist or it moved.",
-    "action": "Go to the home page"
+    "code": "404",
+    "heading": "This page wandered off.",
+    "message": "I tested it. It is not here.",
+    "home": "Go to the home page",
+    "products": "See what I build"
   },
   "es": {
     "meta": {
       "title": "Página no encontrada",
       "description": "Esta página no existe o se movió."
     },
-    "heading": "404",
-    "message": "Esta página no existe o se movió.",
-    "action": "Ir al inicio"
+    "code": "404",
+    "heading": "Esta página se fue por ahí.",
+    "message": "La probé. No está aquí.",
+    "home": "Ir al inicio",
+    "products": "Mira lo que construyo"
   }
 }

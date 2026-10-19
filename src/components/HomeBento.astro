@@ -1,14 +1,20 @@
 ---
 import { Image } from 'astro:assets'
+import { getCollection } from 'astro:content'
 
 import memoji from '../../docs/brand/avatar/memoji.webp'
+import partyPopper from '../assets/products/sprites/party-popper.png'
 import chrome from '../content/chrome.json'
 import home from '../content/home.json'
 import { localePath, type Locale } from '../i18n/locales'
-import { tokensForHref } from '../lib/external-link'
-import { revealClass } from '../lib/motion'
-import { getLatestLogEntries } from '../log/collection'
-import ThemeToggle from './ThemeToggle'
+import type { ProductEntry } from '../lib/products'
+import { spriteClass } from '../lib/sprites'
+import FindMe from './FindMe.astro'
+import FxTile from './FxTile.astro'
+import LanguageTile from './LanguageTile.astro'
+import ProductIcon from './ProductIcon.astro'
+import StackScene from './StackScene.astro'
+import ThemeSlider from './ThemeSlider'
 
 interface Props {
   locale: Locale
@@ -18,77 +24,80 @@ const { locale } = Astro.props
 const copy = home[locale]
 const themeCopy = chrome[locale].theme
 
-const RECENT_LOG_LIMIT = 3
-const latest = await getLatestLogEntries(locale, RECENT_LOG_LIMIT)
-const recent = latest.map((entry) => ({
-  key: entry.key,
-  title: entry.title,
-  date: entry.date.toISOString().slice(0, 10),
-}))
-
 const hasClock = Astro.slots.has('clock')
-const hasLive = Astro.slots.has('github') || Astro.slots.has('stream')
+const hasGithub = Astro.slots.has('github')
 
-const tileBase =
-  'tile-reveal bg-card border-border relative flex min-w-0 flex-col gap-3 overflow-hidden rounded-[1.25rem] border p-5 shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)] transition-[transform,border-color] duration-[160ms] ease-out hover:-translate-y-0.5 hover:border-foreground/40'
+const entries: ProductEntry[] = await getCollection('products')
+const productEntry = (key: string): ProductEntry | undefined =>
+  entries.find(
+    (candidate) => candidate.data.lang === locale && candidate.data.key === key,
+  )
 
-const place = {
-  hero: 'sm:col-span-2 lg:col-span-8 lg:row-span-4 lg:p-8',
-  about: hasClock
-    ? 'lg:col-span-4 lg:row-span-3'
-    : 'lg:col-span-4 lg:row-span-4',
-  snug: 'lg:col-span-6 lg:row-span-4',
-  afe: 'lg:col-span-6 lg:row-span-4',
-  status: 'lg:col-span-4 lg:row-span-3',
-  recent: 'sm:col-span-2 lg:col-span-8 lg:row-span-3',
-  links: hasLive
-    ? 'lg:col-span-4 lg:row-span-2'
-    : 'sm:col-span-2 lg:col-span-8 lg:row-span-1',
-  theme: hasLive
-    ? 'lg:col-span-4 lg:row-span-1'
-    : 'sm:col-span-2 lg:col-span-4 lg:row-span-1',
-}
+const SPRITE_SIZE = 56
+const PARTY_FRAMES = 61
+const PARTY_SIZE = 28
 
+const tileClass =
+  'bg-card border-border relative flex min-w-0 flex-col gap-3 overflow-hidden rounded-[1.25rem] border p-5 shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)]'
+const stripTileClass =
+  'bg-card border-border relative flex min-w-0 flex-col gap-2.5 overflow-hidden rounded-[1.25rem] border p-5 shadow-[inset_0_1px_0_var(--hl),0_10px_28px_-16px_rgb(0_0_0/0.28)]'
+const linkTileClass = `link-tile ${tileClass}`
 const labelClass =
   'text-muted-foreground flex items-center justify-between gap-3 font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase'
 const bodyClass = 'text-muted-foreground m-0 text-sm [overflow-wrap:anywhere]'
+const sectionHeadingClass = 'm-0 text-2xl font-bold tracking-[-0.025em]'
 const pillClass =
   'bg-secondary border-border inline-flex shrink-0 items-center gap-2 rounded-pill border px-2.5 py-0.5 font-mono text-[0.6875rem] font-medium tracking-[0.06em] whitespace-nowrap uppercase'
-const sampleClass =
-  'border-border rounded-pill border px-2 font-mono text-[0.6875rem] tracking-[0.06em] whitespace-nowrap'
-const dateClass =
-  'text-muted-foreground font-mono text-xs tabular-nums whitespace-nowrap'
+const stretchedLink =
+  'text-foreground inline-flex min-h-11 items-center no-underline after:absolute after:inset-0 after:content-[""]'
+const handleClass =
+  'bg-background border-primary absolute size-[7px] rounded-[1px] border'
 
-const productsPlacement = [place.snug, place.afe]
 const hero = copy.hero
+const contribution = copy.products.contribution
+const installsFigure = new Intl.NumberFormat(locale).format(
+  contribution.metaTotal,
+)
+const partyRun = spriteClass(PARTY_FRAMES)
+const metaLine = (entry: ProductEntry | undefined, year: string): string =>
+  [year, entry?.data.version, entry?.data.stack.join(', ')]
+    .filter(Boolean)
+    .join(' · ')
 ---
 
-<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-12 lg:auto-rows-[minmax(5.25rem,auto)]">
-  <article
-    class:list={[tileBase, revealClass(0), place.hero, 'justify-between gap-7']}
-  >
-    <p class={labelClass}>{hero.kicker}</p>
-    <h1 class="relative m-0 text-4xl leading-[1.04] font-bold tracking-[-0.035em] text-balance [overflow-wrap:anywhere] sm:text-5xl lg:text-[3.75rem]">
-      {hero.lead}
-      <span class="relative inline-block">
-        {hero.emphasis}
+<div class="flex flex-col gap-12 sm:gap-16">
+  <section class="hero-grid grid items-center gap-4 py-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:gap-10">
+    <div class="relative flex min-w-0 flex-col gap-5.5">
+      <p class={`hero-enter hero-enter-0 ${labelClass} justify-start`}>
+        {hero.kicker}
+        <span class="caret" aria-hidden="true"></span>
+      </p>
+      <h1 class="hero-enter hero-enter-1 relative m-0 text-4xl leading-[1.04] font-bold tracking-[-0.035em] text-balance [overflow-wrap:anywhere] sm:text-5xl lg:text-[3.75rem]">
+        {hero.lead}
+        <span class="text-primary relative inline-block">
+          {hero.emphasis}
+          <span
+            class="annotation-in outline-primary pointer-events-none absolute -inset-1 rounded-sm outline outline-1 motion-reduce:hidden"
+            aria-hidden="true"
+          >
+            <i class:list={[handleClass, '-top-[5px] -left-[5px]']}></i>
+            <i class:list={[handleClass, '-top-[5px] -right-[5px]']}></i>
+            <i class:list={[handleClass, '-bottom-[5px] -left-[5px]']}></i>
+            <i class:list={[handleClass, '-right-[5px] -bottom-[5px]']}></i>
+          </span>
+        </span>
+        {hero.tail}
         <span
-          class="annotation-in outline-primary pointer-events-none absolute -inset-1 rounded-sm outline outline-1 motion-reduce:hidden"
+          class="annotation-in text-muted-foreground border-border bg-card-2 pointer-events-none absolute -top-[26px] right-0 hidden rounded-md border px-2 py-0.5 font-mono text-[0.6875rem] font-medium tracking-[0.02em] whitespace-nowrap motion-reduce:hidden xl:block"
           aria-hidden="true"
         >
-          <i class="bg-background border-primary absolute -top-[5px] -left-[5px] size-[7px] rounded-[1px] border"></i>
-          <i class="bg-background border-primary absolute -top-[5px] -right-[5px] size-[7px] rounded-[1px] border"></i>
-          <i class="bg-background border-primary absolute -bottom-[5px] -left-[5px] size-[7px] rounded-[1px] border"></i>
-          <i class="bg-background border-primary absolute -right-[5px] -bottom-[5px] size-[7px] rounded-[1px] border"></i>
+          {hero.annotation}
         </span>
-      </span>
-      {hero.tail}
-    </h1>
-    <div class="grid gap-5">
-      <p class="text-muted-foreground m-0 max-w-[56ch] text-base">
+      </h1>
+      <p class="hero-enter hero-enter-2 text-muted-foreground m-0 max-w-[56ch] text-base">
         {hero.body}
       </p>
-      <div class="flex flex-wrap gap-2.5">
+      <div class="hero-enter hero-enter-3 flex flex-wrap gap-2.5">
         <a
           href={localePath(locale, hero.primary.path)}
           class="bg-foreground text-background rounded-pill inline-flex min-h-11 items-center px-5 text-sm font-medium no-underline transition-transform duration-[160ms] ease-out hover:-translate-y-px"
@@ -103,204 +112,264 @@ const hero = copy.hero
         </a>
       </div>
     </div>
-    <span
-      class="annotation-in text-muted-foreground border-border bg-secondary/60 pointer-events-none absolute top-6 right-6 hidden rounded-md border px-2 py-0.5 font-mono text-[0.6875rem] whitespace-nowrap motion-reduce:hidden lg:block"
-      aria-hidden="true"
+
+    <div
+      data-hero-art
+      class="hero-enter hero-enter-2 relative order-first grid h-[260px] w-full place-items-center lg:order-none lg:h-[380px]"
     >
-      {hero.annotation}
-    </span>
-  </article>
-
-  <article class:list={[tileBase, revealClass(1), place.about]}>
-    <p class={labelClass}>{copy.about.label}</p>
-    <div class="grid flex-1 place-items-center">
-      <Image
-        src={memoji}
-        alt=""
-        width={264}
-        height={264}
-        class="border-border bg-secondary size-[8.25rem] rounded-[1.75rem] border"
-      />
+      <div class="floaty motion-reduce:animate-none">
+        <div class="avatar-tile">
+          <Image
+            src={memoji}
+            alt=""
+            width={460}
+            height={460}
+            loading="eager"
+            fetchpriority="high"
+            class="relative z-10 size-full object-contain"
+          />
+        </div>
+      </div>
+      {hasClock && (
+        <div class="floaty-clock absolute top-[12%] left-[4%] motion-reduce:animate-none">
+          <slot name="clock" />
+        </div>
+      )}
+      <div class="floaty-open absolute right-[2%] bottom-[3%] max-w-full motion-reduce:animate-none">
+        <span
+          data-availability
+          class="bg-card border-border rounded-pill inline-flex items-center gap-2 border px-3.5 py-2 font-mono text-xs font-medium text-muted-foreground shadow-(--shadow)"
+        >
+          <span
+            class="block size-7 shrink-0 overflow-hidden"
+            aria-hidden="true"
+          >
+            <Image
+              src={partyPopper}
+              alt=""
+              width={PARTY_SIZE * 2}
+              height={PARTY_SIZE * 2 * PARTY_FRAMES}
+              class:list={['sprite-strip block h-auto w-full', partyRun]}
+              data-sprite={partyRun ? '' : undefined}
+            />
+          </span>
+          {hero.availability}
+        </span>
+      </div>
     </div>
-    <p class={bodyClass}>{copy.about.body}</p>
-  </article>
+  </section>
 
-  {hasClock && (
-    <div class:list={[revealClass(2), 'tile-reveal lg:col-span-4']}>
-      <slot name="clock" />
+  <section
+    id="products"
+    class="flex scroll-mt-[88px] flex-col gap-4"
+    aria-labelledby="products-heading"
+  >
+    <h2
+      id="products-heading"
+      class:list={[sectionHeadingClass, 'scroll-reveal']}
+    >
+      {copy.products.heading}
+    </h2>
+    <div class="grid gap-4 md:grid-cols-2">
+      {copy.products.items.map((product, index) => {
+        const entry = productEntry(product.key)
+        const website = entry?.data.website
+        const sprites =
+          product.key === 'animated-fluent-emojis'
+            ? (entry?.data.sprites ?? [])
+            : []
+        return (
+          <article
+            class:list={[
+              linkTileClass,
+              'scroll-reveal gap-3.5 p-3.5 pb-5',
+              `scroll-stagger-${index}`,
+            ]}
+          >
+            <div
+              data-product-image={product.key}
+              class="border-border bg-secondary relative aspect-video overflow-hidden rounded-[0.875rem] border"
+            >
+              {website && (
+                <Image
+                  src={website.src}
+                  alt=""
+                  width={960}
+                  height={540}
+                  class="size-full object-cover object-top"
+                />
+              )}
+              {sprites.length > 0 && (
+                <div
+                  class="bg-card/85 border-border rounded-pill absolute right-3 bottom-3 flex gap-1.5 border px-2.5 py-1.5 backdrop-blur-sm"
+                  aria-hidden="true"
+                >
+                  {sprites.map((sprite) => {
+                    const run = spriteClass(sprite.frames)
+                    return (
+                      <span class="block size-10 overflow-hidden">
+                        <Image
+                          src={sprite.src}
+                          alt=""
+                          width={SPRITE_SIZE * 2}
+                          height={SPRITE_SIZE * 2 * sprite.frames}
+                          class:list={['sprite-strip block h-auto w-full', run]}
+                          data-sprite={run ? '' : undefined}
+                        />
+                      </span>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+            <div class="flex min-w-0 flex-col gap-1.5 px-1.5">
+              <div class="flex items-center justify-between gap-3">
+                <h3 class="m-0 min-w-0 text-2xl tracking-[-0.025em] [overflow-wrap:anywhere]">
+                  <a
+                    href={localePath(locale, product.path)}
+                    class={stretchedLink}
+                  >
+                    {product.name}
+                  </a>
+                </h3>
+                <span class={pillClass}>
+                  <span
+                    class="bg-success size-[7px] rounded-full"
+                    aria-hidden="true"
+                  />
+                  {product.state}
+                </span>
+              </div>
+              <p class={bodyClass}>{product.description}</p>
+              <p
+                data-product-meta
+                class="text-muted-foreground m-0 font-mono text-xs [overflow-wrap:anywhere]"
+              >
+                {metaLine(entry, product.year)}
+              </p>
+            </div>
+          </article>
+        )
+      })}
     </div>
-  )}
 
-  {copy.products.items.map((product, index) => (
     <article
-      id={index === 0 ? 'products' : undefined}
       class:list={[
-        tileBase,
-        revealClass(3 + index),
-        'scroll-mt-4',
-        productsPlacement[index],
-        'sm:col-span-1',
+        linkTileClass,
+        'scroll-reveal scroll-stagger-2 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-2 px-5 py-4 md:grid-cols-[auto_minmax(0,1fr)_auto]',
       ]}
     >
-      <div class={labelClass}>
-        <span class="flex items-center gap-2">
-          {copy.products.label}
-          {product.sample && <span class={sampleClass}>{copy.sample}</span>}
-        </span>
-        <span class={pillClass}>
-          <span
-            class:list={[
-              'size-[7px] rounded-full',
-              product.stateKind === 'beta' ? 'bg-primary' : 'bg-success',
-            ]}
-            aria-hidden="true"
-          />
-          {product.state}
-        </span>
-      </div>
-      <a
-        href={localePath(locale, product.path)}
-        class="border-border bg-secondary relative grid min-h-48 flex-1 place-items-center overflow-hidden rounded-[0.875rem] border no-underline"
+      <span
+        class="bg-primary/15 text-primary grid size-10 place-items-center rounded-xl"
         aria-hidden="true"
-        tabindex="-1"
       >
-        {product.key === 'snug' ? (
-          <span
-            class="bg-card border-border grid w-64 max-w-[80%] gap-2 rounded-[0.875rem] border p-3"
-            aria-hidden="true"
-          >
-            <i class="bg-muted block h-7 rounded-lg" />
-            <i class="bg-muted block h-7 w-[82%] rounded-lg" />
-            <i class="bg-muted block h-7 w-[66%] rounded-lg" />
-          </span>
-        ) : (
-          <span class="grid grid-cols-4 gap-3 text-3xl" aria-hidden="true">
-            <span>🚀</span>
-            <span>🎉</span>
-            <span>✨</span>
-            <span>🔥</span>
-            <span>💡</span>
-            <span>🎨</span>
-            <span>🧩</span>
-            <span>☕</span>
-          </span>
-        )}
-        <span class="text-muted-foreground absolute right-2.5 bottom-2 font-mono text-[0.625rem] tracking-[0.06em] uppercase">
-          {copy.products.imagePlaceholder}
-        </span>
-      </a>
-      <div class="flex items-baseline justify-between gap-3">
-        <h2 class="m-0 min-w-0 text-xl tracking-[-0.02em] [overflow-wrap:anywhere]">
-          <a
-            href={localePath(locale, product.path)}
-            class="text-foreground inline-flex min-h-11 items-center no-underline"
-          >
-            {product.name}
-          </a>
-        </h2>
-        {product.year && <span class={dateClass}>{product.year}</span>}
-      </div>
-      <p class={bodyClass}>{product.description}</p>
-    </article>
-  ))}
-
-  <article class:list={[tileBase, revealClass(5), place.status]}>
-    <p class={labelClass}>
-      <span class="flex items-center gap-2">
-        {copy.status.label}
-        {copy.status.rows.some((row) => row.sample) && (
-          <span class={sampleClass}>{copy.sample}</span>
-        )}
+        <ProductIcon name="workflow" size={20} />
       </span>
-    </p>
-    <ul class="m-0 grid list-none p-0">
-      {copy.status.rows.map((row) => (
-        <li class="border-border grid grid-cols-[1fr_auto] items-baseline gap-x-3 border-b py-2.5 last:border-b-0">
-          <span class="font-medium [overflow-wrap:anywhere]">{row.label}</span>
-          <time class={dateClass} datetime={row.date}>
-            {row.date}
-          </time>
-          <span class="text-muted-foreground col-span-2 text-sm [overflow-wrap:anywhere]">
-            {row.value}
-          </span>
-        </li>
-      ))}
-    </ul>
-  </article>
-
-  {hasLive && (
-    <>
-      <div class:list={[revealClass(6), 'tile-reveal lg:col-span-5']}>
-        <slot name="github" />
+      <div class="flex min-w-0 flex-col gap-1">
+        <p class={`${labelClass} justify-start`}>{contribution.label}</p>
+        <h3 class="m-0 min-w-0 text-xl tracking-[-0.02em] [overflow-wrap:anywhere]">
+          <a href={localePath(locale, contribution.path)} class={stretchedLink}>
+            {contribution.name}
+          </a>
+        </h3>
+        <p class={bodyClass}>{contribution.description}</p>
       </div>
-      <div class:list={[revealClass(7), 'tile-reveal lg:col-span-3']}>
+      <p class="text-muted-foreground m-0 inline-flex items-center gap-2 font-mono text-sm tabular-nums max-md:col-span-2">
+        <span>
+          {contribution.metaPrefix}
+          <span
+            data-count-installs={contribution.metaTotal}
+            data-count-locale={locale}
+          >
+            {installsFigure}
+          </span>
+          {contribution.metaSuffix}
+        </span>
+        <ProductIcon name="external-link" size={14} />
+      </p>
+    </article>
+  </section>
+
+  <div data-slot="stack-scene" class="ml-[calc(50%-50cqw)] w-[100cqw]">
+    <StackScene locale={locale} />
+  </div>
+
+  <section class="flex flex-col gap-4" aria-labelledby="live-heading">
+    <h2 id="live-heading" class:list={[sectionHeadingClass, 'scroll-reveal']}>
+      {copy.live.heading}
+    </h2>
+    <div
+      data-slot="live-strip"
+      class="grid grid-cols-1 gap-3 lg:auto-rows-[84px] lg:grid-cols-12 lg:gap-4"
+    >
+      {hasGithub && (
+        <div class="scroll-reveal min-w-0 lg:[grid-area:1/1/5/5]">
+          <slot name="github" />
+        </div>
+      )}
+      <div class="scroll-reveal scroll-stagger-1 min-h-[360px] min-w-0 lg:[grid-area:1/5/5/8]">
         <slot name="stream" />
       </div>
-    </>
-  )}
-
-  <article class:list={[tileBase, revealClass(8), place.recent]}>
-    <p class:list={[labelClass]}>
-      <span>{copy.recent.label}</span>
-      <a
-        href={localePath(locale, copy.recent.allPath)}
-        class="text-muted-foreground hover:text-foreground normal-case"
+      <div class="scroll-reveal scroll-stagger-2 min-h-[140px] min-w-0 lg:[grid-area:1/8/3/10]">
+        <LanguageTile locale={locale} />
+      </div>
+      <div class="scroll-reveal scroll-stagger-2 min-h-[140px] min-w-0 lg:[grid-area:3/8/5/10]">
+        <FxTile locale={locale} />
+      </div>
+      <article
+        class:list={[
+          stripTileClass,
+          'scroll-reveal scroll-stagger-2 min-h-[220px] lg:[grid-area:1/10/5/13]',
+        ]}
       >
-        {copy.recent.all}
-      </a>
-    </p>
-    {recent.length === 0 ? (
-      <p
-        class="border-border text-muted-foreground m-0 rounded-2xl border border-dashed p-5 text-sm"
-        data-recent-empty
-      >
-        {copy.recent.empty}
-      </p>
-    ) : (
-      <ul class="m-0 grid list-none p-0" data-recent-list>
-        {recent.map((entry) => (
-          <li class="border-border grid grid-cols-[auto_1fr] items-baseline gap-x-3 border-b py-2.5 last:border-b-0 sm:grid-cols-[auto_1fr_auto]">
-            <time class={dateClass} datetime={entry.date}>
-              {entry.date}
-            </time>
-            <a
-              href={localePath(locale, `${copy.recent.entryPath}${entry.key}/`)}
-              class="text-foreground min-w-0 font-medium [overflow-wrap:anywhere]"
-            >
-              {entry.title}
-            </a>
-          </li>
-        ))}
-      </ul>
-    )}
-  </article>
+        <p class={labelClass}>{themeCopy.label}</p>
+        <div class="flex flex-1">
+          <ThemeSlider client:interaction copy={themeCopy} />
+        </div>
+      </article>
+    </div>
+  </section>
 
-  <article class:list={[tileBase, revealClass(9), place.links]}>
-    <p class={labelClass}>{copy.links.label}</p>
-    <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
-      {copy.links.items.map((link) => (
-        <li>
-          <a
-            href={link.href}
-            rel={tokensForHref(link.href)}
-            class="border-border bg-secondary text-foreground rounded-pill inline-flex min-h-11 items-center border px-3 font-mono text-[0.6875rem] font-medium tracking-[0.06em] uppercase no-underline"
-          >
-            {link.label}
-          </a>
-        </li>
-      ))}
-    </ul>
-  </article>
-
-  <article
-    class:list={[
-      tileBase,
-      revealClass(10),
-      place.theme,
-      'flex-row items-center justify-between',
-    ]}
-  >
-    <p class={labelClass}>{copy.theme.label}</p>
-    <ThemeToggle client:interaction copy={themeCopy} />
-  </article>
+  <div data-slot="find-me" class="empty:hidden">
+    <FindMe locale={locale} />
+  </div>
 </div>
+
+<script>
+  import { prefersReducedMotion } from '../lib/motion'
+  import { startCountUp } from '../scripts/count-up'
+  import { observeVisibility } from '../scripts/in-view'
+
+  const createObserver =
+    'IntersectionObserver' in globalThis
+      ? (callback: ConstructorParameters<typeof IntersectionObserver>[0]) =>
+          new IntersectionObserver(callback)
+      : undefined
+
+  const counters = document.querySelectorAll<HTMLElement>(
+    '[data-count-installs]',
+  )
+  observeVisibility(
+    [...counters],
+    (target) => {
+      const total = Number(target.dataset.countInstalls)
+      if (!Number.isFinite(total)) return
+      startCountUp(target, total, {
+        reducedMotion: prefersReducedMotion(globalThis),
+        locale: target.dataset.countLocale ?? 'en',
+        requestFrame: (callback) => requestAnimationFrame(callback),
+      })
+    },
+    { createObserver, once: true },
+  )
+
+  const strips = document.querySelectorAll<HTMLElement>('[data-sprite]')
+  observeVisibility(
+    [...strips],
+    (target, visible) => {
+      if (visible) delete target.dataset.paused
+      else target.dataset.paused = ''
+    },
+    { createObserver },
+  )
+</script>

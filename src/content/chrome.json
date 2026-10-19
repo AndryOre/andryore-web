@@ -2,10 +2,7 @@
   "en": {
     "wordmark": "AndryOre",
     "skipLink": "Skip to content",
-    "footerNote": "AndryOre",
-    "footerNavLabel": "More about this site",
-    "usesLabel": "Uses",
-    "colophonLabel": "Colophon",
+    "opensInNewTab": "Opens in a new tab",
     "theme": {
       "label": "Theme",
       "auto": "Auto",
@@ -17,30 +14,41 @@
       "pages": {
         "home": "Home",
         "products": "Products",
-        "log": "Log",
         "about": "About",
-        "uses": "Uses"
+        "uses": "Uses",
+        "findMe": "Find me"
       },
       "language": {
         "label": "Language",
         "en": "English",
-        "es": "Español"
+        "es": "Español",
+        "codes": {
+          "en": "EN",
+          "es": "ES"
+        }
+      },
+      "sound": {
+        "label": "Sound",
+        "on": "Sound on",
+        "off": "Sound off"
       }
     },
-    "switchLabel": "Español",
-    "switchAria": "Leer en español",
-    "ogImageAlt": "AndryOre: Building, exploring, telling."
+    "ogImageAlt": "AndryOre: Building, exploring, telling.",
+    "wordmarkParts": ["Andry", "Ore"],
+    "openToWork": "Open to work",
+    "fx": {
+      "label": "FX",
+      "sound": "Sound",
+      "hint": "Subtle interface sounds. Off by default."
+    }
   },
   "es": {
     "wordmark": "AndryOre",
     "skipLink": "Saltar al contenido",
-    "footerNote": "AndryOre",
-    "footerNavLabel": "Más sobre este sitio",
-    "usesLabel": "Uso",
-    "colophonLabel": "Colofón",
+    "opensInNewTab": "Se abre en una pestaña nueva",
     "theme": {
       "label": "Tema",
-      "auto": "Automático",
+      "auto": "Auto",
       "light": "Claro",
       "dark": "Oscuro"
     },
@@ -49,18 +57,32 @@
       "pages": {
         "home": "Inicio",
         "products": "Productos",
-        "log": "Log",
         "about": "Sobre mí",
-        "uses": "Setup"
+        "uses": "Setup",
+        "findMe": "Encuéntrame"
       },
       "language": {
         "label": "Idioma",
         "en": "English",
-        "es": "Español"
+        "es": "Español",
+        "codes": {
+          "en": "EN",
+          "es": "ES"
+        }
+      },
+      "sound": {
+        "label": "Sonido",
+        "on": "Sonido activado",
+        "off": "Sonido apagado"
       }
     },
-    "switchLabel": "English",
-    "switchAria": "Read in English",
-    "ogImageAlt": "AndryOre: Construyendo, explorando, contando."
+    "ogImageAlt": "AndryOre: Construyendo, explorando, contando.",
+    "wordmarkParts": ["Andry", "Ore"],
+    "openToWork": "Disponible",
+    "fx": {
+      "label": "FX",
+      "sound": "Sonido",
+      "hint": "Sonidos sutiles de interfaz. Apagados por defecto."
+    }
   }
 }

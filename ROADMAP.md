@@ -7,12 +7,11 @@ for what is actually being worked on next.
 ## Next 12 months
 
 - **Launch the Site** — publish andryore.dev as a static Astro site on Coolify
-  with the Log, the About page and the product pages, in English and Spanish
-  with full parity; see [ADR 0002](docs/adr/0002-bilingual-parity.md) and
+  with the About page and the product pages, in English and Spanish with full
+  parity; see [ADR 0002](docs/adr/0002-bilingual-parity.md) and
   [ADR 0003](docs/adr/0003-static-astro-on-coolify.md).
 - **Live status** — keep the live status endpoint working and honest; see
   [ADR 0004](docs/adr/0004-live-status-endpoint.md).
-- **The Log** — publish writing regularly across the topics Andry covers.
 - **Product pages** — keep the pages for Snug, StreamBoss and Animated Fluent
   Emojis in step with the products.
 - **Maintenance** — keep dependencies, tooling and CI current.

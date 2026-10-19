@@ -1,0 +1,60 @@
+---
+import { glyphSvg } from '../lib/glyphs'
+import { resolveIcon } from '../lib/icons'
+import { classifyIcon } from '../lib/products'
+
+interface Props {
+  name: string
+  size?: number
+  class?: string
+}
+
+const { name, size = 16, class: className } = Astro.props
+
+const brandUrls = import.meta.glob<string>('/src/assets/icons/*.svg', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+})
+
+const icon = classifyIcon(name)
+if (!icon) throw new Error(`Unknown product icon "${name}".`)
+
+const brand = icon.kind === 'brand' ? resolveIcon(icon.id) : undefined
+const lightUrl = brand ? brandUrls[brand.light] : undefined
+const darkUrl = brand ? brandUrls[brand.dark] : undefined
+const splitMarks = lightUrl !== darkUrl
+---
+
+{brand && lightUrl && darkUrl ? (
+  <span class:list={['inline-flex shrink-0', className]} aria-hidden="true">
+    <img
+      src={lightUrl}
+      alt=""
+      width={size}
+      height={size}
+      class:list={[splitMarks && 'dark:hidden']}
+      loading="lazy"
+      decoding="async"
+    />
+    {splitMarks && (
+      <img
+        src={darkUrl}
+        alt=""
+        width={size}
+        height={size}
+        class="hidden dark:block"
+        loading="lazy"
+        decoding="async"
+      />
+    )}
+  </span>
+) : (
+  icon.kind === 'glyph' && (
+    <span
+      class:list={['inline-flex shrink-0', className]}
+      aria-hidden="true"
+      set:html={glyphSvg(icon.name, size)}
+    />
+  )
+)}

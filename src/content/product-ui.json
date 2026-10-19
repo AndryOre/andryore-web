@@ -1,28 +1,70 @@
 {
   "en": {
-    "tryCta": "Try {name}",
     "state": {
-      "live": "Live",
-      "beta": "Beta"
+      "live": "Shipped",
+      "beta": "Beta",
+      "contribution": "Contribution"
     },
-    "proofHeading": "Proof",
-    "proofAsOf": "as of {date}",
+    "links": {
+      "website": "Visit website",
+      "source": "View the source",
+      "npm": "npm",
+      "marketplace": "Marketplace",
+      "chromeWebStore": "Chrome Web Store"
+    },
+    "statsHeading": "Facts",
+    "worksWith": "Works with",
+    "importsFrom": "Imports from",
+    "exportFormats": "Export",
+    "importFormats": "Import",
+    "skinTones": [
+      "Default",
+      "Light",
+      "Medium light",
+      "Medium",
+      "Medium dark",
+      "Dark"
+    ],
+    "websiteHeading": "Website",
+    "galleryHeading": "The real interface",
     "whyHeading": "Why I built it",
-    "stackHeading": "Stack",
-    "changelogLink": "Read the changelog",
-    "placeholderNote": "Placeholder image"
+    "contributionWhyHeading": "What I did",
+    "backLink": "Products",
+    "builtWithHeading": "Built with",
+    "heroLabel": "Overview"
   },
   "es": {
-    "tryCta": "Probar {name}",
     "state": {
-      "live": "Activo",
-      "beta": "Beta"
+      "live": "Publicado",
+      "beta": "Beta",
+      "contribution": "Colaboración"
     },
-    "proofHeading": "Pruebas",
-    "proofAsOf": "a {date}",
+    "links": {
+      "website": "Visitar el sitio",
+      "source": "Ver el código",
+      "npm": "npm",
+      "marketplace": "Marketplace",
+      "chromeWebStore": "Chrome Web Store"
+    },
+    "statsHeading": "Datos",
+    "worksWith": "Funciona con",
+    "importsFrom": "Importa desde",
+    "exportFormats": "Exportar",
+    "importFormats": "Importar",
+    "skinTones": [
+      "Predeterminado",
+      "Claro",
+      "Medio claro",
+      "Medio",
+      "Medio oscuro",
+      "Oscuro"
+    ],
+    "websiteHeading": "Sitio web",
+    "galleryHeading": "La interfaz real",
     "whyHeading": "Por qué lo construí",
-    "stackHeading": "Stack",
-    "changelogLink": "Leer el registro de cambios",
-    "placeholderNote": "Imagen provisional"
+    "contributionWhyHeading": "Qué hice",
+    "backLink": "Productos",
+    "builtWithHeading": "Hecho con",
+    "heroLabel": "Resumen"
   }
 }

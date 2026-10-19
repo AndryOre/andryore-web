@@ -9,7 +9,11 @@ import {
 } from './theme'
 
 const FADE_CLASS = 'theme-fade'
-const FADE_DURATION_MS = 400
+/**
+ * How long the fade class stays on the root. It equals `--duration-base`, the
+ * one duration every Theme tile transition and the colour fade share.
+ */
+export const FADE_DURATION_MS = 320
 
 const listeners = new Set<() => void>()
 const memory: { preference: ThemePreference | null } = { preference: null }
@@ -55,11 +59,15 @@ export const paintTheme = (preference: ThemePreference): void => {
 
 /**
  * Applies, paints and stores a theme preference, fading colours briefly.
+ * Choosing the preference already in effect does nothing, so a drag across one
+ * stop neither restarts the fade nor rewrites storage.
  * @param preference The choice to apply.
  */
 export const chooseTheme = (preference: ThemePreference): void => {
+  if (preference === getThemeSnapshot()) return
   const root = document.documentElement
   root.classList.add(FADE_CLASS)
+  root.dataset.themePref = preference
   paintTheme(preference)
   setTimeout(() => {
     root.classList.remove(FADE_CLASS)

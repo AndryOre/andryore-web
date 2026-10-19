@@ -2,12 +2,14 @@ import {
   useCallback,
   useEffect,
   useState,
+  useSyncExternalStore,
   type PointerEvent,
   type ReactElement,
   type ReactNode,
 } from 'react'
 
 import { localePath, LOCALES, type Locale } from '@/i18n/locales'
+import { ANALYTICS_EVENTS, analyticsAttributes } from '@/lib/analytics'
 import {
   activePageKey,
   DOCK_PAGES,
@@ -22,6 +24,8 @@ import {
   shouldMagnify,
   type DockMenuName,
 } from '@/lib/dock-dom'
+import { getFxStorage, readFx, subscribeFx, writeFx } from '@/lib/fx-store'
+import { soundEngine, type SoundAvailability } from '@/lib/sound-engine'
 import { THEME_PREFERENCES, type ThemePreference } from '@/lib/theme'
 import { chooseTheme } from '@/lib/theme-store'
 import { cn } from '@/lib/utils'
@@ -37,6 +41,7 @@ interface DockCopy {
   label: string
   pages: Record<DockPageKey, string>
   language: { label: string } & Record<Locale, string>
+  sound: { label: string; on: string; off: string }
 }
 
 interface DockProps {
@@ -47,15 +52,9 @@ interface DockProps {
 }
 
 const ITEM_CLASS =
-  'relative inline-flex size-11 items-center justify-center rounded-pill text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring [&_svg]:size-5 [&_svg]:shrink-0'
+  'relative inline-flex size-8.5 min-[360px]:size-9 min-[400px]:size-11 items-center justify-center rounded-pill text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring [&_svg]:size-5 [&_svg]:shrink-0'
 
-const PAGE_ICONS: Record<DockPageKey, ReactElement> = {
-  home: (
-    <>
-      <path d="M3 11l9-8 9 8" />
-      <path d="M5 10v10h14V10" />
-    </>
-  ),
+const PAGE_ICONS: Record<Exclude<DockPageKey, 'home'>, ReactElement> = {
   products: (
     <>
       <rect x="3" y="3" width="7" height="7" rx="2" />
@@ -64,16 +63,16 @@ const PAGE_ICONS: Record<DockPageKey, ReactElement> = {
       <rect x="14" y="14" width="7" height="7" rx="2" />
     </>
   ),
-  log: (
-    <>
-      <path d="M5 4h11l3 3v13H5z" />
-      <path d="M9 11h6M9 15h6" />
-    </>
-  ),
   about: (
     <>
       <circle cx="12" cy="8" r="4" />
       <path d="M4 21c1-4 4-6 8-6s7 2 8 6" />
+    </>
+  ),
+  findMe: (
+    <>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8" />
     </>
   ),
   uses: (
@@ -84,7 +83,27 @@ const PAGE_ICONS: Record<DockPageKey, ReactElement> = {
   ),
 }
 
+function AoMark() {
+  return (
+    <svg viewBox="118 170 276 172" className="h-4! w-auto!" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M122.88 333.26 164.33 175.59H216.13L257.58 333.26H226.94L218.38 298.57H162.07L153.51 333.26H122.88ZM169.06 271.09H211.4L192.26 194.28H188.2L169.06 271.09Z"
+      />
+      <circle
+        cx="330.56"
+        cy="277.4"
+        r="40"
+        fill="none"
+        className="stroke-primary"
+        strokeWidth="25.5"
+      />
+    </svg>
+  )
+}
+
 function PageIcon({ page }: { page: DockPageKey }) {
+  if (page === 'home') return <AoMark />
   return (
     <svg
       viewBox="0 0 24 24"
@@ -100,11 +119,111 @@ function PageIcon({ page }: { page: DockPageKey }) {
   )
 }
 
-function Tooltip({ children }: { children: ReactNode }) {
+const getSoundSnapshot = (): boolean => readFx(getFxStorage())
+const getServerSoundSnapshot = (): boolean => false
+const getServerAvailability = (): SoundAvailability => 'unknown'
+
+function SoundIcon({ enabled }: { enabled: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z" />
+      {enabled ? (
+        <>
+          <path d="M16 9a5 5 0 0 1 0 6" />
+          <path d="M19.364 18.364a9 9 0 0 0 0-12.728" />
+        </>
+      ) : (
+        <>
+          <line x1="22" x2="16" y1="9" y2="15" />
+          <line x1="16" x2="22" y1="9" y2="15" />
+        </>
+      )}
+    </svg>
+  )
+}
+
+/**
+ * The Sound switch: shares the stored choice with the Sound tile and shows a
+ * dot while it is on. The switch sound comes from the page-level sound
+ * triggers through `data-sound`. It renders nothing once the audio files are
+ * known to be missing.
+ * @param props Component props.
+ * @param props.copy Sound labels.
+ * @param props.enabled Whether Sound is on.
+ * @param props.availability Whether the audio files are known to be served.
+ * @param props.onToggle Called when the switch is pressed.
+ * @returns The switch inside a dock item, or nothing.
+ */
+export function SoundSwitch({
+  copy,
+  enabled,
+  availability = 'unknown',
+  onToggle,
+}: {
+  copy: DockCopy['sound']
+  enabled: boolean
+  availability?: SoundAvailability
+  onToggle: () => void
+}) {
+  return (
+    <DockItem
+      label={enabled ? copy.on : copy.off}
+      hidden={availability === 'unavailable'}
+      align="end"
+    >
+      <Button
+        variant="dock"
+        size="dock"
+        role="switch"
+        aria-checked={enabled}
+        aria-label={copy.label}
+        data-dock-sound
+        data-sound="switch"
+        onClick={onToggle}
+      >
+        <SoundIcon enabled={enabled} />
+        {enabled && (
+          <span
+            data-dock-sound-dot
+            aria-hidden="true"
+            className="absolute top-2.25 right-2.25 size-1.5 rounded-full bg-foreground"
+          />
+        )}
+      </Button>
+    </DockItem>
+  )
+}
+
+const TOOLTIP_ALIGN_CLASS = {
+  start: 'left-0 sm:left-1/2 sm:-translate-x-1/2',
+  center: 'left-1/2 -translate-x-1/2',
+  end: 'right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2',
+} as const
+
+type TooltipAlign = keyof typeof TOOLTIP_ALIGN_CLASS
+
+function Tooltip({
+  children,
+  align,
+}: {
+  children: ReactNode
+  align: TooltipAlign
+}) {
   return (
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute bottom-full left-1/2 mb-5 -translate-x-1/2 translate-y-1 rounded-lg bg-foreground px-2.5 py-1 text-xs font-medium whitespace-nowrap text-background opacity-0 transition duration-150 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-has-focus-visible:translate-y-0 group-has-focus-visible:opacity-100 group-data-[menu-open]:hidden motion-reduce:transition-none"
+      className={cn(
+        TOOLTIP_ALIGN_CLASS[align],
+        'pointer-events-none absolute bottom-full mb-2.5 translate-y-1 rounded-lg bg-foreground px-2.5 py-1 text-xs font-medium whitespace-nowrap text-background opacity-0 transition duration-160 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-has-focus-visible:translate-y-0 group-has-focus-visible:opacity-100 group-data-[menu-open]:hidden motion-reduce:transition-none',
+      )}
     >
       {children}
     </span>
@@ -114,21 +233,29 @@ function Tooltip({ children }: { children: ReactNode }) {
 function DockItem({
   label,
   menuOpen = false,
+  hidden = false,
+  align = 'center',
   children,
 }: {
   label: string
   menuOpen?: boolean
+  hidden?: boolean
+  align?: TooltipAlign
   children: ReactNode
 }) {
   return (
-    <div className="group relative" data-menu-open={menuOpen ? '' : undefined}>
+    <div
+      className={cn('group relative', hidden && 'hidden')}
+      data-menu-open={menuOpen ? '' : undefined}
+      data-sound-unavailable={hidden ? '' : undefined}
+    >
       <div
         data-dock-scale
         className="origin-bottom transition-transform duration-160 ease-out motion-reduce:transition-none"
       >
         {children}
       </div>
-      <Tooltip>{label}</Tooltip>
+      <Tooltip align={align}>{label}</Tooltip>
     </div>
   )
 }
@@ -145,9 +272,10 @@ function MenuPanel({
   return (
     <div
       role="menu"
+      data-dock-panel
       aria-label={label}
       className={cn(
-        'absolute bottom-full z-10 mb-3 grid min-w-36 origin-bottom gap-0.5 rounded-card border border-border bg-popover p-1.5 text-popover-foreground shadow-lg transition duration-150 ease-out motion-reduce:transition-none starting:scale-95 starting:opacity-0',
+        'absolute bottom-full z-10 mb-3 grid min-w-35 origin-bottom gap-0 rounded-card border border-border bg-popover p-1.5 text-popover-foreground transition duration-150 ease-out motion-reduce:transition-none starting:scale-95 starting:opacity-0',
         edge
           ? 'right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2'
           : 'left-1/2 -translate-x-1/2',
@@ -182,10 +310,14 @@ export function LanguageMenu({
           <a
             key={code}
             role="menuitem"
+            data-dock-item
             href={localePath(code, path)}
             hrefLang={code}
             lang={code}
             data-locale-switch={code}
+            {...analyticsAttributes(ANALYTICS_EVENTS.languageSwitch, {
+              to: code,
+            })}
             aria-current={code === locale ? 'true' : undefined}
             className={menuItemClass(code === locale)}
           >
@@ -222,7 +354,12 @@ export function ThemeMenu({
             key={option}
             type="button"
             role="menuitemradio"
+            data-dock-item
             aria-checked={preference === option}
+            data-sound="theme"
+            {...analyticsAttributes(ANALYTICS_EVENTS.themeSwitch, {
+              theme: option,
+            })}
             className={menuItemClass(preference === option)}
             onClick={() => {
               onChoose(option)
@@ -238,7 +375,7 @@ export function ThemeMenu({
 
 const menuItemClass = (selected: boolean): string =>
   cn(
-    'rounded-xl px-3 py-2 text-left text-sm no-underline outline-none focus-visible:ring-2 focus-visible:ring-ring',
+    'px-3 py-2 text-left text-sm no-underline outline-none focus-visible:ring-2 focus-visible:ring-ring',
     selected
       ? 'bg-muted text-foreground'
       : 'text-muted-foreground hover:text-foreground',
@@ -289,8 +426,8 @@ function useMenuBehaviour(
 }
 
 /**
- * The floating pill navigation: the five pages, then the language and theme
- * menus. Neighbours of the pointer magnify on fine pointers when motion is
+ * The floating pill navigation: the pages and Find me, then the language and
+ * theme menus and the Sound switch. Neighbours of the pointer magnify on fine pointers when motion is
  * allowed, the active page carries a pill that morphs between routes through
  * view transitions, and both menus open upward.
  * @param props Component props.
@@ -304,6 +441,16 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
   const [nav, setNav] = useState<HTMLElement | null>(null)
   const [openMenu, setOpenMenu] = useState<DockMenuName | undefined>()
   const preference = useThemePreference()
+  const soundEnabled = useSyncExternalStore(
+    subscribeFx,
+    getSoundSnapshot,
+    getServerSoundSnapshot,
+  )
+  const soundAvailability = useSyncExternalStore(
+    soundEngine.subscribeAvailability,
+    soundEngine.getAvailability,
+    getServerAvailability,
+  )
   const activeKey = activePageKey(path)
 
   const closeMenu = useCallback(() => {
@@ -328,16 +475,24 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
       aria-label={copy.label}
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
-      className="pointer-events-auto relative inline-flex items-center gap-0 rounded-pill border border-border bg-card/92 p-1 shadow-lg shadow-black/10 sm:gap-1 sm:p-2"
+      data-dock-nav
+      className="pointer-events-auto relative inline-flex items-center gap-0 rounded-pill border border-border bg-card/92 p-0.5 backdrop-blur-lg min-[360px]:p-1 sm:gap-1 sm:p-2"
     >
       {DOCK_PAGES.map((page) => {
         const active = activeKey === page.key
         return (
-          <DockItem key={page.key} label={copy.pages[page.key]}>
+          <DockItem
+            key={page.key}
+            label={copy.pages[page.key]}
+            align={page.key === 'home' ? 'start' : 'center'}
+          >
             <a
               href={pageHref(locale, page.path)}
               aria-label={copy.pages[page.key]}
               aria-current={active ? 'page' : undefined}
+              {...analyticsAttributes(ANALYTICS_EVENTS.dockNavigate, {
+                page: page.key,
+              })}
               className={cn(ITEM_CLASS, active && 'text-foreground')}
             >
               {active && (
@@ -355,7 +510,10 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
         )
       })}
 
-      <span aria-hidden="true" className="mx-0.5 h-6 w-px bg-border sm:mx-1" />
+      <span
+        aria-hidden="true"
+        className="h-5 w-px bg-border min-[360px]:mx-0.5 min-[360px]:h-6 sm:mx-1"
+      />
 
       <DockItem label={copy.language.label} menuOpen={openMenu === 'language'}>
         <Button
@@ -369,7 +527,7 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
             toggleMenu('language')
           }}
         >
-          <span className="font-mono text-xs font-bold tracking-wide uppercase">
+          <span data-dock-lang className="font-mono font-bold uppercase">
             {locale}
           </span>
         </Button>
@@ -400,6 +558,15 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
           />
         )}
       </DockItem>
+
+      <SoundSwitch
+        copy={copy.sound}
+        enabled={soundEnabled}
+        availability={soundAvailability}
+        onToggle={() => {
+          writeFx(getFxStorage(), !soundEnabled)
+        }}
+      />
     </nav>
   )
 }

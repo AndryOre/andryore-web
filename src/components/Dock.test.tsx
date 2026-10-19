@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 
 import chrome from '../content/chrome.json'
 import type { Locale } from '../i18n/locales'
-import Dock, { LanguageMenu, ThemeMenu } from './Dock'
+import Dock, { LanguageMenu, SoundSwitch, ThemeMenu } from './Dock'
 
 function render(locale: Locale, path: string): string {
   return renderToStaticMarkup(
@@ -22,30 +22,68 @@ describe('Dock', () => {
     for (const name of [
       'Home',
       'Products',
-      'Log',
       'About',
       'Uses',
+      'Find me',
       'EN Language',
       'Theme',
+      'Sound',
     ]) {
       expect(html).toContain(`aria-label="${name}"`)
     }
     expect(html).toContain('aria-label="Main"')
   })
 
+  test('uses the canvas dock geometry from sm and a compact one on phones', () => {
+    const html = render('en', '/')
+    expect(html).toContain('sm:gap-1')
+    expect(html).toContain('sm:p-2')
+    expect(html).toContain('gap-0 rounded-pill')
+    expect(html).toContain('data-dock-nav')
+  })
+
+  test('orders the items as the canvas does', () => {
+    const html = render('en', '/')
+    const names = [
+      'Home',
+      'About',
+      'Products',
+      'Uses',
+      'Find me',
+      'EN Language',
+      'Theme',
+      'Sound',
+    ]
+    const positions = names.map((name) => html.indexOf(`aria-label="${name}"`))
+    expect(positions).toEqual(positions.toSorted((a, b) => a - b))
+    expect(positions.every((position) => position >= 0)).toBe(true)
+  })
+
+  test('links Find me to the home anchor in each language', () => {
+    expect(render('en', '/about/')).toContain('href="/#find-me"')
+    expect(render('es', '/')).toContain('href="/es/#find-me"')
+  })
+
+  test('renders Sound off by default as a switch', () => {
+    const html = render('en', '/')
+    expect(html).toMatch(/role="switch"[^>]*aria-checked="false"/)
+    expect(html).toContain('Sound off')
+    expect(html).not.toContain('data-dock-sound-dot')
+  })
+
   test('localises names and links in Spanish', () => {
-    const html = render('es', '/log/')
+    const html = render('es', '/about/')
     expect(html).toContain('aria-label="Inicio"')
     expect(html).toContain('aria-label="ES Idioma"')
-    expect(html).toContain('href="/es/log/"')
+    expect(html).toContain('href="/es/about/"')
     expect(html).toContain('href="/es/#products"')
   })
 
   test('marks only the current page and draws the pill on it', () => {
-    const html = render('en', '/log/first-entry/')
+    const html = render('en', '/about/')
     expect(html.match(/aria-current="page"/g)).toHaveLength(1)
     expect(html.match(/data-dock-pill/g)).toHaveLength(1)
-    expect(html).toMatch(/href="\/log\/"[^>]*aria-current="page"/)
+    expect(html).toMatch(/href="\/about\/"[^>]*aria-current="page"/)
   })
 
   test('marks no page on a page the dock does not list', () => {
@@ -66,14 +104,14 @@ describe('LanguageMenu', () => {
       <LanguageMenu
         copy={chrome.es.dock.language}
         locale="es"
-        path="/log/first-entry/"
+        path="/about/"
       />,
     )
     expect(html).toContain('role="menu"')
-    expect(html).toContain('href="/log/first-entry/"')
-    expect(html).toContain('href="/es/log/first-entry/"')
+    expect(html).toContain('href="/about/"')
+    expect(html).toContain('href="/es/about/"')
     expect(html.match(/aria-current="true"/g)).toHaveLength(1)
-    expect(html).toMatch(/href="\/es\/log\/first-entry\/"[^>]*aria-current/)
+    expect(html).toMatch(/href="\/es\/about\/"[^>]*aria-current/)
     expect(html).toContain('data-locale-switch="en"')
   })
 })
@@ -86,5 +124,63 @@ describe('ThemeMenu', () => {
     expect(html.match(/role="menuitemradio"/g)).toHaveLength(3)
     expect(html.match(/aria-checked="true"/g)).toHaveLength(1)
     expect(html).toMatch(/aria-checked="true"[^>]*>Dark</)
+  })
+})
+
+describe('sound triggers', () => {
+  test('names the switch sound on the dock Sound switch', () => {
+    const html = render('en', '/')
+    expect(html).toContain('data-dock-sound="true"')
+    expect(html.match(/data-sound="switch"/g)).toHaveLength(1)
+  })
+
+  test('names the theme sound on every theme option', () => {
+    const html = renderToStaticMarkup(
+      <ThemeMenu copy={chrome.en.theme} preference="dark" onChoose={mock()} />,
+    )
+    expect(html.match(/data-sound="theme"/g)).toHaveLength(3)
+  })
+
+  test('leaves language links and dock buttons on the default click', () => {
+    const html = renderToStaticMarkup(
+      <LanguageMenu copy={chrome.en.dock.language} locale="en" path="/" />,
+    )
+    expect(html).not.toContain('data-sound=')
+  })
+})
+
+const renderSwitch = (availability: 'unknown' | 'available' | 'unavailable') =>
+  renderToStaticMarkup(
+    <SoundSwitch
+      copy={chrome.en.dock.sound}
+      enabled={false}
+      availability={availability}
+      onToggle={mock()}
+    />,
+  )
+
+describe('SoundSwitch availability', () => {
+  test('renders while availability is unknown or available', () => {
+    expect(renderSwitch('unknown')).toContain('data-dock-sound')
+    expect(renderSwitch('available')).toContain('data-dock-sound')
+  })
+
+  test('gives up its slot once the audio files are missing', () => {
+    const html = renderSwitch('unavailable')
+    expect(html).toContain('data-sound-unavailable')
+    expect(html).toMatch(/class="[^"]*\bhidden\b/)
+    expect(html).not.toContain('invisible')
+    expect(renderSwitch('available')).not.toContain('data-sound-unavailable')
+  })
+})
+
+describe('SoundSwitch', () => {
+  test('shows the dot, the checked state and the on tooltip when on', () => {
+    const html = renderToStaticMarkup(
+      <SoundSwitch copy={chrome.es.dock.sound} enabled onToggle={mock()} />,
+    )
+    expect(html).toContain('aria-checked="true"')
+    expect(html).toContain('data-dock-sound-dot')
+    expect(html).toContain('Sonido activado')
   })
 })

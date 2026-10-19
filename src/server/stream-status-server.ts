@@ -1,4 +1,12 @@
+import {
+  contributionsResponse,
+  createContributionsReader,
+} from '../lib/github-contributions'
 import { createLiveStatus, statusResponse } from '../lib/twitch-status'
+
+const contributions = createContributionsReader({
+  token: process.env.GITHUB_TOKEN,
+})
 
 const liveStatus = createLiveStatus({
   clientId: process.env.TWITCH_CLIENT_ID,
@@ -11,6 +19,8 @@ Bun.serve({
   port,
   routes: {
     '/api/stream-status': async () => statusResponse(await liveStatus.get()),
+    '/api/github-contributions': async () =>
+      contributionsResponse(await contributions.get()),
   },
   fetch: () => new Response('Not found', { status: 404 }),
 })
