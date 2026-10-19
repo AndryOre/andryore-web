@@ -53,9 +53,22 @@ describe('readLastmod', () => {
     expect(readLastmod('2026-10-17')).toBe('2026-10-17')
   })
 
-  test('falls back to nothing when missing or malformed', () => {
-    expect(readLastmod(undefined)).toBeUndefined()
-    expect(readLastmod('')).toBeUndefined()
-    expect(readLastmod('yesterday')).toBeUndefined()
+  const buildDate = new Date('2026-10-20T03:00:00Z')
+
+  test('keeps a valid date over the build date', () => {
+    expect(readLastmod('2026-10-17', buildDate)).toBe('2026-10-17')
+  })
+
+  test('falls back to the build date when unset', () => {
+    expect(readLastmod(undefined, buildDate)).toBe('2026-10-20')
+  })
+
+  test('falls back to the build date when empty or malformed', () => {
+    expect(readLastmod('', buildDate)).toBe('2026-10-20')
+    expect(readLastmod('yesterday', buildDate)).toBe('2026-10-20')
+  })
+
+  test('defaults the build date to today', () => {
+    expect(readLastmod(undefined)).toMatch(/^\d{4}-\d{2}-\d{2}$/)
   })
 })
