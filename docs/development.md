@@ -247,18 +247,18 @@ those tests.
 
 ## Lighthouse budget
 
-`bun run lint:lighthouse` serves `dist/` locally and audits the home page and
-the Snug product page in English and Spanish, five runs each, with the
-Lighthouse version pinned in `scripts/lighthouse-budget.ts`. It prints a table
-with the median performance, accessibility, best practices and SEO scores plus
-the page weight. It exits non-zero when any median is below 90 or any score is
-null; weight is reported and never fails. It needs a built site
-(`bun run build`, opt-in locally) and a Chrome binary: set `CHROME_PATH` when
-Chrome is not on the default path. The local server answers `/api/stream-status`
-with the offline state, as the nginx image's upstream does, so the missing
-endpoint does not log a console error. CI runs it in
-`.github/workflows/lighthouse.yml`. Renovate bumps the pinned version through a
-custom manager in `renovate.json5`.
+`bun run lint:lighthouse` serves `dist/` locally, gzipping text assets the way
+`docker/nginx.conf` does, and audits the home page and the Snug product page in
+English and Spanish, five runs each, with the Lighthouse version pinned in
+`scripts/lighthouse-budget.ts`. It prints a table with the median performance,
+accessibility, best practices and SEO scores plus the page weight. It exits
+non-zero when any median is below 90 or any score is null; weight is reported
+and never fails. It needs a built site (`bun run build`, opt-in locally) and a
+Chrome binary: set `CHROME_PATH` when Chrome is not on the default path. The
+local server answers `/api/stream-status` with the offline state, as the nginx
+image's upstream does, so the missing endpoint does not log a console error. CI
+runs it in `.github/workflows/lighthouse.yml`. Renovate bumps the pinned version
+through a custom manager in `renovate.json5`.
 
 ## Renovate
 
