@@ -1471,7 +1471,7 @@ html:not(.dark) .stream-tile {
 .theme-bar[data-dragging='true'] .theme-sun-rays {
   transition: none;
 }
-@container (min-width: 64rem) {
+@media (min-width: 64rem) {
   .theme-control {
     min-height: 8.75rem;
     flex-direction: row;

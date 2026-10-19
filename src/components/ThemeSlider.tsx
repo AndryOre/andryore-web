@@ -83,7 +83,7 @@ function BarSun() {
 }
 
 /**
- * The orientation the tile's container query chose, read from the control's
+ * The orientation the tile's media query chose, read from the control's
  * flex direction: a row puts the tabs beside a vertical bar, a column stacks a
  * horizontal bar under the tabs.
  * @param flexDirection The computed `flex-direction` of the control.
@@ -96,7 +96,7 @@ export function orientationFromFlexDirection(
 }
 
 /**
- * Follows the visible orientation of the control as its container query flips.
+ * Follows the visible orientation of the control as its media query flips.
  * Starts horizontal, the layout the pre-hydration CSS renders.
  * @param controlRef The element whose flex direction carries the orientation.
  * @returns The current orientation.

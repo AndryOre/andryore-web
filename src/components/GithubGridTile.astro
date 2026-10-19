@@ -195,6 +195,7 @@ const stats = [
       if (!grid.contains(event.target as Node)) show(null)
     })
     grid.addEventListener('focus', () => {
+      if (!grid.matches(':focus-visible')) return
       show(active ?? cells()[0] ?? null)
     })
     grid.addEventListener('blur', () => {

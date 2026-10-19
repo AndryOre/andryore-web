@@ -101,22 +101,24 @@ test.describe('theme tile orientation', () => {
     }
   }
 
-  test('keeps the tabs in a column beside a vertical bar at 1280px', async ({
-    page,
-  }) => {
-    await openThemeTile(page, 1280)
-    await expect(page.locator('[data-theme-slider]')).toHaveAttribute(
-      'aria-orientation',
-      'vertical',
-    )
-    const layout = await readThemeLayout(page)
-    const [first, second] = layout.tabs
-    if (!first || !second) throw new Error('no tabs')
-    expect(second.y).toBeGreaterThan(first.y)
-    expect(layout.bar.height).toBeGreaterThan(layout.bar.width)
-    expect(layout.bar.x).toBeGreaterThan(first.x + first.width)
-    expect(layout.touchAction).toBe('none')
-  })
+  for (const width of [1024, 1280]) {
+    test(`keeps the tabs in a column beside a vertical bar at ${String(width)}px`, async ({
+      page,
+    }) => {
+      await openThemeTile(page, width)
+      await expect(page.locator('[data-theme-slider]')).toHaveAttribute(
+        'aria-orientation',
+        'vertical',
+      )
+      const layout = await readThemeLayout(page)
+      const [first, second] = layout.tabs
+      if (!first || !second) throw new Error('no tabs')
+      expect(second.y).toBeGreaterThan(first.y)
+      expect(layout.bar.height).toBeGreaterThan(layout.bar.width)
+      expect(layout.bar.x).toBeGreaterThan(first.x + first.width)
+      expect(layout.touchAction).toBe('none')
+    })
+  }
 
   test('renders the horizontal layout before hydration without a jump', async ({
     page,
