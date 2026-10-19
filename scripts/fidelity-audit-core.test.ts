@@ -2,9 +2,11 @@ import { describe, expect, test } from 'bun:test'
 
 import {
   countDeviations,
+  DOCUMENTED_EXCEPTIONS,
   failedMeasurements,
   findMissingTexts,
   formatReport,
+  isMissingSoundAsset,
   isWithinTolerance,
   normalizeText,
   parsePixels,
@@ -96,5 +98,36 @@ describe('resolveCanvasPath', () => {
     )
     expect(resolveCanvasPath([], { FIDELITY_CANVAS: 'b' })).toBe('b')
     expect(resolveCanvasPath([], {})).toBeUndefined()
+  })
+})
+
+describe('isMissingSoundAsset', () => {
+  const miss =
+    'Failed to load resource: the server responded with a status of 404 (Not Found)'
+
+  test('accepts a 404 on a sound file', () => {
+    expect(
+      isMissingSoundAsset(miss, 'http://127.0.0.1:4418/sounds/tap.mp3'),
+    ).toBe(true)
+  })
+
+  test('rejects a 404 elsewhere and other sound errors', () => {
+    expect(isMissingSoundAsset(miss, 'http://127.0.0.1:4418/app.js')).toBe(
+      false,
+    )
+    expect(
+      isMissingSoundAsset('Uncaught TypeError', 'http://x/sounds/tap.mp3'),
+    ).toBe(false)
+  })
+})
+
+describe('DOCUMENTED_EXCEPTIONS', () => {
+  test('lists unique ids with a reason', () => {
+    const ids = DOCUMENTED_EXCEPTIONS.map((entry) => entry.id)
+    expect(new Set(ids).size).toBe(ids.length)
+    expect(ids).toContain('epidemic-sound-files')
+    expect(DOCUMENTED_EXCEPTIONS.every((entry) => entry.reason !== '')).toBe(
+      true,
+    )
   })
 })

@@ -10,9 +10,11 @@ import {
 import { ALLOWED_ORIGINS } from './audit-distribution'
 import {
   countDeviations,
+  DOCUMENTED_EXCEPTIONS,
   failedMeasurements,
   findMissingTexts,
   formatReport,
+  isMissingSoundAsset,
   resolveCanvasPath,
   type MeasurementResult,
   type ReportSection,
@@ -500,7 +502,11 @@ async function openSite(
   const probe: SiteProbe = { consoleErrors: [], foreignRequests: [] }
   const origin = new URL(baseUrl).origin
   page.on('console', (message) => {
-    if (message.type() === 'error') probe.consoleErrors.push(message.text())
+    if (message.type() !== 'error') return
+    const text = message.text()
+    const url = message.location().url
+    if (url !== '' && isMissingSoundAsset(text, url)) return
+    probe.consoleErrors.push(text)
   })
   page.on('pageerror', (error) => {
     probe.consoleErrors.push(error.message)
@@ -1070,7 +1076,7 @@ async function main(): Promise<void> {
       { title: 'Reduced motion', lines: layout.motion },
       { title: 'Interactions', lines: interactions },
     ]
-    const report = `${formatReport(sections)}\nChecked: ${String(coverage.texts)} canvas strings, ${String(coverage.measurements)} measurements, ${String(coverage.pages)} page loads.\n`
+    const report = `${formatReport(sections)}\nChecked: ${String(coverage.texts)} canvas strings, ${String(coverage.measurements)} measurements, ${String(coverage.pages)} page loads.\nDocumented exceptions skipped: ${DOCUMENTED_EXCEPTIONS.map((entry) => entry.id).join(', ')}.\n`
     mkdirSync(OUTPUT_DIRECTORY, { recursive: true })
     writeFileSync(path.join(OUTPUT_DIRECTORY, 'report.md'), report)
     console.log(report)
