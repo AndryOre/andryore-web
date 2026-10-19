@@ -1,7 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
 
-const PORT = '4417'
+const PORT = process.env.E2E_PORT ?? '4417'
 const LAYOUT_SPEC = /layout\.spec\.ts/
+const MOBILE_SPECS =
+  /(layout|overflow|landscape|theme-tile-orientation)\.spec\.ts/
 const EXTERNAL_BASE_URL = process.env.E2E_BASE_URL
 
 export default defineConfig({
@@ -27,6 +29,16 @@ export default defineConfig({
       name: 'firefox',
       testMatch: LAYOUT_SPEC,
       use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'mobile-android',
+      testMatch: MOBILE_SPECS,
+      use: { ...devices['Pixel 7'] },
+    },
+    {
+      name: 'mobile-ios',
+      testMatch: MOBILE_SPECS,
+      use: { ...devices['iPhone 14'], defaultBrowserType: 'chromium' },
     },
   ],
   webServer: EXTERNAL_BASE_URL

@@ -97,6 +97,15 @@ agents.
   `e2e/messages.ts`. Use `--project=chromium` for the default run. Set
   `E2E_BASE_URL` to run the specs against a server that is already up, such as
   the nginx image, so the real header CSP applies instead of the meta policy.
+- **Mobile**: the `mobile-android` (Pixel 7) and `mobile-ios` (iPhone 14)
+  projects use Playwright device descriptors, so `isMobile` and `hasTouch` are
+  on. Both run in Chromium, because CI installs only Chromium; the iPhone
+  project covers its viewport, user agent and touch, not WebKit rendering. They
+  run the layout, overflow and Theme tile orientation specs, plus
+  `e2e/landscape.spec.ts`: every route at 844x390 with no horizontal overflow,
+  the first heading in view and no interactive element under the Dock. Run them
+  with `bun run test:e2e --project='mobile-*'`; CI runs them next to `chromium`.
+  Set `E2E_PORT` when port 4417 is taken by another server.
 - **Other browsers**: `bun run test:browsers` runs the layout spec in `webkit`
   and `firefox` inside the pinned Playwright image (Docker required), because
   the host libraries those browsers need are not installed on a server.

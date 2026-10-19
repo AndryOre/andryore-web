@@ -122,7 +122,7 @@ jobs:
         run: bun run build
 
       - name: Run e2e
-        run: bun run test:e2e --project=chromium
+        run: bun run test:e2e --project=chromium --project='mobile-*'
 
       - name: Summarise flaky tests
         if: always()
