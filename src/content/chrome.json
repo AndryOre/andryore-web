@@ -2,6 +2,7 @@
   "en": {
     "wordmark": "AndryOre",
     "skipLink": "Skip to content",
+    "opensInNewTab": "Opens in a new tab",
     "theme": {
       "label": "Theme",
       "auto": "Auto",
@@ -44,6 +45,7 @@
   "es": {
     "wordmark": "AndryOre",
     "skipLink": "Saltar al contenido",
+    "opensInNewTab": "Se abre en una pestaña nueva",
     "theme": {
       "label": "Tema",
       "auto": "Auto",

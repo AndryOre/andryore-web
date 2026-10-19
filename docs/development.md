@@ -160,6 +160,20 @@ are directive comments a tool reads, such as `eslint-disable`,
 `@ts-expect-error` and `prettier-ignore`. Rationale:
 [ADR 0005](adr/0005-tsdoc-only-code-comments.md).
 
+## External links
+
+`externalLinkAttributes(href)` in `src/lib/external-link.ts` is the only place
+that decides how a link opens. It returns `{ target: '_blank', rel }` for a
+cross-origin `http(s)` href and `undefined` for `mailto:`, `tel:`, `#` anchors,
+relative and same-origin links and the language switch. Spread it on the anchor:
+`<a href={href} {...externalLinkAttributes(href)}>`. Never write `target` or
+`rel` by hand.
+
+Announce the new tab with `chrome[locale].opensInNewTab`
+(`src/content/chrome.json`): as visually hidden text on a link with visible
+text, and appended inside the `aria-label` of an icon-only link. Rationale:
+[ADR 0020](adr/0020-external-links-open-in-a-new-tab.md).
+
 ## Adding a `@shadcn/lint` contract
 
 The `shadcn/no-restyle` rule restricts which classes a call site may pass to a

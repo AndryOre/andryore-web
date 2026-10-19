@@ -12,6 +12,10 @@ describe('chrome content', () => {
         }
       })
 
+      test('has the opens-in-a-new-tab note', () => {
+        expect(chrome[locale].opensInNewTab).toBeTruthy()
+      })
+
       test('has the Sound labels', () => {
         const { sound } = chrome[locale].dock
         expect(sound.label).toBeTruthy()
