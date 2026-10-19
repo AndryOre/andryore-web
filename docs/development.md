@@ -269,6 +269,18 @@ application's Coolify GitHub webhook endpoint; the secret lives only in the
 webhook and in Coolify. PR preview deployments stay off so a fork PR can never
 run on the server; `dev.andryore.dev` covers pre-merge checks.
 
+### Sound files
+
+The Glass sound set is a private build input
+([ADR 0019](adr/0019-optional-interface-sound.md)). In each Coolify application,
+add the build arguments `SOUNDS_REPO` (`owner/repository`) and `SOUNDS_REF`
+(branch, tag or commit), and a build secret named `sounds_token` holding a
+read-only fine-grained GitHub token with Contents read access to that
+repository. The Dockerfile mounts it with `RUN --mount=type=secret`, so it never
+lands in a layer. Without the secret the build succeeds and the Site hides the
+Sound switch. To try it locally:
+`docker build --secret id=sounds_token,env=SOUNDS_TOKEN --build-arg SOUNDS_REPO=owner/repo .`
+
 To roll back, redeploy the previous good commit from the Coolify application
 page (Deployments, then Redeploy on the earlier entry), or revert the commit on
 `main` and let the webhook deploy the revert.
