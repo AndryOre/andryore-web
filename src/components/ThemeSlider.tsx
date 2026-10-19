@@ -1,4 +1,10 @@
-import { useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
+import {
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type KeyboardEvent,
+  type PointerEvent,
+} from 'react'
 
 import type { ThemePreference } from '@/lib/theme'
 import { stopAfterKey, stopFromRatio, THEME_STOPS } from '@/lib/theme-stops'
@@ -6,6 +12,11 @@ import { chooseTheme } from '@/lib/theme-store'
 import { cn } from '@/lib/utils'
 
 import { useThemePreference, type ThemeToggleCopy } from './ThemeToggle'
+
+const unsubscribeNothing = (): void => undefined
+const subscribeToNothing = (): (() => void) => unsubscribeNothing
+const readHydrated = (): boolean => true
+const readNotHydrated = (): boolean => false
 
 const RAY_PATH =
   'M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4'
@@ -73,6 +84,11 @@ function BarSun() {
  */
 export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
   const preference = useThemePreference()
+  const hydrated = useSyncExternalStore(
+    subscribeToNothing,
+    readHydrated,
+    readNotHydrated,
+  )
   const barRef = useRef<HTMLDivElement>(null)
   const [dragging, setDragging] = useState(false)
   const index = THEME_STOPS.indexOf(preference)
@@ -112,18 +128,21 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
         role="group"
         aria-label={copy.label}
         data-theme-tabs
+        data-ready={hydrated ? '' : undefined}
         className="theme-tabs relative grid flex-1 grid-rows-3 bg-muted p-1"
       >
         <span
           aria-hidden="true"
           data-theme-indicator
           className="theme-indicator absolute inset-x-1 top-1 bg-foreground"
+          data-ready={hydrated ? '' : undefined}
           data-stop={preference}
         />
         {THEME_STOPS.map((stop) => (
           <button
             key={stop}
             type="button"
+            data-tab={stop}
             aria-pressed={stop === preference}
             onClick={() => {
               chooseTheme(stop)
@@ -151,6 +170,7 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
         aria-valuenow={index}
         aria-valuetext={copy[preference]}
         data-theme-slider
+        data-ready={hydrated ? '' : undefined}
         data-dragging={dragging}
         onKeyDown={onKeyDown}
         onPointerDown={onPointerDown}
