@@ -2,9 +2,12 @@
 
 ## Status
 
-Accepted
+Accepted. Partly supersedes [0001](0001-brand-kit-in-docs-brand.md): the
+research no longer lives in `docs/brand`.
 
 Date: 2026-10-16
+
+Revised: 2026-10-19, recorded the partial supersession of 0001.
 
 ## Context
 

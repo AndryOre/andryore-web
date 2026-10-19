@@ -5,7 +5,9 @@
 Accepted. Amended by [0004](0004-live-status-endpoint.md): one runtime endpoint
 for the Twitch live status. Amended by
 [0006](0006-tailwind-and-shadcn-islands.md): Tailwind v4 and shadcn/ui as
-islands. Amended by [0018](0018-the-site-has-no-log.md): the Log is gone.
+islands. Amended by [0009](0009-no-third-party-requests.md): no third-party
+requests. Amended by [0010](0010-hash-based-csp-and-security-headers.md):
+hash-based CSP. Amended by [0018](0018-the-site-has-no-log.md): the Log is gone.
 
 Date: 2026-10-16
 
