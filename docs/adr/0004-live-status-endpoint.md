@@ -4,11 +4,15 @@
 
 Accepted. Amends [0003](0003-static-astro-on-coolify.md). Amended by
 [0017](0017-github-contributions-via-runtime-endpoint.md): the same endpoint
-also serves the GitHub contribution grid.
+also serves the GitHub contribution grid. Amended by
+[0022](0022-secrets-in-dotenvx-encrypted-env-files.md): the credentials live in
+an encrypted env file, not as Coolify secrets.
 
 Date: 2026-10-16
 
 Revised: 2026-10-19, linked 0017, which extends the endpoint.
+
+Revised: 2026-10-20, credentials moved to an encrypted env file (0022).
 
 ## Context
 
@@ -23,8 +27,8 @@ build can provide it.
   host that returns the channel's online or offline state.
 - The endpoint caches its answer for 60 seconds and returns "offline" when
   Twitch cannot be reached, so the tile never blocks or shows an error.
-- Credentials live only as Coolify secrets, never in the repository or the
-  browser.
+- Credentials never reach the browser. They are stored encrypted in the
+  repository ([0022](0022-secrets-in-dotenvx-encrypted-env-files.md)).
 
 ### Rejected alternatives
 
