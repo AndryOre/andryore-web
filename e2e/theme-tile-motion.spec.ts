@@ -28,7 +28,9 @@ async function readTransition(
 }
 
 async function pressBar(page: Page, ratio: number): Promise<void> {
-  const box = await page.locator('[data-theme-slider]').boundingBox()
+  const bar = page.locator('[data-theme-slider]')
+  await bar.scrollIntoViewIfNeeded()
+  const box = await bar.boundingBox()
   if (!box) throw new Error('the theme bar has no box')
   await page.mouse.click(box.x + box.width / 2, box.y + box.height * ratio)
 }
