@@ -15,7 +15,7 @@ replaced decision gets a new ADR, and the last column is filled in.
 | Number | Title                                                                              | Status   | Superseded or amended by  |
 | ------ | ---------------------------------------------------------------------------------- | -------- | ------------------------- |
 | 0001   | [Brand kit lives in docs/brand](0001-brand-kit-in-docs-brand.md)                   | Accepted | 0008 (partly)             |
-| 0002   | [Every page and Log entry exists in English and Spanish](0002-bilingual-parity.md) | Accepted | 0018                      |
+| 0002   | [Every page exists in English and Spanish](0002-bilingual-parity.md)               | Accepted | 0018                      |
 | 0003   | [Static Astro site deployed on Coolify](0003-static-astro-on-coolify.md)           | Accepted | 0004, 0006, 0018          |
 | 0004   | [One runtime endpoint for the Twitch live status](0004-live-status-endpoint.md)    | Accepted | 0017                      |
 | 0005   | [TSDoc-only code comments](0005-tsdoc-only-code-comments.md)                       | Accepted | -                         |
