@@ -52,6 +52,8 @@ Agents do not run a `build` script unless explicitly asked.
 - The hero art border and shadow where the canvas differs.
 - The Epidemic sound files being absent (404 on `/sounds/`) in local and CI
   builds.
+- The dock buttons shrinking to 36 px (34 px under 360 px) below 400 px, so the
+  dock fits phones.
 - The Astro badge dark text, JSON Flow without a website tile, the 404 tiles
   behind the content at 390 px, and the 404 tiles keeping their positions with
   reduced motion.

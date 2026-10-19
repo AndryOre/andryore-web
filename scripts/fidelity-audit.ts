@@ -17,6 +17,7 @@ import {
   failedMeasurements,
   findMissingTexts,
   formatReport,
+  isDocumentedMeasurement,
   isMissingSoundAsset,
   resolveCanvasPath,
   type MeasurementResult,
@@ -856,10 +857,12 @@ async function auditMeasurements(
     await canvas.context().close()
     await context.close()
   }
-  return failedMeasurements(results, TOLERANCE).map(
-    (result) =>
-      `${result.scene}: ${result.id} is ${result.actual?.toFixed(1) ?? 'missing'}, expected ${result.expected.toFixed(1)} (${notes.get(result.id) ?? ''})`,
-  )
+  return failedMeasurements(results, TOLERANCE)
+    .filter((result) => !isDocumentedMeasurement(result.id))
+    .map(
+      (result) =>
+        `${result.scene}: ${result.id} is ${result.actual?.toFixed(1) ?? 'missing'}, expected ${result.expected.toFixed(1)} (${notes.get(result.id) ?? ''})`,
+    )
 }
 
 /**

@@ -7,6 +7,7 @@ import {
   failedMeasurements,
   findMissingTexts,
   formatReport,
+  isDocumentedMeasurement,
   isMissingSoundAsset,
   isWithinTolerance,
   normalizeText,
@@ -148,5 +149,13 @@ describe('describeOverflow', () => {
     expect(describeOverflow({ ...state, scrolled: false }, 'x')).toBe(
       '/about/ es dark @320 top: x',
     )
+  })
+})
+
+describe('isDocumentedMeasurement', () => {
+  test('accepts the compact dock button on phones only', () => {
+    expect(isDocumentedMeasurement('dock button width @390')).toBe(true)
+    expect(isDocumentedMeasurement('dock button width @1440')).toBe(false)
+    expect(isDocumentedMeasurement('Find me button width @390')).toBe(false)
   })
 })

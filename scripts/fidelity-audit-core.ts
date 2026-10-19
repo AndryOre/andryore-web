@@ -218,10 +218,25 @@ export const DOCUMENTED_EXCEPTIONS: readonly DocumentedException[] = [
     reason: 'The 404 tiles sit behind the content at 390 px.',
   },
   {
+    id: 'dock-compact-buttons-phones',
+    reason:
+      'Below 400 px the dock buttons shrink to 36 px (34 px under 360 px) so the dock fits phones.',
+  },
+  {
     id: '404-reduced-motion-positions',
     reason: 'With reduced motion the 404 tiles keep their positions.',
   },
 ]
+
+/**
+ * Tells whether a failed measurement is a documented exception.
+ * @param measurementId The measurement id with its viewport, e.g. `x @390`.
+ * @returns True when the owner accepted the deviation.
+ */
+export function isDocumentedMeasurement(measurementId: string): boolean {
+  const match = /^dock button width @(\d+)$/.exec(measurementId)
+  return match !== null && Number(match[1]) < 400
+}
 
 /**
  * Tells whether a console error is the 404 of a sound file, a documented
