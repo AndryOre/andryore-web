@@ -148,6 +148,12 @@ const socialTags = [
       {copy.skipLink}
     </a>
 
+    <div
+      data-header-sentinel
+      class="pointer-events-none absolute top-0 left-0 h-2 w-px"
+      aria-hidden="true"
+    ></div>
+
     <header class="site-header sticky top-0 z-30">
       <div
         class:list={[
@@ -176,7 +182,7 @@ const socialTags = [
       id="main"
       tabindex="-1"
       class:list={[
-        'mx-auto grid w-full flex-1 content-start gap-7 px-4 pt-2 pb-[calc(var(--dock-height)+1rem)] focus:outline-none sm:gap-10 sm:px-10',
+        'mx-auto grid w-full flex-1 content-start gap-7 px-4 pt-2 pb-[calc(var(--dock-height)+2rem)] focus:outline-none sm:gap-10 sm:px-10',
         wide ? 'max-w-[75rem]' : 'max-w-reading',
       ]}
     >
@@ -200,6 +206,19 @@ const socialTags = [
 
 <script>
   import { rememberLocale } from '../i18n/preference'
+  import { watchHeaderSurface } from '../scripts/header-surface'
+
+  const header = document.querySelector('.site-header')
+  const sentinel = document.querySelector('[data-header-sentinel]')
+  if (header && sentinel) {
+    watchHeaderSurface(
+      header,
+      sentinel,
+      typeof IntersectionObserver === 'undefined'
+        ? undefined
+        : (callback) => new IntersectionObserver(callback),
+    )
+  }
 
   document.addEventListener('click', (event) => {
     const target = event.target
