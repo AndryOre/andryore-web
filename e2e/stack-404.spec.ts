@@ -146,3 +146,110 @@ test('with motion allowed the scroll timeline drives the tiles and fades the tit
     )
     .toBeLessThan(1)
 })
+
+const SHORT_VIEWPORTS = [
+  { width: 844, height: 390 },
+  { width: 740, height: 360 },
+] as const
+
+for (const viewport of SHORT_VIEWPORTS) {
+  test(`${String(viewport.width)}x${String(viewport.height)} keeps the headline in the first viewport and the hero chips clear of the Dock`, async ({
+    page,
+  }) => {
+    await preparePage(page, 'light')
+    await page.setViewportSize(viewport)
+    await page.goto('/')
+    await settlePage(page)
+    const layout = await page.evaluate(() => {
+      const doc = globalThis.document
+      const rectOf = (selector: string) =>
+        doc.querySelector(selector)?.getBoundingClientRect()
+      const dock = rectOf('[data-dock-nav]')
+      const chips = ['.floaty-clock', '[data-availability]']
+        .map((selector) => rectOf(selector))
+        .filter((rect) => rect !== undefined)
+      return {
+        headlineTop: rectOf('h1')?.top ?? Infinity,
+        dockOverlaps: chips.map(
+          (chip) =>
+            dock !== undefined &&
+            chip.left < dock.right &&
+            chip.right > dock.left &&
+            chip.top < dock.bottom &&
+            chip.bottom > dock.top,
+        ),
+        chipCount: chips.length,
+      }
+    })
+    expect(layout.headlineTop).toBeLessThan(viewport.height)
+    expect(layout.chipCount).toBe(2)
+    expect(layout.dockOverlaps).toEqual([false, false])
+  })
+}
+
+const STACK_PHONE_WIDTHS = [320, 360, 390, 430, 768] as const
+const STACK_SAMPLES = 24
+
+for (const width of STACK_PHONE_WIDTHS) {
+  test(`${String(width)}px Stack tiles never cross the heading and the pin stays short`, async ({
+    page,
+  }) => {
+    const height = width === 768 ? 1024 : 800
+    await preparePage(page, 'light', 'no-preference')
+    await page.setViewportSize({ width, height })
+    await page.goto('/')
+    await settlePage(page)
+    await expect(page.locator('.stack-tile-scatter').first()).toHaveCSS(
+      'animation-timeline',
+      '--stack, --stack',
+    )
+    const geometry = await page.locator('.stack-scene').evaluate((element) => {
+      const { top, height: sceneHeight } = element.getBoundingClientRect()
+      const stage = element.querySelector('.stack-stage')
+      return {
+        sceneTop: top + globalThis.scrollY,
+        pinned: sceneHeight - (stage?.getBoundingClientRect().height ?? 0),
+      }
+    })
+    expect(geometry.pinned).toBeLessThanOrEqual(height * 0.7)
+
+    const start = geometry.sceneTop - height
+    const end = geometry.sceneTop + geometry.pinned
+    const crossings: string[] = []
+    for (let step = 0; step <= STACK_SAMPLES; step += 1) {
+      const offset = Math.round(start + ((end - start) * step) / STACK_SAMPLES)
+      await page.evaluate(async (scrollTop) => {
+        globalThis.scrollTo(0, scrollTop)
+        await new Promise((resolve) =>
+          globalThis.requestAnimationFrame(resolve),
+        )
+        await new Promise((resolve) =>
+          globalThis.requestAnimationFrame(resolve),
+        )
+      }, offset)
+      const found = await page.evaluate(() => {
+        const doc = globalThis.document
+        const title = doc.querySelector('.stack-title')?.getBoundingClientRect()
+        return title
+          ? [...doc.querySelectorAll('.stack-tile-scatter')]
+              .map((tile) => tile.getBoundingClientRect())
+              .filter(
+                (box) =>
+                  box.width > 0 &&
+                  box.left < title.right &&
+                  box.right > title.left &&
+                  box.top < title.bottom &&
+                  box.bottom > title.top,
+              )
+              .map(
+                (box) =>
+                  `${String(Math.round(box.left))},${String(Math.round(box.top))}`,
+              )
+          : ['no title']
+      })
+      if (found.length > 0)
+        crossings.push(`${String(offset)}: ${found.join(' ')}`)
+    }
+    expect(crossings).toEqual([])
+  })
+}
