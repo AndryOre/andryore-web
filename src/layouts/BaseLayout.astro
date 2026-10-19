@@ -211,6 +211,9 @@ const socialTags = [
     restoreLocaleScroll,
     saveLocaleScroll,
   } from '../scripts/locale-scroll'
+  import { soundTriggers } from '../scripts/sound-triggers'
+
+  soundTriggers.mount(document)
 
   const header = document.querySelector('.site-header')
   const sentinel = document.querySelector('[data-header-sentinel]')

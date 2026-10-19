@@ -23,6 +23,12 @@ describe('CvSplitButton', () => {
     expect(render('es')).toContain(`aria-label="${about.es.cvMenuLabel}"`)
   })
 
+  test('plays the cv sound on the download only, the menu keeps the click', () => {
+    const html = render('en')
+    expect(html).toContain('data-sound="cv"')
+    expect(html.match(/data-sound=/g)).toHaveLength(1)
+  })
+
   test('shows the language of the file next to the label', () => {
     expect(render('en')).toContain('CV · EN')
     expect(render('es')).toContain('CV · ES')

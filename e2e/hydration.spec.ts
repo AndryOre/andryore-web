@@ -35,6 +35,9 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
           problems.push(`cross-origin: ${response.url()}`)
         }
       })
+      await page.route('**/sounds/manifest.json', (route) =>
+        route.fulfill({ json: { sounds: [] } }),
+      )
       await preparePage(page, 'light')
       await page.emulateMedia({ reducedMotion })
       await page.goto(route)

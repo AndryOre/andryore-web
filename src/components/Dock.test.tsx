@@ -127,6 +127,52 @@ describe('ThemeMenu', () => {
   })
 })
 
+describe('sound triggers', () => {
+  test('names the switch sound on the dock Sound switch', () => {
+    const html = render('en', '/')
+    expect(html).toContain('data-dock-sound="true"')
+    expect(html.match(/data-sound="switch"/g)).toHaveLength(1)
+  })
+
+  test('names the theme sound on every theme option', () => {
+    const html = renderToStaticMarkup(
+      <ThemeMenu copy={chrome.en.theme} preference="dark" onChoose={mock()} />,
+    )
+    expect(html.match(/data-sound="theme"/g)).toHaveLength(3)
+  })
+
+  test('leaves language links and dock buttons on the default click', () => {
+    const html = renderToStaticMarkup(
+      <LanguageMenu copy={chrome.en.dock.language} locale="en" path="/" />,
+    )
+    expect(html).not.toContain('data-sound=')
+  })
+})
+
+const renderSwitch = (availability: 'unknown' | 'available' | 'unavailable') =>
+  renderToStaticMarkup(
+    <SoundSwitch
+      copy={chrome.en.dock.sound}
+      enabled={false}
+      availability={availability}
+      onToggle={mock()}
+    />,
+  )
+
+describe('SoundSwitch availability', () => {
+  test('renders while availability is unknown or available', () => {
+    expect(renderSwitch('unknown')).toContain('data-dock-sound')
+    expect(renderSwitch('available')).toContain('data-dock-sound')
+  })
+
+  test('keeps its slot but hides once the audio files are missing', () => {
+    const html = renderSwitch('unavailable')
+    expect(html).toContain('data-sound-unavailable')
+    expect(html).toContain('invisible')
+    expect(renderSwitch('available')).not.toContain('data-sound-unavailable')
+  })
+})
+
 describe('SoundSwitch', () => {
   test('shows the dot, the checked state and the on tooltip when on', () => {
     const html = renderToStaticMarkup(

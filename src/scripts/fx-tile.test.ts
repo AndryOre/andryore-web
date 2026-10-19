@@ -1,7 +1,11 @@
 import { describe, expect, test } from 'bun:test'
 
 import type { FxStorage } from '../lib/fx-store'
-import { mountFxSwitch, type FxSwitchElement } from './fx-tile'
+import {
+  mountFxAvailability,
+  mountFxSwitch,
+  type FxSwitchElement,
+} from './fx-tile'
 
 const noop = (): undefined => undefined
 
@@ -55,5 +59,55 @@ describe('mountFxSwitch', () => {
     const { element, attributes } = createSwitch()
     mountFxSwitch(element, storage)
     expect(attributes.get('aria-checked')).toBe('true')
+  })
+})
+
+const createSource = () => {
+  let current: 'unknown' | 'available' | 'unavailable' = 'unknown'
+  let notify: () => void = noop
+  return {
+    source: {
+      getAvailability: () => current,
+      subscribeAvailability: (onChange: () => void) => {
+        notify = onChange
+        return noop
+      },
+    },
+    settle: (next: 'available' | 'unavailable') => {
+      current = next
+      notify()
+    },
+  }
+}
+
+const createTile = () => {
+  const flags = new Map<string, boolean>()
+  return {
+    flags,
+    element: {
+      toggleAttribute: (name: string, force: boolean) => {
+        flags.set(name, force)
+        return force
+      },
+    },
+  }
+}
+
+describe('mountFxAvailability', () => {
+  test('keeps the tile while availability is unknown or available', () => {
+    const { source, settle } = createSource()
+    const { element, flags } = createTile()
+    mountFxAvailability(element, source)
+    expect(flags.get('data-sound-unavailable')).toBe(false)
+    settle('available')
+    expect(flags.get('data-sound-unavailable')).toBe(false)
+  })
+
+  test('hides the tile once the audio files are known to be missing', () => {
+    const { source, settle } = createSource()
+    const { element, flags } = createTile()
+    mountFxAvailability(element, source)
+    settle('unavailable')
+    expect(flags.get('data-sound-unavailable')).toBe(true)
   })
 })

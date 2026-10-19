@@ -67,6 +67,7 @@ export default function CvSplitButton({
         hrefLang={language}
         type="application/pdf"
         data-cv-download
+        data-sound="cv"
         {...analyticsAttributes(ANALYTICS_EVENTS.cvDownload, { language })}
         className={buttonClassName('neutral', 'cta', 'border-r-0')}
       >
