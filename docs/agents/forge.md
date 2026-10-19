@@ -8,8 +8,7 @@ preflight's required files, handoff/usage thresholds) live in
 prose and everything a JSON value can't express.
 
 **Trunk.** `repo.trunk` is `develop`: waves merge there and a promotion PR ships
-them to `main` ([ADR 0015](../adr/0015-develop-as-integration-branch.md),
-[ADR 0016](../adr/0016-forge-trunk-moves-to-develop.md)).
+them to `main` ([ADR 0015](../adr/0015-develop-as-integration-branch.md)).
 
 ## Tracker
 
