@@ -2,9 +2,13 @@
 
 ## Status
 
-Accepted. Amends [0003](0003-static-astro-on-coolify.md).
+Accepted. Amends [0003](0003-static-astro-on-coolify.md). Amended by
+[0017](0017-github-contributions-via-runtime-endpoint.md): the same endpoint
+also serves the GitHub contribution grid.
 
 Date: 2026-10-16
+
+Revised: 2026-10-19, linked 0017, which extends the endpoint.
 
 ## Context
 

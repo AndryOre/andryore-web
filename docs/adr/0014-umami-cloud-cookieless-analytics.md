@@ -7,6 +7,8 @@ analytics only.
 
 Date: 2026-10-17
 
+Revised: 2026-10-19, reworded a historical ticket mention
+
 ## Context
 
 0009 forbids third-party scripts and analytics. Server logs count requests, not
@@ -52,6 +54,5 @@ a strict CSP and a privacy note. The owner asked for what Snug has.
   cross-check.
 - The privacy note must keep matching what the tracker collects. Its copy needs
   the owner's approval (0007).
-- The analytics ticket under AO-1964 owns the layout change, the events, the
-  privacy note and the CSP test. The owner creates the Umami site and provides
-  its website ID.
+- The layout change, the events, the privacy note and the CSP test belong to the
+  analytics work. The owner creates the Umami site and provides its website ID.

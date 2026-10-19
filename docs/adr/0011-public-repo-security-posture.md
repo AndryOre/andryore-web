@@ -6,6 +6,9 @@ Accepted. Extends [0007](0007-split-license.md).
 
 Date: 2026-10-17
 
+Revised: 2026-10-19, the tags ruleset has an admin bypass and the settings
+section exists
+
 ## Context
 
 The repository went public with a fresh single-commit history. It is maintained
@@ -24,11 +27,12 @@ reference is AFE's ADR 0001, which follows the OpenSSF SCM best-practices guide.
 
 ### Already in place (read from the GitHub API on 2026-10-17)
 
-- **Rulesets, active, no bypass actors.** `main` blocks deletion and
+- **Rulesets, active.** `main` has no bypass actors and blocks deletion and
   force-pushes, requires linear history, signed commits, a pull request with
   squash as the only merge method and resolved threads, and the checks
-  `CI passed`, `Validate PR title` and `Check markdown links`. `v*` tags cannot
-  be deleted, moved or updated.
+  `CI passed`, `Validate PR title` and `Check markdown links`. The `v*` tags
+  ruleset blocks deleting, moving and updating tags, with a bypass for the
+  repository admin role.
 - **0 required approvals**, because a solo maintainer cannot approve their own
   PR and a bypass actor would count against Scorecard's Branch-Protection check.
 - **Squash-only merges** with branches deleted on merge.
@@ -71,5 +75,5 @@ reference is AFE's ADR 0001, which follows the OpenSSF SCM best-practices guide.
   are not work items.
 - Once releases are immutable, a bad release is fixed by publishing a new
   version, never by editing the old one.
-- The open settings are tracked in `docs/development.md#repository-settings`
-  when that section lands.
+- The open settings are tracked in
+  [`docs/development.md#repository-settings`](../development.md#repository-settings).

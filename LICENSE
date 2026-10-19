@@ -26,7 +26,7 @@ Notice: what the MIT License above covers
 
 The MIT License covers the source code of this repository. It does not cover
 the brand assets or the Site's content. The brand assets (the logos, tokens,
-Open Graph image and avatar under docs/brand/) and the Site's content (the Log, the About text, the product
+Open Graph image and avatar under docs/brand/) and the Site's content (the home, About and Uses pages, the product
 pages and all other written content) are Copyright (c) 2026 Andry Orellana, all
 rights reserved. You may not copy, reuse, modify or redistribute them without
 written permission. See docs/adr/0007-split-license.md.

@@ -6,6 +6,8 @@ Accepted. Amends [0010](0010-hash-based-csp-and-security-headers.md).
 
 Date: 2026-10-17
 
+Revised: 2026-10-19, both X-Frame-Options and frame-ancestors are sent
+
 ## Context
 
 0010 chose Astro's `security.csp`, which emits the policy in a `<meta>` tag. A
@@ -43,9 +45,10 @@ build time and checking the built pages against it.
 
 ## Consequences
 
-- The deploy ticket (AO-1975) ships the header template, the render script and
-  the smoke assertions together.
+- The header template, the render script and the smoke assertions ship together.
 - The theme-init script's hash is covered twice: by its own test (0010) and by
   the build check.
+- nginx sends both `frame-ancestors 'none'` in the CSP and
+  `X-Frame-Options: DENY`; the second is a legacy fallback for old browsers.
 - `docs/adr/0010` keeps its decisions; this ADR replaces only the delivery
   mechanism.
