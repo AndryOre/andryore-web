@@ -112,6 +112,7 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
   )
   const barRef = useRef<HTMLDivElement>(null)
   const [dragging, setDragging] = useState(false)
+  const replayedPressRef = useRef(false)
   const index = THEME_STOPS.indexOf(preference)
 
   const choose = (stop: ThemePreference | undefined): void => {
@@ -135,15 +136,20 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
     if (event.nativeEvent.isTrusted) {
       event.currentTarget.setPointerCapture(event.pointerId)
       setDragging(true)
+    } else {
+      replayedPressRef.current = true
     }
     pick(event.clientY)
   }
 
   const onPointerMove = (event: PointerEvent<HTMLDivElement>): void => {
-    if (dragging || event.buttons === 1) pick(event.clientY)
+    if (dragging || (replayedPressRef.current && event.buttons === 1)) {
+      pick(event.clientY)
+    }
   }
 
   const endDrag = (): void => {
+    replayedPressRef.current = false
     setDragging(false)
   }
 
