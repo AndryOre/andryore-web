@@ -7,10 +7,9 @@ Decisions are recorded in
 `adr-invariants.test.ts` enforces the header format, unique, ascending numbers,
 an allowed status, and that this index lists every ADR.
 
-To add one, copy the next number, write the file, and add a row below. ADRs are
-living documents: edit one in place to keep it true and add a
-`Revised: YYYY-MM-DD, what changed` line under its `Date:`. A reversed or
-replaced decision gets a new ADR, and the last column is filled in.
+To add one, copy the next number, write the file, and add a row below, filling
+the last column when it amends or supersedes another. The rules for editing ADRs
+are in [`AGENTS.md`](../../AGENTS.md#architecture-decision-records).
 
 | Number | Title                                                                                                    | Status   | Superseded or amended by        |
 | ------ | -------------------------------------------------------------------------------------------------------- | -------- | ------------------------------- |
