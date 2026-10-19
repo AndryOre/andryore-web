@@ -1,7 +1,11 @@
 ---
+import chrome from '../content/chrome.json'
 import tiles from '../content/live-tiles.json'
 import type { Locale } from '../i18n/locales'
-import { externalLinkTokens } from '../lib/external-link'
+import {
+  externalLinkAttributes,
+  labelWithNewTabNote,
+} from '../lib/external-link'
 import type { GridSnapshot } from '../lib/github-grid'
 import {
   computeStats,
@@ -148,8 +152,8 @@ const stats = [
   <p class="text-muted-foreground m-0 mt-auto flex items-center justify-between gap-3 font-mono text-[0.6875rem]">
     <a
       href={copy.profileHref}
-      rel={externalLinkTokens()}
-      aria-label={copy.profileLabel}
+      {...externalLinkAttributes(copy.profileHref)}
+      aria-label={labelWithNewTabNote(copy.profileLabel, chrome[locale])}
       class="github-profile"
     >
       {copy.profileHandle} ↗
