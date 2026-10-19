@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted. Amended by [0018](0018-the-site-has-no-log.md): the Log is gone.
+Accepted. Amended by [0011](0011-public-repo-security-posture.md): repo security
+posture. Amended by [0018](0018-the-site-has-no-log.md): the Log is gone.
 
 Date: 2026-10-16
 

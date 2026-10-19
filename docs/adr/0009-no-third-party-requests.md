@@ -2,8 +2,9 @@
 
 ## Status
 
-Accepted. Extends [0003](0003-static-astro-on-coolify.md). Partly superseded by
-[0014](0014-umami-cloud-cookieless-analytics.md): one cookieless analytics
+Accepted. Extends [0003](0003-static-astro-on-coolify.md). Amended by
+[0010](0010-hash-based-csp-and-security-headers.md): the CSP. Partly superseded
+by [0014](0014-umami-cloud-cookieless-analytics.md): one cookieless analytics
 script is allowed. Amended by
 [0017](0017-github-contributions-via-runtime-endpoint.md): the contribution grid
 is fetched same-origin at runtime. Amended by

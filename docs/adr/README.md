@@ -12,25 +12,25 @@ living documents: edit one in place to keep it true and add a
 `Revised: YYYY-MM-DD, what changed` line under its `Date:`. A reversed or
 replaced decision gets a new ADR, and the last column is filled in.
 
-| Number | Title                                                                                                    | Status   | Superseded or amended by  |
-| ------ | -------------------------------------------------------------------------------------------------------- | -------- | ------------------------- |
-| 0001   | [Brand kit lives in docs/brand](0001-brand-kit-in-docs-brand.md)                                         | Accepted | 0008 (partly)             |
-| 0002   | [Every page exists in English and Spanish](0002-bilingual-parity.md)                                     | Accepted | 0018                      |
-| 0003   | [Static Astro site deployed on Coolify](0003-static-astro-on-coolify.md)                                 | Accepted | 0004, 0006, 0018          |
-| 0004   | [One runtime endpoint for the Twitch live status](0004-live-status-endpoint.md)                          | Accepted | 0017                      |
-| 0005   | [TSDoc-only code comments](0005-tsdoc-only-code-comments.md)                                             | Accepted | -                         |
-| 0006   | [Tailwind v4 and shadcn/ui, as islands](0006-tailwind-and-shadcn-islands.md)                             | Accepted | -                         |
-| 0007   | [MIT for code, brand and content reserved](0007-split-license.md)                                        | Accepted | 0018                      |
-| 0008   | [Private docs stay local](0008-private-docs-stay-local.md)                                               | Accepted | -                         |
-| 0009   | [No third-party requests from the Site](0009-no-third-party-requests.md)                                 | Accepted | 0014 (partly), 0017, 0020 |
-| 0010   | [Hash-based CSP and security headers](0010-hash-based-csp-and-security-headers.md)                       | Accepted | 0012                      |
-| 0011   | [Public repo security posture](0011-public-repo-security-posture.md)                                     | Accepted | -                         |
-| 0012   | [CSP delivered as an nginx header](0012-csp-delivered-as-an-nginx-header.md)                             | Accepted | -                         |
-| 0013   | [AI crawler policy](0013-ai-crawler-policy.md)                                                           | Accepted | -                         |
-| 0014   | [Umami Cloud cookieless analytics](0014-umami-cloud-cookieless-analytics.md)                             | Accepted | -                         |
-| 0015   | [develop as the integration branch](0015-develop-as-integration-branch.md)                               | Accepted | -                         |
-| 0017   | [GitHub contributions served by the runtime endpoint](0017-github-contributions-via-runtime-endpoint.md) | Accepted | -                         |
-| 0018   | [The Site has no Log](0018-the-site-has-no-log.md)                                                       | Accepted | -                         |
-| 0019   | [Optional interface sound](0019-optional-interface-sound.md)                                             | Accepted | 0021                      |
-| 0020   | [External links open in a new tab](0020-external-links-open-in-a-new-tab.md)                             | Accepted | -                         |
-| 0021   | [Stack scene scroll sound](0021-stack-scroll-sound.md)                                                   | Accepted | -                         |
+| Number | Title                                                                                                    | Status   | Superseded or amended by        |
+| ------ | -------------------------------------------------------------------------------------------------------- | -------- | ------------------------------- |
+| 0001   | [Brand kit lives in docs/brand](0001-brand-kit-in-docs-brand.md)                                         | Accepted | 0008 (partly)                   |
+| 0002   | [Every page exists in English and Spanish](0002-bilingual-parity.md)                                     | Accepted | 0013, 0018                      |
+| 0003   | [Static Astro site deployed on Coolify](0003-static-astro-on-coolify.md)                                 | Accepted | 0004, 0006, 0009, 0010, 0018    |
+| 0004   | [One runtime endpoint for the Twitch live status](0004-live-status-endpoint.md)                          | Accepted | 0017                            |
+| 0005   | [TSDoc-only code comments](0005-tsdoc-only-code-comments.md)                                             | Accepted | -                               |
+| 0006   | [Tailwind v4 and shadcn/ui, as islands](0006-tailwind-and-shadcn-islands.md)                             | Accepted | -                               |
+| 0007   | [MIT for code, brand and content reserved](0007-split-license.md)                                        | Accepted | 0011, 0018                      |
+| 0008   | [Private docs stay local](0008-private-docs-stay-local.md)                                               | Accepted | -                               |
+| 0009   | [No third-party requests from the Site](0009-no-third-party-requests.md)                                 | Accepted | 0010, 0014 (partly), 0017, 0020 |
+| 0010   | [Hash-based CSP and security headers](0010-hash-based-csp-and-security-headers.md)                       | Accepted | 0012                            |
+| 0011   | [Public repo security posture](0011-public-repo-security-posture.md)                                     | Accepted | -                               |
+| 0012   | [CSP delivered as an nginx header](0012-csp-delivered-as-an-nginx-header.md)                             | Accepted | -                               |
+| 0013   | [AI crawler policy](0013-ai-crawler-policy.md)                                                           | Accepted | -                               |
+| 0014   | [Umami Cloud cookieless analytics](0014-umami-cloud-cookieless-analytics.md)                             | Accepted | -                               |
+| 0015   | [develop as the integration branch](0015-develop-as-integration-branch.md)                               | Accepted | -                               |
+| 0017   | [GitHub contributions served by the runtime endpoint](0017-github-contributions-via-runtime-endpoint.md) | Accepted | -                               |
+| 0018   | [The Site has no Log](0018-the-site-has-no-log.md)                                                       | Accepted | -                               |
+| 0019   | [Optional interface sound](0019-optional-interface-sound.md)                                             | Accepted | 0021                            |
+| 0020   | [External links open in a new tab](0020-external-links-open-in-a-new-tab.md)                             | Accepted | -                               |
+| 0021   | [Stack scene scroll sound](0021-stack-scroll-sound.md)                                                   | Accepted | -                               |
