@@ -207,6 +207,10 @@ const socialTags = [
 <script>
   import { rememberLocale } from '../i18n/preference'
   import { watchHeaderSurface } from '../scripts/header-surface'
+  import {
+    restoreLocaleScroll,
+    saveLocaleScroll,
+  } from '../scripts/locale-scroll'
 
   const header = document.querySelector('.site-header')
   const sentinel = document.querySelector('[data-header-sentinel]')
@@ -225,8 +229,15 @@ const socialTags = [
     if (!(target instanceof Element)) return
     const link = target.closest<HTMLElement>('[data-locale-switch]')
     const locale = link?.dataset.localeSwitch
-    if (locale === 'en' || locale === 'es') {
-      rememberLocale(localStorage, locale)
+    if (!(locale === 'en' || locale === 'es')) {
+      return
+    }
+
+    rememberLocale(localStorage, locale)
+    if (link instanceof HTMLAnchorElement) {
+      saveLocaleScroll(sessionStorage, globalThis, document, link.pathname)
     }
   })
+
+  restoreLocaleScroll(sessionStorage, globalThis, document, location.pathname)
 </script>
