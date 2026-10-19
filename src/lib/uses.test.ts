@@ -33,14 +33,14 @@ describe('FIELD_ICONS', () => {
       'docker',
     ])
     expect(FIELD_ICONS.map((icon) => icon.placement)).toEqual([
-      'left-[8%] top-[12%] size-[84px]',
-      'left-[20%] top-[62%] size-[64px]',
-      'left-[30%] top-[18%] size-[72px]',
-      'left-[44%] top-[70%] size-[96px]',
-      'left-[58%] top-[8%] size-[60px]',
-      'left-[66%] top-[66%] size-[72px]',
-      'left-[78%] top-[20%] size-[84px]',
-      'left-[88%] top-[58%] size-[64px]',
+      'left-[8%] top-[12%] size-[84px] max-[639px]:top-4 max-[639px]:left-[6%] max-[639px]:size-11',
+      'left-[20%] top-[62%] size-[64px] max-[639px]:top-auto max-[639px]:bottom-4 max-[639px]:left-[6%] max-[639px]:size-11',
+      'left-[30%] top-[18%] size-[72px] max-[639px]:top-4 max-[639px]:left-[28%] max-[639px]:size-11',
+      'left-[44%] top-[70%] size-[96px] max-[639px]:top-auto max-[639px]:bottom-4 max-[639px]:left-[28%] max-[639px]:size-12',
+      'left-[58%] top-[8%] size-[60px] max-[639px]:top-4 max-[639px]:left-[50%] max-[639px]:size-11',
+      'left-[66%] top-[66%] size-[72px] max-[639px]:top-auto max-[639px]:bottom-4 max-[639px]:left-[50%] max-[639px]:size-11',
+      'left-[78%] top-[20%] size-[84px] max-[639px]:top-4 max-[639px]:left-[72%] max-[639px]:size-12',
+      'left-[88%] top-[58%] size-[64px] max-[639px]:top-auto max-[639px]:bottom-4 max-[639px]:left-[72%] max-[639px]:size-11',
     ])
     for (const icon of FIELD_ICONS)
       expect(Object.hasOwn(ICONS, icon.id)).toBe(true)

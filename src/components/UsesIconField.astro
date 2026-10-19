@@ -3,7 +3,11 @@ import { FIELD_ICONS, floatClass } from '../lib/uses'
 import BrandIcon from './BrandIcon.astro'
 ---
 
-<div aria-hidden="true" class="pointer-events-none absolute inset-0">
+<div
+  aria-hidden="true"
+  class="pointer-events-none absolute inset-0"
+  data-uses-field
+>
   {FIELD_ICONS.map((icon, index) => (
     <span
       class:list={[

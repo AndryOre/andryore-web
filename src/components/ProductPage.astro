@@ -181,7 +181,7 @@ const backHref = localePath(locale, '/#products')
         formats={['avif', 'webp']}
         widths={[480, 960, 1440]}
         sizes="(min-width: 1024px) 960px, 100vw"
-        class="block min-h-[300px] w-full object-cover object-top"
+        class="block min-h-[300px] w-full object-cover object-top max-[639px]:h-auto max-[639px]:min-h-0"
       />
       {pillSprites.length > 0 && (
         <div
@@ -535,7 +535,7 @@ const backHref = localePath(locale, '/#products')
             widths={[480, 720, 1200]}
             sizes="(min-width: 768px) 720px, 100vw"
             loading="lazy"
-            class="block aspect-[16/10] w-full object-cover object-top"
+            class="block aspect-[16/10] w-full object-cover object-top max-[639px]:h-auto max-[639px]:min-h-0"
           />
           <span class="sr-only">. {copy.opensInNewTab}</span>
         </a>
