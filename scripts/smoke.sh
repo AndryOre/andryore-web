@@ -14,7 +14,7 @@ name="andryore-site-smoke-$$"
 if [ -n "${SMOKE_BASE_URL:-}" ]; then
   base="$SMOKE_BASE_URL"
 else
-  docker build --build-arg SITE_LASTMOD="$(date -u +%F)" -t "$image" "$root"
+  docker build -t "$image" "$root"
   docker run -d --rm --name "$name" -p 127.0.0.1:0:80 "$image" >/dev/null
   trap 'docker rm -f "$name" >/dev/null 2>&1 || true' EXIT
   port="$(docker port "$name" 80/tcp | head -n1 | sed 's/.*://')"

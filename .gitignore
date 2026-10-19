@@ -34,3 +34,6 @@ audit-output/
 
 # Private sound files fetched at build time (ADR 0019)
 public/sounds/
+
+# dotenvx private keys; the encrypted .env files are committed (ADR 0022)
+.env.keys
