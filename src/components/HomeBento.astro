@@ -126,19 +126,19 @@ const metaLine = (entry: ProductEntry | undefined, year: string): string =>
             height={460}
             loading="eager"
             fetchpriority="high"
-            class="relative z-10 size-full object-contain p-[8%]"
+            class="relative z-10 size-full object-contain"
           />
         </div>
       </div>
       {hasClock && (
-        <div class="floaty-late absolute top-[12%] left-[4%] motion-reduce:animate-none">
+        <div class="floaty-clock absolute top-[12%] left-[4%] motion-reduce:animate-none">
           <slot name="clock" />
         </div>
       )}
-      <div class="floaty absolute right-[2%] bottom-[3%] max-w-full motion-reduce:animate-none">
+      <div class="floaty-open absolute right-[2%] bottom-[3%] max-w-full motion-reduce:animate-none">
         <span
           data-availability
-          class="bg-card border-border rounded-pill inline-flex items-center gap-2 border px-3.5 py-2 font-mono text-xs font-medium text-muted-foreground shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)]"
+          class="bg-card border-border rounded-pill inline-flex items-center gap-2 border px-3.5 py-2 font-mono text-xs font-medium text-muted-foreground shadow-(--shadow)"
         >
           <span
             class="block size-7 shrink-0 overflow-hidden"
