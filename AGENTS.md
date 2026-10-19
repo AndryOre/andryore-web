@@ -137,8 +137,8 @@ never disable the rule file-wide or project-wide:
 
 ## Quirks and gotchas
 
-- Never print or decrypt env values (`.env`, `.env.development`, `.env.keys`),
-  in output, logs, commits or tickets. Variables and workflow:
+- Never print or decrypt env values (`.env`, `.env.keys`), in output, logs,
+  commits or tickets. Variables and workflow:
   [`docs/configuration.md`](docs/configuration.md).
 - Run `eslint` and `tsc` without `--bun`; the scripts already do. ESLint uses
   `--cache --cache-strategy content`, so a stale cache is never a reason to

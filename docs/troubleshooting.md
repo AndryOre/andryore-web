@@ -63,11 +63,11 @@ transitive one. After a linker or lockfile change, reinstall with
 
 ## "Cannot decrypt .env"
 
-**Root cause**: `.env` and `.env.development` are committed but encrypted with
-dotenvx ([ADR 0022](adr/0022-secrets-in-dotenvx-encrypted-env-files.md)). The
-private keys (`DOTENV_PRIVATE_KEY`, `DOTENV_PRIVATE_KEY_DEVELOPMENT`) live in
-`.env.keys`, which Git ignores, so a fresh clone does not have it. The key has
-to come from Andry's backup; it cannot be derived.
+**Root cause**: `.env` is committed but encrypted with dotenvx
+([ADR 0022](adr/0022-secrets-in-dotenvx-encrypted-env-files.md)). The private
+key (`DOTENV_PRIVATE_KEY`) lives in `.env.keys`, which Git ignores, so a fresh
+clone does not have it. The key has to come from Andry's backup; it cannot be
+derived.
 
 **Symptom**: a command run under `dotenvx run` (the Docker build, for example)
 exits with an error shaped like
@@ -83,4 +83,6 @@ Site builds with the committed grid snapshot and no Sound switch
 `DOTENV_PRIVATE_KEY` in the environment. For a Docker build, pass it as a
 secret: `docker build --secret id=DOTENV_PRIVATE_KEY,env=DOTENV_PRIVATE_KEY .`.
 In Coolify, check that the application has Docker Build Secrets on and a
-`DOTENV_PRIVATE_KEY` variable. Never print or decrypt the values to debug it.
+`DOTENV_PRIVATE_KEY` variable. Coolify's API returns secret values wrapped in
+single quotes: strip them before `bun run env:encrypt`, or the encrypted value
+carries stray quotes. Never print or decrypt the values to debug it.

@@ -7,18 +7,17 @@ list of names is [`.env.example`](../.env.example).
 
 ## Variables
 
-| Name                             | When              | Secret | Required | When missing                                                                                              |
-| -------------------------------- | ----------------- | ------ | -------- | --------------------------------------------------------------------------------------------------------- |
-| `TWITCH_CLIENT_ID`               | Runtime           | No     | No       | The live status endpoint reports the unavailable state and the stream tile shows its fallback.            |
-| `TWITCH_CLIENT_SECRET`           | Runtime           | Yes    | No       | Same as above.                                                                                            |
-| `GITHUB_TOKEN`                   | Build and runtime | Yes    | No       | The build keeps the committed `src/content/github-grid.json`; the runtime endpoint has no data.           |
-| `SOUNDS_TOKEN`                   | Build             | Yes    | No       | `fetch-sounds` skips quietly and the Site hides the Sound switch.                                         |
-| `SOUNDS_REPO`                    | Build             | No     | No       | Dockerfile argument, default `AndryOre/andryore-web-private`. Required by the script once a token exists. |
-| `SOUNDS_REF`                     | Build             | No     | No       | Dockerfile argument, default `main`; a blank value also means `main`.                                     |
-| `PORT`                           | Runtime           | No     | No       | The endpoint server listens on `3000`. The entrypoint sets it, so leave it alone.                         |
-| `SITE_LASTMOD`                   | Build             | No     | No       | The sitemap `lastmod` falls back to the UTC build date. Only a `YYYY-MM-DD` value is used.                |
-| `DOTENV_PRIVATE_KEY`             | Build and runtime | Yes    | No       | dotenvx cannot decrypt `.env`; the credentials above count as missing.                                    |
-| `DOTENV_PRIVATE_KEY_DEVELOPMENT` | Local             | Yes    | No       | `.env.development` cannot be decrypted; nothing in the Site needs it to run.                              |
+| Name                   | When              | Secret | Required | When missing                                                                                              |
+| ---------------------- | ----------------- | ------ | -------- | --------------------------------------------------------------------------------------------------------- |
+| `TWITCH_CLIENT_ID`     | Runtime           | No     | No       | The live status endpoint reports the unavailable state and the stream tile shows its fallback.            |
+| `TWITCH_CLIENT_SECRET` | Runtime           | Yes    | No       | Same as above.                                                                                            |
+| `GITHUB_TOKEN`         | Build and runtime | Yes    | No       | The build keeps the committed `src/content/github-grid.json`; the runtime endpoint has no data.           |
+| `SOUNDS_TOKEN`         | Build             | Yes    | No       | `fetch-sounds` skips quietly and the Site hides the Sound switch.                                         |
+| `SOUNDS_REPO`          | Build             | No     | No       | Dockerfile argument, default `AndryOre/andryore-web-private`. Required by the script once a token exists. |
+| `SOUNDS_REF`           | Build             | No     | No       | Dockerfile argument, default `main`; a blank value also means `main`.                                     |
+| `PORT`                 | Runtime           | No     | No       | The endpoint server listens on `3000`. The entrypoint sets it, so leave it alone.                         |
+| `SITE_LASTMOD`         | Build             | No     | No       | The sitemap `lastmod` falls back to the UTC build date. Only a `YYYY-MM-DD` value is used.                |
+| `DOTENV_PRIVATE_KEY`   | Build and runtime | Yes    | No       | dotenvx cannot decrypt `.env`; the credentials above count as missing.                                    |
 
 "Build" means the Docker build or a local `bun run build`; "runtime" means the
 endpoint server inside the image. A blank value, or an `encrypted:` value that
@@ -31,10 +30,9 @@ nothing decrypted, counts as missing. Variables outside the Site (`CHROME_PATH`,
 
 - `.env` holds the production values, encrypted with dotenvx and committed. Its
   key is `DOTENV_PRIVATE_KEY`.
-- `.env.development` holds the local values the same way. Its key is
-  `DOTENV_PRIVATE_KEY_DEVELOPMENT`.
-- `.env.keys` holds both private keys. Git and Docker ignore it, and a
-  pre-commit guard refuses it.
+- `.env.keys` holds the private key. Git and Docker ignore it, and a pre-commit
+  guard refuses it. There is no `.env.development`: the `dev` script does not
+  load dotenvx.
 - Coolify holds one value, `DOTENV_PRIVATE_KEY`, with Docker Build Secrets on so
   the build receives it as a BuildKit secret. It is the only variable to add
   there.
@@ -72,6 +70,9 @@ manager. Losing it means re-creating every credential and re-encrypting.
 
 A fresh clone has no `.env.keys`, and none is needed: `dev`, `build`, `preview`,
 `test` and `check` run without it. The build uses the committed grid snapshot,
-hides the Sound switch and the endpoints report no data. Only a Docker build for
-production needs the key. If a command asks for one, see
+hides the Sound switch and the endpoints report no data. Bun autoloads `.env`,
+so a keyless clone sees the ciphertext; `usableCredential`
+(`src/lib/credential.ts`) ignores any value that starts with `encrypted:`, so it
+counts as missing. Only a Docker build for production needs the key. If a
+command asks for one, see
 [Troubleshooting](troubleshooting.md#cannot-decrypt-env).
