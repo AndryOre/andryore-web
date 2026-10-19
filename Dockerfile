@@ -10,8 +10,8 @@ COPY docs/brand/avatar/memoji.webp docs/brand/avatar/memoji.webp
 COPY public public
 COPY src src
 COPY scripts/fetch-sounds.ts scripts/fetch-sounds.ts
-ARG SOUNDS_REPO
-ARG SOUNDS_REF
+ARG SOUNDS_REPO=AndryOre/andryore-web-private
+ARG SOUNDS_REF=main
 RUN --mount=type=secret,id=sounds_token \
     SOUNDS_REPO="$SOUNDS_REPO" SOUNDS_REF="$SOUNDS_REF" bun scripts/fetch-sounds.ts
 ARG SITE_LASTMOD
