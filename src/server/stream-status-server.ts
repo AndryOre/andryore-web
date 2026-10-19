@@ -3,6 +3,9 @@ import {
   createContributionsReader,
 } from '../lib/github-contributions'
 import { createLiveStatus, statusResponse } from '../lib/twitch-status'
+import { loadEncryptedEnvironment } from './load-encrypted-env'
+
+loadEncryptedEnvironment()
 
 const contributions = createContributionsReader({
   token: process.env.GITHUB_TOKEN,

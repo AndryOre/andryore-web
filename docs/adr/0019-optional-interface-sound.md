@@ -5,11 +5,16 @@
 Accepted. The audio files never enter the public repository; they live in a
 private GitHub repository and are fetched at build time. Amended by
 [0021](0021-stack-scroll-sound.md): the Stack scene plays a scroll sound.
+Amended by [0022](0022-secrets-in-dotenvx-encrypted-env-files.md): the token
+lives in an encrypted env file.
 
 Date: 2026-10-18
 
 Revised: 2026-10-19, one Coolify application with the sounds_token secret only,
 0021 link, licence confirmed
+
+Revised: 2026-10-20, the token is `SOUNDS_TOKEN` in the encrypted env file
+(0022)
 
 ## Context
 
@@ -42,11 +47,13 @@ them on the Site itself is the permitted use.
 - **The private source is a private GitHub repository.** Its `sounds/` folder
   holds the seven files and a `manifest.json` (`{"sounds": [...]}`).
   `scripts/fetch-sounds.ts` downloads it into the gitignored `public/sounds/`
-  during the Docker build, using a read-only fine-grained token passed as the
-  BuildKit secret `sounds_token`. The Dockerfile defaults the build args
-  `SOUNDS_REPO` and `SOUNDS_REF`. Without a token the script exits 0 and the
-  Site builds without audio, so CI, `astro preview` and local builds are
-  unaffected. The token never reaches an image layer or the logs.
+  during the Docker build, using a read-only fine-grained token, `SOUNDS_TOKEN`,
+  from the encrypted env file
+  ([0022](0022-secrets-in-dotenvx-encrypted-env-files.md)). The Dockerfile
+  defaults the build args `SOUNDS_REPO` and `SOUNDS_REF`. Without a token the
+  script exits 0 and the Site builds without audio, so CI, `astro preview` and
+  local builds are unaffected. The token never reaches an image layer or the
+  logs.
 - **Availability is checked at runtime.** The engine loads
   `/sounds/manifest.json` once; when it is missing or malformed the Sound switch
   and the FX tile stay hidden.
@@ -74,6 +81,6 @@ them on the Site itself is the permitted use.
 - A visitor who never turns Sound on downloads no audio.
 - The build must tolerate missing audio and the Docker image needs a way to
   receive the private files.
-- The Coolify application needs only the `sounds_token` build secret; Coolify
-  drops build args when build secrets are on, so the Dockerfile defaults
+- The Coolify application needs only the `DOTENV_PRIVATE_KEY` build secret;
+  Coolify drops build args when build secrets are on, so the Dockerfile defaults
   `SOUNDS_REPO` and `SOUNDS_REF` ([Sound files](../development.md#sound-files)).
