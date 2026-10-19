@@ -476,7 +476,7 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
       data-dock-nav
-      className="pointer-events-auto relative inline-flex items-center gap-0 rounded-pill border border-border bg-card/92 p-0.5 min-[360px]:p-1 sm:gap-1 sm:p-2"
+      className="pointer-events-auto relative inline-flex items-center gap-0 rounded-pill border border-border bg-card/92 p-0.5 backdrop-blur-lg min-[360px]:p-1 sm:gap-1 sm:p-2"
     >
       {DOCK_PAGES.map((page) => {
         const active = activeKey === page.key

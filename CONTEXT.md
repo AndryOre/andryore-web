@@ -36,6 +36,10 @@ _Avoid_: mockup, moodboard
 The floating pill navigation of the Site, with icons and tooltips, holding the page links and the language and theme controls.
 _Avoid_: toolbar, tab bar, menu
 
+**Header**:
+The pill at the top of every page with the wordmark and the availability pill: plain and transparent at rest, and the same surface as the Dock once the page scrolls.
+_Avoid_: navbar, top bar, banner
+
 **Bento tile**:
 One card of the home page grid.
 _Avoid_: widget, block, module
