@@ -1,7 +1,9 @@
 ---
+import chrome from '../content/chrome.json'
 import uses from '../content/uses.json'
 import { localePath, type Locale } from '../i18n/locales'
 import BaseLayout from '../layouts/BaseLayout.astro'
+import { externalLinkAttributes } from '../lib/external-link'
 import { glyphSvg, type GlyphName } from '../lib/glyphs'
 import { revealClass } from '../lib/motion'
 import {
@@ -20,6 +22,8 @@ interface Props {
 const { locale } = Astro.props
 const copy = uses[locale]
 const site = copy.thisSite
+const newTabNote = chrome[locale].opensInNewTab
+const sourceLink = externalLinkAttributes(site.sourceUrl)
 
 const toBadges = (
   rows: readonly { name: string; icon: string; url?: string }[],
@@ -101,7 +105,7 @@ const tileSub = 'text-muted-foreground m-0 text-[13px]'
           <ul class="m-0 flex list-none flex-wrap gap-2.5 p-0">
             {section.badges.map((badge) => (
               <li>
-                <UsesBadge badge={badge} />
+                <UsesBadge badge={badge} newTabNote={newTabNote} />
               </li>
             ))}
           </ul>
@@ -133,11 +137,11 @@ const tileSub = 'text-muted-foreground m-0 text-[13px]'
               <span class="text-muted-foreground text-right max-[699px]:col-span-full max-[699px]:text-left">
                 <a
                   href={row.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  {...externalLinkAttributes(row.url)}
                   class="inline-flex items-center gap-1.5 underline underline-offset-[3px]"
                 >
                   {row.label}
+                  <span class="sr-only">. {newTabNote}</span>
                   <span
                     aria-hidden="true"
                     class="inline-flex size-[14px]"
@@ -266,8 +270,7 @@ const tileSub = 'text-muted-foreground m-0 text-[13px]'
 
           <a
             href={site.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+            {...sourceLink}
             class:list={[
               tile,
               'text-inherit no-underline transition-[transform,border-color] duration-150 hover:-translate-y-0.5 hover:border-[color-mix(in_oklab,var(--border)_60%,var(--foreground))]',
@@ -286,6 +289,7 @@ const tileSub = 'text-muted-foreground m-0 text-[13px]'
             </div>
             <strong class="inline-flex items-center gap-1.5">
               {site.source.name}
+              <span class="sr-only">. {newTabNote}</span>
               <span
                 aria-hidden="true"
                 class="inline-flex size-[14px]"
@@ -298,11 +302,10 @@ const tileSub = 'text-muted-foreground m-0 text-[13px]'
 
         <a
           href={site.sourceUrl}
-          target="_blank"
-          rel="noopener noreferrer"
+          {...sourceLink}
           class={`${footnote} inline-flex min-h-11 items-center underline underline-offset-[3px]`}
         >
-          {site.sourceLinkLabel} →
+          {site.sourceLinkLabel} →<span class="sr-only">. {newTabNote}</span>
         </a>
       </section>
 
