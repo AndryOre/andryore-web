@@ -31,4 +31,4 @@ column.
 | 0016   | [forge trunk moves to develop](0016-forge-trunk-moves-to-develop.md)                                     | Accepted | -                          |
 | 0017   | [GitHub contributions served by the runtime endpoint](0017-github-contributions-via-runtime-endpoint.md) | Accepted | -                          |
 | 0018   | [The Site has no Log](0018-the-site-has-no-log.md)                                                       | Accepted | -                          |
-| 0019   | [Optional interface sound](0019-optional-interface-sound.md)                                             | Proposed | -                          |
+| 0019   | [Optional interface sound](0019-optional-interface-sound.md)                                             | Accepted | -                          |

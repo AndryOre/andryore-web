@@ -2,8 +2,8 @@
 
 ## Status
 
-Proposed. The audio files never enter the public repository; the owner still has
-to pick where the private source lives.
+Accepted. The audio files never enter the public repository; they live in a
+private GitHub repository and are fetched at build time.
 
 Date: 2026-10-18
 
@@ -35,10 +35,23 @@ them on the Site itself is the permitted use.
   build input, ignored by Git, and only the deployed Site serves them. Without
   them the FX tile and the dock switch ship with the engine and the switch stays
   hidden, so a fresh clone and CI build and test without audio.
-- **Open for the owner:** where the private source lives (private storage or a
-  private repository fetched at build time with a secret), or whether to replace
-  the set with CC0 sounds, which could be committed. Asking Epidemic Sound in
-  writing is the only way to commit the files themselves.
+- **The private source is a private GitHub repository.** Its `sounds/` folder
+  holds the seven files and a `manifest.json` (`{"sounds": [...]}`).
+  `scripts/fetch-sounds.ts` downloads it into the gitignored `public/sounds/`
+  during the Docker build, using a read-only fine-grained token passed as the
+  BuildKit secret `sounds_token`, with the build args `SOUNDS_REPO` and
+  `SOUNDS_REF`. Without a token the script exits 0 and the Site builds without
+  audio, so CI, `astro preview` and local builds are unaffected. The token never
+  reaches an image layer or the logs.
+- **Availability is checked at runtime.** The engine loads
+  `/sounds/manifest.json` once; when it is missing or malformed the Sound switch
+  and the FX tile stay hidden.
+- **Licence caveat.** Epidemic Sound bars standalone redistribution of the
+  files. Serving them on the Site is the permitted use, but the owner confirms
+  this with Epidemic Sound in writing.
+- **Fallback.** If the licence check fails, replace the private set with the CC0
+  Kenney Interface Sounds. Because those are CC0 they could then be committed,
+  and this ADR would be superseded.
 - **Delivery:** files are served from the Site's own origin and fetched under
   `connect-src 'self'`, so the CSP gains no new directive
   ([0010](0010-hash-based-csp-and-security-headers.md),
@@ -56,4 +69,6 @@ them on the Site itself is the permitted use.
 - A visitor who never turns Sound on downloads no audio.
 - The build must tolerate missing audio and the Docker image needs a way to
   receive the private files.
-- This ADR moves to Accepted when the owner picks the private source or CC0.
+- The Coolify applications need the `sounds_token` build secret and the
+  `SOUNDS_REPO` and `SOUNDS_REF` build args
+  ([Deploying](../development.md#deploying)).
