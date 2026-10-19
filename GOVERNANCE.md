@@ -26,10 +26,7 @@ on the Site's content.
 3. **ADR for hard-to-reverse choices.** Decisions that are expensive to reverse
    (architecture, hosting, licensing, or anything that changes how contributors
    work) are recorded as an Architecture Decision Record under `docs/adr/`, not
-   only discussed in a PR description. ADRs are living documents: edit one in
-   place to keep it true and add a `Revised: YYYY-MM-DD, what changed` line
-   under its `Date:`. A reversed or replaced decision gets a new ADR. Numbers
-   are unique and ascending.
+   only discussed in a PR description.
 
 ## Roles and responsibilities
 

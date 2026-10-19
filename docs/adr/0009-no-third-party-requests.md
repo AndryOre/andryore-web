@@ -16,14 +16,17 @@ Date: 2026-10-17
 Revised: 2026-10-19, runtime exceptions, same-origin grid fetch and the `target`
 rule (0017, 0020).
 
+Revised: 2026-10-19, Snug's site allows the Umami Cloud script, so it is not a
+site with no third-party requests.
+
 ## Context
 
-The Site is a static, text-first build (0003) with a Lighthouse 90 gate. Snug's
-and Animated Fluent Emojis' sites already run with no third-party requests:
-fonts are self-hosted, analytics is first-party or absent, and a build-output
-audit fails the build if a page reaches another origin. Every third-party
-request adds latency, a privacy footprint and a supply-chain dependency that a
-personal site does not need.
+The Site is a static, text-first build (0003) with a Lighthouse 90 gate. The
+Animated Fluent Emojis site already runs with no third-party requests, and
+Snug's site allows only its cookieless Umami Cloud script: fonts are
+self-hosted, and a build-output audit fails the build if a page reaches another
+origin. Every third-party request adds latency, a privacy footprint and a
+supply-chain dependency that a personal site does not need.
 
 ## Decision
 
