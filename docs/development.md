@@ -226,7 +226,7 @@ API).
 ## ADR index
 
 `docs/adr/README.md` indexes every ADR. A new ADR adds its row there, and
-`docs/adr/adr-invariants.test.ts` enforces the header format, unique sequential
+`docs/adr/adr-invariants.test.ts` enforces the header format, unique, ascending
 numbers, an allowed status and that the index lists every file.
 
 ## CI

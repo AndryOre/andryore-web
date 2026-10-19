@@ -97,7 +97,9 @@ The `astro-docs` MCP server is declared in `.mcp.json`. Use its
 
 A new ADR must add its row to [`docs/adr/README.md`](docs/adr/README.md);
 `docs/adr/adr-invariants.test.ts` fails when an ADR is missing from the index.
-Never rewrite an accepted ADR: supersede or amend it with a new one.
+ADRs are living documents: edit one in place to keep it true and add a
+`Revised: YYYY-MM-DD, what changed` line under its `Date:`. A reversed or
+replaced decision gets a new ADR.
 
 ## Branch and commit conventions
 

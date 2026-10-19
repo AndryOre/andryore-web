@@ -35,8 +35,12 @@ function findAdrViolations(
   if (new Set(numbers).size !== numbers.length) {
     violations.push('duplicate ADR number')
   }
-  if (numbers.some((number, index) => number !== index + 1)) {
-    violations.push('ADR numbers are not sequential from 0001')
+  if (
+    numbers.some(
+      (number, index) => index > 0 && number < (numbers[index - 1] ?? 0),
+    )
+  ) {
+    violations.push('ADR numbers are not ascending')
   }
 
   for (const adr of adrs) {
@@ -197,11 +201,32 @@ describe('findAdrViolations', () => {
     expect(violations).toContain('0002-fixture.md: not listed in README')
   })
 
-  it('flags a bad header and a gap in numbering', () => {
+  it('flags a bad header', () => {
     const bad: AdrFile = { ...fixtureAdr('0003'), content: '# Oops\n' }
     const violations = findAdrViolations([fixtureAdr('0001'), bad], index)
     expect(violations).toContain('0003-fixture.md: bad header')
-    expect(violations).toContain('ADR numbers are not sequential from 0001')
+  })
+
+  it('allows gaps in numbering', () => {
+    const violations = findAdrViolations(
+      [fixtureAdr('0001'), fixtureAdr('0003')],
+      '[a](0001-fixture.md) [b](0003-fixture.md)',
+    )
+    expect(violations).toEqual([])
+  })
+
+  it('allows numbering that does not start at 0001', () => {
+    expect(
+      findAdrViolations([fixtureAdr('0002')], '[b](0002-fixture.md)'),
+    ).toEqual([])
+  })
+
+  it('flags descending numbers', () => {
+    const violations = findAdrViolations(
+      [fixtureAdr('0002'), fixtureAdr('0001')],
+      index,
+    )
+    expect(violations).toContain('ADR numbers are not ascending')
   })
 
   it('flags an index entry with no file', () => {
