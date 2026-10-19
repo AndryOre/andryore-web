@@ -60,3 +60,29 @@ to the top level of `node_modules`.
 transitive one. After a linker or lockfile change, reinstall with
 `bun install --frozen-lockfile`. `knip` reports unlisted dependencies, so
 `bun run check` catches the mistake.
+
+## "Cannot decrypt .env"
+
+**Root cause**: `.env` is committed but encrypted with dotenvx
+([ADR 0022](adr/0022-secrets-in-dotenvx-encrypted-env-files.md)). The private
+key (`DOTENV_PRIVATE_KEY`) lives in `.env.keys`, which Git ignores, so a fresh
+clone does not have it. The key has to come from Andry's backup; it cannot be
+derived.
+
+**Symptom**: dotenvx prints an error shaped like
+`[MISSING_PRIVATE_KEY] could not decrypt ... using private key 'DOTENV_PRIVATE_KEY=undefined'`
+and carries on. The Docker build does not fail: it finishes and produces an
+image with no credentials, so the live status and GitHub endpoints return their
+unavailable state and the Sound switch is hidden.
+
+`dev`, `build`, `preview`, `test` and `check` never need the key: without it the
+Site builds with the committed grid snapshot and no Sound switch
+([Configuration](configuration.md#keyless-clones)).
+
+**Fix**: place the real `.env.keys` at the repository root, or set
+`DOTENV_PRIVATE_KEY` in the environment. For a Docker build, pass it as a
+secret: `docker build --secret id=DOTENV_PRIVATE_KEY,env=DOTENV_PRIVATE_KEY .`.
+In Coolify, check that the application has Docker Build Secrets on and a
+`DOTENV_PRIVATE_KEY` variable. Coolify's API returns secret values wrapped in
+single quotes: strip them before `bun run env:encrypt`, or the encrypted value
+carries stray quotes. Never print or decrypt the values to debug it.

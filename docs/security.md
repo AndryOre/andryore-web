@@ -111,7 +111,7 @@ layer, and the stream-status server decrypts the file itself at startup. A
 missing key or file means no credentials, and the endpoint behaves as it does
 when a token is missing. A pre-commit guard refuses a plaintext env file or the
 private keys file. The variables and the workflow get their own guide,
-`docs/configuration.md`.
+[Configuration](configuration.md).
 
 The repository is public, so the ciphertext stays in history forever and a
 leaked key exposes every value ever committed. Andry accepts that risk. A key
