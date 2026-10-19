@@ -133,6 +133,35 @@
     var(--shadow);
 }
 
+html[data-theme-pref='light'] .theme-indicator:not([data-ready]) {
+  --stop-index: 0;
+}
+html[data-theme-pref='dark'] .theme-indicator:not([data-ready]) {
+  --stop-index: 2;
+}
+html[data-theme-pref='light'] .theme-bar:not([data-ready]) {
+  --strength: 1;
+  --level: 100;
+}
+html[data-theme-pref='dark'] .theme-bar:not([data-ready]) {
+  --strength: 0.24;
+  --level: 24;
+}
+html[data-theme-pref] .theme-tabs:not([data-ready]) .theme-tab {
+  color: var(--muted-foreground);
+}
+html[data-theme-pref='light']
+  .theme-tabs:not([data-ready])
+  .theme-tab[data-tab='light'],
+html[data-theme-pref='auto']
+  .theme-tabs:not([data-ready])
+  .theme-tab[data-tab='auto'],
+html[data-theme-pref='dark']
+  .theme-tabs:not([data-ready])
+  .theme-tab[data-tab='dark'] {
+  color: var(--background);
+}
+
 @media (prefers-reduced-motion: no-preference) {
   html.theme-fade,
   html.theme-fade *,
@@ -162,36 +191,6 @@
   }
   html.theme-fade .theme-sun-rays {
     transition: opacity 320ms var(--ease-out) !important;
-  }
-  html.theme-fade
-    html[data-theme-pref='light']
-    .theme-indicator:not([data-ready]) {
-    --stop-index: 0;
-  }
-  html[data-theme-pref='dark'] .theme-indicator:not([data-ready]) {
-    --stop-index: 2;
-  }
-  html[data-theme-pref='light'] .theme-bar:not([data-ready]) {
-    --strength: 1;
-    --level: 100;
-  }
-  html[data-theme-pref='dark'] .theme-bar:not([data-ready]) {
-    --strength: 0.24;
-    --level: 24;
-  }
-  html[data-theme-pref] .theme-tabs:not([data-ready]) .theme-tab {
-    color: var(--muted-foreground);
-  }
-  html[data-theme-pref='light']
-    .theme-tabs:not([data-ready])
-    .theme-tab[data-tab='light'],
-  html[data-theme-pref='auto']
-    .theme-tabs:not([data-ready])
-    .theme-tab[data-tab='auto'],
-  html[data-theme-pref='dark']
-    .theme-tabs:not([data-ready])
-    .theme-tab[data-tab='dark'] {
-    color: var(--background);
   }
   .theme-bar[data-dragging='true'] .theme-fill,
   html.theme-fade .theme-bar[data-dragging='true'] .theme-sun {
