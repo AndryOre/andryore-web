@@ -11,7 +11,14 @@ import {
 const TALL_BOX = { top: 100, height: 200 }
 const EMPTY_BOX = { top: 0, height: 0 }
 
-const makeBar = (box: { top: number; height: number }) => {
+const WIDE_BOX = { top: 0, height: 56, left: 100, width: 200 }
+
+const makeBar = (box: {
+  top: number
+  height: number
+  left?: number
+  width?: number
+}) => {
   const properties = new Map<string, string>()
   const bar: DragBar = {
     getBoundingClientRect: () => box,
@@ -110,5 +117,43 @@ describe('prefersReducedMotion', () => {
     }
     expect(prefersReducedMotion(match)).toBe(true)
     expect(queries).toEqual(['(prefers-reduced-motion: reduce)'])
+  })
+})
+
+describe('horizontal bar', () => {
+  test('follows the pointer along X, light on the right', () => {
+    const { bar, properties } = makeBar(WIDE_BOX)
+    const level = { current: 0 }
+    followPointer(bar, 240, level, false, 'horizontal')
+    expect(level.current).toBeCloseTo(70, 5)
+    expect(properties.get('--drag-squeeze')).toBe('1')
+  })
+
+  test('picks the stop under the pointer along X', () => {
+    const { bar } = makeBar(WIDE_BOX)
+    expect(pickAtPointer(bar, 290, 'horizontal')).toBe('light')
+    expect(pickAtPointer(bar, 110, 'horizontal')).toBe('dark')
+    expect(pickAtPointer(bar, 200, 'horizontal')).toBe('auto')
+  })
+
+  test('rubber-bands past both ends by at most 8 points', () => {
+    const { bar } = makeBar(WIDE_BOX)
+    const level = { current: 0 }
+    followPointer(bar, 9000, level, false, 'horizontal')
+    expect(level.current).toBeGreaterThan(100)
+    expect(level.current).toBeLessThanOrEqual(108)
+    followPointer(bar, -9000, level, false, 'horizontal')
+    expect(level.current).toBeLessThan(0)
+    expect(level.current).toBeGreaterThanOrEqual(-8)
+  })
+
+  test('clamps under reduced motion and has no box without a width', () => {
+    const { bar } = makeBar(WIDE_BOX)
+    const level = { current: 0 }
+    followPointer(bar, 9000, level, true, 'horizontal')
+    expect(level.current).toBe(100)
+    expect(
+      pickAtPointer(makeBar({ top: 0, height: 56 }).bar, 5, 'horizontal'),
+    ).toBeUndefined()
   })
 })

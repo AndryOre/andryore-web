@@ -7,10 +7,15 @@ import {
   THEME_STOPS,
 } from './theme-stops'
 
+/** The way the brightness bar runs: vertically or from left to right. */
+export type ThemeOrientation = 'vertical' | 'horizontal'
+
 /** The box of the brightness bar that a pointer position is measured in. */
 interface BarBox {
   top: number
   height: number
+  left?: number
+  width?: number
 }
 
 /**
@@ -38,15 +43,27 @@ export function prefersReducedMotion(match = browserMatchMedia): boolean {
 }
 
 /**
- * Where a pointer sits in the bar as a ratio from the top, or `undefined`
- * while the bar has no box to measure in.
+ * Where a pointer sits in the bar as a ratio from the light end, or
+ * `undefined` while the bar has no box to measure in. Vertical bars have the
+ * light end at the top; horizontal ones at the right.
  * @param bar The bar, if mounted.
- * @param clientY The pointer's vertical position in the viewport.
- * @returns The ratio, `0` at the top edge and `1` at the bottom edge.
+ * @param position The pointer's position along the bar's axis in the viewport:
+ * `clientY` when vertical, `clientX` when horizontal.
+ * @param orientation The way the bar runs.
+ * @returns The ratio, `0` at the light end and `1` at the dark end.
  */
-function ratioAt(bar: DragBar | null, clientY: number): number | undefined {
+function ratioAt(
+  bar: DragBar | null,
+  position: number,
+  orientation: ThemeOrientation,
+): number | undefined {
   const box = bar?.getBoundingClientRect()
-  return !box || box.height === 0 ? undefined : (clientY - box.top) / box.height
+  if (!box) return undefined
+  if (orientation === 'horizontal') {
+    const { left = 0, width = 0 } = box
+    return width === 0 ? undefined : 1 - (position - left) / width
+  }
+  return box.height === 0 ? undefined : (position - box.top) / box.height
 }
 
 /**
@@ -54,18 +71,20 @@ function ratioAt(bar: DragBar | null, clientY: number): number | undefined {
  * the fill and the sun follow it without a render. Stays inside 0 to 100 under
  * reduced motion; otherwise it rubber-bands past both ends.
  * @param bar The bar, if mounted.
- * @param clientY The pointer's vertical position in the viewport.
+ * @param position The pointer's position along the bar's axis in the viewport.
  * @param level Receives the level that was written.
  * @param level.current The last written level.
  * @param reducedMotion Whether to clamp instead of rubber-band.
+ * @param orientation The way the bar runs.
  */
 export function followPointer(
   bar: DragBar | null,
-  clientY: number,
+  position: number,
   level: { current: number },
   reducedMotion: boolean = prefersReducedMotion(),
+  orientation: ThemeOrientation = 'vertical',
 ): void {
-  const ratio = ratioAt(bar, clientY)
+  const ratio = ratioAt(bar, position, orientation)
   if (!bar || ratio === undefined) return
   const banded = levelFromRatio(ratio)
   const next = reducedMotion ? Math.min(100, Math.max(0, banded)) : banded
@@ -92,13 +111,15 @@ export function releaseDrag(
 /**
  * The stop under a pointer, for a press that starts no drag.
  * @param bar The bar, if mounted.
- * @param clientY The pointer's vertical position in the viewport.
+ * @param position The pointer's position along the bar's axis in the viewport.
+ * @param orientation The way the bar runs.
  * @returns The stop in that third of the bar, if the bar can be measured.
  */
 export function pickAtPointer(
   bar: DragBar | null,
-  clientY: number,
+  position: number,
+  orientation: ThemeOrientation = 'vertical',
 ): ThemePreference | undefined {
-  const ratio = ratioAt(bar, clientY)
+  const ratio = ratioAt(bar, position, orientation)
   return ratio === undefined ? undefined : THEME_STOPS[stopFromRatio(ratio)]
 }

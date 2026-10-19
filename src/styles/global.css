@@ -1302,13 +1302,26 @@ html:not(.dark) .stream-tile {
     1
   );
 }
+.theme-control {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-self: stretch;
+}
 .theme-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 0.25rem;
   border-radius: 1.375rem;
 }
 .theme-indicator {
-  height: calc((100% - 0.5rem) / 3);
+  top: 0.25rem;
+  bottom: 0.25rem;
+  left: 0.25rem;
+  width: calc((100% - 0.5rem) / 3);
   border-radius: 1.125rem;
-  transform: translateY(calc(var(--stop-index, 0) * 100%));
+  transform: translateX(calc(var(--stop-index, 0) * 100%));
   transition:
     transform var(--duration-spring) var(--ease-spring),
     background-color var(--duration-base) var(--ease-out);
@@ -1323,8 +1336,12 @@ html:not(.dark) .stream-tile {
   --stop-index: 2;
 }
 .theme-bar {
-  border-radius: 1.625rem;
-  scale: var(--drag-squeeze, 1) 1;
+  width: 100%;
+  height: 3.5rem;
+  border-radius: 1.375rem;
+  cursor: ew-resize;
+  touch-action: pan-y;
+  scale: 1 var(--drag-squeeze, 1);
   transition: scale var(--duration-spring) var(--ease-spring);
 }
 .theme-bar[data-stop='light'] {
@@ -1345,6 +1362,11 @@ html:not(.dark) .stream-tile {
   transition: none;
 }
 .theme-tab {
+  min-width: 0;
+  min-height: 2.75rem;
+  flex-direction: row;
+  gap: 0.5rem;
+  padding-inline: 0.25rem;
   border-radius: 1.125rem;
   font-size: 0.8125rem;
   letter-spacing: 0.06em;
@@ -1355,14 +1377,31 @@ html:not(.dark) .stream-tile {
 .theme-tab:active {
   scale: 0.94;
 }
+.theme-tab-icon {
+  width: 1rem;
+  height: 1rem;
+}
+.theme-tab-icon > svg {
+  width: 1rem;
+  height: 1rem;
+}
 .theme-fill {
-  transform-origin: bottom;
-  transform: scaleY(calc(max(var(--level, 62), 0) / 100));
+  inset: 0;
+  transform-origin: left;
+  transform: scaleX(calc(max(var(--level, 62), 0) / 100));
   transition:
     transform var(--duration-spring) var(--ease-spring),
     background-color var(--duration-base) var(--ease-out);
 }
 .theme-sun {
+  top: 50%;
+  right: 0.875rem;
+  translate: 0 -50%;
+  color: color-mix(
+    in oklab,
+    var(--background) clamp(0%, (var(--strength, 0.62) - 0.9) * 1000%, 100%),
+    var(--muted-foreground)
+  );
   transform-origin: center;
   rotate: calc(var(--strength, 0.62) * 140deg);
   scale: calc(0.8 + var(--strength, 0.62) * 0.35);
@@ -1379,6 +1418,58 @@ html:not(.dark) .stream-tile {
 .theme-bar[data-dragging='true'] .theme-sun,
 .theme-bar[data-dragging='true'] .theme-sun-rays {
   transition: none;
+}
+@container (min-width: 64rem) {
+  .theme-control {
+    min-height: 8.75rem;
+    flex-direction: row;
+  }
+  .theme-tabs {
+    flex: 1;
+    grid-template-columns: none;
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+  }
+  .theme-indicator {
+    inset-inline: 0.25rem;
+    top: 0.25rem;
+    bottom: auto;
+    left: 0.25rem;
+    width: auto;
+    height: calc((100% - 0.5rem) / 3);
+    transform: translateY(calc(var(--stop-index, 0) * 100%));
+  }
+  .theme-tab {
+    min-height: 2.75rem;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-inline: 0.75rem;
+  }
+  .theme-tab-icon,
+  .theme-tab-icon > svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  .theme-bar {
+    width: 4.75rem;
+    height: auto;
+    flex-shrink: 0;
+    border-radius: 1.625rem;
+    cursor: ns-resize;
+    touch-action: none;
+    scale: var(--drag-squeeze, 1) 1;
+  }
+  .theme-fill {
+    transform-origin: bottom;
+    transform: scaleY(calc(max(var(--level, 62), 0) / 100));
+  }
+  .theme-sun {
+    top: auto;
+    right: auto;
+    bottom: 0.875rem;
+    left: 50%;
+    translate: -50% 0;
+    color: var(--background);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .theme-bar,

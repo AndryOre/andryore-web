@@ -3,7 +3,10 @@ import { renderToStaticMarkup } from 'react-dom/server'
 
 import chrome from '../content/chrome.json'
 import type { Locale } from '../i18n/locales'
-import ThemeSlider, { chooseWithSound } from './ThemeSlider'
+import ThemeSlider, {
+  chooseWithSound,
+  orientationFromFlexDirection,
+} from './ThemeSlider'
 
 const render = (locale: Locale): string =>
   renderToStaticMarkup(<ThemeSlider copy={chrome[locale].theme} />)
@@ -41,10 +44,10 @@ describe('chooseWithSound', () => {
 })
 
 describe('ThemeSlider', () => {
-  test('exposes the bar as a vertical slider over the three stops', () => {
+  test('exposes the bar as a slider over the three stops, horizontal before hydration', () => {
     const html = render('en')
     expect(html).toContain('role="slider"')
-    expect(html).toContain('aria-orientation="vertical"')
+    expect(html).toContain('aria-orientation="horizontal"')
     expect(html).toContain('aria-valuemin="0"')
     expect(html).toContain('aria-valuemax="2"')
     expect(html).toContain('aria-valuetext="Auto"')
@@ -66,11 +69,12 @@ describe('ThemeSlider', () => {
     expect(html.match(/data-sound="theme"/g)).toHaveLength(3)
   })
 
-  test('stacks each tab icon above its centred label', () => {
+  test('centres each tab label and leaves the layout to the container query', () => {
     const html = render('en')
-    expect(html).toContain('flex-col items-center justify-center')
+    expect(html).toContain('items-center justify-center')
     expect(html).toContain('text-center font-mono font-bold')
-    expect(html).toContain('min-h-35')
+    expect(html).toContain('class="theme-control"')
+    expect(html).not.toContain('flex-col')
   })
 
   test('marks the indicator and the bar with the stored stop, never inline style', () => {
@@ -94,5 +98,16 @@ describe('ThemeSlider', () => {
     const html = render('es')
     expect(html).toContain(`aria-label="${chrome.es.theme.label}"`)
     expect(html).toContain(chrome.es.theme.dark)
+  })
+})
+
+describe('orientationFromFlexDirection', () => {
+  test('a row is the vertical bar beside the tabs, from lg up', () => {
+    expect(orientationFromFlexDirection('row')).toBe('vertical')
+  })
+
+  test('a column is the horizontal bar under the tabs, below lg', () => {
+    expect(orientationFromFlexDirection('column')).toBe('horizontal')
+    expect(orientationFromFlexDirection('')).toBe('horizontal')
   })
 })
