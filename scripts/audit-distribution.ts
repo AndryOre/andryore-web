@@ -52,7 +52,7 @@ function tokensOf(value = ''): string[] {
 /**
  * Finds third-party requests and unsafe external links in one HTML page.
  * Plain anchors are not requests, but an external one must carry
- * `rel="noopener noreferrer"`.
+ * `rel="noopener noreferrer"` and `target="_blank"`.
  * @param html The page source.
  * @returns One message per problem; empty when the page is clean.
  */
@@ -63,12 +63,16 @@ export function auditHtml(html: string): string[] {
     const name = tag.toLowerCase()
     if (name === 'a') {
       const href = attributes.get('href') ?? ''
+      if (!isForeign(href)) continue
       const linkTypes = tokensOf(attributes.get('rel'))
       const lacksProtection = !(
         linkTypes.includes('noopener') && linkTypes.includes('noreferrer')
       )
-      if (lacksProtection && isForeign(href)) {
+      if (lacksProtection) {
         problems.push(`external link without noopener noreferrer: ${href}`)
+      }
+      if (attributes.get('target')?.toLowerCase() !== '_blank') {
+        problems.push(`external link without target="_blank": ${href}`)
       }
       continue
     }
