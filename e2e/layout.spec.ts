@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test'
 import {
   assertNoHorizontalOverflow,
   findClippedText,
+  findDockOutsideViewport,
   findSmallTouchTargets,
   preparePage,
   settlePage,
@@ -54,4 +55,27 @@ for (const reducedMotion of ['reduce', 'no-preference'] as const) {
       .poll(background)
       .not.toMatch(/^rgba\(0, 0, 0, 0\)$|^transparent$/)
   })
+}
+
+const DOCK_WIDTHS = [320, 360, 375, 390, 412, 430] as const
+
+for (const reducedMotion of ['reduce', 'no-preference'] as const) {
+  for (const width of DOCK_WIDTHS) {
+    test(`dock fits the viewport at ${String(width)} px with ${reducedMotion} motion`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: 800 })
+      await preparePage(page, 'light')
+      await page.emulateMedia({ reducedMotion })
+      await page.goto('/')
+      await settlePage(page)
+      expect(await findDockOutsideViewport(page)).toEqual([])
+      for (const trigger of ['language', 'theme']) {
+        await page.locator(`[data-dock-trigger="${trigger}"]`).click()
+        await expect(page.locator('[data-dock-panel]')).toBeVisible()
+        expect(await findDockOutsideViewport(page)).toEqual([])
+        await page.keyboard.press('Escape')
+      }
+    })
+  }
 }
