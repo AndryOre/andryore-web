@@ -93,7 +93,11 @@ export async function assertNoHorizontalOverflow(page: Page): Promise<void> {
   expect(overflow).toBeLessThanOrEqual(0)
 }
 
-const MINIMUM_TOUCH_TARGET = 43.5
+const TOUCH_TARGET_LIMITS = {
+  standard: 43.5,
+  compactDock: 24,
+  compactBelow: 400,
+}
 
 /**
  * Lists the standalone controls smaller than the touch target minimum. Links
@@ -102,8 +106,10 @@ const MINIMUM_TOUCH_TARGET = 43.5
  * @returns A description of each control that is too small.
  */
 export async function findSmallTouchTargets(page: Page): Promise<string[]> {
-  return page.evaluate((minimum) => {
+  return page.evaluate((limits) => {
     const small: string[] = []
+    const compact =
+      globalThis.document.documentElement.clientWidth < limits.compactBelow
     const controls = globalThis.document.querySelectorAll<HTMLElement>(
       'a[href], button, [role="button"], summary',
     )
@@ -113,6 +119,10 @@ export async function findSmallTouchTargets(page: Page): Promise<string[]> {
       if (bounds.width === 0 || bounds.height === 0) continue
       if (inline && !control.closest('nav, footer')) continue
       if (control.closest('.sr-only, [hidden], [aria-hidden="true"]')) continue
+      const minimum =
+        compact && control.closest('[data-dock-nav]')
+          ? limits.compactDock
+          : limits.standard
       if (bounds.width < minimum || bounds.height < minimum) {
         small.push(
           `${control.tagName.toLowerCase()} "${control.textContent.trim().slice(0, 30)}" ${String(Math.round(bounds.width))}x${String(Math.round(bounds.height))}`,
@@ -120,7 +130,34 @@ export async function findSmallTouchTargets(page: Page): Promise<string[]> {
       }
     }
     return small
-  }, MINIMUM_TOUCH_TARGET)
+  }, TOUCH_TARGET_LIMITS)
+}
+
+/**
+ * Lists the Dock boxes that stick out of the viewport: every control, every
+ * tooltip, and the menu panel when one is open. The Dock is fixed, so the
+ * document scroll width never sees it.
+ * @param page The page to measure.
+ * @returns A description of each box that is not fully inside the viewport.
+ */
+export async function findDockOutsideViewport(page: Page): Promise<string[]> {
+  return page.evaluate(() => {
+    const width = globalThis.document.documentElement.clientWidth
+    const outside: string[] = []
+    const boxes = globalThis.document.querySelectorAll<HTMLElement>(
+      '[data-dock-nav] a, [data-dock-nav] button, [data-dock-nav] .group > span[aria-hidden="true"], [data-dock-panel]',
+    )
+    for (const box of boxes) {
+      const bounds = box.getBoundingClientRect()
+      if (bounds.width === 0 || bounds.height === 0) continue
+      if (bounds.left >= 0 && bounds.right <= width) continue
+      const name = (box.getAttribute('aria-label') ?? box.textContent).trim()
+      outside.push(
+        `${box.tagName.toLowerCase()} "${name.slice(0, 30)}" ${String(Math.round(bounds.left))}..${String(Math.round(bounds.right))} of ${String(width)}`,
+      )
+    }
+    return outside
+  })
 }
 
 /**

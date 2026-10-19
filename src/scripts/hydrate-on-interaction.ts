@@ -8,6 +8,12 @@ export const INTERACTION_EVENTS = [
   'touchstart',
 ] as const
 
+/** The fields of a `pointerdown` needed to replay it after hydration. */
+export interface PointerDownRecord {
+  target: EventTarget | null
+  init: PointerEventInit
+}
+
 type Hydrate = () => Promise<void>
 
 const isClickable = (
@@ -18,12 +24,48 @@ const isClickable = (
   typeof target.click === 'function' &&
   'isConnected' in target
 
+const isDispatcher = (
+  target: EventTarget | null,
+): target is EventTarget & { isConnected: boolean } =>
+  target !== null && 'isConnected' in target
+
+const recordPointerDown = (event: Event): PointerDownRecord => {
+  const pointer = event as PointerEvent
+  return {
+    target: event.target,
+    init: {
+      bubbles: true,
+      cancelable: true,
+      clientX: pointer.clientX,
+      clientY: pointer.clientY,
+      pointerId: pointer.pointerId,
+      pointerType: pointer.pointerType,
+      isPrimary: pointer.isPrimary,
+      button: pointer.button,
+      buttons: pointer.buttons,
+    },
+  }
+}
+
+/**
+ * Dispatches a recorded `pointerdown` again, so a press that landed before
+ * hydration reaches the handlers React attached since. The replay is
+ * untrusted, which lets a handler tell it from a live press.
+ * @param record The press recorded before hydration finished.
+ */
+export function replayPointerDown(record: PointerDownRecord): void {
+  const { target, init } = record
+  if (isDispatcher(target) && target.isConnected) {
+    target.dispatchEvent(new PointerEvent('pointerdown', init))
+  }
+}
+
 /**
  * Hydrates an island on its first pointer, focus or touch interaction and
- * replays a click that landed while hydration was still running.
+ * replays the press and click that landed while hydration was still running.
  * @param root The island's root element.
  * @param load Resolves the hydration function, as Astro passes to a directive.
- * @returns Resolves once the island is hydrated and any early click replayed.
+ * @returns Resolves once the island is hydrated and any early press and click replayed.
  */
 export async function hydrateOnInteraction(
   root: EventTarget,
@@ -32,6 +74,10 @@ export async function hydrateOnInteraction(
   const earlyClick: { target: EventTarget | null } = { target: null }
   const recordClick = (event: Event): void => {
     earlyClick.target = event.target
+  }
+  const earlyPress: { record: PointerDownRecord | null } = { record: null }
+  const recordPress = (event: Event): void => {
+    earlyPress.record ??= recordPointerDown(event)
   }
 
   await new Promise<void>((resolve) => {
@@ -45,11 +91,15 @@ export async function hydrateOnInteraction(
       root.addEventListener(eventName, start, { passive: true, once: true })
     }
     root.addEventListener('click', recordClick, { capture: true })
+    root.addEventListener('pointerdown', recordPress, { capture: true })
   })
 
   const hydrate = await load()
   await hydrate()
   root.removeEventListener('click', recordClick, { capture: true })
+  root.removeEventListener('pointerdown', recordPress, { capture: true })
+
+  if (earlyPress.record) replayPointerDown(earlyPress.record)
 
   const { target } = earlyClick
   if (isClickable(target) && target.isConnected) {
