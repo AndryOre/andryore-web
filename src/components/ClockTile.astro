@@ -12,11 +12,11 @@ const copy = tiles[locale].clock
 
 <p
   data-clock
-  class="bg-card border-border rounded-pill text-muted-foreground m-0 inline-flex items-center gap-2 border px-3.5 py-2 font-mono text-xs font-medium whitespace-nowrap tabular-nums shadow-[0_10px_28px_-16px_rgb(0_0_0/0.28)]"
+  class="bg-card border-border rounded-pill text-muted-foreground m-0 inline-flex items-center gap-2 border px-3.5 py-2 font-mono text-xs font-medium whitespace-nowrap tabular-nums shadow-(--shadow)"
 >
   <span class="bg-success size-[7px] rounded-full" aria-hidden="true"></span>
   <b
-    class="text-foreground text-base font-medium tracking-[-0.02em]"
+    class="text-foreground text-base font-bold tracking-[-0.02em]"
     data-clock-local
   >
     {copy.placeholder}
