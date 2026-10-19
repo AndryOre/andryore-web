@@ -7,6 +7,9 @@ now also covers `target`.
 
 Date: 2026-10-19
 
+Revised: 2026-10-19, the dist audit checks rel and target only; tests enforce
+the note
+
 ## Context
 
 0009 only requires `rel="noopener noreferrer"` on external links. In practice
@@ -30,8 +33,11 @@ meant to leave.
   hidden `opensInNewTab` note from `src/content/chrome.json`; an icon-only link
   appends it inside its `aria-label`. The note exists in English and Spanish
   (0002).
-- **The dist audit checks it.** `audit:dist` is extended to require `target` and
-  the note, as well as `rel`, on external links.
+- **Tests and the dist audit check it.** `audit:dist`
+  (`scripts/audit-distribution.ts`) requires `rel` and `target` on external
+  links. The screen-reader note is enforced by
+  `src/components/external-links.test.ts`, `src/lib/external-link.test.ts` and
+  `src/components/product-page-links.test.ts`.
 
 ## Consequences
 

@@ -3,9 +3,13 @@
 ## Status
 
 Accepted. The audio files never enter the public repository; they live in a
-private GitHub repository and are fetched at build time.
+private GitHub repository and are fetched at build time. Amended by
+[0021](0021-stack-scroll-sound.md): the Stack scene plays a scroll sound.
 
 Date: 2026-10-18
+
+Revised: 2026-10-19, one Coolify application with the sounds_token secret only,
+0021 link, licence confirmed
 
 ## Context
 
@@ -39,16 +43,17 @@ them on the Site itself is the permitted use.
   holds the seven files and a `manifest.json` (`{"sounds": [...]}`).
   `scripts/fetch-sounds.ts` downloads it into the gitignored `public/sounds/`
   during the Docker build, using a read-only fine-grained token passed as the
-  BuildKit secret `sounds_token`, with the build args `SOUNDS_REPO` and
-  `SOUNDS_REF`. Without a token the script exits 0 and the Site builds without
-  audio, so CI, `astro preview` and local builds are unaffected. The token never
-  reaches an image layer or the logs.
+  BuildKit secret `sounds_token`. The Dockerfile defaults the build args
+  `SOUNDS_REPO` and `SOUNDS_REF`. Without a token the script exits 0 and the
+  Site builds without audio, so CI, `astro preview` and local builds are
+  unaffected. The token never reaches an image layer or the logs.
 - **Availability is checked at runtime.** The engine loads
   `/sounds/manifest.json` once; when it is missing or malformed the Sound switch
   and the FX tile stay hidden.
 - **Licence caveat.** Epidemic Sound bars standalone redistribution of the
   files. Serving them on the Site is the permitted use, but the owner confirms
-  this with Epidemic Sound in writing.
+  this with Epidemic Sound in writing. The confirmation is done (Linear
+  AO-2126).
 - **Fallback.** If the licence check fails, replace the private set with the CC0
   Kenney Interface Sounds. Because those are CC0 they could then be committed,
   and this ADR would be superseded.
@@ -69,6 +74,6 @@ them on the Site itself is the permitted use.
 - A visitor who never turns Sound on downloads no audio.
 - The build must tolerate missing audio and the Docker image needs a way to
   receive the private files.
-- The Coolify applications need the `sounds_token` build secret and the
-  `SOUNDS_REPO` and `SOUNDS_REF` build args
-  ([Deploying](../development.md#deploying)).
+- The Coolify application needs only the `sounds_token` build secret; Coolify
+  drops build args when build secrets are on, so the Dockerfile defaults
+  `SOUNDS_REPO` and `SOUNDS_REF` ([Sound files](../development.md#sound-files)).
