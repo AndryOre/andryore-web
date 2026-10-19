@@ -2,12 +2,13 @@
 import { Image, Picture } from 'astro:assets'
 import { getCollection, render } from 'astro:content'
 
+import chrome from '../content/chrome.json'
 import productUi from '../content/product-ui.json'
 import type { Locale } from '../i18n/locales'
 import { localePath } from '../i18n/locales'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import { ANALYTICS_EVENTS, analyticsAttributes } from '../lib/analytics'
-import { externalLinkTokens } from '../lib/external-link'
+import { externalLinkAttributes } from '../lib/external-link'
 import { revealClass } from '../lib/motion'
 import {
   classifyIcon,
@@ -31,6 +32,7 @@ interface Props {
 
 const { locale, productKey } = Astro.props
 const ui = productUi[locale]
+const copy = chrome[locale]
 
 const entries: ProductEntry[] = await getCollection('products')
 const entry = entries.find(
@@ -126,7 +128,7 @@ const backHref = localePath(locale, '/#products')
           <li>
             <a
               href={link.href}
-              rel={externalLinkTokens()}
+              {...externalLinkAttributes(link.href)}
               {...analyticsAttributes(ANALYTICS_EVENTS.productOpen, {
                 product: data.key,
                 link: link.id,
@@ -140,6 +142,7 @@ const backHref = localePath(locale, '/#products')
             >
               <ProductIcon name={linkIcons[link.id]} />
               {ui.links[link.id]}
+              <span class="sr-only">. {copy.opensInNewTab}</span>
             </a>
           </li>
         ))}
@@ -273,7 +276,7 @@ const backHref = localePath(locale, '/#products')
                   {item.href ? (
                     <a
                       href={item.href}
-                      rel={externalLinkTokens()}
+                      {...externalLinkAttributes(item.href)}
                       class={chipClass}
                     >
                       <ProductIcon
@@ -282,6 +285,7 @@ const backHref = localePath(locale, '/#products')
                         class="text-muted-foreground"
                       />
                       {item.label}
+                      <span class="sr-only">. {copy.opensInNewTab}</span>
                       <ProductIcon
                         name="external-link"
                         size={12}
@@ -459,10 +463,11 @@ const backHref = localePath(locale, '/#products')
               {href ? (
                 <a
                   href={href}
-                  rel={externalLinkTokens()}
+                  {...externalLinkAttributes(href)}
                   class:list={badgeClass}
                 >
                   {content}
+                  <span class="sr-only">. {copy.opensInNewTab}</span>
                 </a>
               ) : (
                 <span class:list={badgeClass}>{content}</span>
@@ -499,7 +504,7 @@ const backHref = localePath(locale, '/#products')
         <h2 class={headingClass}>{ui.websiteHeading}</h2>
         <a
           href={data.url}
-          rel={externalLinkTokens()}
+          {...externalLinkAttributes(data.url)}
           class="border-border bg-card block overflow-hidden rounded-2xl border no-underline"
           data-product-browser
           data-product-website={data.key}
@@ -532,6 +537,7 @@ const backHref = localePath(locale, '/#products')
             loading="lazy"
             class="block aspect-[16/10] w-full object-cover object-top"
           />
+          <span class="sr-only">. {copy.opensInNewTab}</span>
         </a>
       </section>
     )}
