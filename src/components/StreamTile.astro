@@ -2,9 +2,10 @@
 import { Image } from 'astro:assets'
 
 import memoji from '../../docs/brand/avatar/memoji.webp'
+import chrome from '../content/chrome.json'
 import home from '../content/home.json'
 import type { Locale } from '../i18n/locales'
-import { externalLinkTokens } from '../lib/external-link'
+import { externalLinkAttributes } from '../lib/external-link'
 import { SESSION_WEEKDAYS } from '../lib/stream-state'
 
 interface Props {
@@ -168,7 +169,7 @@ const TWITCH_GLYPH =
     {ctas.map((cta) => (
       <a
         href={stream.href}
-        rel={externalLinkTokens()}
+        {...externalLinkAttributes(stream.href)}
         class="stream-cta"
         data-show={cta.show}
       >
@@ -181,6 +182,7 @@ const TWITCH_GLYPH =
           <path d={TWITCH_GLYPH} />
         </svg>
         {cta.label}
+        <span class="sr-only">{chrome[locale].opensInNewTab}</span>
       </a>
     ))}
   </div>
