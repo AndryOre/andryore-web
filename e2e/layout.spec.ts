@@ -37,6 +37,11 @@ for (const route of ROUTES) {
   })
 }
 
+function expectedPillHeight(width: number): number {
+  if (width <= 360) return 48
+  return width < 640 ? 52 : 56
+}
+
 for (const reducedMotion of ['reduce', 'no-preference'] as const) {
   test(`header is plain at rest and a floating pill after scrolling with ${reducedMotion} motion`, async ({
     page,
@@ -76,7 +81,9 @@ for (const reducedMotion of ['reduce', 'no-preference'] as const) {
       )
       .toBe(16)
     const pill = await readRow()
-    expect(pill.height).toBe(56)
+    expect(pill.height).toBe(
+      expectedPillHeight(page.viewportSize()?.width ?? 0),
+    )
     expect(pill.background).not.toMatch(/^rgba\(0, 0, 0, 0\)$|^transparent$/)
     expect(pill.shadow).not.toBe('none')
     expect(await headerHeight()).toBe(restingHeaderHeight)
