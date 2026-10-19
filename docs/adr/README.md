@@ -31,5 +31,6 @@ column.
 | 0016   | [forge trunk moves to develop](0016-forge-trunk-moves-to-develop.md)                                     | Accepted | -                          |
 | 0017   | [GitHub contributions served by the runtime endpoint](0017-github-contributions-via-runtime-endpoint.md) | Accepted | -                          |
 | 0018   | [The Site has no Log](0018-the-site-has-no-log.md)                                                       | Accepted | -                          |
-| 0019   | [Optional interface sound](0019-optional-interface-sound.md)                                             | Accepted | -                          |
+| 0019   | [Optional interface sound](0019-optional-interface-sound.md)                                             | Accepted | 0021 (amended)             |
 | 0020   | [External links open in a new tab](0020-external-links-open-in-a-new-tab.md)                             | Accepted | -                          |
+| 0021   | [Stack scene scroll sound](0021-stack-scroll-sound.md)                                                   | Accepted | 0019 (amended)             |

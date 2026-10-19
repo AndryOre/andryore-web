@@ -8,7 +8,8 @@ import {
 
 import { soundEngine, type SoundEngine } from '@/lib/sound-engine'
 import type { ThemePreference } from '@/lib/theme'
-import { stopAfterKey, stopFromRatio, THEME_STOPS } from '@/lib/theme-stops'
+import { followPointer, pickAtPointer, releaseDrag } from '@/lib/theme-drag'
+import { stopAfterKey, THEME_STOPS } from '@/lib/theme-stops'
 import { chooseTheme } from '@/lib/theme-store'
 import { cn } from '@/lib/utils'
 
@@ -97,8 +98,10 @@ export function chooseWithSound(
  * Theme control: vertical sliding tabs for Light, Auto and Dark next to a
  * brightness bar. The bar is one `slider`; arrow keys step between the stops
  * and a press or drag on it picks the nearest one. A press replayed after
- * hydration is untrusted: it picks a stop but starts no drag. Tabs and bar always agree
- * because both read and write the same stored preference.
+ * hydration is untrusted: it picks a stop but starts no drag. A real drag only
+ * moves the fill, through `--drag-level`, and the stop is stored on release.
+ * Tabs and bar always agree because both read and write the same stored
+ * preference.
  * @param props Component props.
  * @param props.copy Localised labels.
  * @returns The control.
@@ -113,44 +116,43 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
   const barRef = useRef<HTMLDivElement>(null)
   const [dragging, setDragging] = useState(false)
   const replayedPressRef = useRef(false)
+  const dragLevelRef = useRef(0)
   const index = THEME_STOPS.indexOf(preference)
-
-  const choose = (stop: ThemePreference | undefined): void => {
-    chooseWithSound(stop, preference)
-  }
-
-  const pick = (clientY: number): void => {
-    const box = barRef.current?.getBoundingClientRect()
-    if (!box || box.height === 0) return
-    choose(THEME_STOPS[stopFromRatio((clientY - box.top) / box.height)])
-  }
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>): void => {
     const next = stopAfterKey(index, event.key)
     if (next === null) return
     event.preventDefault()
-    choose(THEME_STOPS[next])
+    chooseWithSound(THEME_STOPS[next], preference)
   }
 
   const onPointerDown = (event: PointerEvent<HTMLDivElement>): void => {
     if (event.nativeEvent.isTrusted) {
       event.currentTarget.setPointerCapture(event.pointerId)
+      followPointer(barRef.current, event.clientY, dragLevelRef)
       setDragging(true)
     } else {
       replayedPressRef.current = true
+      chooseWithSound(pickAtPointer(barRef.current, event.clientY), preference)
     }
-    pick(event.clientY)
   }
 
   const onPointerMove = (event: PointerEvent<HTMLDivElement>): void => {
-    if (dragging || (replayedPressRef.current && event.buttons === 1)) {
-      pick(event.clientY)
+    if (dragging) {
+      followPointer(barRef.current, event.clientY, dragLevelRef)
+    } else if (replayedPressRef.current && event.buttons === 1) {
+      chooseWithSound(pickAtPointer(barRef.current, event.clientY), preference)
     }
   }
 
   const endDrag = (): void => {
     replayedPressRef.current = false
+    if (!dragging) return
     setDragging(false)
+    chooseWithSound(
+      releaseDrag(barRef.current, dragLevelRef.current),
+      preference,
+    )
   }
 
   return (

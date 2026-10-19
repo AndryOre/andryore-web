@@ -70,8 +70,12 @@ const count = copy.count.replace('{count}', () =>
     DEFERRED_STYLESHEET_SELECTOR,
     loadStylesheet,
   } from '../scripts/defer-stylesheet'
+  import { mountStackSoundInBrowser } from '../scripts/stack-sound'
 
   const href = document.querySelector<HTMLElement>(DEFERRED_STYLESHEET_SELECTOR)
     ?.dataset.deferStylesheet
   if (href) loadStylesheet(document.createElement('link'), href, document.head)
+
+  const scene = document.querySelector<HTMLElement>('.stack-scene')
+  if (scene) mountStackSoundInBrowser(scene)
 </script>

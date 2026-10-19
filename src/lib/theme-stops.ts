@@ -56,3 +56,60 @@ export function stopFromRatio(ratio: number): number {
     Math.max(0, Math.floor(ratio * THEME_STOPS.length)),
   )
 }
+
+const OVERSHOOT_CAP = 8
+const OVERSHOOT_DAMPING = 0.35
+const FULL_SQUEEZE = 0.96
+
+/**
+ * Damps a drag past an end of the bar: it starts at 0.35 of the pull and
+ * flattens towards the cap, so the bar never stretches more than about 8%.
+ * @param overshoot The pull past the end, in percent; the sign is kept.
+ * @returns The damped overshoot, strictly between minus and plus the cap.
+ */
+export function rubberBand(overshoot: number): number {
+  return (
+    OVERSHOOT_CAP * Math.tanh((overshoot * OVERSHOOT_DAMPING) / OVERSHOOT_CAP)
+  )
+}
+
+/**
+ * Turns a pointer position into the fill level that follows it one to one,
+ * rubber-banded past either end.
+ * @param ratio Vertical position on the bar, 0 at the top and 1 at the bottom.
+ * @returns A percentage, 100 at the top and 0 at the bottom, within about 8
+ * of either end when the pointer leaves the bar.
+ */
+export function levelFromRatio(ratio: number): number {
+  const level = (1 - ratio) * 100
+  if (level > 100) return 100 + rubberBand(level - 100)
+  return level < 0 ? rubberBand(level) : level
+}
+
+/**
+ * Finds the stop a released drag settles on.
+ * @param level The fill level at release, in percent.
+ * @returns The index of the stop whose level is nearest.
+ */
+export function stopFromLevel(level: number): number {
+  let nearest = 0
+  for (const [index, stop] of THEME_STOPS.entries()) {
+    const best = THEME_STOPS[nearest] ?? 'light'
+    if (
+      Math.abs(level - STOP_LEVELS[stop]) < Math.abs(level - STOP_LEVELS[best])
+    ) {
+      nearest = index
+    }
+  }
+  return nearest
+}
+
+/**
+ * Finds how much the bar narrows while it is pulled past an end.
+ * @param level The fill level, in percent.
+ * @returns 1 inside the bar, down to 0.96 at the full overshoot.
+ */
+export function squeezeForLevel(level: number): number {
+  const overshoot = level > 100 ? level - 100 : level < 0 ? -level : 0
+  return 1 - (1 - FULL_SQUEEZE) * Math.min(1, overshoot / OVERSHOOT_CAP)
+}
