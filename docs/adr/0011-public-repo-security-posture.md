@@ -2,19 +2,25 @@
 
 ## Status
 
-Accepted. Extends [0007](0007-split-license.md).
+Accepted. Extends [0007](0007-split-license.md). Amended by
+[0022](0022-secrets-in-dotenvx-encrypted-env-files.md): the Site has runtime
+credentials, kept in an encrypted env file.
 
 Date: 2026-10-17
 
 Revised: 2026-10-19, the tags ruleset has an admin bypass and the settings
 section exists
 
+Revised: 2026-10-20, the Site does have runtime credentials (0022)
+
 ## Context
 
 The repository went public with a fresh single-commit history. It is maintained
 by one person, and its supply chain (GitHub Actions, dependencies, the release
-workflow) is the main attack surface. The Site has no runtime secrets, so the
-exposure is CI and the tags that trigger a release.
+workflow) is the main attack surface. The Site's few credentials (Twitch,
+GitHub, the sound repository) are dotenvx-encrypted in the repository
+([0022](0022-secrets-in-dotenvx-encrypted-env-files.md)), so the exposure is CI,
+the tags that trigger a release and the encryption key.
 
 Some of the posture is already committed as code: two repository rulesets in
 `.github/rulesets/` (`main` and `v*` tags), SHA-pinned workflows checked by a
