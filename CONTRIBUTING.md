@@ -1,63 +1,43 @@
 # Contributing
 
-Thanks for your interest in contributing to andryore.dev. This document covers
-the conventions this repository expects from a pull request.
-
-By participating in this project, you agree to abide by the
+Thanks for your interest in andryore.dev. Participation is covered by the
 [Code of Conduct](CODE_OF_CONDUCT.md).
-
-## Setup
-
-This project uses [bun](https://bun.sh/) `1.4.2` as its package manager. Fork
-the repository, clone your fork, then install dependencies:
-
-```sh
-bun install
-```
-
-Useful scripts (see `package.json` for the full list):
-
-- `bun run check` runs the static checks: formatting, linting, type-checking and
-  knip.
-- `bun run test` runs the test suite.
-- `bun run lint:docs` checks the links and anchors of the Markdown.
 
 ## Where to start
 
-Open an issue first so the "why" is on the record, then send a pull request
-against `main`. [`ROADMAP.md`](ROADMAP.md) describes where the project is
-heading and [`GOVERNANCE.md`](GOVERNANCE.md) how decisions are made. Changes to
-the brand assets (the logos, tokens, Open Graph image and avatar under
-`docs/brand/`) or the Site's content need Andry's approval (see
-[ADR 0007](docs/adr/0007-split-license.md)).
+Ask questions and float ideas in
+[GitHub Discussions](https://github.com/AndryOre/andryore-web/discussions). For
+a bug or a concrete proposal, open an issue first so the reason is on the
+record. Issues labelled
+[`good first issue`](https://github.com/AndryOre/andryore-web/labels/good%20first%20issue)
+or
+[`help wanted`](https://github.com/AndryOre/andryore-web/labels/help%20wanted)
+are the best entry points.
 
-## Branch naming and commit format
+[`ROADMAP.md`](ROADMAP.md) lists the [out-of-scope](ROADMAP.md#out-of-scope)
+items, including the brand assets and Site content, which are not open to
+contributions. [`GOVERNANCE.md`](GOVERNANCE.md) explains how decisions are made.
 
-Use a short, descriptive feature branch named `<type>/<slug>` (never work
-directly on `main`). Commits and pull request titles follow
-[Conventional Commits](https://www.conventionalcommits.org/) with a gitmoji, for
-example `feat: ✨ add log page`. Details:
-[Branch naming](docs/development.md#branch-naming) and
-[Commit format](docs/development.md#commit-format).
+## Set up and check your work
 
-## Merging
+Fork, clone and install with bun. The setup steps and every script are in
+[Development](docs/development.md#scripts). Run `bun run check` and
+`bun run test` before you push.
 
-Pull requests are squash merged, keeping a linear history on `main`. The final
-PR title becomes the commit message, so it must follow the format above. See
-[Merging](docs/development.md#merging).
+## Open a pull request
 
-## CI
+Pull requests target `develop`
+([ADR 0015](docs/adr/0015-develop-as-integration-branch.md)). The conventions
+live in one place each:
 
-Run `bun run check` and `bun run test` locally before opening a PR. The
-`CI passed` check must be green before a pull request can be merged. See
-[CI](docs/development.md#ci).
+- [Branch naming](docs/development.md#branch-naming)
+- [Commit format](docs/development.md#commit-format), which also applies to the
+  PR title
+- [Code documentation](docs/development.md#code-documentation)
+- [Merging](docs/development.md#merging)
+- [CI](docs/development.md#ci)
 
-## Code comments
+## Security
 
-Comments are TSDoc blocks on non-obvious exports only. See
-[Code documentation](docs/development.md#code-documentation).
-
-## Reporting security issues
-
-Do not open a public issue for a security vulnerability. Report it privately as
-described in [`.github/SECURITY.md`](.github/SECURITY.md).
+Report vulnerabilities privately, as described in
+[`.github/SECURITY.md`](.github/SECURITY.md).

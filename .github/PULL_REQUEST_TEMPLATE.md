@@ -34,7 +34,6 @@ Refs: AO-<!-- Linear ticket number, delete this line if not applicable -->
 - [ ] Added/updated tests for the changed behavior
 - [ ] Docs updated if behavior or decisions changed
 - [ ] Ran `bun run fix` and `bun run check` passes
-- [ ] PR title follows
-      [Conventional Commits](https://www.conventionalcommits.org/)
-      (`type(scope): description`)
+- [ ] PR title follows the [commit format](../docs/development.md#commit-format)
+      (`type: emoji lowercase subject`)
 - [ ] No secrets or sensitive data included
