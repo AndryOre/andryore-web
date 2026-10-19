@@ -7,9 +7,12 @@ import {
   type Page,
 } from '@playwright/test'
 
+import { findHorizontalOverflow } from '../e2e/helpers'
+import { PHONE_WIDTHS } from '../e2e/routes'
 import { ALLOWED_ORIGINS } from './audit-distribution'
 import {
   countDeviations,
+  describeOverflow,
   DOCUMENTED_EXCEPTIONS,
   failedMeasurements,
   findMissingTexts,
@@ -860,7 +863,7 @@ async function auditMeasurements(
 }
 
 /**
- * Finds horizontal overflow at 390 px and running animations under reduced
+ * Finds horizontal overflow at every phone width, at rest and scrolled, and running animations under reduced
  * motion on every route.
  * @param browser Chromium instance that opens every page of the pass.
  * @param baseUrl Origin of the local preview that serves the built Site.
@@ -874,29 +877,34 @@ async function auditLayout(
   const motion: string[] = []
   for (const language of LANGUAGES) {
     for (const theme of THEMES) {
-      const context = await browser.newContext({
-        viewport: { width: 390, height: 844 },
-        colorScheme: theme,
-      })
-      for (const route of PAGE_ROUTES) {
-        const { page } = await openSite(context, baseUrl, {
-          route,
-          language,
-          theme,
+      for (const width of PHONE_WIDTHS) {
+        const context = await browser.newContext({
+          viewport: { width, height: 844 },
+          colorScheme: theme,
         })
-        const excess = await page.evaluate(
-          () =>
-            globalThis.document.documentElement.scrollWidth -
-            globalThis.document.documentElement.clientWidth,
-        )
-        if (excess > 0) {
-          overflow.push(
-            `${route} ${language} ${theme}: ${String(excess)}px wider than 390`,
-          )
+        for (const route of PAGE_ROUTES) {
+          const { page } = await openSite(context, baseUrl, {
+            route,
+            language,
+            theme,
+          })
+          for (const scrolled of [false, true]) {
+            if (scrolled) {
+              await page.evaluate(() => {
+                globalThis.scrollTo(0, 400)
+              })
+              await page.waitForTimeout(150)
+            }
+            const state = { route, language, theme, width, scrolled }
+            const findings = await findHorizontalOverflow(page)
+            overflow.push(
+              ...findings.map((finding) => describeOverflow(state, finding)),
+            )
+          }
+          await page.close()
         }
-        await page.close()
+        await context.close()
       }
-      await context.close()
     }
     const reduced = await browser.newContext({
       viewport: { width: 1440, height: 900 },
@@ -1070,7 +1078,7 @@ async function main(): Promise<void> {
       { title: 'EN/ES text diff', lines: texts.text },
       { title: 'Stream and GitHub states', lines: states },
       { title: 'Measurements', lines: measurements },
-      { title: 'Horizontal overflow at 390', lines: layout.overflow },
+      { title: 'Horizontal overflow at 320 to 430', lines: layout.overflow },
       { title: 'Console errors', lines: texts.console },
       { title: 'Third-party requests', lines: texts.network },
       { title: 'Reduced motion', lines: layout.motion },

@@ -2,6 +2,7 @@ import { describe, expect, test } from 'bun:test'
 
 import {
   countDeviations,
+  describeOverflow,
   DOCUMENTED_EXCEPTIONS,
   failedMeasurements,
   findMissingTexts,
@@ -128,6 +129,24 @@ describe('DOCUMENTED_EXCEPTIONS', () => {
     expect(ids).toContain('epidemic-sound-files')
     expect(DOCUMENTED_EXCEPTIONS.every((entry) => entry.reason !== '')).toBe(
       true,
+    )
+  })
+})
+
+describe('describeOverflow', () => {
+  test('labels a finding with route, width and scroll state', () => {
+    const state = {
+      route: '/about/',
+      language: 'es',
+      theme: 'dark',
+      width: 320,
+      scrolled: true,
+    }
+    expect(describeOverflow(state, 'div right 330 > 320')).toBe(
+      '/about/ es dark @320 scrolled: div right 330 > 320',
+    )
+    expect(describeOverflow({ ...state, scrolled: false }, 'x')).toBe(
+      '/about/ es dark @320 top: x',
     )
   })
 })

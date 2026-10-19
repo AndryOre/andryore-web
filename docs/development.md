@@ -47,7 +47,8 @@ Agents do not run a `build` script unless explicitly asked.
 
 - The `← Home` link on About and Uses.
 - The Chrome Web Store button in the Snug header.
-- The header blurred surface after scroll.
+- The header floating as a blurred pill after scroll, which canvas v29 shows and
+  the audit's top-of-page canvas capture does not.
 - The hero art border and shadow where the canvas differs.
 - The Epidemic sound files being absent (404 on `/sounds/`) in local and CI
   builds.
