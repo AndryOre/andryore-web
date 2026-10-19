@@ -1,1 +1,6 @@
+if git diff --cached --name-only | grep -Eq '(^|/)\.env\.keys'; then
+  echo "pre-commit: refusing to commit a .env.keys file" >&2
+  exit 1
+fi
+bun --bun ./node_modules/.bin/dotenvx ext precommit || exit 1
 bunx lint-staged
