@@ -83,4 +83,5 @@ them on the Site itself is the permitted use.
   receive the private files.
 - The Coolify application needs only the `DOTENV_PRIVATE_KEY` build secret;
   Coolify drops build args when build secrets are on, so the Dockerfile defaults
-  `SOUNDS_REPO` and `SOUNDS_REF` ([Sound files](../development.md#sound-files)).
+  `SOUNDS_REPO` and `SOUNDS_REF`
+  ([Sound files](../development.md#sound-files-and-credentials)).

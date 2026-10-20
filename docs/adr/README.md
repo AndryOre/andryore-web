@@ -11,6 +11,9 @@ To add one, copy the next number, write the file, and add a row below, filling
 the last column when it amends or supersedes another. The rules for editing ADRs
 are in [`AGENTS.md`](../../AGENTS.md#architecture-decision-records).
 
+ADR 0016 does not exist: its decision was merged into
+[0015](0015-develop-as-integration-branch.md), and the number is not reused.
+
 | Number | Title                                                                                                    | Status   | Superseded or amended by        |
 | ------ | -------------------------------------------------------------------------------------------------------- | -------- | ------------------------------- |
 | 0001   | [Brand kit lives in docs/brand](0001-brand-kit-in-docs-brand.md)                                         | Accepted | 0008 (partly)                   |
