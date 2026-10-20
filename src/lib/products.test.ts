@@ -21,11 +21,14 @@ import {
   fillPlaceholder,
   formatProofDate,
   headerLinks,
+  productMetaLabel,
   productPath,
   SKIN_TONE_CLASSES,
   stackBadgeClass,
+  stackGlyphClass,
   stackHref,
   stackIconId,
+  stackMetaItems,
   statLabel,
   visibleProof,
 } from './products'
@@ -564,5 +567,75 @@ describe('store links', () => {
     expect(realSchema.parse(parse('snug.es.md')).platformNote).toEndWith(
       'Chrome Web Store. Sin versión para Firefox ni Safari.',
     )
+  })
+})
+
+describe('productMetaLabel', () => {
+  test('joins the year and the version', () => {
+    expect(productMetaLabel('2024', 'v2.2.0')).toBe('2024 · v2.2.0')
+  })
+
+  test('is just the year when the version is absent', () => {
+    expect(productMetaLabel('2025')).toBe('2025')
+    expect(productMetaLabel('2025', '')).toBe('2025')
+  })
+})
+
+describe('stackGlyphClass', () => {
+  test('uses the brand colour where it keeps contrast on both cards', () => {
+    expect(stackGlyphClass('TypeScript')).toBe('text-[#3178C6]')
+    expect(stackGlyphClass('Astro + Starlight')).toBe('text-[#BC52EE]')
+  })
+
+  test('falls back to the foreground on the light card only', () => {
+    expect(stackGlyphClass('WXT')).toBe('text-foreground dark:text-[#67D55E]')
+    expect(stackGlyphClass('React')).toBe('text-foreground dark:text-[#61DAFB]')
+    expect(stackGlyphClass('Tailwind CSS')).toBe(
+      'text-foreground dark:text-[#06B6D4]',
+    )
+  })
+
+  test('draws shadcn/ui and unknown stacks in the foreground', () => {
+    expect(stackGlyphClass('shadcn/ui')).toBe('text-foreground')
+    expect(stackGlyphClass('Unknown')).toBe('text-foreground')
+  })
+})
+
+describe('stackMetaItems', () => {
+  test('gives an icon item to every stack item with a logo', () => {
+    expect(stackMetaItems(['React', 'shadcn/ui'])).toEqual([
+      {
+        label: 'React',
+        iconId: 'react',
+        colorClass: 'text-foreground dark:text-[#61DAFB]',
+      },
+      {
+        label: 'shadcn/ui',
+        iconId: 'shadcn-ui',
+        colorClass: 'text-foreground',
+      },
+    ])
+  })
+
+  test('keeps only the name for an item without a logo', () => {
+    expect(stackMetaItems(['Obscure'])).toEqual([{ label: 'Obscure' }])
+  })
+
+  test('is empty without a stack', () => {
+    expect(stackMetaItems([])).toEqual([])
+  })
+
+  test('every stack of the product files resolves to an icon', () => {
+    for (const file of readdirSync(PRODUCTS_DIRECTORY)) {
+      const source = readFileSync(path.join(PRODUCTS_DIRECTORY, file), 'utf8')
+      const stack = /^stack:\n((?: {2}- .+\n)+)/m.exec(source)?.[1] ?? ''
+      const labels = stack
+        .trim()
+        .split('\n')
+        .map((line) => line.replaceAll(/^ *- '?|'?$/g, ''))
+      for (const item of stackMetaItems(labels)) {
+        expect(item.iconId, `${file}: ${item.label}`).toBeDefined()
+      }
+    }
   })
 })

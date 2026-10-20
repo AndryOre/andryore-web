@@ -6,8 +6,13 @@ import memoji from '../../docs/brand/avatar/memoji.webp'
 import partyPopper from '../assets/products/sprites/party-popper.png'
 import chrome from '../content/chrome.json'
 import home from '../content/home.json'
+import productUi from '../content/product-ui.json'
 import { localePath, type Locale } from '../i18n/locales'
-import type { ProductEntry } from '../lib/products'
+import {
+  productMetaLabel,
+  stackMetaItems,
+  type ProductEntry,
+} from '../lib/products'
 import { spriteClass } from '../lib/sprites'
 import FindMe from './FindMe.astro'
 import FxTile from './FxTile.astro'
@@ -59,10 +64,7 @@ const installsFigure = new Intl.NumberFormat(locale).format(
   contribution.metaTotal,
 )
 const partyRun = spriteClass(PARTY_FRAMES)
-const metaLine = (entry: ProductEntry | undefined, year: string): string =>
-  [year, entry?.data.version, entry?.data.stack.join(', ')]
-    .filter(Boolean)
-    .join(' · ')
+const builtWith = productUi[locale].builtWithHeading
 ---
 
 <div class="flex flex-col gap-12 sm:gap-16">
@@ -241,12 +243,39 @@ const metaLine = (entry: ProductEntry | undefined, year: string): string =>
                 </span>
               </div>
               <p class={bodyClass}>{product.description}</p>
-              <p
+              <div
                 data-product-meta
-                class="text-muted-foreground m-0 font-mono text-xs [overflow-wrap:anywhere]"
+                class="pointer-events-none flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5"
               >
-                {metaLine(entry, product.year)}
-              </p>
+                <p class="text-muted-foreground m-0 font-mono text-xs tabular-nums">
+                  {productMetaLabel(product.year, entry?.data.version)}
+                </p>
+                <ul
+                  aria-label={builtWith}
+                  class="m-0 flex list-none flex-wrap items-center gap-2.5 p-0"
+                >
+                  {stackMetaItems(entry?.data.stack ?? []).map((item) => (
+                    <li
+                      title={item.label}
+                      class:list={[
+                        'inline-flex items-center',
+                        item.iconId
+                          ? item.colorClass
+                          : 'text-muted-foreground font-mono text-xs',
+                      ]}
+                    >
+                      {item.iconId ? (
+                        <>
+                          <ProductIcon name={item.iconId} size={18} tint />
+                          <span class="sr-only">{item.label}</span>
+                        </>
+                      ) : (
+                        item.label
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </article>
         )

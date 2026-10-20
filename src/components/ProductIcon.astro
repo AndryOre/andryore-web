@@ -2,18 +2,26 @@
 import { glyphSvg } from '../lib/glyphs'
 import { resolveIcon } from '../lib/icons'
 import { classifyIcon } from '../lib/products'
+import { tintSvg } from '../lib/tint-svg'
 
 interface Props {
   name: string
   size?: number
   class?: string
+  tint?: boolean
 }
 
-const { name, size = 16, class: className } = Astro.props
+const { name, size = 16, class: className, tint = false } = Astro.props
 
 const brandUrls = import.meta.glob<string>('/src/assets/icons/*.svg', {
   eager: true,
   query: '?url',
+  import: 'default',
+})
+
+const brandSources = import.meta.glob<string>('/src/assets/icons/*.svg', {
+  eager: true,
+  query: '?raw',
   import: 'default',
 })
 
@@ -23,10 +31,17 @@ if (!icon) throw new Error(`Unknown product icon "${name}".`)
 const brand = icon.kind === 'brand' ? resolveIcon(icon.id) : undefined
 const lightUrl = brand ? brandUrls[brand.light] : undefined
 const darkUrl = brand ? brandUrls[brand.dark] : undefined
+const tintedSource = brand ? brandSources[brand.light] : undefined
 const splitMarks = lightUrl !== darkUrl
 ---
 
-{brand && lightUrl && darkUrl ? (
+{tint && tintedSource ? (
+  <span
+    class:list={['inline-flex shrink-0', className]}
+    aria-hidden="true"
+    set:html={tintSvg(tintedSource, size)}
+  />
+) : brand && lightUrl && darkUrl ? (
   <span class:list={['inline-flex shrink-0', className]} aria-hidden="true">
     <img
       src={lightUrl}

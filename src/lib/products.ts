@@ -349,6 +349,58 @@ export function stackBadgeClass(label: string): string {
   return STACK_BADGE_CLASSES[label.toLowerCase()] ?? 'bg-muted text-foreground'
 }
 
+const STACK_GLYPH_CLASSES: Readonly<Record<string, string>> = {
+  wxt: 'text-foreground dark:text-[#67D55E]',
+  react: 'text-foreground dark:text-[#61DAFB]',
+  typescript: 'text-[#3178C6]',
+  'tailwind css': 'text-foreground dark:text-[#06B6D4]',
+  'shadcn/ui': 'text-foreground',
+  astro: 'text-[#BC52EE]',
+  'astro + starlight': 'text-[#BC52EE]',
+}
+
+/**
+ * The text colour a bare stack glyph is drawn in: the brand colour of
+ * `stackBadgeClass`. A colour under 3:1 against the light card is only used in
+ * dark mode, and shadcn/ui, which is black, keeps the foreground.
+ * @param label The stack name as written in the product file.
+ * @returns Literal text classes, the foreground when the stack is unknown.
+ */
+export function stackGlyphClass(label: string): string {
+  return STACK_GLYPH_CLASSES[label.toLowerCase()] ?? 'text-foreground'
+}
+
+/**
+ * The year and version line of a product card.
+ * @param year The four-digit year, or a year range.
+ * @param version The release tag such as `v2.2.0`, when the product has one.
+ * @returns `year · version`, or just the year without a version.
+ */
+export function productMetaLabel(year: string, version?: string): string {
+  return [year, version].filter(Boolean).join(' · ')
+}
+
+/** One stack entry of a product card meta row. */
+export interface StackMetaItem {
+  readonly label: string
+  readonly iconId?: IconId
+  readonly colorClass?: string
+}
+
+/**
+ * The stack of a product card, each item as an icon or, without a logo, a name.
+ * @param stack The stack names as written in the product file.
+ * @returns One item per stack name; only items with a logo carry an icon id and colour.
+ */
+export function stackMetaItems(stack: readonly string[]): StackMetaItem[] {
+  return stack.map((label) => {
+    const iconId = stackIconId(label)
+    return iconId === undefined
+      ? { label }
+      : { label, iconId, colorClass: stackGlyphClass(label) }
+  })
+}
+
 /**
  * Background classes of the six emoji skin-tone swatches, default first. They
  * are literal so the Tailwind scanner sees them and no inline style is needed.
