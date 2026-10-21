@@ -385,7 +385,7 @@ The `Dockerfile` builds the Site in a Bun stage and serves it from nginx:
 
 The Glass sound set is a private build input
 ([ADR 0019](adr/0019-optional-interface-sound.md)). The Dockerfile defaults
-`SOUNDS_REPO` to `AndryOre/andryore-web-private` and `SOUNDS_REF` to `main`.
+`SOUNDS_REPO` to `AndryOre/andryore-private` and `SOUNDS_REF` to `main`.
 `SOUNDS_TOKEN` and the other credentials come from the encrypted `.env`, which
 the build decrypts with the `DOTENV_PRIVATE_KEY` BuildKit secret
 ([ADR 0022](adr/0022-secrets-in-dotenvx-encrypted-env-files.md)). In the Coolify
