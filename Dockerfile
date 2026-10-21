@@ -10,7 +10,7 @@ COPY docs/brand/avatar/memoji.webp docs/brand/avatar/memoji.webp
 COPY public public
 COPY src src
 COPY scripts/fetch-sounds.ts scripts/fetch-sounds.ts
-ARG SOUNDS_REPO=AndryOre/andryore-web-private
+ARG SOUNDS_REPO=AndryOre/andryore-private
 ARG SOUNDS_REF=main
 COPY package.json .env* ./
 RUN mkdir /env-out && if [ -f .env ]; then cp .env /env-out/.env && chmod 644 /env-out/.env; fi
