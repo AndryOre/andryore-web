@@ -7,17 +7,17 @@ list of names is [`.env.example`](../.env.example).
 
 ## Variables
 
-| Name                   | When              | Secret | Required | When missing                                                                                              |
-| ---------------------- | ----------------- | ------ | -------- | --------------------------------------------------------------------------------------------------------- |
-| `TWITCH_CLIENT_ID`     | Runtime           | No     | No       | The live status endpoint reports the unavailable state and the stream tile shows its fallback.            |
-| `TWITCH_CLIENT_SECRET` | Runtime           | Yes    | No       | Same as above.                                                                                            |
-| `GITHUB_TOKEN`         | Build and runtime | Yes    | No       | The build keeps the committed `src/content/github-grid.json`; the runtime endpoint has no data.           |
-| `SOUNDS_TOKEN`         | Build             | Yes    | No       | `fetch-sounds` skips quietly and the Site hides the Sound switch.                                         |
-| `SOUNDS_REPO`          | Build             | No     | No       | Dockerfile argument, default `AndryOre/andryore-web-private`. Required by the script once a token exists. |
-| `SOUNDS_REF`           | Build             | No     | No       | Dockerfile argument, default `main`; a blank value also means `main`.                                     |
-| `PORT`                 | Runtime           | No     | No       | The endpoint server listens on `3000`. The entrypoint sets it, so leave it alone.                         |
-| `SITE_LASTMOD`         | Build             | No     | No       | The sitemap `lastmod` falls back to the UTC build date. Only a `YYYY-MM-DD` value is used.                |
-| `DOTENV_PRIVATE_KEY`   | Build and runtime | Yes    | No       | dotenvx cannot decrypt `.env`; the credentials above count as missing.                                    |
+| Name                   | When              | Secret | Required | When missing                                                                                          |
+| ---------------------- | ----------------- | ------ | -------- | ----------------------------------------------------------------------------------------------------- |
+| `TWITCH_CLIENT_ID`     | Runtime           | No     | No       | The live status endpoint reports the unavailable state and the stream tile shows its fallback.        |
+| `TWITCH_CLIENT_SECRET` | Runtime           | Yes    | No       | Same as above.                                                                                        |
+| `GITHUB_TOKEN`         | Build and runtime | Yes    | No       | The build keeps the committed `src/content/github-grid.json`; the runtime endpoint has no data.       |
+| `SOUNDS_TOKEN`         | Build             | Yes    | No       | `fetch-sounds` skips quietly and the Site hides the Sound switch.                                     |
+| `SOUNDS_REPO`          | Build             | No     | No       | Dockerfile argument, default `AndryOre/andryore-private`. Required by the script once a token exists. |
+| `SOUNDS_REF`           | Build             | No     | No       | Dockerfile argument, default `main`; a blank value also means `main`.                                 |
+| `PORT`                 | Runtime           | No     | No       | The endpoint server listens on `3000`. The entrypoint sets it, so leave it alone.                     |
+| `SITE_LASTMOD`         | Build             | No     | No       | The sitemap `lastmod` falls back to the UTC build date. Only a `YYYY-MM-DD` value is used.            |
+| `DOTENV_PRIVATE_KEY`   | Build and runtime | Yes    | No       | dotenvx cannot decrypt `.env`; the credentials above count as missing.                                |
 
 "Build" means the Docker build or a local `bun run build`; "runtime" means the
 endpoint server inside the image. A blank value, or an `encrypted:` value that
