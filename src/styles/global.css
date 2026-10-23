@@ -224,7 +224,7 @@ html[data-fx='on'] [data-dock-nav]:not([data-ready]) [data-sound-state='off'],
     view-transition-name: main;
   }
 
-  [data-dock-pill] {
+  [aria-current='page'] > [data-dock-pill] {
     view-transition-name: dock-pill;
   }
 
