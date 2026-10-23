@@ -9,6 +9,8 @@ import {
 const KEYS = ['home', 'about', 'products', 'uses', 'findMe']
 
 const setup = (hash: string, withObserver = true) => {
+  const page = { atEnd: false }
+  const scrollListeners: (() => void)[] = []
   const current = new Map<string, boolean>()
   const anchors: DockAnchor[] = KEYS.map((key) => ({
     dataset: { dockPage: key },
@@ -25,6 +27,10 @@ const setup = (hash: string, withObserver = true) => {
     anchors,
     findSection: (id) => ({ id }),
     hash,
+    atPageEnd: () => page.atEnd,
+    onScroll: (listener) => {
+      scrollListeners.push(listener)
+    },
     createObserver: withObserver
       ? (callback) => {
           reporters.push(callback)
@@ -40,7 +46,11 @@ const setup = (hash: string, withObserver = true) => {
   const see = (id: string, isIntersecting: boolean): void => {
     for (const report of reporters) report([{ target: { id }, isIntersecting }])
   }
-  return { marked, see, observed }
+  const scrollTo = (atEnd: boolean): void => {
+    page.atEnd = atEnd
+    for (const listener of scrollListeners) listener()
+  }
+  return { marked, see, observed, scrollTo }
 }
 
 describe('mountDockActive', () => {
@@ -64,6 +74,15 @@ describe('mountDockActive', () => {
     see('find-me', true)
     expect(marked()).toEqual(['findMe'])
     see('find-me', false)
+    expect(marked()).toEqual(['home'])
+  })
+
+  test('marks Find me at the end of the page and keeps it on the first empty report', () => {
+    const { marked, see, scrollTo } = setup('#find-me')
+    scrollTo(true)
+    see('products', false)
+    expect(marked()).toEqual(['findMe'])
+    scrollTo(false)
     expect(marked()).toEqual(['home'])
   })
 

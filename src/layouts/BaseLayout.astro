@@ -225,6 +225,12 @@ const socialTags = [
       anchors: [...document.querySelectorAll<HTMLElement>('[data-dock-page]')],
       findSection: (id) => document.querySelector(`#${id}`),
       hash: location.hash,
+      atPageEnd: () =>
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 2,
+      onScroll: (listener) => {
+        window.addEventListener('scroll', listener, { passive: true })
+      },
       createObserver:
         typeof IntersectionObserver === 'undefined'
           ? undefined
