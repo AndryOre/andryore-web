@@ -49,6 +49,7 @@ const {
 const copy = chrome[locale]
 const { path: routePath } = splitLocalePath(Astro.url.pathname)
 const path = routePath === '/404/' ? '/' : routePath
+const isHome = routePath === '/'
 const alternates = alternatesFor(path)
 const canonical = absoluteUrl(localePath(locale, path))
 const fullTitle = documentTitle(title, copy.wordmark)
@@ -191,6 +192,7 @@ const socialTags = [
 
     <div
       data-dock-slot
+      data-home={isHome ? '' : undefined}
       class="pointer-events-none fixed inset-x-0 bottom-4 z-40 flex justify-center px-4"
     >
       <Dock
@@ -198,7 +200,7 @@ const socialTags = [
         copy={copy.dock}
         themeCopy={copy.theme}
         locale={locale}
-        path={path}
+        path={routePath}
       />
     </div>
   </body>
@@ -206,6 +208,8 @@ const socialTags = [
 
 <script>
   import { rememberLocale } from '../i18n/preference'
+  import { mountDockActive } from '../scripts/dock-active'
+  import { mountDockSoundState } from '../scripts/dock-state'
   import { watchHeaderSurface } from '../scripts/header-surface'
   import {
     restoreLocaleScroll,
@@ -214,6 +218,31 @@ const socialTags = [
   import { soundTriggers } from '../scripts/sound-triggers'
 
   soundTriggers.mount(document)
+  mountDockSoundState(document.querySelector('[data-dock-sound]'))
+
+  if (document.querySelector('[data-dock-slot][data-home]')) {
+    mountDockActive({
+      anchors: [...document.querySelectorAll<HTMLElement>('[data-dock-page]')],
+      findSection: (id) => document.querySelector(`#${id}`),
+      hash: location.hash,
+      atPageEnd: () =>
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 2,
+      onScroll: (listener) => {
+        window.addEventListener('scroll', listener, { passive: true })
+      },
+      createObserver:
+        typeof IntersectionObserver === 'undefined'
+          ? undefined
+          : (callback) =>
+              new IntersectionObserver(
+                (entries) => {
+                  callback(entries)
+                },
+                { rootMargin: '-40% 0px -55% 0px' },
+              ),
+    })
+  }
 
   const header = document.querySelector('.site-header')
   const sentinel = document.querySelector('[data-header-sentinel]')

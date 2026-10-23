@@ -68,7 +68,7 @@ describe('Dock', () => {
     const html = render('en', '/')
     expect(html).toMatch(/role="switch"[^>]*aria-checked="false"/)
     expect(html).toContain('Sound off')
-    expect(html).not.toContain('data-dock-sound-dot')
+    expect(html).toContain('data-fx="off"')
   })
 
   test('localises names and links in Spanish', () => {
@@ -82,8 +82,37 @@ describe('Dock', () => {
   test('marks only the current page and draws the pill on it', () => {
     const html = render('en', '/about/')
     expect(html.match(/aria-current="page"/g)).toHaveLength(1)
-    expect(html.match(/data-dock-pill/g)).toHaveLength(1)
+    expect(html.match(/data-dock-pill/g)).toHaveLength(5)
     expect(html).toMatch(/href="\/about\/"[^>]*aria-current="page"/)
+  })
+
+  test.each<[Locale, string, string]>([
+    ['en', '/', 'home'],
+    ['es', '/', 'home'],
+    ['en', '/about/', 'about'],
+    ['es', '/about/', 'about'],
+    ['en', '/uses/', 'uses'],
+    ['es', '/uses/', 'uses'],
+    ['en', '/products/snug/', 'products'],
+    ['es', '/products/snug/', 'products'],
+  ])('%s %s marks %s', (locale, path, key) => {
+    const html = render(locale, path)
+    expect(html.match(/aria-current="page"/g)).toHaveLength(1)
+    expect(html).toMatch(
+      new RegExp(`aria-current="page"[^>]*data-dock-page="${key}"`),
+    )
+  })
+
+  test.each<[Locale, string]>([
+    ['en', '/404/'],
+    ['es', '/404/'],
+  ])('%s %s marks no page', (locale, path) => {
+    expect(render(locale, path)).not.toContain('aria-current="page"')
+  })
+
+  test('tags every page link for the home scroll spy', () => {
+    const html = render('en', '/')
+    expect(html.match(/data-dock-page="/g)).toHaveLength(5)
   })
 
   test('marks no page on a page the dock does not list', () => {
@@ -182,5 +211,22 @@ describe('SoundSwitch', () => {
     expect(html).toContain('aria-checked="true"')
     expect(html).toContain('data-dock-sound-dot')
     expect(html).toContain('Sonido activado')
+    expect(html).toContain('data-fx="on"')
+  })
+
+  test('renders both variants so CSS can pick one before hydration', () => {
+    const html = renderSwitch('unknown')
+    expect(html).toContain('data-fx="off"')
+    expect(html.match(/data-sound-state="on"/g)).toHaveLength(3)
+    expect(html.match(/data-sound-state="off"/g)).toHaveLength(2)
+  })
+})
+
+describe('Dock pre-hydration state', () => {
+  test('is not ready on the server and renders all three theme icons', () => {
+    const html = render('en', '/about/')
+    expect(html).not.toContain('data-ready')
+    for (const option of ['auto', 'light', 'dark'])
+      expect(html).toContain(`data-theme-icon="${option}"`)
   })
 })

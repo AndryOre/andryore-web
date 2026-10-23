@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import { runInNewContext } from 'node:vm'
 
 import astroConfig from '../../astro.config.mjs'
+import { FX_STORAGE_KEY } from '../lib/fx-store'
 import {
   applyResolvedTheme,
   resolveTheme,
@@ -22,14 +23,20 @@ const THROWS = '<throws>'
 function createFakePage(options: {
   stored: string | null
   systemDark: boolean
+  storedFx?: string | null
 }) {
+  const requestedKeys: string[] = []
   const classes = new Set<string>()
   const dataset: Record<string, string> = {}
   const metas = ['light', 'dark'].map((themeColor) => ({
     media: `(prefers-color-scheme: ${themeColor})`,
     dataset: { themeColor },
   }))
-  const state = { stored: options.stored, systemDark: options.systemDark }
+  const state = {
+    stored: options.stored,
+    storedFx: options.storedFx ?? null,
+    systemDark: options.systemDark,
+  }
   const queryListeners: Listener[] = []
   const windowListeners = new Map<string, Listener>()
 
@@ -52,9 +59,10 @@ function createFakePage(options: {
     },
   }
   const localStorage = {
-    getItem: () => {
+    getItem: (key: string) => {
+      requestedKeys.push(key)
       if (state.stored === THROWS) throw new Error('blocked')
-      return state.stored
+      return key === FX_STORAGE_KEY ? state.storedFx : state.stored
     },
   }
 
@@ -70,6 +78,12 @@ function createFakePage(options: {
   return {
     isDark: () => classes.has('dark'),
     pref: () => dataset.themePref,
+    fx: () => dataset.fx,
+    requestedKeys,
+    changeStoredFx: (storedFx: string | null) => {
+      state.storedFx = storedFx
+      windowListeners.get('storage')?.()
+    },
     metaMedia: () => metas.map((meta) => meta.media),
     changeSystem: (systemDark: boolean) => {
       state.systemDark = systemDark
@@ -173,6 +187,44 @@ describe('theme init script', () => {
         )
       }
     }
+  })
+})
+
+describe('theme init script Sound state', () => {
+  test('reads the same key the Sound store writes', () => {
+    const page = createFakePage({ stored: null, systemDark: false })
+    expect(page.requestedKeys).toContain(FX_STORAGE_KEY)
+  })
+
+  test('mirrors a stored on choice on the root', () => {
+    const page = createFakePage({
+      stored: null,
+      systemDark: false,
+      storedFx: 'on',
+    })
+    expect(page.fx()).toBe('on')
+  })
+
+  test('defaults to off with nothing or anything else stored', () => {
+    expect(createFakePage({ stored: null, systemDark: false }).fx()).toBe('off')
+    const page = createFakePage({
+      stored: null,
+      systemDark: false,
+      storedFx: 'maybe',
+    })
+    expect(page.fx()).toBe('off')
+  })
+
+  test('falls back to off when storage throws', () => {
+    expect(createFakePage({ stored: THROWS, systemDark: false }).fx()).toBe(
+      'off',
+    )
+  })
+
+  test('re-applies when another tab changes the Sound choice', () => {
+    const page = createFakePage({ stored: null, systemDark: false })
+    page.changeStoredFx('on')
+    expect(page.fx()).toBe('on')
   })
 })
 

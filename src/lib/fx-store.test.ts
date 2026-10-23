@@ -109,3 +109,24 @@ describe('fx store', () => {
     expect(readFx(readOnly)).toBe(false)
   })
 })
+
+describe('writeFx root mirror', () => {
+  test('keeps html data-fx in sync after each toggle', () => {
+    const dataset: Record<string, string> = {}
+    const previous = Object.getOwnPropertyDescriptor(globalThis, 'document')
+    Object.defineProperty(globalThis, 'document', {
+      value: { documentElement: { dataset } },
+      configurable: true,
+    })
+    try {
+      writeFx(fakeStorage(), true)
+      expect(dataset.fx).toBe('on')
+      writeFx(brokenStorage, false)
+      expect(dataset.fx).toBe('off')
+      writeFx(fakeStorage(), false)
+    } finally {
+      if (previous) Object.defineProperty(globalThis, 'document', previous)
+      else Reflect.deleteProperty(globalThis, 'document')
+    }
+  })
+})

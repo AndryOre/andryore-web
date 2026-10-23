@@ -123,7 +123,12 @@ const getSoundSnapshot = (): boolean => readFx(getFxStorage())
 const getServerSoundSnapshot = (): boolean => false
 const getServerAvailability = (): SoundAvailability => 'unknown'
 
-function SoundIcon({ enabled }: { enabled: boolean }) {
+const unsubscribeNothing = (): void => undefined
+const subscribeToNothing = (): (() => void) => unsubscribeNothing
+const readHydrated = (): boolean => true
+const readNotHydrated = (): boolean => false
+
+function SoundIcon() {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -135,17 +140,14 @@ function SoundIcon({ enabled }: { enabled: boolean }) {
       aria-hidden="true"
     >
       <path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z" />
-      {enabled ? (
-        <>
-          <path d="M16 9a5 5 0 0 1 0 6" />
-          <path d="M19.364 18.364a9 9 0 0 0 0-12.728" />
-        </>
-      ) : (
-        <>
-          <line x1="22" x2="16" y1="9" y2="15" />
-          <line x1="16" x2="22" y1="9" y2="15" />
-        </>
-      )}
+      <g data-sound-state="on">
+        <path d="M16 9a5 5 0 0 1 0 6" />
+        <path d="M19.364 18.364a9 9 0 0 0 0-12.728" />
+      </g>
+      <g data-sound-state="off">
+        <line x1="22" x2="16" y1="9" y2="15" />
+        <line x1="16" x2="22" y1="9" y2="15" />
+      </g>
     </svg>
   )
 }
@@ -175,9 +177,15 @@ export function SoundSwitch({
 }) {
   return (
     <DockItem
-      label={enabled ? copy.on : copy.off}
+      label={
+        <>
+          <span data-sound-state="on">{copy.on}</span>
+          <span data-sound-state="off">{copy.off}</span>
+        </>
+      }
       hidden={availability === 'unavailable'}
       align="end"
+      fx={enabled ? 'on' : 'off'}
     >
       <Button
         variant="dock"
@@ -187,16 +195,16 @@ export function SoundSwitch({
         aria-label={copy.label}
         data-dock-sound
         data-sound="switch"
+        suppressHydrationWarning
         onClick={onToggle}
       >
-        <SoundIcon enabled={enabled} />
-        {enabled && (
-          <span
-            data-dock-sound-dot
-            aria-hidden="true"
-            className="absolute top-2.25 right-2.25 size-1.5 rounded-full bg-foreground"
-          />
-        )}
+        <SoundIcon />
+        <span
+          data-dock-sound-dot
+          data-sound-state="on"
+          aria-hidden="true"
+          className="absolute top-2.25 right-2.25 size-1.5 rounded-full bg-foreground"
+        />
       </Button>
     </DockItem>
   )
@@ -235,18 +243,21 @@ function DockItem({
   menuOpen = false,
   hidden = false,
   align = 'center',
+  fx,
   children,
 }: {
-  label: string
+  label: ReactNode
   menuOpen?: boolean
   hidden?: boolean
   align?: TooltipAlign
+  fx?: 'on' | 'off'
   children: ReactNode
 }) {
   return (
     <div
       className={cn('group relative', hidden && 'hidden')}
       data-menu-open={menuOpen ? '' : undefined}
+      data-fx={fx}
       data-sound-unavailable={hidden ? '' : undefined}
     >
       <div
@@ -451,6 +462,11 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
     soundEngine.getAvailability,
     getServerAvailability,
   )
+  const hydrated = useSyncExternalStore(
+    subscribeToNothing,
+    readHydrated,
+    readNotHydrated,
+  )
   const activeKey = activePageKey(path)
 
   const closeMenu = useCallback(() => {
@@ -476,6 +492,7 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
       data-dock-nav
+      data-ready={hydrated ? '' : undefined}
       className="pointer-events-auto relative inline-flex items-center gap-0 rounded-pill border border-border bg-card/92 p-0.5 backdrop-blur-lg min-[360px]:p-1 sm:gap-1 sm:p-2"
     >
       {DOCK_PAGES.map((page) => {
@@ -490,18 +507,21 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
               href={pageHref(locale, page.path)}
               aria-label={copy.pages[page.key]}
               aria-current={active ? 'page' : undefined}
+              data-dock-page={page.key}
+              suppressHydrationWarning
               {...analyticsAttributes(ANALYTICS_EVENTS.dockNavigate, {
                 page: page.key,
               })}
-              className={cn(ITEM_CLASS, active && 'text-foreground')}
-            >
-              {active && (
-                <span
-                  data-dock-pill
-                  aria-hidden="true"
-                  className="absolute inset-0 rounded-pill bg-muted"
-                />
+              className={cn(
+                ITEM_CLASS,
+                'group aria-[current=page]:text-foreground',
               )}
+            >
+              <span
+                data-dock-pill
+                aria-hidden="true"
+                className="absolute inset-0 hidden rounded-pill bg-muted group-aria-[current=page]:block"
+              />{' '}
               <span className="relative inline-flex">
                 <PageIcon page={page.key} />
               </span>
@@ -548,7 +568,16 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
             toggleMenu('theme')
           }}
         >
-          <ThemeIcon preference={preference} />
+          {THEME_PREFERENCES.map((option) => (
+            <span
+              key={option}
+              data-theme-icon={option}
+              data-active={preference === option ? '' : undefined}
+              className="contents"
+            >
+              <ThemeIcon preference={option} />
+            </span>
+          ))}
         </Button>
         {openMenu === 'theme' && (
           <ThemeMenu
