@@ -123,6 +123,7 @@ describe('writeFx root mirror', () => {
       expect(dataset.fx).toBe('on')
       writeFx(brokenStorage, false)
       expect(dataset.fx).toBe('off')
+      writeFx(fakeStorage(), false)
     } finally {
       if (previous) Object.defineProperty(globalThis, 'document', previous)
       else Reflect.deleteProperty(globalThis, 'document')
