@@ -51,6 +51,16 @@ export function readFx(storage: FxStorage | undefined): boolean {
 }
 
 /**
+ * Mirrors the Sound choice on `<html data-fx>`, which the dock reads before it
+ * hydrates. The inline theme script sets it on load.
+ * @param enabled Whether Sound is on.
+ */
+function paintFxRoot(enabled: boolean): void {
+  if (typeof document === 'undefined') return
+  document.documentElement.dataset.fx = enabled ? 'on' : 'off'
+}
+
+/**
  * Stores the Sound choice, keeping it in memory when storage fails.
  * @param storage The storage to write, if any.
  * @param enabled Whether Sound is on.
@@ -66,6 +76,7 @@ export function writeFx(
   } catch {
     memory.unsaved = true
   } finally {
+    paintFxRoot(enabled)
     if (typeof globalThis.dispatchEvent === 'function')
       globalThis.dispatchEvent(new Event(FX_CHANGE_EVENT))
   }
