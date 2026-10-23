@@ -2,13 +2,38 @@ import { describe, expect, test } from 'bun:test'
 
 import {
   activePageKey,
+  activeSectionKey,
   DOCK_PAGES,
+  hashSectionKey,
   MAGNIFICATION_MAX_SCALE,
   MAGNIFICATION_RADIUS_PX,
   magnificationScale,
   pageHref,
   type DockPageKey,
 } from './dock'
+
+describe('activeSectionKey', () => {
+  test.each<[string[], DockPageKey]>([
+    [[], 'home'],
+    [['products'], 'products'],
+    [['find-me'], 'findMe'],
+    [['products', 'find-me'], 'findMe'],
+    [['unknown'], 'home'],
+  ])('%j is %s', (visible, key) => {
+    expect(activeSectionKey(visible)).toBe(key)
+  })
+})
+
+describe('hashSectionKey', () => {
+  test.each<[string, DockPageKey]>([
+    ['', 'home'],
+    ['#products', 'products'],
+    ['#find-me', 'findMe'],
+    ['#other', 'home'],
+  ])('%j is %s', (hash, key) => {
+    expect(hashSectionKey(hash)).toBe(key)
+  })
+})
 
 describe('activePageKey', () => {
   test.each<[string, DockPageKey]>([

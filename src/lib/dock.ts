@@ -27,6 +27,37 @@ export function activePageKey(path: string): DockPageKey | undefined {
   return DOCK_PAGES.find((page) => page.section === section)?.key
 }
 
+/** Ids of the home page sections the dock follows, in page order. */
+export const HOME_SECTION_IDS: readonly string[] = DOCK_PAGES.filter((page) =>
+  page.path.startsWith('/#'),
+).map((page) => page.section)
+
+/**
+ * Which dock page the home scroll position belongs to.
+ * @param visibleSections Ids of the home sections currently in view.
+ * @returns The page of the last visible section in page order, or `home` when
+ *   none is in view.
+ */
+export function activeSectionKey(
+  visibleSections: readonly string[],
+): DockPageKey {
+  const visible = DOCK_PAGES.filter(
+    (page) =>
+      HOME_SECTION_IDS.includes(page.section) &&
+      visibleSections.includes(page.section),
+  )
+  return visible.at(-1)?.key ?? 'home'
+}
+
+/**
+ * Dock page of a location hash on the home page.
+ * @param hash A location hash such as `#products`.
+ * @returns The page of that section, or `home` for any other hash.
+ */
+export function hashSectionKey(hash: string): DockPageKey {
+  return activeSectionKey([hash.replace(/^#/, '')])
+}
+
 /**
  * Link target of a dock page in a language.
  * @param locale The language to link to.

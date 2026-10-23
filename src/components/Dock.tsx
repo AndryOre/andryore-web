@@ -507,18 +507,21 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
               href={pageHref(locale, page.path)}
               aria-label={copy.pages[page.key]}
               aria-current={active ? 'page' : undefined}
+              data-dock-page={page.key}
+              suppressHydrationWarning
               {...analyticsAttributes(ANALYTICS_EVENTS.dockNavigate, {
                 page: page.key,
               })}
-              className={cn(ITEM_CLASS, active && 'text-foreground')}
-            >
-              {active && (
-                <span
-                  data-dock-pill
-                  aria-hidden="true"
-                  className="absolute inset-0 rounded-pill bg-muted"
-                />
+              className={cn(
+                ITEM_CLASS,
+                'group aria-[current=page]:text-foreground',
               )}
+            >
+              <span
+                data-dock-pill
+                aria-hidden="true"
+                className="absolute inset-0 hidden rounded-pill bg-muted group-aria-[current=page]:block"
+              />{' '}
               <span className="relative inline-flex">
                 <PageIcon page={page.key} />
               </span>
