@@ -162,6 +162,34 @@ html[data-theme-pref='dark']
   color: var(--background);
 }
 
+[data-dock-nav]:not([data-ready]) [data-theme-icon],
+[data-dock-nav][data-ready] [data-theme-icon]:not([data-active]) {
+  display: none;
+}
+html:not([data-theme-pref])
+  [data-dock-nav]:not([data-ready])
+  [data-theme-icon='auto'],
+html[data-theme-pref='auto']
+  [data-dock-nav]:not([data-ready])
+  [data-theme-icon='auto'],
+html[data-theme-pref='light']
+  [data-dock-nav]:not([data-ready])
+  [data-theme-icon='light'],
+html[data-theme-pref='dark']
+  [data-dock-nav]:not([data-ready])
+  [data-theme-icon='dark'] {
+  display: contents;
+}
+
+html:not([data-fx='on'])
+  [data-dock-nav]:not([data-ready])
+  [data-sound-state='on'],
+html[data-fx='on'] [data-dock-nav]:not([data-ready]) [data-sound-state='off'],
+[data-dock-nav][data-ready] [data-fx='off'] [data-sound-state='on'],
+[data-dock-nav][data-ready] [data-fx='on'] [data-sound-state='off'] {
+  display: none;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   @layer base {
     :where(html.theme-fade),
