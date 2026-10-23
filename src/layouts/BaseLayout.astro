@@ -206,6 +206,7 @@ const socialTags = [
 
 <script>
   import { rememberLocale } from '../i18n/preference'
+  import { mountDockSoundState } from '../scripts/dock-state'
   import { watchHeaderSurface } from '../scripts/header-surface'
   import {
     restoreLocaleScroll,
@@ -214,6 +215,7 @@ const socialTags = [
   import { soundTriggers } from '../scripts/sound-triggers'
 
   soundTriggers.mount(document)
+  mountDockSoundState(document.querySelector('[data-dock-sound]'))
 
   const header = document.querySelector('.site-header')
   const sentinel = document.querySelector('[data-header-sentinel]')

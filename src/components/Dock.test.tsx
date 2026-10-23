@@ -68,7 +68,7 @@ describe('Dock', () => {
     const html = render('en', '/')
     expect(html).toMatch(/role="switch"[^>]*aria-checked="false"/)
     expect(html).toContain('Sound off')
-    expect(html).not.toContain('data-dock-sound-dot')
+    expect(html).toContain('data-fx="off"')
   })
 
   test('localises names and links in Spanish', () => {
@@ -182,5 +182,22 @@ describe('SoundSwitch', () => {
     expect(html).toContain('aria-checked="true"')
     expect(html).toContain('data-dock-sound-dot')
     expect(html).toContain('Sonido activado')
+    expect(html).toContain('data-fx="on"')
+  })
+
+  test('renders both variants so CSS can pick one before hydration', () => {
+    const html = renderSwitch('unknown')
+    expect(html).toContain('data-fx="off"')
+    expect(html.match(/data-sound-state="on"/g)).toHaveLength(3)
+    expect(html.match(/data-sound-state="off"/g)).toHaveLength(2)
+  })
+})
+
+describe('Dock pre-hydration state', () => {
+  test('is not ready on the server and renders all three theme icons', () => {
+    const html = render('en', '/about/')
+    expect(html).not.toContain('data-ready')
+    for (const option of ['auto', 'light', 'dark'])
+      expect(html).toContain(`data-theme-icon="${option}"`)
   })
 })
