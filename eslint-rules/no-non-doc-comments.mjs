@@ -1,11 +1,11 @@
 /**
  * Prefixes that mark a comment as a machine-readable directive (for ESLint:
- * `eslint`, `eslint-disable*`, `eslint-enable`, `global`; the TypeScript
- * compiler: `@ts-*`; Prettier: `prettier-ignore`) rather than prose this
- * rule should police.
+ * `eslint`, `eslint-disable*`, `eslint-enable`, `global`; Oxlint:
+ * `oxlint-disable*`, `oxlint-enable`; the TypeScript compiler: `@ts-*`;
+ * Prettier: `prettier-ignore`) rather than prose this rule should police.
  */
 const ALLOWED_DIRECTIVE_PATTERN =
-  /^(?:eslint(?:-[a-z-]+(?:\s|$)|\s+[@\w/-]+\s*:)|globals?\s|@ts-|prettier-ignore(?:\s|$))/
+  /^(?:eslint(?:-[a-z-]+(?:\s|$)|\s+[@\w/-]+\s*:)|oxlint-(?:enable|disable(?:-next)?(?:-line)?)(?:\s|$)|globals?\s|@ts-|prettier-ignore(?:\s|$))/
 
 /**
  * The exact prefix (including its two/three leading slashes) of a
