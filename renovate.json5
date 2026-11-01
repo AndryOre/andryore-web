@@ -105,5 +105,14 @@
       rangeStrategy: 'pin',
       automerge: false,
     },
+    {
+      matchDepNames: ['typescript7', '@astrojs/ts-content-mapper'],
+      rangeStrategy: 'pin',
+      automerge: false,
+    },
+    {
+      matchDepNames: ['typescript'],
+      allowedVersions: '<7',
+    },
   ],
 }

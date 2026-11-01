@@ -22,7 +22,7 @@
     "lint:fix": "eslint . --fix --cache --cache-strategy content",
     "lint:oxlint": "oxlint --type-aware --deny-warnings",
     "lint:parity": "bun parity/run.ts --oxlint node_modules/.bin/oxlint --type-aware",
-    "typecheck": "astro check && tsc --noEmit",
+    "typecheck": "astro sync && node_modules/typescript7/bin/tsc --noEmit --runExternalCode",
     "knip": "knip",
     "lint:docs": "bun scripts/lint-docs.ts",
     "lint:lighthouse": "bun scripts/lighthouse-budget.ts",
@@ -36,8 +36,8 @@
     "audit:fidelity": "bun scripts/fidelity-audit.ts"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.10",
     "@astrojs/compiler-rs": "0.5.2",
+    "@astrojs/ts-content-mapper": "0.2.0",
     "@axe-core/playwright": "^4.14.0",
     "@commitlint/cli": "^21.2.3",
     "@commitlint/config-conventional": "^21.2.3",
@@ -66,8 +66,9 @@
     "playwright": "^1.63.0",
     "schema-dts": "^2.1.0",
     "sharp": "^0.35.5",
-    "typescript": "~6.0.3",
+    "typescript": "6.0.3",
     "typescript-eslint": "^8.71.0",
+    "typescript7": "npm:typescript@7.1.0-beta",
     "yaml": "^2.9.1"
   },
   "packageManager": "bun@1.4.2",
@@ -81,7 +82,7 @@
     "@fontsource-variable/space-grotesk": "^5.3.0",
     "@radix-ui/react-dropdown-menu": "^2.2.1",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.4.0",
+    "astro": "^7.4.4",
     "clsx": "^2.1.1",
     "lucide-react": "^1.59.0",
     "react": "^19.3.1",
