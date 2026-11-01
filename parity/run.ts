@@ -13,12 +13,14 @@ import path from 'node:path'
 import { parseArgs } from 'node:util'
 import tseslint from 'typescript-eslint'
 
+import { NATIVE_PORTS } from '../eslint-rules/oxlint-rules.mjs'
 import {
   diffFindings,
   findingKey,
   parseAccepted,
   parseEslintJson,
   parseOxlintJson,
+  remapNativePorts,
   resolveGate,
   type AcceptedEntry,
   type Finding,
@@ -239,7 +241,7 @@ function runOxlint(
   if (status !== 0 && status !== 1) {
     throw new Error(`oxlint exited with status ${String(status)}`)
   }
-  return parseOxlintJson(stdout, REPO_ROOT)
+  return remapNativePorts(parseOxlintJson(stdout, REPO_ROOT), NATIVE_PORTS)
 }
 
 function runOxlintIfRequested(
@@ -256,7 +258,10 @@ const compareText = (left: string, right: string): number =>
   left.localeCompare(right)
 
 function listFiles(directory: string): string[] {
-  const entries: string[] = readdirSync(directory, { recursive: true })
+  const entries = readdirSync(directory, {
+    recursive: true,
+    encoding: 'utf8',
+  })
   return entries
     .filter((entry) => statSync(path.join(directory, entry)).isFile())
     .toSorted(compareText)

@@ -66,7 +66,7 @@ export default defineConfig([
     ],
     languageOptions: {
       parserOptions: {
-        projectService: { allowDefaultProject: ['parity/*.ts'] },
+        projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
     },
