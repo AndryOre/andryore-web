@@ -1,12 +1,25 @@
 import eslintComments from '@eslint-community/eslint-plugin-eslint-comments'
 import astro from 'eslint-plugin-astro'
+import jsdoc from 'eslint-plugin-jsdoc'
 import jsxA11y from 'eslint-plugin-jsx-a11y'
 import unicorn from 'eslint-plugin-unicorn'
 import { defineConfig, globalIgnores } from 'eslint/config'
+import tseslint from 'typescript-eslint'
 
 import localPlugin from './eslint-rules/index.mjs'
 
 const ASTRO_FILES = ['**/*.astro']
+
+/** The `<script>` blocks ESLint lints as virtual children of an `.astro` file. */
+const ASTRO_SCRIPT_FILES = ['**/*.astro/*.{ts,js}']
+
+/** The TypeScript `<script>` blocks, the only ones the jsdoc rules reach. */
+const ASTRO_TS_SCRIPT_FILES = ['**/*.astro/*.ts']
+
+/** The plain JavaScript `<script>` blocks, which only get the shared rules. */
+const ASTRO_JS_SCRIPT_FILES = ['**/*.astro/*.js']
+
+const ASTRO_AND_SCRIPT_FILES = [...ASTRO_FILES, ...ASTRO_SCRIPT_FILES]
 
 /**
  * The recommended `eslint-comments` rules, with `require-description` turned
@@ -15,6 +28,16 @@ const ASTRO_FILES = ['**/*.astro']
 const eslintCommentsRules = {
   ...eslintComments.configs.recommended.rules,
   '@eslint-community/eslint-comments/require-description': 'error',
+}
+
+/**
+ * `eslint-plugin-jsdoc`'s TypeScript-flavored recommended rules, with
+ * `require-jsdoc` off and `informative-docs` on.
+ */
+const jsdocRules = {
+  ...jsdoc.configs['flat/recommended-typescript-error'].rules,
+  'jsdoc/require-jsdoc': 'off',
+  'jsdoc/informative-docs': 'error',
 }
 
 /**
@@ -27,6 +50,12 @@ const eslintCommentsRules = {
  * the `eslint` and `eslint-plugin-astro` dependencies, and make
  * `bun run lint` Oxlint only.
  *
+ * ESLint also lints every `<script>` block of an `.astro` file as a virtual
+ * child file (`Foo.astro/1_1.ts`), so those are scoped here too: the
+ * non-type-checked typescript-eslint `strict` and `stylistic` rules, `jsdoc`
+ * on the TypeScript blocks, and the same rules as the component itself. Type
+ * information is never available to them, so every type-checked rule is off.
+ *
  * The `.astro` rule set is exactly: `astro/recommended`, `jsx-a11y`
  * recommended, `unicorn` recommended with this repo's overrides (including the
  * four formatting rules `eslint-config-prettier` used to switch off),
@@ -34,10 +63,24 @@ const eslintCommentsRules = {
  * needs type information, so the parser gets no `project`.
  */
 export default defineConfig([
-  { files: ASTRO_FILES, extends: [jsxA11y.flatConfigs.recommended] },
-  { files: ASTRO_FILES, extends: [unicorn.configs.recommended] },
   {
-    files: ASTRO_FILES,
+    files: ASTRO_TS_SCRIPT_FILES,
+    extends: [
+      tseslint.configs.strictTypeChecked,
+      tseslint.configs.stylisticTypeChecked,
+      tseslint.configs.disableTypeChecked,
+    ],
+    languageOptions: { parserOptions: { projectService: false } },
+    rules: { '@typescript-eslint/consistent-type-imports': 'error' },
+  },
+  {
+    files: ASTRO_JS_SCRIPT_FILES,
+    extends: [tseslint.configs.disableTypeChecked],
+  },
+  { files: ASTRO_AND_SCRIPT_FILES, extends: [jsxA11y.flatConfigs.recommended] },
+  { files: ASTRO_AND_SCRIPT_FILES, extends: [unicorn.configs.recommended] },
+  {
+    files: ASTRO_AND_SCRIPT_FILES,
     rules: {
       'unicorn/no-null': 'off',
       'unicorn/empty-brace-spaces': 'off',
@@ -70,7 +113,7 @@ export default defineConfig([
   },
   ...astro.configs.recommended,
   {
-    files: ASTRO_FILES,
+    files: [...ASTRO_FILES, ...ASTRO_TS_SCRIPT_FILES],
     plugins: {
       local: localPlugin,
       '@eslint-community/eslint-comments': eslintComments,
@@ -79,6 +122,13 @@ export default defineConfig([
       ...eslintCommentsRules,
       'local/no-non-doc-comments': 'error',
     },
+  },
+  {
+    files: ASTRO_TS_SCRIPT_FILES,
+    plugins: {
+      jsdoc: jsdoc.configs['flat/recommended-typescript-error'].plugins.jsdoc,
+    },
+    rules: jsdocRules,
   },
   {
     files: ['src/pages/**/*.astro'],
