@@ -264,3 +264,34 @@ describe('the Oxlint config', () => {
     expect(OXLINT_IGNORE_PATTERNS).toContain('.forge/**')
   })
 })
+
+describe('hexadecimal literal case', () => {
+  const eslint = new ESLint({ cwd: REPO_ROOT })
+  const filePath = path.join(REPO_ROOT, 'src/components/Hex.astro/1_1.js')
+
+  async function reportedRules(code: string): Promise<string[]> {
+    const [result] = await eslint.lintText(code, { filePath })
+    return (result?.messages ?? []).map((message) => message.ruleId ?? '')
+  }
+
+  test('both engines require lowercase digits, as Oxfmt writes them', async () => {
+    expect(
+      OXLINT_BASE_RULES[toOxlintRuleId('unicorn/number-literal-case')],
+    ).toEqual(['error', { hexadecimalValue: 'lowercase' }])
+    expect(await reportedRules('export const x = 0xABCDEF\n')).toContain(
+      'unicorn/number-literal-case',
+    )
+    expect(await reportedRules('export const x = 0xabcdef\n')).not.toContain(
+      'unicorn/number-literal-case',
+    )
+  })
+
+  test('Oxfmt writes hexadecimal digits in lowercase', async () => {
+    const proc = Bun.spawn(['bunx', 'oxfmt', '--stdin-filepath', 'hex.ts'], {
+      cwd: REPO_ROOT,
+      stdin: new Blob(['export const x = 0xABCDEF\n']),
+      stdout: 'pipe',
+    })
+    expect(await new Response(proc.stdout).text()).toContain('0xabcdef')
+  })
+})
