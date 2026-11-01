@@ -523,6 +523,19 @@ describe('ci.yml gates', () => {
     expect(ci.jobs?.['ci-passed']?.needs).toContain('build')
     expect(ci.jobs?.build?.name).toBe('Build')
   })
+
+  test('the quality job runs ESLint and Oxlint side by side, Oxlint not gating yet', () => {
+    const steps = ci.jobs?.quality?.steps ?? []
+    const runs = steps.map((step) => step.run)
+    expect(runs).toContain('bun run check')
+    const oxlintStep = steps.find((step) => step.run === 'bun run lint:oxlint')
+    expect(oxlintStep).toBeDefined()
+    expect(
+      (oxlintStep as Record<string, unknown> | undefined)?.[
+        'continue-on-error'
+      ],
+    ).toBe(true)
+  })
 })
 
 test.each(['main', 'develop'])(
