@@ -48,11 +48,11 @@ export function mountDockActive(options: DockActiveOptions): void {
     options
   const paint = (key: DockPageKey): void => {
     for (const anchor of anchors) {
-      if (anchor.dataset.dockPage === key) {
-        anchor.setAttribute('aria-current', 'page')
-      } else {
+      if (anchor.dataset.dockPage !== key) {
         anchor.removeAttribute('aria-current')
+        continue
       }
+      anchor.setAttribute('aria-current', 'page')
     }
   }
   paint(hashSectionKey(hash))
