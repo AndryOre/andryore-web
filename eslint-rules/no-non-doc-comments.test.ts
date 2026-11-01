@@ -33,6 +33,18 @@ ruleTester.run('no-non-doc-comments', rule, {
       code: '/* eslint-disable no-console */\nconsole.log(1)\n/* eslint-enable no-console */\n',
     },
     {
+      name: 'oxlint-disable-next-line directive',
+      code: '// oxlint-disable-next-line no-console -- reason\nconsole.log(1)\n',
+    },
+    {
+      name: 'oxlint-disable and oxlint-enable block directives',
+      code: '/* oxlint-disable no-console */\nconsole.log(1)\n/* oxlint-enable no-console */\n',
+    },
+    {
+      name: 'bare oxlint-disable line directive',
+      code: '// oxlint-disable\nconsole.log(1)\n',
+    },
+    {
       name: 'global directive',
       code: '/* global window */\nwindow.focus()\n',
     },
@@ -82,6 +94,16 @@ ruleTester.run('no-non-doc-comments', rule, {
     {
       name: 'prose starting with the word eslint',
       code: '// eslint is slow here\nexport const value = 1\n',
+      errors: [{ messageId: 'noNonDocComment' }],
+    },
+    {
+      name: 'prose starting with the word oxlint',
+      code: '// oxlint is fast here\nexport const value = 1\n',
+      errors: [{ messageId: 'noNonDocComment' }],
+    },
+    {
+      name: 'prose starting with an oxlint- compound word',
+      code: '// oxlint-style tooling runs here\nexport const value = 1\n',
       errors: [{ messageId: 'noNonDocComment' }],
     },
   ],
