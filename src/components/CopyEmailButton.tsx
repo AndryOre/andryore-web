@@ -84,12 +84,11 @@ export default function CopyEmailButton({
     }, RESET_DELAY_MS)
   }
 
-  const message =
-    outcome === 'copied'
-      ? copy.copiedMessage
-      : outcome === 'selected'
-        ? copy.selectedMessage
-        : ''
+  const messageByOutcome: Record<CopyOutcome, string> = {
+    copied: copy.copiedMessage,
+    selected: copy.selectedMessage,
+  }
+  const message = outcome === null ? '' : messageByOutcome[outcome]
 
   const copied = outcome === 'copied'
 

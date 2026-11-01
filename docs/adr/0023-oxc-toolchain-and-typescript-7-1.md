@@ -6,6 +6,10 @@ Accepted
 
 Date: 2026-11-01
 
+Revised: 2026-11-02, removed the four `unicorn` formatting overrides that
+replaced `eslint-config-prettier` for `.astro` files, and moved
+`.prettierignore` into the Oxfmt `ignorePatterns`.
+
 ## Context
 
 Linting, formatting and type-checking took about 60 seconds on a cold run:
