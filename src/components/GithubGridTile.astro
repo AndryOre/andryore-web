@@ -72,9 +72,9 @@ const stats = [
   data-tip-one={copy.tipOne}
   data-tip-other={copy.tipOther}
   data-tip-none={copy.tipNone}
-  class="github-tile bg-card border-border relative flex h-full min-w-0 flex-col gap-2.5 rounded-[1.25rem] border p-5"
+  class="github-tile relative flex h-full min-w-0 flex-col gap-2.5 rounded-[1.25rem] border border-border bg-card p-5"
 >
-  <p class="text-muted-foreground m-0 flex items-center justify-between gap-3 font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase">
+  <p class="m-0 flex items-center justify-between gap-3 font-mono text-[0.6875rem] font-medium tracking-[0.08em] text-muted-foreground uppercase">
     <span>{copy.label}</span>
     <time
       class="normal-case tabular-nums"
@@ -92,7 +92,7 @@ const stats = [
     >
       {total}
     </span>
-    <span class="text-muted-foreground text-[0.9375rem]">
+    <span class="text-[0.9375rem] text-muted-foreground">
       {copy.totalLabel}
     </span>
   </p>
@@ -149,7 +149,7 @@ const stats = [
       </dd>
     </div>
   </dl>
-  <p class="text-muted-foreground m-0 mt-auto flex items-center justify-between gap-3 font-mono text-[0.6875rem]">
+  <p class="m-0 mt-auto flex items-center justify-between gap-3 font-mono text-[0.6875rem] text-muted-foreground">
     <a
       href={copy.profileHref}
       {...externalLinkAttributes(copy.profileHref)}

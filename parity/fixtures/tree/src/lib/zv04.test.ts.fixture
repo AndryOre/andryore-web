@@ -1,0 +1,5 @@
+import { expect } from 'bun:test'
+
+const promise = Promise.reject(new Error('x'))
+expect(promise).rejects.toThrow()
+expect(promise).resolves.toBe(1)
