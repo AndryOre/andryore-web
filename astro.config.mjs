@@ -1,6 +1,6 @@
+import { defineConfig } from 'astro/config'
 import react from '@astrojs/react'
 import tailwindcss from '@tailwindcss/vite'
-import { defineConfig } from 'astro/config'
 
 import parityIntegration from './src/i18n/parity-integration'
 import { UMAMI_GATEWAY_ORIGIN, UMAMI_SCRIPT_ORIGIN } from './src/lib/analytics'

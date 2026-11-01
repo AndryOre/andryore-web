@@ -15,12 +15,12 @@ const labelClass =
 
 <article
   data-language-tile
-  class="bg-card border-border relative flex h-full min-w-0 flex-col justify-between gap-2.5 overflow-hidden rounded-[1.25rem] border p-4 shadow-[inset_0_1px_0_var(--hl),0_10px_28px_-16px_rgb(0_0_0/0.28)]"
+  class="relative flex h-full min-w-0 flex-col justify-between gap-2.5 overflow-hidden rounded-[1.25rem] border border-border bg-card p-4 shadow-[inset_0_1px_0_var(--hl),0_10px_28px_-16px_rgb(0_0_0/0.28)]"
 >
   <div class="flex items-center gap-2.5">
     <svg
       viewBox="0 0 24 24"
-      class="text-foreground size-5.5 shrink-0"
+      class="size-5.5 shrink-0 text-foreground"
       fill="none"
       stroke="currentColor"
       stroke-width="2"
@@ -38,11 +38,11 @@ const labelClass =
     aria-label={copy.label}
     data-language-tabs
     data-locale={locale}
-    class="language-tabs bg-muted rounded-pill relative mt-auto grid grid-cols-2 p-1 font-mono"
+    class="language-tabs relative mt-auto grid grid-cols-2 rounded-pill bg-muted p-1 font-mono"
   >
     <span
       aria-hidden="true"
-      class="language-indicator bg-foreground rounded-pill absolute top-1 left-1"
+      class="language-indicator absolute top-1 left-1 rounded-pill bg-foreground"
     ></span>
     {LOCALES.map((target) => (
       <a
@@ -53,7 +53,7 @@ const labelClass =
         aria-label={`${copy.codes[target]} ${copy[target]}`}
         aria-current={target === locale ? 'true' : undefined}
         class:list={[
-          'language-tab rounded-pill relative z-10 grid min-h-11 place-items-center text-[13px] font-bold no-underline',
+          'language-tab relative z-10 grid min-h-11 place-items-center rounded-pill text-[13px] font-bold no-underline',
           target === locale ? 'text-background' : 'text-muted-foreground',
         ]}
       >

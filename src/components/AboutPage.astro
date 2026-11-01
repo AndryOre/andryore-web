@@ -78,7 +78,7 @@ const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
   >
     <a
       href={localePath(locale, '/')}
-      class="text-muted-foreground hover:text-foreground inline-flex min-h-11 w-fit items-center gap-2 font-mono text-xs tracking-wide no-underline"
+      class="inline-flex min-h-11 w-fit items-center gap-2 font-mono text-xs tracking-wide text-muted-foreground no-underline hover:text-foreground"
       data-page-back
     >
       <span aria-hidden="true">←</span>
@@ -99,10 +99,10 @@ const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
         width={240}
         height={240}
         loading="eager"
-        class="bg-card-2 border-border size-[120px] rounded-[26px] border object-contain"
+        class="size-[120px] rounded-[26px] border border-border bg-card-2 object-contain"
       />
       <div class="grid min-w-0 gap-3.5">
-        <p class="text-muted-foreground m-0 font-mono text-[11px] font-medium tracking-[0.08em] uppercase">
+        <p class="m-0 font-mono text-[11px] font-medium tracking-[0.08em] text-muted-foreground uppercase">
           {copy.kicker}
         </p>
         <h1
@@ -120,7 +120,7 @@ const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
             <span class="caret caret-em"></span>
           </span>
         </h1>
-        <p class="text-muted-foreground m-0 max-w-[56ch] text-[17px]">
+        <p class="m-0 max-w-[56ch] text-[17px] text-muted-foreground">
           {copy.subline}
         </p>
         <div class="flex flex-wrap gap-2.5">
@@ -162,7 +162,7 @@ const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
                 <Icon aria-hidden="true" size={18} />
               </span>
               <h3 class="m-0 text-[15px] font-bold">{item.title}</h3>
-              <p class="text-muted-foreground m-0 text-sm">{item.body}</p>
+              <p class="m-0 text-sm text-muted-foreground">{item.body}</p>
             </li>
           )
         })}
@@ -192,13 +192,13 @@ const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
               data-about-live={stat.key === 'contributions' ? '' : undefined}
               data-locale={locale}
             >
-              <span class="text-muted-foreground mb-1" aria-hidden="true">
+              <span class="mb-1 text-muted-foreground" aria-hidden="true">
                 <Icon aria-hidden="true" size={18} />
               </span>
-              <dt class="text-muted-foreground order-last font-mono text-[11px] leading-[1.4]">
+              <dt class="order-last font-mono text-[11px] leading-[1.4] text-muted-foreground">
                 {stat.label}
               </dt>
-              <dd class="m-0 text-[28px] leading-[1.1] [overflow-wrap:anywhere] font-bold tracking-[-0.03em] tabular-nums">
+              <dd class="m-0 text-[28px] leading-[1.1] font-bold tracking-[-0.03em] [overflow-wrap:anywhere] tabular-nums">
                 {stat.count === undefined ? (
                   stat.display
                 ) : (
@@ -224,17 +224,17 @@ const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
       <h2 id="timeline-heading" class={headingClass}>
         {copy.timelineHeading}
       </h2>
-      <ol class="about-timeline border-border m-0 ml-1.5 grid list-none gap-0 border-l p-0 pl-[22px]">
+      <ol class="about-timeline m-0 ml-1.5 grid list-none gap-0 border-l border-border p-0 pl-[22px]">
         {copy.timeline.map((entry) => (
           <li class="relative grid gap-0.5 pb-[22px]">
             <time
               datetime={entry.date}
-              class="text-muted-foreground font-mono text-[11px] font-medium tracking-[0.06em] uppercase"
+              class="font-mono text-[11px] font-medium tracking-[0.06em] text-muted-foreground uppercase"
             >
               {entry.date}
             </time>
             <strong class="font-bold">{entry.title}</strong>
-            <span class="text-muted-foreground text-sm">{entry.body}</span>
+            <span class="text-sm text-muted-foreground">{entry.body}</span>
           </li>
         ))}
       </ol>
@@ -268,7 +268,7 @@ const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
       </ul>
       <a
         href={localePath(locale, '/uses/')}
-        class="text-muted-foreground hover:text-foreground inline-flex min-h-11 w-fit items-center font-mono text-xs underline underline-offset-[3px]"
+        class="inline-flex min-h-11 w-fit items-center font-mono text-xs text-muted-foreground underline underline-offset-[3px] hover:text-foreground"
       >
         {copy.stackLink}
         <span aria-hidden="true">&nbsp;→</span>

@@ -1,6 +1,5 @@
 ---
 import '../styles/global.css'
-
 import jetbrainsMonoLatin from '@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2?url'
 import spaceGroteskLatin from '@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2?url'
 
@@ -144,7 +143,7 @@ const socialTags = [
   <body class="flex min-h-dvh flex-col">
     <a
       href="#main"
-      class="bg-primary text-primary-foreground rounded-pill fixed top-3 left-3 z-50 inline-flex min-h-11 -translate-y-20 items-center px-4 font-mono text-xs font-medium focus:translate-y-0"
+      class="fixed top-3 left-3 z-50 inline-flex min-h-11 -translate-y-20 items-center rounded-pill bg-primary px-4 font-mono text-xs font-medium text-primary-foreground focus:translate-y-0"
     >
       {copy.skipLink}
     </a>
@@ -169,9 +168,9 @@ const socialTags = [
           <span>{copy.wordmarkParts[0]}</span>
           <span class="text-primary">{copy.wordmarkParts[1]}</span>
         </a>
-        <span class="site-header-chip text-muted-foreground border-border rounded-pill inline-flex items-center gap-2 border px-3 py-1.5 font-mono text-[0.6875rem] font-medium tracking-[0.06em] whitespace-nowrap uppercase">
+        <span class="site-header-chip inline-flex items-center gap-2 rounded-pill border border-border px-3 py-1.5 font-mono text-[0.6875rem] font-medium tracking-[0.06em] whitespace-nowrap text-muted-foreground uppercase">
           <span
-            class="bg-success size-[7px] rounded-full"
+            class="size-[7px] rounded-full bg-success"
             aria-hidden="true"
           ></span>
           {copy.openToWork}
