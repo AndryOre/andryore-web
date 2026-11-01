@@ -8,31 +8,26 @@ interface ServeOptions {
   fetch: () => Response
 }
 
-const ENVIRONMENT_KEYS = [
-  'PORT',
+const CLEARED_KEYS = [
+  'DOTENV_PRIVATE_KEY',
   'GITHUB_TOKEN',
   'TWITCH_CLIENT_ID',
   'TWITCH_CLIENT_SECRET',
 ] as const
 
 describe('stream status server', () => {
-  const original = Object.fromEntries(
-    ENVIRONMENT_KEYS.map((key) => [key, process.env[key]]),
-  )
+  const snapshot = { ...process.env }
 
   afterEach(() => {
-    for (const key of ENVIRONMENT_KEYS) {
+    for (const key of Object.keys(process.env)) {
       Reflect.deleteProperty(process.env, key)
-      const value = original[key]
-      if (value !== undefined) process.env[key] = value
     }
+    Object.assign(process.env, snapshot)
   })
 
   test('binds the configured port and serves both routes without credentials', async () => {
     process.env.PORT = '4321'
-    delete process.env.GITHUB_TOKEN
-    delete process.env.TWITCH_CLIENT_ID
-    delete process.env.TWITCH_CLIENT_SECRET
+    for (const key of CLEARED_KEYS) Reflect.deleteProperty(process.env, key)
     const serve = spyOn(Bun, 'serve').mockImplementation((() => ({})) as never)
 
     await import('./stream-status-server')
