@@ -1,0 +1,89 @@
+{
+  "src/components/zv05.tsx": [
+    "shadcn/no-arbitrary-values",
+    "shadcn/no-inline-styles",
+    "shadcn/no-raw-colors",
+    "shadcn/no-restyle",
+    "shadcn/no-unknown-classes"
+  ],
+  "src/components/zv05b.tsx": [
+    "shadcn/require-static-classes"
+  ],
+  "src/components/zv06.tsx": [
+    "@eslint-react/exhaustive-deps",
+    "@eslint-react/rules-of-hooks",
+    "@eslint-react/set-state-in-effect",
+    "react-hooks/exhaustive-deps",
+    "react-hooks/rules-of-hooks",
+    "react-hooks/set-state-in-effect"
+  ],
+  "src/components/zv07.tsx": [
+    "@eslint-react/no-missing-key",
+    "jsx-a11y/alt-text",
+    "jsx-a11y/click-events-have-key-events",
+    "jsx-a11y/no-static-element-interactions",
+    "unicorn/no-useless-undefined"
+  ],
+  "src/lib/zv01.ts": [
+    "local/no-non-doc-comments"
+  ],
+  "src/lib/zv02.ts": [
+    "jsdoc/informative-docs",
+    "jsdoc/require-param",
+    "jsdoc/require-returns"
+  ],
+  "src/lib/zv03.ts": [
+    "unicorn/name-replacements"
+  ],
+  "src/lib/zv04.test.ts": [
+    "no-restricted-syntax"
+  ],
+  "src/lib/zv08.ts": [
+    "@eslint-community/eslint-comments/require-description",
+    "@typescript-eslint/no-confusing-void-expression",
+    "unused-disable-directive"
+  ],
+  "src/lib/zv08b.ts": [
+    "@eslint-community/eslint-comments/no-unlimited-disable",
+    "@eslint-community/eslint-comments/require-description",
+    "unicorn/no-abusive-eslint-disable"
+  ],
+  "src/lib/zv08c.ts": [
+    "@eslint-community/eslint-comments/no-unused-enable",
+    "@eslint-community/eslint-comments/require-description",
+    "@typescript-eslint/no-confusing-void-expression",
+    "unused-disable-directive"
+  ],
+  "src/lib/zv09.ts": [
+    "@typescript-eslint/no-base-to-string",
+    "@typescript-eslint/no-floating-promises",
+    "@typescript-eslint/no-misused-promises",
+    "@typescript-eslint/restrict-template-expressions",
+    "unicorn/no-for-each",
+    "unicorn/no-useless-promise-resolve-reject",
+    "unicorn/no-useless-template-literals"
+  ],
+  "src/lib/zv10.ts": [
+    "@typescript-eslint/consistent-type-definitions",
+    "@typescript-eslint/dot-notation",
+    "@typescript-eslint/no-explicit-any",
+    "@typescript-eslint/no-non-null-assertion",
+    "@typescript-eslint/no-unnecessary-boolean-literal-compare",
+    "@typescript-eslint/no-unnecessary-condition",
+    "@typescript-eslint/no-unsafe-member-access",
+    "@typescript-eslint/no-unsafe-return",
+    "unicorn/no-unnecessary-boolean-comparison",
+    "unicorn/prefer-ternary"
+  ],
+  "src/lib/zv11.ts": [
+    "@typescript-eslint/ban-ts-comment",
+    "unicorn/prefer-node-protocol"
+  ],
+  "src/lib/zv12.ts": [
+    "@typescript-eslint/no-unused-vars",
+    "no-var"
+  ],
+  "src/lib/zvBad_Name.ts": [
+    "unicorn/filename-case"
+  ]
+}
