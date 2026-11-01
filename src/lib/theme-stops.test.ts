@@ -108,7 +108,6 @@ describe('squeezeForLevel', () => {
     expect(squeezeForLevel(100)).toBe(1)
     expect(squeezeForLevel(108)).toBeCloseTo(0.96, 10)
     expect(squeezeForLevel(-8)).toBeCloseTo(0.96, 10)
-    expect(squeezeForLevel(-8)).toBeCloseTo(0.96, 10)
     expect(squeezeForLevel(104)).toBeCloseTo(0.98, 10)
   })
 })
