@@ -37,3 +37,4 @@ ADR 0016 does not exist: its decision was merged into
 | 0020   | [External links open in a new tab](0020-external-links-open-in-a-new-tab.md)                             | Accepted | -                               |
 | 0021   | [Stack scene scroll sound](0021-stack-scroll-sound.md)                                                   | Accepted | -                               |
 | 0022   | [Secrets live in dotenvx-encrypted env files](0022-secrets-in-dotenvx-encrypted-env-files.md)            | Accepted | -                               |
+| 0023   | [Oxc toolchain and TypeScript 7.1](0023-oxc-toolchain-and-typescript-7-1.md)                             | Accepted | -                               |
