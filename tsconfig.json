@@ -1,5 +1,8 @@
 {
   "extends": "astro/tsconfigs/strict",
+  "contentMappers": [
+    { "package": "@astrojs/ts-content-mapper", "extensions": [".astro"] }
+  ],
   "compilerOptions": {
     "target": "ES2023",
     "lib": ["ES2025"],
@@ -29,6 +32,7 @@
     "scripts",
     "e2e",
     "playwright.config.ts",
+    "oxlint.config.ts",
     "playwright.visual.config.ts",
     ".github/**/*.ts"
   ],

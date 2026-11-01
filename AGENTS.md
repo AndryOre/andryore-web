@@ -6,16 +6,16 @@ Instructions for coding agents working in this repository.
 
 A single-package bun repository for the personal site
 [andryore.dev](https://andryore.dev): a static Astro site, TypeScript (strict),
-ESM-only. The root holds the tooling (husky, commitlint, prettier, eslint, knip)
-and the documentation:
+ESM-only. The root holds the tooling (husky, commitlint, oxfmt, oxlint, eslint,
+knip) and the documentation:
 
 - [`docs/adr`](docs/adr): architecture decision records.
 - [`docs/brand`](docs/brand): the public brand assets and their export tooling.
 - [`docs/agents`](docs/agents): the tracker and `/forge` specifics for agents.
 - [`docs/configuration.md`](docs/configuration.md): every environment variable
   and the dotenvx workflow.
-- [`eslint-rules`](eslint-rules): local ESLint rules, such as the TSDoc-only
-  comment rule.
+- [`eslint-rules`](eslint-rules): local lint rules, such as the TSDoc-only
+  comment rule, which run in Oxlint and in ESLint.
 - [`scripts`](scripts): repo scripts (commit lint, docs link check) and their
   tests.
 
@@ -37,8 +37,10 @@ never use another package manager (this repo uses `bun.lock`). Read
 `package.json`'s `scripts` before inventing a command.
 
 - `bun run check` — format check, lint, typecheck and knip. Run this after any
-  change. `typecheck` runs `astro check && tsc --noEmit`, so `.astro` files are
-  type-checked too.
+  change. `typecheck` runs `astro sync` and then TypeScript 7.1 (`typescript7`)
+  with the `@astrojs/ts-content-mapper`, so `.astro` files are type-checked too.
+  `lint` runs Oxlint (type-aware) on everything but `.astro` and ESLint on
+  `.astro` only ([ADR 0023](docs/adr/0023-oxc-toolchain-and-typescript-7-1.md)).
 - `bun run test` — the `bun test` suite, with coverage on. `bunfig.toml` sets a
   `coverageThreshold` (lines 0.55, functions 0.4); a run below it fails, so add
   tests with new code instead of lowering the threshold.
@@ -50,8 +52,8 @@ never use another package manager (this repo uses `bun.lock`). Read
   `build`; you do not.
 - `bun run lint:docs` — offline link and anchor check of the Markdown. Run this
   after any docs change.
-- `bun run fix` — formats the repository with Prettier, then autofixes ESLint.
-  Prose wraps always.
+- `bun run fix` — formats the repository with Oxfmt, then autofixes Oxlint and
+  ESLint. Prose wraps always.
 - `bun run build` — **do not run unless explicitly asked.** It is slow and not
   needed to verify most changes.
 
@@ -129,7 +131,8 @@ never disable the rule file-wide or project-wide:
 1. Use an existing shadcn/ui variant that already covers the styling you need.
 2. Add a new variant to the component if no existing one fits.
 3. Add or change a `no-restyle` contract in `shadcnNoRestyleContracts`
-   (`eslint.config.mjs`), encoding one real, bounded design decision. Detail:
+   (`shadcnNoRestyleContracts` is a single-source export of the Oxlint config),
+   encoding one real, bounded design decision. Detail:
    [`docs/development.md#adding-a-shadcnlint-contract`](docs/development.md#adding-a-shadcnlint-contract).
 4. Last resort: a single-line `eslint-disable-next-line -- <reason>` on the
    exact offending line, with a reason that says why it does not generalize.
@@ -140,11 +143,13 @@ never disable the rule file-wide or project-wide:
 - Never print or decrypt env values (`.env`, `.env.keys`), in output, logs,
   commits or tickets. Variables and workflow:
   [`docs/configuration.md`](docs/configuration.md).
-- Run `eslint` and `tsc` without `--bun`; the scripts already do. ESLint uses
+- Run `eslint` and `tsc` without `--bun`; the scripts already do. `tsc` is
+  `node_modules/typescript7/bin/tsc`, called by path; `typescript` stays 6.x for
+  tools that use its JS API. ESLint (`.astro` only) uses
   `--cache --cache-strategy content`, so a stale cache is never a reason to
   delete files: run `bun run lint` again.
 - Bun is pinned to `1.4.2` (`packageManager` and `engines`).
-- Prettier wraps prose always; run `bun run fix` instead of reflowing by hand.
+- Oxfmt wraps prose always; run `bun run fix` instead of reflowing by hand.
 - Actions are SHA-pinned and workflows are linted; edit them with care:
   [`docs/development.md#ci`](docs/development.md#ci).
 - Releases are tag-driven and have no npm step; never publish by hand:

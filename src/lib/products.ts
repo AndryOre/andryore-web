@@ -205,7 +205,11 @@ export function productPath(locale: Locale, key: string): string {
 
 /** The kinds of call to action a product header can carry. */
 export type HeaderLinkId =
-  'website' | 'source' | 'npm' | 'marketplace' | 'chromeWebStore'
+  | 'website'
+  | 'source'
+  | 'npm'
+  | 'marketplace'
+  | 'chromeWebStore'
 
 export interface HeaderLink {
   id: HeaderLinkId
@@ -274,7 +278,8 @@ export function countableStat(
 }
 
 export type ProductIconRef =
-  { kind: 'brand'; id: IconId } | { kind: 'glyph'; name: GlyphName }
+  | { kind: 'brand'; id: IconId }
+  | { kind: 'glyph'; name: GlyphName }
 
 /**
  * Decides whether an icon name from a product file is a brand logo or a

@@ -6,12 +6,12 @@ fix.
 ## `lint`, `typecheck` or the pre-commit hook crashes with a `TypeError` inside `typescript.js`
 
 **Symptom**: a command fails at `require` time with a `TypeError` such as
-`Cannot create property '...' on number '0'`, reached through
-`typescript-eslint/dist/index.js`.
+`Cannot create property '...' on number '0'`, reached through a linter or
+TypeScript module.
 
 **Root cause**: a poisoned entry in Node's on-disk V8 compile cache
 (`/tmp/node-compile-cache`), which ESLint opts into. It is not a real
-TypeScript, Node or typescript-eslint incompatibility.
+TypeScript, Node or linter incompatibility.
 
 **Confirm**: prepend `NODE_DISABLE_COMPILE_CACHE=1` to the failing command. If
 it passes, this is the cause.
@@ -20,14 +20,16 @@ it passes, this is the cause.
 `.eslintcache` and `node_modules/.cache`. Do not change Node versions to fix it:
 a new version only creates a fresh cache bucket and hides the corruption.
 
-## ESLint reports stale results
+## ESLint reports stale results on `.astro` files
 
-**Symptom**: `bun run lint` still reports a finding you fixed, or misses one you
-introduced.
+**Symptom**: the ESLint half of `bun run lint` (the `.astro` files) still
+reports a finding you fixed, or misses one you introduced.
 
-**Root cause**: ESLint runs with `--cache --cache-strategy content`, so results
-come from `.eslintcache` keyed by file content. A cache written by a different
-config or plugin version can be out of step.
+**Root cause**: ESLint, which lints only `.astro` files now
+([ADR 0023](adr/0023-oxc-toolchain-and-typescript-7-1.md)), runs with
+`--cache --cache-strategy content`, so results come from `.eslintcache` keyed by
+file content. A cache written by a different config or plugin version can be out
+of step.
 
 **Fix**: run `bun run lint` again, since the content strategy normally
 self-corrects. If it persists, run `bun run cache:clear` and lint once more.
@@ -38,9 +40,9 @@ Never delete files by hand to work around the cache.
 **Symptom**: ESLint prints this warning for a file passed explicitly. With
 `--max-warnings=0` the warning fails the run.
 
-**Root cause**: `lint-staged` passes every staged file to ESLint, including ones
-the flat config ignores (generated or vendored files). ESLint reports each as a
-warning.
+**Root cause**: `lint-staged` passes every staged `.astro` file to ESLint,
+including ones the flat config ignores (generated or vendored files). ESLint
+reports each as a warning.
 
 **Fix**: nothing to do locally. `lint-staged.config.mjs` passes
 `--no-warn-ignored`, which silences the warning for ignored files only. If you

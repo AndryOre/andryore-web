@@ -1,5 +1,5 @@
-import { defineCollection } from 'astro:content'
 import { glob } from 'astro/loaders'
+import { defineCollection } from 'astro:content'
 
 import { createProductSchema } from './lib/products'
 

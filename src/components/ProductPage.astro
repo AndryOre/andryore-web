@@ -99,7 +99,7 @@ const backHref = localePath(locale, '/#products')
     <header class:list={['reveal', revealClass(0), 'flex flex-col gap-4']}>
       <a
         href={backHref}
-        class="text-muted-foreground hover:text-foreground inline-flex min-h-11 w-fit items-center gap-2 font-mono text-xs tracking-wide no-underline"
+        class="inline-flex min-h-11 w-fit items-center gap-2 font-mono text-xs tracking-wide text-muted-foreground no-underline hover:text-foreground"
         data-product-back
       >
         <span aria-hidden="true">←</span>
@@ -110,17 +110,17 @@ const backHref = localePath(locale, '/#products')
           {data.name}
         </h1>
         <span
-          class="border-border bg-card-2 text-foreground rounded-pill inline-flex shrink-0 items-center gap-2 border px-3 py-1 font-mono text-[11px] tracking-[0.06em] whitespace-nowrap uppercase"
+          class="inline-flex shrink-0 items-center gap-2 rounded-pill border border-border bg-card-2 px-3 py-1 font-mono text-[11px] tracking-[0.06em] whitespace-nowrap text-foreground uppercase"
           data-product-state={data.state}
         >
           <span
-            class="bg-success size-[7px] rounded-full"
+            class="size-[7px] rounded-full bg-success"
             aria-hidden="true"
           ></span>
           {ui.state[data.state]}
         </span>
       </div>
-      <p class="text-muted-foreground m-0 max-w-[56ch] text-base [overflow-wrap:anywhere]">
+      <p class="m-0 max-w-[56ch] text-base [overflow-wrap:anywhere] text-muted-foreground">
         {data.value}
       </p>
       <ul class="m-0 flex list-none flex-wrap gap-2.5 p-0">
@@ -136,7 +136,7 @@ const backHref = localePath(locale, '/#products')
               class:list={[
                 buttonClass,
                 link.id === 'website'
-                  ? 'bg-foreground border-foreground text-background hover:opacity-90'
+                  ? 'border-foreground bg-foreground text-background hover:opacity-90'
                   : 'border-border bg-card-2 hover:bg-muted',
               ]}
             >
@@ -153,7 +153,7 @@ const backHref = localePath(locale, '/#products')
       class:list={[
         'reveal',
         revealClass(1),
-        'border-border bg-card relative overflow-hidden rounded-[20px] border p-0',
+        'relative overflow-hidden rounded-[20px] border border-border bg-card p-0',
         surfaceShadow,
       ]}
       aria-label={ui.heroLabel}
@@ -161,16 +161,16 @@ const backHref = localePath(locale, '/#products')
     >
       {showFrame && (
         <div
-          class="border-border bg-muted flex items-center gap-3 border-b px-4 py-2"
+          class="flex items-center gap-3 border-b border-border bg-muted px-4 py-2"
           aria-hidden="true"
           data-product-frame
         >
           <span class="flex gap-1.5">
-            <span class="bg-border size-2.5 rounded-full" />
-            <span class="bg-border size-2.5 rounded-full" />
-            <span class="bg-border size-2.5 rounded-full" />
+            <span class="size-2.5 rounded-full bg-border" />
+            <span class="size-2.5 rounded-full bg-border" />
+            <span class="size-2.5 rounded-full bg-border" />
           </span>
-          <span class="bg-background text-muted-foreground rounded-pill min-w-0 flex-1 px-3 py-1 font-mono text-xs break-all">
+          <span class="min-w-0 flex-1 rounded-pill bg-background px-3 py-1 font-mono text-xs break-all text-muted-foreground">
             {data.website?.host}
           </span>
         </div>
@@ -185,7 +185,7 @@ const backHref = localePath(locale, '/#products')
       />
       {pillSprites.length > 0 && (
         <div
-          class="bg-card/88 border-border rounded-pill absolute right-3 bottom-3 flex gap-1.5 border px-2.5 py-1.5 backdrop-blur-sm"
+          class="absolute right-3 bottom-3 flex gap-1.5 rounded-pill border border-border bg-card/88 px-2.5 py-1.5 backdrop-blur-sm"
           aria-hidden="true"
           data-product-sprites
         >
@@ -222,7 +222,7 @@ const backHref = localePath(locale, '/#products')
             return (
               <li
                 class:list={[
-                  'border-border bg-card flex min-w-0 flex-col gap-1 rounded-[18px] border p-4',
+                  'flex min-w-0 flex-col gap-1 rounded-[18px] border border-border bg-card p-4',
                   surfaceShadow,
                 ]}
                 data-product-stat
@@ -230,9 +230,9 @@ const backHref = localePath(locale, '/#products')
                 <ProductIcon
                   name={stat.icon}
                   size={18}
-                  class="text-muted-foreground mb-1"
+                  class="mb-1 text-muted-foreground"
                 />
-                <span class="text-[28px] leading-[1.1] font-bold tracking-[-0.03em] tabular-nums [overflow-wrap:anywhere]">
+                <span class="text-[28px] leading-[1.1] font-bold tracking-[-0.03em] [overflow-wrap:anywhere] tabular-nums">
                   {countable ? (
                     <>
                       <span
@@ -247,7 +247,7 @@ const backHref = localePath(locale, '/#products')
                     stat.value
                   )}
                 </span>
-                <span class="text-muted-foreground font-mono text-[11px] leading-[1.4]">
+                <span class="font-mono text-[11px] leading-[1.4] text-muted-foreground">
                   {statLabel(stat.label, stat.date)}
                 </span>
               </li>
@@ -262,7 +262,7 @@ const backHref = localePath(locale, '/#products')
         class:list={[
           'reveal',
           revealClass(3),
-          'border-border bg-card flex flex-col gap-[18px] rounded-[20px] border p-6',
+          'flex flex-col gap-[18px] rounded-[20px] border border-border bg-card p-6',
           surfaceShadow,
         ]}
         data-product-formats
@@ -308,7 +308,7 @@ const backHref = localePath(locale, '/#products')
           </div>
         )}
         {data.platformNote && (
-          <p class="text-muted-foreground m-0 font-mono text-xs">
+          <p class="m-0 font-mono text-xs text-muted-foreground">
             {data.platformNote}
           </p>
         )}
@@ -360,7 +360,7 @@ const backHref = localePath(locale, '/#products')
                 <span
                   class:list={[
                     toneClass,
-                    'border-border block size-[30px] rounded-full border',
+                    'block size-[30px] rounded-full border border-border',
                   ]}
                   role="img"
                   aria-label={ui.skinTones[index]}
@@ -378,20 +378,20 @@ const backHref = localePath(locale, '/#products')
           {data.cards.map((card) => (
             <li
               class:list={[
-                'border-border bg-card flex flex-col gap-2.5 rounded-[18px] border p-[18px]',
+                'flex flex-col gap-2.5 rounded-[18px] border border-border bg-card p-[18px]',
                 surfaceShadow,
               ]}
             >
               <span
                 class:list={[
                   iconTileClass,
-                  'text-primary bg-[color-mix(in_oklab,var(--primary)_14%,var(--card-2))]',
+                  'bg-[color-mix(in_oklab,var(--primary)_14%,var(--card-2))] text-primary',
                 ]}
               >
                 <ProductIcon name={card.icon} size={22} />
               </span>
               <h3 class="m-0 text-[15px] font-semibold">{card.title}</h3>
-              <p class="text-muted-foreground m-0 text-sm">{card.body}</p>
+              <p class="m-0 text-sm text-muted-foreground">{card.body}</p>
             </li>
           ))}
         </ul>
@@ -403,7 +403,7 @@ const backHref = localePath(locale, '/#products')
             <span
               class:list={[
                 iconTileClass,
-                'text-success bg-[color-mix(in_oklab,var(--success)_18%,var(--card-2))]',
+                'bg-[color-mix(in_oklab,var(--success)_18%,var(--card-2))] text-success',
               ]}
             >
               <ProductIcon name={data.callout.icon} size={22} />
@@ -414,7 +414,7 @@ const backHref = localePath(locale, '/#products')
                   {data.callout.title}
                 </h3>
               )}
-              <p class="text-muted-foreground m-0 text-sm">
+              <p class="m-0 text-sm text-muted-foreground">
                 {data.callout.body}
               </p>
             </div>
@@ -483,7 +483,7 @@ const backHref = localePath(locale, '/#products')
         <h2 class={headingClass}>{ui.galleryHeading}</h2>
         <ul class="m-0 grid list-none grid-cols-1 gap-3 p-0 min-[640px]:grid-cols-3">
           {data.gallery.map((shot) => (
-            <li class="border-border overflow-hidden rounded-xl border">
+            <li class="overflow-hidden rounded-xl border border-border">
               <Picture
                 src={shot.src}
                 alt={shot.alt}
@@ -505,7 +505,7 @@ const backHref = localePath(locale, '/#products')
         <a
           href={data.url}
           {...externalLinkAttributes(data.url)}
-          class="border-border bg-card block overflow-hidden rounded-2xl border no-underline"
+          class="block overflow-hidden rounded-2xl border border-border bg-card no-underline"
           data-product-browser
           data-product-website={data.key}
           {...analyticsAttributes(ANALYTICS_EVENTS.productOpen, {
@@ -513,13 +513,13 @@ const backHref = localePath(locale, '/#products')
             link: 'website-tile',
           })}
         >
-          <span class="bg-card border-border flex items-center gap-3 border-b px-3.5 py-2.5">
+          <span class="flex items-center gap-3 border-b border-border bg-card px-3.5 py-2.5">
             <span class="flex gap-1.5" aria-hidden="true">
-              <span class="bg-border size-[9px] rounded-full"></span>
-              <span class="bg-border size-[9px] rounded-full"></span>
-              <span class="bg-border size-[9px] rounded-full"></span>
+              <span class="size-[9px] rounded-full bg-border"></span>
+              <span class="size-[9px] rounded-full bg-border"></span>
+              <span class="size-[9px] rounded-full bg-border"></span>
             </span>
-            <span class="bg-muted text-muted-foreground rounded-pill mx-auto min-w-0 px-3 py-1 text-center font-mono text-[11px] break-all">
+            <span class="mx-auto min-w-0 rounded-pill bg-muted px-3 py-1 text-center font-mono text-[11px] break-all text-muted-foreground">
               {data.website.host}
             </span>
             <ProductIcon

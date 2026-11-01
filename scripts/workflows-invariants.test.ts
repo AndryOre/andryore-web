@@ -523,6 +523,16 @@ describe('ci.yml gates', () => {
     expect(ci.jobs?.['ci-passed']?.needs).toContain('build')
     expect(ci.jobs?.build?.name).toBe('Build')
   })
+
+  test('the quality job gates on bun run check alone, with no separate lint step', () => {
+    const steps = ci.jobs?.quality?.steps ?? []
+    const runs = steps.map((step) => step.run)
+    expect(runs).toContain('bun run check')
+    expect(runs).not.toContain('bun run lint:oxlint')
+    expect(steps.some((step) => step['continue-on-error'] !== undefined)).toBe(
+      false,
+    )
+  })
 })
 
 test.each(['main', 'develop'])(
