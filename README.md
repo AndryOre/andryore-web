@@ -20,7 +20,7 @@
 [![Website][badge-website]][link-website]
 
 Built with [Astro](https://astro.build) 7 ·
-[TypeScript](https://www.typescriptlang.org) 6 ·
+[TypeScript](https://www.typescriptlang.org) 6 (7.1 for type checks) ·
 [Tailwind CSS](https://tailwindcss.com) 4 · [React](https://react.dev) 19 ·
 [Bun](https://bun.sh) 1.4
 
@@ -74,7 +74,7 @@ src/
   styles/       Tailwind entry and design tokens
 docs/           Guides, ADRs and the public brand kit
 scripts/        Repo scripts and their tests
-eslint-rules/   Local ESLint rules
+eslint-rules/   Local lint rules
 e2e/            Playwright tests
 docker/         Production image files
 ```

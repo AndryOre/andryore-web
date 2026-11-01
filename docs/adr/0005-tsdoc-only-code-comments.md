@@ -9,6 +9,10 @@ Date: 2026-10-16
 Revised: 2026-10-19, removed the vendored-code exemption, which the lint config
 never applied.
 
+Revised: 2026-11-01, the rule is enforced by Oxlint on every file except
+`.astro`, and by ESLint on `.astro`; see
+[0023](0023-oxc-toolchain-and-typescript-7-1.md).
+
 ## Context
 
 Andry's other repos (Animated Fluent Emojis, Snug) enforce one comment policy by
