@@ -524,13 +524,14 @@ describe('ci.yml gates', () => {
     expect(ci.jobs?.build?.name).toBe('Build')
   })
 
-  test('the quality job runs ESLint and Oxlint side by side, both gating', () => {
+  test('the quality job gates on bun run check alone, with no separate lint step', () => {
     const steps = ci.jobs?.quality?.steps ?? []
     const runs = steps.map((step) => step.run)
     expect(runs).toContain('bun run check')
-    const oxlintStep = steps.find((step) => step.run === 'bun run lint:oxlint')
-    expect(oxlintStep).toBeDefined()
-    expect(oxlintStep?.['continue-on-error']).toBeUndefined()
+    expect(runs).not.toContain('bun run lint:oxlint')
+    expect(steps.some((step) => step['continue-on-error'] !== undefined)).toBe(
+      false,
+    )
   })
 })
 
