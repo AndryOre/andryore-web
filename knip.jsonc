@@ -6,6 +6,7 @@
     "src/server/stream-status-server.ts",
     "playwright.visual.config.ts",
   ],
+  "ignoreDependencies": ["typescript7"],
   "project": ["**/*.{ts,tsx,mjs,astro,css}"],
   "ignore": [
     ".claude/skills/**",

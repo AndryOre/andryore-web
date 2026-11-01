@@ -48,8 +48,7 @@ jobs:
       - name: Check
         run: bun run check
 
-      - name: Oxlint (non-gating until its diagnostics are cleared)
-        continue-on-error: true
+      - name: Oxlint
         run: bun run lint:oxlint
 
   test:

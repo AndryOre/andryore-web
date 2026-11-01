@@ -149,12 +149,32 @@ const OXLINT_PLUGIN_PREFIX: Record<string, string> = {
   'typescript-eslint': '@typescript-eslint/',
   nextjs: '@next/next/',
   next: '@next/next/',
+  'typescript-js': '@typescript-eslint/',
+  'unicorn-js': 'unicorn/',
+  'jsdoc-js': 'jsdoc/',
+  'jsx-a11y-js': 'jsx-a11y/',
+  'astro-js': 'astro/',
+  'react-hooks-js': 'react-hooks/',
+  'eslint-comments-js': '@eslint-community/eslint-comments/',
 }
 
 /**
+ * `@eslint-community/eslint-comments` rules that run under Oxlint as the
+ * `local/` ports in `eslint-rules/directive-comments.mjs`.
+ */
+const LOCAL_DIRECTIVE_RULES = new Set([
+  'disable-enable-pair',
+  'no-aggregating-enable',
+  'no-unlimited-disable',
+  'no-unused-enable',
+  'require-description',
+])
+
+/**
  * Maps an Oxlint diagnostic `code` (`plugin(rule)`) to the ESLint rule id the
- * same rule has under the current config, including the `eslint-js` jsPlugin
- * alias used for `no-restricted-syntax`. Unknown plugins map to
+ * same rule has under the current config: native plugins, the `-js` jsPlugin
+ * aliases `oxlint.config.ts` loads the originals under, and the `local/`
+ * ports of the eslint-comments directive rules. Unknown plugins map to
  * `plugin/rule`, which is how every other plugin names its rules.
  * @param code - The Oxlint diagnostic code, such as `eslint(no-console)`.
  * @returns The ESLint rule id.
@@ -163,7 +183,11 @@ export function normalizeOxlintRule(code: string): string {
   const match = /^([^()]+)\((.+)\)$/.exec(code)
   if (!match) return code
   const [, plugin = '', rule = ''] = match
-  return `${OXLINT_PLUGIN_PREFIX[plugin] ?? `${plugin}/`}${rule}`
+  const isDirectivePort = plugin === 'local' && LOCAL_DIRECTIVE_RULES.has(rule)
+  const prefix = isDirectivePort
+    ? '@eslint-community/eslint-comments/'
+    : (OXLINT_PLUGIN_PREFIX[plugin] ?? `${plugin}/`)
+  return `${prefix}${rule}`
 }
 
 /**
@@ -173,7 +197,76 @@ export function normalizeOxlintRule(code: string): string {
  */
 export const UNUSED_DIRECTIVE_RULE = 'unused-disable-directive'
 
-const UNUSED_DIRECTIVE_MESSAGE = /^Unused (?:eslint|oxlint)-disable directive/
+const UNUSED_DIRECTIVE_MESSAGE =
+  /^Unused (?:eslint|oxlint)-(?:disable|enable) directive/
+
+/**
+ * Pseudo rule id for an Oxlint diagnostic that carries no `code` and is not
+ * an unused-directive report, so it still shows up in the diff.
+ */
+export const OXLINT_UNCODED_RULE = 'oxlint-uncoded-diagnostic'
+
+const oxlintRuleOf = (code: string, message: string): string => {
+  if (code !== '') return normalizeOxlintRule(code)
+  return UNUSED_DIRECTIVE_MESSAGE.test(message)
+    ? UNUSED_DIRECTIVE_RULE
+    : OXLINT_UNCODED_RULE
+}
+
+const UNKNOWN_RULE_MESSAGE = /^Definition for rule '.+' was not found\.?$/
+
+/**
+ * A directive that names an unknown rule suppresses nothing: ESLint reports
+ * it under that rule id ("Definition for rule ... was not found"), Oxlint as
+ * an unused directive, so both land on the unused-directive pseudo rule.
+ * @param ruleId - The ESLint message's rule id.
+ * @param message - The ESLint message text.
+ * @returns The rule id, or undefined for a message that is not a finding.
+ */
+const eslintRuleOf = (
+  ruleId: string | null,
+  message: string,
+): string | undefined => {
+  if (UNKNOWN_RULE_MESSAGE.test(message)) return UNUSED_DIRECTIVE_RULE
+  if (ruleId !== null) return ruleId
+  return UNUSED_DIRECTIVE_MESSAGE.test(message)
+    ? UNUSED_DIRECTIVE_RULE
+    : undefined
+}
+
+/**
+ * Rewrites Oxlint findings of a native port whose Oxlint id normalizes to a
+ * different ESLint id (such as the core `no-unused-expressions` port that
+ * enforces `@typescript-eslint/no-unused-expressions`) to that ESLint id.
+ * @param findings - Oxlint findings, already in normalized rule ids.
+ * @param nativePorts - ESLint rule id to native Oxlint rule id, as in
+ *   `NATIVE_PORTS` of `eslint-rules/oxlint-rules.mjs`.
+ * @returns The findings with every port under its ESLint id.
+ */
+export function remapNativePorts(
+  findings: readonly Finding[],
+  nativePorts: ReadonlyMap<string, string>,
+): Finding[] {
+  const eslintIdByNormalizedNative = new Map(
+    [...nativePorts]
+      .map(
+        ([eslintId, nativeId]) =>
+          [normalizeOxlintRule(nativeCode(nativeId)), eslintId] as const,
+      )
+      .filter(([normalized, eslintId]) => normalized !== eslintId),
+  )
+  return findings.map((item) => {
+    const eslintId = eslintIdByNormalizedNative.get(item.rule)
+    return eslintId === undefined ? item : { ...item, rule: eslintId }
+  })
+}
+
+const nativeCode = (nativeId: string): string => {
+  const slash = nativeId.indexOf('/')
+  return slash === -1
+    ? `eslint(${nativeId})`
+    : `${nativeId.slice(0, slash)}(${nativeId.slice(slash + 1)})`
+}
 
 interface EslintResult {
   filePath: string
@@ -205,11 +298,7 @@ export function parseEslintJson(text: string, root: string): Finding[] {
   }
   return results.flatMap((result) =>
     result.messages.flatMap((message) => {
-      const rule =
-        message.ruleId ??
-        (UNUSED_DIRECTIVE_MESSAGE.test(message.message ?? '')
-          ? UNUSED_DIRECTIVE_RULE
-          : undefined)
+      const rule = eslintRuleOf(message.ruleId, message.message ?? '')
       return rule === undefined
         ? []
         : {
@@ -223,7 +312,7 @@ export function parseEslintJson(text: string, root: string): Finding[] {
 
 interface OxlintOutput {
   diagnostics: {
-    code: string
+    code?: string
     message?: string
     filename: string
     labels?: { span: { line: number } }[]
@@ -244,10 +333,6 @@ export function parseOxlintJson(text: string, root: string): Finding[] {
       ? path.relative(root, diagnostic.filename)
       : diagnostic.filename,
     line: diagnostic.labels?.[0]?.span.line ?? 0,
-    rule:
-      diagnostic.code === '' &&
-      UNUSED_DIRECTIVE_MESSAGE.test(diagnostic.message ?? '')
-        ? UNUSED_DIRECTIVE_RULE
-        : normalizeOxlintRule(diagnostic.code),
+    rule: oxlintRuleOf(diagnostic.code ?? '', diagnostic.message ?? ''),
   }))
 }

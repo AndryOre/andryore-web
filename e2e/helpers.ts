@@ -272,7 +272,7 @@ export async function findUsesHeroIconProblems(page: Page): Promise<string[]> {
     )
     const problems: string[] = []
     const icons = card.querySelectorAll(':scope [data-uses-field] > span')
-    icons.forEach((icon, index) => {
+    for (const [index, icon] of [...icons].entries()) {
       const box = icon.getBoundingClientRect()
       const hitsText = textBoxes.some(
         (text) =>
@@ -288,7 +288,7 @@ export async function findUsesHeroIconProblems(page: Page): Promise<string[]> {
         box.top < cardBox.top ||
         box.bottom > cardBox.bottom
       if (clipped) problems.push(`icon ${String(index)} is clipped by the card`)
-    })
+    }
     if (icons.length === 0) problems.push('no icons found')
     return problems
   })
