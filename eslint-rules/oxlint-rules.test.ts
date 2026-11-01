@@ -136,6 +136,32 @@ describe('ESLint lints .astro files and nothing else', () => {
     expect(await resolveEslintRules('src/lib/about.ts')).toEqual([])
   })
 
+  test('applies the script block rules to a TypeScript child of an Astro component', async () => {
+    const rules = await resolveEslintRules(
+      'src/components/AboutPage.astro/1_1.ts',
+    )
+    for (const ruleId of [
+      'local/no-non-doc-comments',
+      'unicorn/no-for-each',
+      '@typescript-eslint/no-explicit-any',
+      '@typescript-eslint/consistent-type-imports',
+      'jsdoc/require-param',
+      '@eslint-community/eslint-comments/require-description',
+    ]) {
+      expect(rules).toContain(ruleId)
+    }
+    expect(rules).not.toContain('@typescript-eslint/no-floating-promises')
+  })
+
+  test('applies only the shared rules to a JavaScript child of an Astro component', async () => {
+    const rules = await resolveEslintRules(
+      'src/components/AboutPage.astro/1_1.js',
+    )
+    expect(rules).toContain('unicorn/no-for-each')
+    expect(rules).not.toContain('local/no-non-doc-comments')
+    expect(rules).not.toContain('@typescript-eslint/no-explicit-any')
+  })
+
   test('applies the astro, unicorn and local rules to an Astro component', async () => {
     const rules = await resolveEslintRules('src/components/AboutPage.astro')
     expect(rules).toContain('local/no-non-doc-comments')

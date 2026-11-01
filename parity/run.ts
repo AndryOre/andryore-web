@@ -193,7 +193,7 @@ function runEslint(
     [
       'eslint',
       '--config',
-      'eslint.config.mjs',
+      'parity/eslint-baseline.config.mjs',
       '--no-cache',
       '--format',
       'json',
