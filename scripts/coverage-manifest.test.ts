@@ -18,6 +18,10 @@ const EXEMPTIONS: Readonly<Record<string, string>> = {
     'Astro collection config that needs astro:content; its schema lives in lib/products.ts, which is tested.',
   'src/pages/sitemap.xml.ts':
     'Astro endpoint that needs import.meta.glob, which bun test does not define; its logic lives in seo/sitemap.ts and i18n/parity.ts, both tested.',
+  'src/pages/robots.txt.ts':
+    'Astro endpoint that only wraps seo/robots.ts; Astro treats every file in src/pages as a route, so a colocated test cannot live there, and the logic is tested in src/seo/robots.test.ts.',
+  'src/pages/llms.txt.ts':
+    'Astro endpoint that only feeds content JSON to seo/llms.ts; Astro treats every file in src/pages as a route, so a colocated test cannot live there, and the logic is tested in src/seo/llms.test.ts.',
   'src/lib/github-grid-build.ts':
     'Build-time wrapper that needs import.meta.glob, which bun test does not define; the fetch and fallback logic lives in lib/github-grid.ts, which is tested.',
   'scripts/update-github-grid.ts':
@@ -103,6 +107,19 @@ describe('coverage manifest', () => {
 
   test('exemptions are justified and not stale', () => {
     expect(findStaleExemptions(repositoryFiles, EXEMPTIONS)).toEqual([])
+  })
+
+  /**
+   * Astro treats every file under `src/pages` as a route, so a test there
+   * imports `bun:test` during the build and breaks it; only the build, not
+   * `bun test`, would notice.
+   */
+  test('no test or spec file lives under src/pages', () => {
+    expect(
+      repositoryFiles.filter((file) =>
+        /^src\/pages\/.*\.(?:test|spec)\./.test(file),
+      ),
+    ).toEqual([])
   })
 })
 
