@@ -4,9 +4,11 @@ import {
   diffFindings,
   findingKey,
   normalizeOxlintRule,
+  OXLINT_UNCODED_RULE,
   parseAccepted,
   parseEslintJson,
   parseOxlintJson,
+  remapNativePorts,
   resolveGate,
   UNUSED_DIRECTIVE_RULE,
   type AcceptedEntry,
@@ -141,9 +143,52 @@ describe('normalizeOxlintRule', () => {
     ['eslint-js(no-restricted-syntax)', 'no-restricted-syntax'],
     ['shadcn(no-restyle)', 'shadcn/no-restyle'],
     ['jsdoc(informative-docs)', 'jsdoc/informative-docs'],
+    ['jsdoc-js(informative-docs)', 'jsdoc/informative-docs'],
+    ['unicorn-js(no-for-each)', 'unicorn/no-for-each'],
+    ['jsx-a11y-js(no-redundant-roles)', 'jsx-a11y/no-redundant-roles'],
+    ['react-hooks-js(exhaustive-deps)', 'react-hooks/exhaustive-deps'],
+    ['astro-js(no-set-html-directive)', 'astro/no-set-html-directive'],
+    ['typescript-js(no-unused-vars)', '@typescript-eslint/no-unused-vars'],
+    [
+      'eslint-comments-js(no-duplicate-disable)',
+      '@eslint-community/eslint-comments/no-duplicate-disable',
+    ],
+    [
+      'local(require-description)',
+      '@eslint-community/eslint-comments/require-description',
+    ],
+    [
+      'local(no-unused-enable)',
+      '@eslint-community/eslint-comments/no-unused-enable',
+    ],
+    ['local(no-non-doc-comments)', 'local/no-non-doc-comments'],
+    ['@eslint-react(no-missing-key)', '@eslint-react/no-missing-key'],
     ['no-bare-code', 'no-bare-code'],
   ])('%s -> %s', (code, expected) => {
     expect(normalizeOxlintRule(code)).toBe(expected)
+  })
+})
+
+describe('remapNativePorts', () => {
+  const ports = new Map([
+    ['@typescript-eslint/no-unused-expressions', 'no-unused-expressions'],
+    ['@typescript-eslint/array-type', 'typescript/array-type'],
+    ['unicorn/prefer-at', 'unicorn/prefer-at'],
+  ])
+
+  test('maps a native port reported under another id to its ESLint id', () => {
+    expect(
+      remapNativePorts([finding('a.ts', 1, 'no-unused-expressions')], ports),
+    ).toEqual([finding('a.ts', 1, '@typescript-eslint/no-unused-expressions')])
+  })
+
+  test('leaves ports whose ids already match and other rules untouched', () => {
+    const findings = [
+      finding('a.ts', 1, '@typescript-eslint/array-type'),
+      finding('a.ts', 2, 'unicorn/prefer-at'),
+      finding('a.ts', 3, 'no-console'),
+    ]
+    expect(remapNativePorts(findings, ports)).toEqual(findings)
   })
 })
 
@@ -173,6 +218,25 @@ describe('linter output parsers', () => {
       },
     ])
     expect(() => parseEslintJson(output, '/repo')).toThrow('Parsing error')
+  })
+
+  test('parseEslintJson reads a directive naming an unknown rule as an unused directive', () => {
+    const output = JSON.stringify([
+      {
+        filePath: '/repo/a.tsx',
+        messages: [
+          {
+            ruleId: '@next/next/no-img-element',
+            line: 3,
+            message:
+              "Definition for rule '@next/next/no-img-element' was not found.",
+          },
+        ],
+      },
+    ])
+    expect(parseEslintJson(output, '/repo')).toEqual([
+      finding('a.tsx', 3, UNUSED_DIRECTIVE_RULE),
+    ])
   })
 
   test('parseEslintJson keeps unused-directive reports under one pseudo rule', () => {
@@ -207,6 +271,40 @@ describe('linter output parsers', () => {
     })
     expect(parseOxlintJson(output, '/repo')).toEqual([
       finding('a.ts', 2, UNUSED_DIRECTIVE_RULE),
+    ])
+  })
+
+  test('parseOxlintJson maps code-less unused-directive diagnostics to the pseudo rule', () => {
+    const output = JSON.stringify({
+      diagnostics: [
+        {
+          message:
+            'Unused eslint-disable directive (no problems were reported).',
+          filename: 'a.ts',
+          labels: [{ span: { line: 2 } }],
+        },
+        {
+          message:
+            'Unused eslint-enable directive (no matching eslint-disable directives were found for no-debugger).',
+          filename: 'a.ts',
+          labels: [{ span: { line: 4 } }],
+        },
+      ],
+    })
+    expect(parseOxlintJson(output, '/repo')).toEqual([
+      finding('a.ts', 2, UNUSED_DIRECTIVE_RULE),
+      finding('a.ts', 4, UNUSED_DIRECTIVE_RULE),
+    ])
+  })
+
+  test('parseOxlintJson keeps an unrecognized code-less diagnostic visible', () => {
+    const output = JSON.stringify({
+      diagnostics: [
+        { message: 'Something else', filename: 'a.ts', labels: [] },
+      ],
+    })
+    expect(parseOxlintJson(output, '/repo')).toEqual([
+      finding('a.ts', 0, OXLINT_UNCODED_RULE),
     ])
   })
 

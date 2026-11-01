@@ -68,8 +68,8 @@ export function parseLocaleScroll(
     const value: unknown = JSON.parse(raw)
     if (typeof value !== 'object' || value === null) return undefined
     const { to, y, anchor } = value as Record<string, unknown>
-    if (typeof to !== 'string' || typeof y !== 'number') return undefined
-    if (!Number.isFinite(y)) return undefined
+    if (typeof to !== 'string' || typeof y !== 'number' || !Number.isFinite(y))
+      return undefined
     const parsedAnchor =
       typeof anchor === 'object' && anchor !== null
         ? (anchor as Record<string, unknown>)
