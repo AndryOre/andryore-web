@@ -74,12 +74,12 @@ const builtWith = productUi[locale].builtWithHeading
         {hero.kicker}
         <span class="caret" aria-hidden="true"></span>
       </p>
-      <h1 class="hero-enter hero-enter-1 relative m-0 text-4xl leading-[1.04] font-bold tracking-[-0.035em] text-balance [overflow-wrap:anywhere] sm:text-5xl lg:text-[3.75rem]">
+      <h1 class="hero-enter relative m-0 text-4xl leading-[1.04] font-bold tracking-[-0.035em] text-balance [overflow-wrap:anywhere] hero-enter-1 sm:text-5xl lg:text-[3.75rem]">
         {hero.lead}
-        <span class="text-primary relative inline-block">
+        <span class="relative inline-block text-primary">
           {hero.emphasis}
           <span
-            class="annotation-in outline-primary pointer-events-none absolute -inset-1 rounded-sm outline outline-1 motion-reduce:hidden"
+            class="pointer-events-none absolute -inset-1 annotation-in rounded-sm outline outline-1 outline-primary motion-reduce:hidden"
             aria-hidden="true"
           >
             <i class:list={[handleClass, '-top-[5px] -left-[5px]']}></i>
@@ -90,25 +90,25 @@ const builtWith = productUi[locale].builtWithHeading
         </span>
         {hero.tail}
         <span
-          class="annotation-in text-muted-foreground border-border bg-card-2 pointer-events-none absolute -top-[26px] right-0 hidden rounded-md border px-2 py-0.5 font-mono text-[0.6875rem] font-medium tracking-[0.02em] whitespace-nowrap motion-reduce:hidden xl:block"
+          class="pointer-events-none absolute -top-[26px] right-0 hidden annotation-in rounded-md border border-border bg-card-2 px-2 py-0.5 font-mono text-[0.6875rem] font-medium tracking-[0.02em] whitespace-nowrap text-muted-foreground motion-reduce:hidden xl:block"
           aria-hidden="true"
         >
           {hero.annotation}
         </span>
       </h1>
-      <p class="hero-enter hero-enter-2 text-muted-foreground m-0 max-w-[56ch] text-base">
+      <p class="hero-enter m-0 max-w-[56ch] text-base text-muted-foreground hero-enter-2">
         {hero.body}
       </p>
-      <div class="hero-enter hero-enter-3 flex flex-wrap gap-2.5">
+      <div class="hero-enter flex flex-wrap gap-2.5 hero-enter-3">
         <a
           href={localePath(locale, hero.primary.path)}
-          class="bg-foreground text-background rounded-pill inline-flex min-h-11 items-center px-5 text-sm font-medium no-underline transition-transform duration-[160ms] ease-out hover:-translate-y-px"
+          class="inline-flex min-h-11 items-center rounded-pill bg-foreground px-5 text-sm font-medium text-background no-underline transition-transform duration-[160ms] ease-out hover:-translate-y-px"
         >
           {hero.primary.label}
         </a>
         <a
           href={localePath(locale, hero.secondary.path)}
-          class="border-border bg-secondary text-foreground rounded-pill inline-flex min-h-11 items-center border px-5 text-sm font-medium no-underline transition-transform duration-[160ms] ease-out hover:-translate-y-px"
+          class="inline-flex min-h-11 items-center rounded-pill border border-border bg-secondary px-5 text-sm font-medium text-foreground no-underline transition-transform duration-[160ms] ease-out hover:-translate-y-px"
         >
           {hero.secondary.label}
         </a>
@@ -117,7 +117,7 @@ const builtWith = productUi[locale].builtWithHeading
 
     <div
       data-hero-art
-      class="hero-enter hero-enter-2 relative order-first grid h-[260px] w-full place-items-center lg:order-none lg:h-[380px]"
+      class="hero-enter relative order-first grid h-[260px] w-full place-items-center hero-enter-2 lg:order-none lg:h-[380px]"
     >
       <div class="floaty motion-reduce:animate-none">
         <div class="avatar-tile">
@@ -133,14 +133,14 @@ const builtWith = productUi[locale].builtWithHeading
         </div>
       </div>
       {hasClock && (
-        <div class="floaty-clock absolute top-[12%] left-[4%] motion-reduce:animate-none">
+        <div class="absolute top-[12%] left-[4%] floaty-clock motion-reduce:animate-none">
           <slot name="clock" />
         </div>
       )}
-      <div class="floaty-open absolute right-[2%] bottom-[3%] max-w-full motion-reduce:animate-none">
+      <div class="absolute right-[2%] bottom-[3%] max-w-full floaty-open motion-reduce:animate-none">
         <span
           data-availability
-          class="bg-card border-border rounded-pill inline-flex items-center gap-2 border px-3.5 py-2 font-mono text-xs font-medium text-muted-foreground shadow-(--shadow)"
+          class="inline-flex items-center gap-2 rounded-pill border border-border bg-card px-3.5 py-2 font-mono text-xs font-medium text-muted-foreground shadow-(--shadow)"
         >
           <span
             class="block size-7 shrink-0 overflow-hidden"
@@ -190,7 +190,7 @@ const builtWith = productUi[locale].builtWithHeading
           >
             <div
               data-product-image={product.key}
-              class="border-border bg-secondary relative aspect-video overflow-hidden rounded-[0.875rem] border"
+              class="relative aspect-video overflow-hidden rounded-[0.875rem] border border-border bg-secondary"
             >
               {website && (
                 <Image
@@ -203,7 +203,7 @@ const builtWith = productUi[locale].builtWithHeading
               )}
               {sprites.length > 0 && (
                 <div
-                  class="bg-card/85 border-border rounded-pill absolute right-3 bottom-3 flex gap-1.5 border px-2.5 py-1.5 backdrop-blur-sm"
+                  class="absolute right-3 bottom-3 flex gap-1.5 rounded-pill border border-border bg-card/85 px-2.5 py-1.5 backdrop-blur-sm"
                   aria-hidden="true"
                 >
                   {sprites.map((sprite) => {
@@ -236,7 +236,7 @@ const builtWith = productUi[locale].builtWithHeading
                 </h3>
                 <span class={pillClass}>
                   <span
-                    class="bg-success size-[7px] rounded-full"
+                    class="size-[7px] rounded-full bg-success"
                     aria-hidden="true"
                   />
                   {product.state}
@@ -247,7 +247,7 @@ const builtWith = productUi[locale].builtWithHeading
                 data-product-meta
                 class="pointer-events-none flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5"
               >
-                <p class="text-muted-foreground m-0 font-mono text-xs tabular-nums">
+                <p class="m-0 font-mono text-xs text-muted-foreground tabular-nums">
                   {productMetaLabel(product.year, entry?.data.version)}
                 </p>
                 <ul
@@ -261,7 +261,7 @@ const builtWith = productUi[locale].builtWithHeading
                         'inline-flex items-center',
                         item.iconId
                           ? item.colorClass
-                          : 'text-muted-foreground font-mono text-xs',
+                          : 'font-mono text-xs text-muted-foreground',
                       ]}
                     >
                       {item.iconId ? (
@@ -285,11 +285,11 @@ const builtWith = productUi[locale].builtWithHeading
     <article
       class:list={[
         linkTileClass,
-        'scroll-reveal scroll-stagger-2 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-2 px-5 py-4 md:grid-cols-[auto_minmax(0,1fr)_auto]',
+        'scroll-reveal grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-2 px-5 py-4 scroll-stagger-2 md:grid-cols-[auto_minmax(0,1fr)_auto]',
       ]}
     >
       <span
-        class="bg-primary/15 text-primary grid size-10 place-items-center rounded-xl"
+        class="grid size-10 place-items-center rounded-xl bg-primary/15 text-primary"
         aria-hidden="true"
       >
         <ProductIcon name="workflow" size={20} />
@@ -303,7 +303,7 @@ const builtWith = productUi[locale].builtWithHeading
         </h3>
         <p class={bodyClass}>{contribution.description}</p>
       </div>
-      <p class="text-muted-foreground m-0 inline-flex items-center gap-2 font-mono text-sm tabular-nums max-md:col-span-2">
+      <p class="m-0 inline-flex items-center gap-2 font-mono text-sm text-muted-foreground tabular-nums max-md:col-span-2">
         <span>
           {contribution.metaPrefix}
           <span
@@ -336,19 +336,19 @@ const builtWith = productUi[locale].builtWithHeading
           <slot name="github" />
         </div>
       )}
-      <div class="scroll-reveal scroll-stagger-1 min-h-[360px] min-w-0 lg:[grid-area:1/5/5/8]">
+      <div class="scroll-reveal min-h-[360px] min-w-0 scroll-stagger-1 lg:[grid-area:1/5/5/8]">
         <slot name="stream" />
       </div>
-      <div class="scroll-reveal scroll-stagger-2 min-h-[140px] min-w-0 lg:[grid-area:1/8/3/10]">
+      <div class="scroll-reveal min-h-[140px] min-w-0 scroll-stagger-2 lg:[grid-area:1/8/3/10]">
         <LanguageTile locale={locale} />
       </div>
-      <div class="scroll-reveal scroll-stagger-2 min-h-[140px] min-w-0 lg:[grid-area:3/8/5/10]">
+      <div class="scroll-reveal min-h-[140px] min-w-0 scroll-stagger-2 lg:[grid-area:3/8/5/10]">
         <FxTile locale={locale} />
       </div>
       <article
         class:list={[
           stripTileClass,
-          'scroll-reveal scroll-stagger-2 min-h-[220px] lg:[grid-area:1/10/5/13]',
+          'scroll-reveal min-h-[220px] scroll-stagger-2 lg:[grid-area:1/10/5/13]',
         ]}
       >
         <p class={labelClass}>{themeCopy.label}</p>

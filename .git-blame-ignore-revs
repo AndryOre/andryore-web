@@ -1,3 +1,6 @@
 # Commits listed here are hidden from git blame (git config blame.ignoreRevsFile .git-blame-ignore-revs).
-# Add the merged SHA of the repository-wide prettier format commit below.
+# Add the merged SHA of each repository-wide format commit below.
+# Prettier reformat
 63bbe8ce923b1992a560b9d833f0fdf84c865e4b
+# Oxfmt reformat
+56d93ce154ceb4696d2a2b02d23e966e4e0adf56

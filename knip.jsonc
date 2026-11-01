@@ -6,7 +6,12 @@
     "src/scripts/hydrate-on-interaction.ts",
     "src/server/stream-status-server.ts",
     "playwright.visual.config.ts",
+    "parity/run.ts",
   ],
   "project": ["**/*.{ts,tsx,mjs,astro,css}"],
-  "ignore": [".claude/skills/**", "docs/brand/brandbook/fonts.css"],
+  "ignore": [
+    ".claude/skills/**",
+    "parity/fixtures/**",
+    "docs/brand/brandbook/fonts.css",
+  ],
 }

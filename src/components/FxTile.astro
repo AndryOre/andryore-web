@@ -30,7 +30,7 @@ const SPEAKER =
   aria-describedby="fx-hint"
   data-fx-switch
   data-sound="switch"
-  class="group bg-card border-border focus-visible:outline-foreground relative flex h-full w-full min-w-0 cursor-pointer flex-col justify-between gap-2.5 overflow-hidden rounded-[1.25rem] border p-4 text-left shadow-[inset_0_1px_0_var(--hl),0_10px_28px_-16px_rgb(0_0_0/0.28)] focus-visible:outline-2 focus-visible:-outline-offset-4"
+  class="group relative flex h-full w-full min-w-0 cursor-pointer flex-col justify-between gap-2.5 overflow-hidden rounded-[1.25rem] border border-border bg-card p-4 text-left shadow-[inset_0_1px_0_var(--hl),0_10px_28px_-16px_rgb(0_0_0/0.28)] focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-foreground"
 >
   <span class="flex items-center gap-2.5">
     <span class="text-foreground">
@@ -47,14 +47,14 @@ const SPEAKER =
     </span>
     <span
       id="fx-label"
-      class="text-muted-foreground font-mono text-[0.6875rem] font-medium tracking-[0.08em] uppercase"
+      class="font-mono text-[0.6875rem] font-medium tracking-[0.08em] text-muted-foreground uppercase"
     >
       {copy.label}
     </span>
   </span>
   <span
     id="fx-hint"
-    class="text-muted-foreground text-[13px] leading-[1.35] font-medium"
+    class="text-[13px] leading-[1.35] font-medium text-muted-foreground"
   >
     {copy.hint}
   </span>
@@ -64,9 +64,9 @@ const SPEAKER =
     </b>
     <span
       aria-hidden="true"
-      class="fx-switch bg-muted border-border rounded-pill group-aria-checked:bg-foreground/88 pointer-events-none relative h-8 w-14 flex-none border group-aria-checked:border-transparent"
+      class="fx-switch pointer-events-none relative h-8 w-14 flex-none rounded-pill border border-border bg-muted group-aria-checked:border-transparent group-aria-checked:bg-foreground/88"
     >
-      <span class="fx-knob bg-muted-foreground group-aria-checked:bg-background rounded-pill absolute top-[3px] left-[3px] size-6"></span>
+      <span class="fx-knob absolute top-[3px] left-[3px] size-6 rounded-pill bg-muted-foreground group-aria-checked:bg-background"></span>
     </span>
   </span>
 </button>

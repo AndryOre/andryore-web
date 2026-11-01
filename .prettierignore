@@ -7,3 +7,6 @@ bun.lock
 .agents
 .forge
 CONTEXT.md
+parity/fixtures
+parity/.corpus
+parity/.out
