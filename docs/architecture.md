@@ -29,9 +29,9 @@ called server side, with credentials that live in an encrypted env file
 
 ## Code map
 
-The repository is a single bun package. The tooling (husky, commitlint,
-prettier, eslint, knip) sits at the root, and the Site is under `src/`. Every
-path below is relative to the repository root.
+The repository is a single bun package. The tooling (husky, commitlint, oxfmt,
+oxlint, eslint, knip) sits at the root, and the Site is under `src/`. Every path
+below is relative to the repository root.
 
 ### `src/content/`
 
@@ -119,7 +119,7 @@ the Tailwind entry and the tokens.
   (refreshes the build capture), the audits (`audit-distribution.ts`,
   `lighthouse-budget.ts`) and the commit and docs linters.
 - `docs/` holds the ADRs, the brand assets, the agent specifics and the guides.
-- `eslint-rules/` holds the local ESLint rules.
+- `eslint-rules/` holds the local lint rules for Oxlint and ESLint.
 - `e2e/` holds the Playwright tests.
 
 ## Runtime

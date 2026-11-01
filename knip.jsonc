@@ -5,6 +5,7 @@
     "src/scripts/hydrate-on-interaction.ts",
     "src/server/stream-status-server.ts",
     "playwright.visual.config.ts",
+    "parity/eslint-baseline.config.mjs",
   ],
   "ignoreDependencies": ["typescript7"],
   "project": ["**/*.{ts,tsx,mjs,astro,css}"],

@@ -62,48 +62,116 @@ function resolveOxlintRules(file: string): Map<string, unknown[]> {
   )
 }
 
-async function resolveEslintRules(
-  file: string,
-): Promise<Map<string, unknown[]>> {
+async function resolveEslintRules(file: string): Promise<string[]> {
   const eslint = new ESLint({ cwd: REPO_ROOT })
-  const config = (await eslint.calculateConfigForFile(file)) as {
-    rules: Record<string, unknown>
-  }
-  return new Map(
-    Object.entries(config.rules)
-      .filter(([, value]) => isEnabled(value))
-      .map(([ruleId, value]) => [ruleId, normalizeValue(value)]),
-  )
+  const config = (await eslint.calculateConfigForFile(file)) as
+    | { rules?: Record<string, unknown> }
+    | undefined
+  return Object.entries(config?.rules ?? {})
+    .filter(([, value]) => isEnabled(value))
+    .map(([ruleId]) => ruleId)
 }
 
-describe('Oxlint enforces exactly the rules ESLint applies to each representative file', () => {
+const EXPECTED_OXLINT_RULES: Record<
+  string,
+  { enabled: string[]; disabled: string[] }
+> = {
+  'src/lib/about.ts': {
+    enabled: [
+      'typescript/no-floating-promises',
+      'unicorn-js/prefer-ternary',
+      'local/no-non-doc-comments',
+      'local/require-description',
+      'jsdoc-js/require-param',
+    ],
+    disabled: ['eslint-js/no-restricted-syntax', 'shadcn/no-raw-colors'],
+  },
+  'src/lib/about.test.ts': {
+    enabled: [
+      'eslint-js/no-restricted-syntax',
+      'typescript/no-floating-promises',
+    ],
+    disabled: ['shadcn/no-raw-colors'],
+  },
+  'src/components/Dock.tsx': {
+    enabled: [
+      'shadcn/no-restyle',
+      'shadcn/no-raw-colors',
+      'react-hooks-js/rules-of-hooks',
+    ],
+    disabled: [],
+  },
+  'src/components/ui/button.tsx': {
+    enabled: ['shadcn/no-raw-colors'],
+    disabled: ['shadcn/no-restyle'],
+  },
+  'eslint-rules/index.mjs': {
+    enabled: ['local/no-non-doc-comments', 'jsdoc-js/require-param'],
+    disabled: ['shadcn/no-raw-colors'],
+  },
+  'astro.config.mjs': {
+    enabled: ['local/no-non-doc-comments'],
+    disabled: ['unicorn-js/no-top-level-side-effects'],
+  },
+}
+
+describe('Oxlint enforces the rules each representative file needs', () => {
   for (const file of REPRESENTATIVE_FILES) {
-    test(file, async () => {
-      const eslintRules = await resolveEslintRules(file)
+    test(file, () => {
       const oxlintRules = resolveOxlintRules(file)
-      const expectedSeverities = Object.fromEntries(
-        [...eslintRules].map(([ruleId, value]) => [
-          toOxlintRuleId(ruleId),
-          value[0],
-        ]),
-      )
-      const severities = Object.fromEntries(
-        [...oxlintRules].map(([ruleId, value]) => [ruleId, value[0]]),
-      )
-      expect(severities).toEqual(expectedSeverities)
-      for (const [ruleId, eslintValue] of eslintRules) {
-        const options = oxlintRules.get(toOxlintRuleId(ruleId))?.slice(1) ?? []
-        for (const [index, option] of options.entries()) {
-          const effective = eslintValue[index + 1]
-          if (typeof option === 'object' && option !== null) {
-            expect(effective).toMatchObject(option)
-          } else {
-            expect(effective).toEqual(option)
-          }
-        }
+      const enabled = EXPECTED_OXLINT_RULES[file]?.enabled ?? []
+      const disabled = EXPECTED_OXLINT_RULES[file]?.disabled ?? []
+      for (const ruleId of enabled) {
+        expect(oxlintRules.has(ruleId)).toBe(true)
+      }
+      for (const ruleId of disabled) {
+        expect(oxlintRules.has(ruleId)).toBe(false)
       }
     })
   }
+})
+
+describe('ESLint lints .astro files and nothing else', () => {
+  test('applies no rule to a TypeScript file', async () => {
+    expect(await resolveEslintRules('src/lib/about.ts')).toEqual([])
+  })
+
+  test('applies the script block rules to a TypeScript child of an Astro component', async () => {
+    const rules = await resolveEslintRules(
+      'src/components/AboutPage.astro/1_1.ts',
+    )
+    for (const ruleId of [
+      'local/no-non-doc-comments',
+      'unicorn/no-for-each',
+      '@typescript-eslint/no-explicit-any',
+      '@typescript-eslint/consistent-type-imports',
+      'jsdoc/require-param',
+      '@eslint-community/eslint-comments/require-description',
+    ]) {
+      expect(rules).toContain(ruleId)
+    }
+    expect(rules).not.toContain('@typescript-eslint/no-floating-promises')
+  })
+
+  test('applies only the shared rules to a JavaScript child of an Astro component', async () => {
+    const rules = await resolveEslintRules(
+      'src/components/AboutPage.astro/1_1.js',
+    )
+    expect(rules).toContain('unicorn/no-for-each')
+    expect(rules).not.toContain('local/no-non-doc-comments')
+    expect(rules).not.toContain('@typescript-eslint/no-explicit-any')
+  })
+
+  test('applies the astro, unicorn and local rules to an Astro component', async () => {
+    const rules = await resolveEslintRules('src/components/AboutPage.astro')
+    expect(rules).toContain('local/no-non-doc-comments')
+    expect(rules).toContain('unicorn/filename-case')
+    expect(rules.some((ruleId) => ruleId.startsWith('astro/'))).toBe(true)
+    expect(
+      rules.some((ruleId) => ruleId.startsWith('@typescript-eslint/')),
+    ).toBe(false)
+    expect(rules.some((ruleId) => ruleId.startsWith('jsdoc/'))).toBe(false)
+  })
 })
 
 describe('toOxlintRuleId', () => {

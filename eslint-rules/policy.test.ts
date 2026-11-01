@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'bun:test'
 import { Linter } from 'eslint'
 
-import { UNAWAITED_ASYNC_MATCHER_SELECTORS } from '../eslint.config.mjs'
+import {
+  shadcnNoRestyleContracts,
+  UNAWAITED_ASYNC_MATCHER_SELECTORS,
+} from './policy.mjs'
 
 const linter = new Linter()
 
@@ -31,5 +34,11 @@ describe('unawaited async matcher selectors', () => {
 
   it('accepts a returned matcher', () => {
     expect(lint('const f = () => expect(p).resolves.toBe(1)')).toHaveLength(0)
+  })
+})
+
+describe('shadcn no-restyle contracts', () => {
+  it('starts empty', () => {
+    expect(shadcnNoRestyleContracts).toEqual([])
   })
 })
