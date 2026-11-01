@@ -50,6 +50,18 @@
     "*.hbs",
     "*.handlebars",
     "*.mdx",
-    "*.markdown"
+    "*.markdown",
+    "node_modules",
+    "**/dist",
+    "bun.lock",
+    "**/coverage",
+    "**/.astro",
+    ".claude",
+    ".agents",
+    ".forge",
+    "CONTEXT.md",
+    "parity/fixtures",
+    "parity/.corpus",
+    "parity/.out"
   ]
 }

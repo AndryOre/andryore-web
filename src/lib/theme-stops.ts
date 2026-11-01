@@ -110,6 +110,8 @@ export function stopFromLevel(level: number): number {
  * @returns 1 inside the bar, down to 0.96 at the full overshoot.
  */
 export function squeezeForLevel(level: number): number {
-  const overshoot = level > 100 ? level - 100 : level < 0 ? -level : 0
+  let overshoot = 0
+  if (level > 100) overshoot = level - 100
+  else if (level < 0) overshoot = -level
   return 1 - (1 - FULL_SQUEEZE) * Math.min(1, overshoot / OVERSHOOT_CAP)
 }

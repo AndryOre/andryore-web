@@ -1,6 +1,5 @@
 import eslintComments from '@eslint-community/eslint-plugin-eslint-comments'
 import eslintReact from '@eslint-react/eslint-plugin'
-import prettierConfig from 'eslint-config-prettier'
 import astro from 'eslint-plugin-astro'
 import jsdoc from 'eslint-plugin-jsdoc'
 import jsxA11y from 'eslint-plugin-jsx-a11y'
@@ -153,9 +152,6 @@ const TYPE_AWARE_TYPESCRIPT_RULES = new Set(
     .map(([name]) => name),
 )
 
-/** Rules `eslint-config-prettier` turns off as its last, global block. */
-const PRETTIER_DISABLED_RULES = new Set(Object.keys(prettierConfig.rules))
-
 /**
  * Splits an ESLint rule id into its plugin namespace (`''` for core rules)
  * and its rule name.
@@ -211,10 +207,8 @@ function isOff(value) {
 
 /**
  * Translates an ESLint rule map to Oxlint ids, keeping each value (severity
- * and options) untouched. Two kinds of entry are left out because they
- * change nothing under ESLint either: rules `eslint-config-prettier` turns
- * off (its block is ESLint's last global one, so they never run), and `off`
- * entries for rules no block enables (such as
+ * and options) untouched. One kind of entry is left out because it
+ * changes nothing under ESLint either: `off` entries for rules no block enables (such as
  * `@typescript-eslint/naming-convention`, which tsgolint does not port).
  * @param rules An ESLint `rules` object.
  * @returns The same rules under their Oxlint ids.
@@ -222,7 +216,6 @@ function isOff(value) {
 function toOxlintRules(rules) {
   return Object.fromEntries(
     Object.entries(rules)
-      .filter(([ruleId]) => !PRETTIER_DISABLED_RULES.has(ruleId))
       .filter(
         ([ruleId, value]) => !isOff(value) || ENABLED_RULE_IDS.has(ruleId),
       )

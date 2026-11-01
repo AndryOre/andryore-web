@@ -33,18 +33,29 @@ const lightUrl = brand ? brandUrls[brand.light] : undefined
 const darkUrl = brand ? brandUrls[brand.dark] : undefined
 const tintedSource = brand ? brandSources[brand.light] : undefined
 const splitMarks = lightUrl !== darkUrl
+const tintedHtml =
+  tint && tintedSource ? tintSvg(tintedSource, size) : undefined
+const brandMarks =
+  tintedHtml === undefined && lightUrl && darkUrl
+    ? { lightUrl, darkUrl }
+    : undefined
+const glyphHtml =
+  tintedHtml === undefined && brandMarks === undefined && icon.kind === 'glyph'
+    ? glyphSvg(icon.name, size)
+    : undefined
 ---
 
-{tint && tintedSource ? (
+{tintedHtml !== undefined && (
   <span
     class:list={['inline-flex shrink-0', className]}
     aria-hidden="true"
-    set:html={tintSvg(tintedSource, size)}
+    set:html={tintedHtml}
   />
-) : brand && lightUrl && darkUrl ? (
+)}
+{brandMarks && (
   <span class:list={['inline-flex shrink-0', className]} aria-hidden="true">
     <img
-      src={lightUrl}
+      src={brandMarks.lightUrl}
       alt=""
       width={size}
       height={size}
@@ -54,7 +65,7 @@ const splitMarks = lightUrl !== darkUrl
     />
     {splitMarks && (
       <img
-        src={darkUrl}
+        src={brandMarks.darkUrl}
         alt=""
         width={size}
         height={size}
@@ -64,12 +75,11 @@ const splitMarks = lightUrl !== darkUrl
       />
     )}
   </span>
-) : (
-  icon.kind === 'glyph' && (
-    <span
-      class:list={['inline-flex shrink-0', className]}
-      aria-hidden="true"
-      set:html={glyphSvg(icon.name, size)}
-    />
-  )
+)}
+{glyphHtml !== undefined && (
+  <span
+    class:list={['inline-flex shrink-0', className]}
+    aria-hidden="true"
+    set:html={glyphHtml}
+  />
 )}
