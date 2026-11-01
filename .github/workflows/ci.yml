@@ -48,9 +48,6 @@ jobs:
       - name: Check
         run: bun run check
 
-      - name: Oxlint
-        run: bun run lint:oxlint
-
   test:
     name: Test
     runs-on: ubuntu-latest

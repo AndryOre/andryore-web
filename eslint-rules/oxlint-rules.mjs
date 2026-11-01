@@ -11,7 +11,7 @@ import tseslint from 'typescript-eslint'
 import {
   shadcnNoRestyleContracts,
   UNAWAITED_ASYNC_MATCHER_SELECTORS,
-} from '../eslint.config.mjs'
+} from './policy.mjs'
 
 /**
  * The ESLint plugins Oxlint loads as JS plugins, so a rule runs on its

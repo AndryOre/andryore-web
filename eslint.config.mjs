@@ -1,28 +1,12 @@
 import eslintComments from '@eslint-community/eslint-plugin-eslint-comments'
-import eslintReact from '@eslint-react/eslint-plugin'
-import { plugin as shadcn } from '@shadcn/lint'
-import prettierConfig from 'eslint-config-prettier'
 import astro from 'eslint-plugin-astro'
-import jsdoc from 'eslint-plugin-jsdoc'
 import jsxA11y from 'eslint-plugin-jsx-a11y'
-import reactHooks from 'eslint-plugin-react-hooks'
 import unicorn from 'eslint-plugin-unicorn'
 import { defineConfig, globalIgnores } from 'eslint/config'
-import tseslint from 'typescript-eslint'
 
 import localPlugin from './eslint-rules/index.mjs'
 
-/**
- * `eslint-plugin-jsdoc`'s TypeScript-flavored recommended rules, with
- * `require-jsdoc` turned off (only non-obvious exports are documented) and
- * `informative-docs` turned on (rejects JSDoc that just restates the
- * declaration's name).
- */
-const jsdocRules = {
-  ...jsdoc.configs['flat/recommended-typescript-error'].rules,
-  'jsdoc/require-jsdoc': 'off',
-  'jsdoc/informative-docs': 'error',
-}
+const ASTRO_FILES = ['**/*.astro']
 
 /**
  * The recommended `eslint-comments` rules, with `require-description` turned
@@ -34,58 +18,32 @@ const eslintCommentsRules = {
 }
 
 /**
- * Flags an un-awaited `.rejects`/`.resolves` matcher statement. bun-types types
- * them as synchronous, so `no-floating-promises` cannot see the missing
- * `await` and a failing assertion would never be reported.
+ * ESLint lints `.astro` files and nothing else. Every other file is linted by
+ * Oxlint (`oxlint.config.ts`), which cannot see the template of an Astro
+ * component because JS plugins do not run on it yet.
+ *
+ * Exit condition: once oxc#23207 lets Oxlint JS plugins see the Astro
+ * template, move these rules into `oxlint.config.ts`, delete this file and
+ * the `eslint` and `eslint-plugin-astro` dependencies, and make
+ * `bun run lint` Oxlint only.
+ *
+ * The `.astro` rule set is exactly: `astro/recommended`, `jsx-a11y`
+ * recommended, `unicorn` recommended with this repo's overrides (including the
+ * four formatting rules `eslint-config-prettier` used to switch off),
+ * `local/no-non-doc-comments` and the `eslint-comments` rules. No rule here
+ * needs type information, so the parser gets no `project`.
  */
-export const UNAWAITED_ASYNC_MATCHER_SELECTORS = [
-  `ExpressionStatement > CallExpression[callee.object.property.name=/^(rejects|resolves)$/]`,
-  `ExpressionStatement > CallExpression[callee.object.object.property.name=/^(rejects|resolves)$/]`,
-].map((selector) => ({
-  selector,
-  message:
-    "bun-types types `.rejects`/`.resolves` as synchronous matchers, so `@typescript-eslint/no-floating-promises` can't see an un-awaited one and a failing assertion is never reported. Prefix the statement with `await` or return it.",
-}))
-
-/**
- * `shadcn/no-restyle` contracts: one entry per real, bounded design decision
- * about a component's `className`. Empty until the first shadcn/ui component
- * lands; add entries here, never a file-wide disable.
- */
-export const shadcnNoRestyleContracts = []
-
-/** Files that hold React islands and the shadcn/ui components they use. */
-const ISLAND_FILES = ['src/**/*.tsx']
-
 export default defineConfig([
+  { files: ASTRO_FILES, extends: [jsxA11y.flatConfigs.recommended] },
+  { files: ASTRO_FILES, extends: [unicorn.configs.recommended] },
   {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      tseslint.configs.strictTypeChecked,
-      tseslint.configs.stylisticTypeChecked,
-    ],
-    languageOptions: {
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
-    rules: {
-      '@typescript-eslint/consistent-type-imports': 'error',
-      '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/await-thenable': 'error',
-      '@typescript-eslint/no-misused-promises': [
-        'error',
-        { checksVoidReturn: { attributes: false } },
-      ],
-      '@typescript-eslint/no-deprecated': 'warn',
-    },
-  },
-  jsxA11y.flatConfigs.recommended,
-  unicorn.configs.recommended,
-  {
+    files: ASTRO_FILES,
     rules: {
       'unicorn/no-null': 'off',
+      'unicorn/empty-brace-spaces': 'off',
+      'unicorn/no-nested-ternary': 'off',
+      'unicorn/number-literal-case': ['off', { hexadecimalValue: 'uppercase' }],
+      'unicorn/template-indent': 'off',
       'unicorn/name-replacements': [
         'error',
         {
@@ -110,19 +68,9 @@ export default defineConfig([
       ],
     },
   },
-  {
-    files: ['**/*.config.{ts,mjs}'],
-    rules: { 'unicorn/no-top-level-side-effects': 'off' },
-  },
   ...astro.configs.recommended,
   {
-    files: ['**/*.astro'],
-    languageOptions: {
-      parserOptions: {
-        project: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
+    files: ASTRO_FILES,
     plugins: {
       local: localPlugin,
       '@eslint-community/eslint-comments': eslintComments,
@@ -131,34 +79,6 @@ export default defineConfig([
       ...eslintCommentsRules,
       'local/no-non-doc-comments': 'error',
     },
-  },
-  {
-    files: ['**/*.astro/*.{ts,js}'],
-    extends: [tseslint.configs.disableTypeChecked],
-    languageOptions: { parserOptions: { projectService: false } },
-  },
-  {
-    files: ['**/*.test.ts'],
-    rules: {
-      'no-restricted-syntax': ['error', ...UNAWAITED_ASYNC_MATCHER_SELECTORS],
-    },
-  },
-  {
-    files: ['**/*.{ts,tsx,mjs}'],
-    plugins: {
-      jsdoc: jsdoc.configs['flat/recommended-typescript-error'].plugins.jsdoc,
-      local: localPlugin,
-      '@eslint-community/eslint-comments': eslintComments,
-    },
-    rules: {
-      ...jsdocRules,
-      ...eslintCommentsRules,
-      'local/no-non-doc-comments': 'error',
-    },
-  },
-  {
-    files: ['**/*.{js,mjs,cjs}'],
-    extends: [tseslint.configs.disableTypeChecked],
   },
   {
     files: ['src/pages/**/*.astro'],
@@ -176,41 +96,6 @@ export default defineConfig([
       ],
     },
   },
-  {
-    files: ['.github/ISSUE_TEMPLATE/**'],
-    rules: { 'unicorn/filename-case': 'off' },
-  },
-  {
-    files: ISLAND_FILES,
-    extends: [eslintReact.configs['recommended-typescript']],
-    plugins: { 'react-hooks': reactHooks },
-    rules: { ...reactHooks.configs.flat.recommended.rules },
-  },
-  {
-    files: ISLAND_FILES,
-    plugins: { shadcn },
-    rules: {
-      'shadcn/no-restyle': [
-        'error',
-        { allow: ['layout'], contracts: shadcnNoRestyleContracts },
-      ],
-      'shadcn/no-raw-colors': 'error',
-      'shadcn/no-arbitrary-values': 'error',
-      'shadcn/no-inline-styles': 'error',
-      'shadcn/no-unknown-classes': 'error',
-      'shadcn/require-static-classes': 'error',
-    },
-  },
-  {
-    files: ['src/components/ui/**'],
-    rules: { 'shadcn/no-restyle': 'off' },
-  },
-  {
-    files: ['parity/.corpus/**'],
-    extends: [tseslint.configs.disableTypeChecked],
-    languageOptions: { parserOptions: { projectService: false } },
-  },
-  prettierConfig,
   globalIgnores([
     '**/.astro/**',
     '**/dist/**',
@@ -218,7 +103,5 @@ export default defineConfig([
     '.claude/**',
     '.agents/**',
     '.forge/**',
-    'parity/fixtures/**',
-    ...(process.env.PARITY_CORPUS === '1' ? [] : ['parity/.corpus/**']),
   ]),
 ])
