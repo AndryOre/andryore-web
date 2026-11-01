@@ -82,6 +82,10 @@ export default defineConfig([
     files: ASTRO_AND_SCRIPT_FILES,
     rules: {
       'unicorn/no-null': 'off',
+      'unicorn/number-literal-case': [
+        'error',
+        { hexadecimalValue: 'lowercase' },
+      ],
       'unicorn/name-replacements': [
         'error',
         {

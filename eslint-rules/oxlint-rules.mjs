@@ -243,6 +243,7 @@ const GLOBAL_RULES = {
   ...jsxA11y.flatConfigs.recommended.rules,
   ...unicorn.configs.recommended.rules,
   'unicorn/no-null': 'off',
+  'unicorn/number-literal-case': ['error', { hexadecimalValue: 'lowercase' }],
   'unicorn/name-replacements': [
     'error',
     {
