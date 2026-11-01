@@ -1,0 +1,55 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "trailingComma": "all",
+  "semi": false,
+  "tabWidth": 2,
+  "singleQuote": true,
+  "printWidth": 80,
+  "proseWrap": "always",
+  "endOfLine": "lf",
+  "arrowParens": "always",
+  "astro": true,
+  "sortPackageJson": false,
+  "sortTailwindcss": {
+    "stylesheet": "./src/styles/global.css",
+    "functions": ["cn", "cva", "clsx"]
+  },
+  "sortImports": {
+    "newlinesBetween": true,
+    "internalPattern": ["@/"],
+    "customGroups": [
+      {
+        "groupName": "astro",
+        "elementNamePattern": ["astro", "astro/**", "astro:*"]
+      }
+    ],
+    "groups": [
+      "builtin",
+      { "newlinesBetween": false },
+      "astro",
+      { "newlinesBetween": false },
+      "external",
+      "internal",
+      ["parent", "sibling", "index"],
+      "unknown"
+    ]
+  },
+  "ignorePatterns": [
+    "*.cjs",
+    "*.cts",
+    "*.mts",
+    "*.jsonc",
+    "*.toml",
+    "*.html",
+    "*.vue",
+    "*.svelte",
+    "*.scss",
+    "*.less",
+    "*.graphql",
+    "*.gql",
+    "*.hbs",
+    "*.handlebars",
+    "*.mdx",
+    "*.markdown"
+  ]
+}

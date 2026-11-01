@@ -62,7 +62,7 @@ const tileSub = 'text-muted-foreground m-0 text-[13px]'
   <div class="uses-page grid gap-10 sm:px-4">
     <a
       href={localePath(locale, '/')}
-      class="text-muted-foreground hover:text-foreground inline-flex min-h-11 w-fit items-center gap-2 font-mono text-xs tracking-wide no-underline"
+      class="inline-flex min-h-11 w-fit items-center gap-2 font-mono text-xs tracking-wide text-muted-foreground no-underline hover:text-foreground"
       data-page-back
     >
       <span aria-hidden="true">←</span>
@@ -73,11 +73,11 @@ const tileSub = 'text-muted-foreground m-0 text-[13px]'
       class:list={[
         'reveal',
         revealClass(0),
-        'bg-card border-border relative isolate h-[360px] overflow-hidden rounded-[20px] border max-[639px]:h-auto max-[639px]:min-h-[360px] max-[639px]:py-[88px] min-[700px]:h-[420px]',
+        'relative isolate h-[360px] overflow-hidden rounded-[20px] border border-border bg-card max-[639px]:h-auto max-[639px]:min-h-[360px] max-[639px]:py-[88px] min-[700px]:h-[420px]',
       ]}
     >
       <UsesIconField />
-      <div class="pointer-events-none absolute inset-0 z-10 grid place-items-center text-center max-[639px]:relative max-[639px]:inset-auto max-[699px]:px-6">
+      <div class="pointer-events-none absolute inset-0 z-10 grid place-items-center text-center max-[699px]:px-6 max-[639px]:relative max-[639px]:inset-auto">
         <div>
           <h1
             id="uses-heading"
@@ -85,7 +85,7 @@ const tileSub = 'text-muted-foreground m-0 text-[13px]'
           >
             {copy.heading}
           </h1>
-          <p class="text-muted-foreground mx-auto mt-3 mb-0 max-w-[46ch] text-base">
+          <p class="mx-auto mt-3 mb-0 max-w-[46ch] text-base text-muted-foreground">
             {copy.intro}
           </p>
         </div>
@@ -123,18 +123,18 @@ const tileSub = 'text-muted-foreground m-0 text-[13px]'
         </h2>
         <ul class="m-0 grid list-none p-0">
           {copy.setup.map((row) => (
-            <li class="border-border grid grid-cols-[auto_auto_1fr_auto] items-center gap-3 border-b py-2.5 last:border-b-0 max-[699px]:grid-cols-[auto_1fr]">
+            <li class="grid grid-cols-[auto_auto_1fr_auto] items-center gap-3 border-b border-border py-2.5 last:border-b-0 max-[699px]:grid-cols-[auto_1fr]">
               <span
                 aria-hidden="true"
-                class="text-muted-foreground border-border grid size-9 place-items-center rounded-[10px] border bg-(--card-2)"
+                class="grid size-9 place-items-center rounded-[10px] border border-border bg-(--card-2) text-muted-foreground"
                 set:html={glyphSvg(row.glyph as GlyphName, 20)}
               />
               <span class="font-medium">{row.role}</span>
               <span
                 aria-hidden="true"
-                class="border-muted-foreground -translate-y-1 border-b border-dotted opacity-50 max-[699px]:hidden"
+                class="-translate-y-1 border-b border-dotted border-muted-foreground opacity-50 max-[699px]:hidden"
               />
-              <span class="text-muted-foreground text-right max-[699px]:col-span-full max-[699px]:text-left">
+              <span class="text-right text-muted-foreground max-[699px]:col-span-full max-[699px]:text-left">
                 <a
                   href={row.url}
                   {...externalLinkAttributes(row.url)}
@@ -162,7 +162,7 @@ const tileSub = 'text-muted-foreground m-0 text-[13px]'
         <h2 id="this-site-heading" class={cardHeading}>
           {site.heading}
         </h2>
-        <p class="text-muted-foreground m-0 text-[15px]">{site.intro}</p>
+        <p class="m-0 text-[15px] text-muted-foreground">{site.intro}</p>
 
         <div class="grid gap-3 min-[700px]:grid-cols-3">
           <div class={tile}>
@@ -224,10 +224,10 @@ const tileSub = 'text-muted-foreground m-0 text-[13px]'
                 {site.type.specimens[1]?.text}
               </span>
             </div>
-            <span class="text-muted-foreground flex items-center gap-2 font-mono text-[10px] font-medium tracking-[0.06em]">
-              <span aria-hidden="true" class="bg-primary/70 h-px flex-1"></span>
+            <span class="flex items-center gap-2 font-mono text-[10px] font-medium tracking-[0.06em] text-muted-foreground">
+              <span aria-hidden="true" class="h-px flex-1 bg-primary/70"></span>
               {site.type.readout}
-              <span aria-hidden="true" class="bg-primary/70 h-px flex-1"></span>
+              <span aria-hidden="true" class="h-px flex-1 bg-primary/70"></span>
             </span>
             <span class={tileSub}>{site.type.body}</span>
           </div>
@@ -242,7 +242,7 @@ const tileSub = 'text-muted-foreground m-0 text-[13px]'
                     aria-label={swatch.token}
                     title={swatch.token}
                     class:list={[
-                      'border-border block aspect-square rounded-[10px] border',
+                      'block aspect-square rounded-[10px] border border-border',
                       swatch.bg,
                     ]}
                   />
@@ -316,7 +316,7 @@ const tileSub = 'text-muted-foreground m-0 text-[13px]'
         <h2 id="uses-privacy" class={cardHeading}>
           {site.privacyHeading}
         </h2>
-        <p class="text-muted-foreground m-0 text-sm">{site.privacyBody}</p>
+        <p class="m-0 text-sm text-muted-foreground">{site.privacyBody}</p>
       </section>
     </div>
   </div>

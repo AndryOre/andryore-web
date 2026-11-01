@@ -66,7 +66,7 @@ export default defineConfig([
     ],
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        projectService: { allowDefaultProject: ['parity/*.ts'] },
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -205,6 +205,11 @@ export default defineConfig([
     files: ['src/components/ui/**'],
     rules: { 'shadcn/no-restyle': 'off' },
   },
+  {
+    files: ['parity/.corpus/**'],
+    extends: [tseslint.configs.disableTypeChecked],
+    languageOptions: { parserOptions: { projectService: false } },
+  },
   prettierConfig,
   globalIgnores([
     '**/.astro/**',
@@ -213,5 +218,7 @@ export default defineConfig([
     '.claude/**',
     '.agents/**',
     '.forge/**',
+    'parity/fixtures/**',
+    ...(process.env.PARITY_CORPUS === '1' ? [] : ['parity/.corpus/**']),
   ]),
 ])

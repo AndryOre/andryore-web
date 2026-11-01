@@ -90,5 +90,20 @@
       automergeType: 'pr',
       minimumReleaseAge: '7 days',
     },
+
+    {
+      groupName: 'oxc',
+      matchPackageNames: [
+        'oxlint',
+        'oxlint-tsgolint',
+        'oxlint-plugin-eslint',
+        'oxfmt',
+        '@oxc-project/**',
+        '@oxlint/**',
+        'oxc-*',
+      ],
+      rangeStrategy: 'pin',
+      automerge: false,
+    },
   ],
 }
