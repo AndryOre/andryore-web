@@ -1,5 +1,6 @@
 import { expect, type Page } from '@playwright/test'
 
+import { UMAMI_SCRIPT_URL } from '../src/lib/analytics'
 import type { Theme } from './routes'
 
 const THEME_STORAGE_KEY = 'theme'
@@ -9,7 +10,8 @@ const THEME_STORAGE_KEY = 'theme'
  * (reduced by default) and
  * answers the runtime endpoints that only the production server serves. The
  * contributions answer is not a valid snapshot, so the tile keeps its build
- * data without a network error.
+ * data without a network error. The Umami script is answered locally so a
+ * run never depends on the third-party host being reachable.
  * @param page The page to configure.
  * @param theme The theme to paint.
  * @param reducedMotion The motion preference to emulate.
@@ -25,6 +27,9 @@ export async function preparePage(
   )
   await page.route('**/api/github-contributions', (route) =>
     route.fulfill({ json: {} }),
+  )
+  await page.route(UMAMI_SCRIPT_URL, (route) =>
+    route.fulfill({ contentType: 'text/javascript', body: '' }),
   )
   await page.addInitScript(
     ([key, value]) => {
