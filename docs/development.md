@@ -55,13 +55,13 @@ committed grid snapshot and no credentials ([Configuration](configuration.md)).
 | `bun run env:encrypt`     | `dotenvx encrypt`: encrypts the plaintext values of the env files ([Configuration](configuration.md#dotenvx-workflow)).                                               |
 | `bun run prepare`         | Installs the Husky hooks; runs on `bun install`.                                                                                                                      |
 | `bun run check`           | Aggregate gate: `format:check`, `lint`, `typecheck` and `knip`.                                                                                                       |
-| `bun run fix`             | Formats the repository with Prettier, then autofixes ESLint findings (`format:write`, `lint:fix`).                                                                    |
+| `bun run fix`             | Formats the repository with Oxfmt, then autofixes Oxlint and ESLint findings (`format:write`, `lint:fix`).                                                            |
 | `bun run cache:clear`     | Removes `/tmp/node-compile-cache`, `.eslintcache` and `node_modules/.cache`.                                                                                          |
-| `bun run format:check`    | Checks formatting with Prettier (no writes).                                                                                                                          |
-| `bun run format:write`    | Formats the repository with Prettier.                                                                                                                                 |
-| `bun run lint`            | ESLint with zero warnings allowed, using `--cache --cache-strategy content`.                                                                                          |
-| `bun run lint:fix`        | ESLint with autofix.                                                                                                                                                  |
-| `bun run typecheck`       | `astro check && tsc --noEmit`.                                                                                                                                        |
+| `bun run format:check`    | Checks formatting with Oxfmt (no writes).                                                                                                                             |
+| `bun run format:write`    | Formats the repository with Oxfmt.                                                                                                                                    |
+| `bun run lint`            | Oxlint (`--type-aware --deny-warnings`) on every file but `.astro`, then ESLint on `**/*.astro` with zero warnings, using `--cache --cache-strategy content`.         |
+| `bun run lint:fix`        | Oxlint and ESLint with autofix.                                                                                                                                       |
+| `bun run typecheck`       | `astro sync`, then `tsc --noEmit --runExternalCode` from `typescript7` with the content mapper.                                                                       |
 | `bun run knip`            | Finds unused files, exports and dependencies.                                                                                                                         |
 | `bun run test`            | Runs `bun test` with coverage and the `bunfig.toml` threshold.                                                                                                        |
 | `bun run lint:docs`       | Offline link and anchor check of the Markdown with lychee.                                                                                                            |
@@ -78,8 +78,10 @@ committed grid snapshot and no credentials ([Configuration](configuration.md)).
 
 When a command crashes inside `typescript.js`, see
 [Troubleshooting](troubleshooting.md). `eslint` and `tsc` run without `--bun`.
-Agents do not run a `build` script unless explicitly asked. Never print or
-decrypt env values while running any script.
+The toolchain is explained in
+[ADR 0023](adr/0023-oxc-toolchain-and-typescript-7-1.md). Agents do not run a
+`build` script unless explicitly asked. Never print or decrypt env values while
+running any script.
 
 ### Fidelity audit exceptions
 
@@ -179,9 +181,9 @@ and never call `waitForTimeout`.
 
 Hooks live in `.husky/`:
 
-- **`pre-commit`** runs `lint-staged`: Prettier and ESLint on staged code files,
-  Prettier alone on staged `json`, `md`, `css` and `yml` files
-  (`lint-staged.config.mjs`).
+- **`pre-commit`** runs `lint-staged`: Oxlint on staged `ts`, `tsx` and `mjs`
+  files, ESLint on staged `astro` files, and Oxfmt on every staged file it
+  formats (`lint-staged.config.mjs`).
 - **`commit-msg`** runs `commitlint` with `@commitlint/config-conventional`. It
   enforces the Conventional Commits shape and type list, not the emoji.
 - **`pre-push`** rejects a push whose branch name does not match `<type>/<slug>`
@@ -210,11 +212,11 @@ title follows the same format and becomes the commit message on `develop` or
 
 ## Code documentation
 
-Comments are TSDoc blocks only, on non-obvious exports. A local ESLint rule
-(`eslint-rules/`) rejects `//` and plain `/* */` comments; the only exceptions
-are directive comments a tool reads, such as `eslint-disable`,
-`@ts-expect-error` and `prettier-ignore`. Rationale:
-[ADR 0005](adr/0005-tsdoc-only-code-comments.md).
+Comments are TSDoc blocks only, on non-obvious exports. A local lint rule
+(`eslint-rules/`, run by Oxlint and by ESLint on `.astro`) rejects `//` and
+plain `/* */` comments; the only exceptions are directive comments a tool reads,
+such as `eslint-disable`, `@ts-expect-error` and format-ignore comments.
+Rationale: [ADR 0005](adr/0005-tsdoc-only-code-comments.md).
 
 ## External links
 
@@ -233,17 +235,18 @@ text, and appended inside the `aria-label` of an icon-only link. Rationale:
 ## Adding a `@shadcn/lint` contract
 
 The `shadcn/no-restyle` rule restricts which classes a call site may pass to a
-shadcn/ui component. A contract is an entry of `shadcnNoRestyleContracts` in
-`eslint.config.mjs`. Add or widen one only when a finding reveals a real,
-repeating design decision, not to silence a single finding. Work up the ladder
-in [`AGENTS.md`](../AGENTS.md#escalating-a-shadcnlint-finding) first: an
-existing variant, then a new variant, then a contract, and only then a one-line
+shadcn/ui component. A contract is an entry of `shadcnNoRestyleContracts`, a
+single-source export that the Oxlint config imports. Add or widen one only when
+a finding reveals a real, repeating design decision, not to silence a single
+finding. Work up the ladder in
+[`AGENTS.md`](../AGENTS.md#escalating-a-shadcnlint-finding) first: an existing
+variant, then a new variant, then a contract, and only then a one-line
 `eslint-disable-next-line -- <reason>`. Record the decision in an ADR when the
 contract is new. See [ADR 0006](adr/0006-tailwind-and-shadcn-islands.md).
 
-`shadcnNoRestyleContracts` lives in `eslint.config.mjs`. It is empty until the
-first shadcn/ui component lands; the `@shadcn/lint` rules run on the React
-island files (`src/**/*.tsx`), not on `.astro` files.
+`shadcnNoRestyleContracts` is empty until the first shadcn/ui component lands;
+the `@shadcn/lint` rules run on the React island files (`src/**/*.tsx`), not on
+`.astro` files.
 
 ## Adding a product page
 
@@ -278,7 +281,8 @@ numbers, an allowed status and that the index lists every file.
 Every PR runs `.github/workflows/ci.yml`, and pushes to `main` and `develop` run
 it too. Job names:
 
-- **Quality**: format check, lint, typecheck, knip.
+- **Quality**: format check, lint (Oxlint, then ESLint on `.astro`), typecheck,
+  knip.
 - **Test**: `bun test`.
 - **Build**: `bun run build`, so a broken build fails the PR. It is the only
   place the build runs; locally it stays opt-in.
