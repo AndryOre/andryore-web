@@ -1,7 +1,7 @@
 import { observeVisibility, type VisibilityObserverFactory } from './in-view'
 
 interface HeaderTarget {
-  toggleAttribute(name: string, force?: boolean): boolean
+  toggleAttribute(name: string, isForced?: boolean): boolean
 }
 
 /**

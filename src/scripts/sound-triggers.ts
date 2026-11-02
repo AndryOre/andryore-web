@@ -5,7 +5,9 @@ import {
   type SoundEvent,
 } from '../lib/sound-engine'
 
-/** The attribute that names the event an element plays, or `none`. */
+/**
+The attribute that names the event an element plays, or `none`.
+ */
 const SOUND_ATTRIBUTE = 'data-sound'
 
 const INTERACTIVE_SELECTOR =
@@ -25,26 +27,34 @@ const NAMED_EVENTS: Readonly<Record<SoundEvent, true>> = {
   stackSettle: true,
 }
 
-/** The parts of an element the triggers read, so tests can fake it. */
+/**
+The parts of an element the triggers read, so tests can fake it.
+ */
 export interface TriggerElement {
   getAttribute: (name: string) => string | null
   matches: (selector: string) => boolean
   contains: (other: unknown) => boolean
 }
 
-/** The parts of a node that may sit inside a trigger. */
+/**
+The parts of a node that may sit inside a trigger.
+ */
 interface TriggerTarget {
   closest: (selector: string) => TriggerElement | null
 }
 
-/** The parts of a pointer or click event the triggers read. */
+/**
+The parts of a pointer or click event the triggers read.
+ */
 export interface TriggerEvent {
   target: unknown
   relatedTarget?: unknown
   pointerType?: string
 }
 
-/** The parts of the document the triggers listen on. */
+/**
+The parts of the document the triggers listen on.
+ */
 export interface TriggerRoot {
   addEventListener: (
     type: 'click' | 'pointerover' | 'pointerdown' | 'keydown',
@@ -52,7 +62,9 @@ export interface TriggerRoot {
   ) => void
 }
 
-/** The slice of the engine the triggers use. */
+/**
+The slice of the engine the triggers use.
+ */
 export type TriggerEngine = Pick<SoundEngine, 'play' | 'loadAvailability'>
 
 const isTarget = (value: unknown): value is TriggerTarget =>
@@ -87,7 +99,7 @@ export function resolveClickSound(target: unknown): SoundEvent | undefined {
  * @param event The pointer event.
  * @returns True when the hover tick should play.
  */
-export function entersControl(event: TriggerEvent): boolean {
+export function isControlEntry(event: TriggerEvent): boolean {
   if (event.pointerType === 'touch' || !isTarget(event.target)) return false
   const element = event.target.closest(INTERACTIVE_SELECTOR)
   if (
@@ -100,7 +112,9 @@ export function entersControl(event: TriggerEvent): boolean {
   return !origin || !element.contains(origin)
 }
 
-/** What the page script holds: mount once, play after a gesture. */
+/**
+What the page script holds: mount once, play after a gesture.
+ */
 export interface SoundTriggers {
   mount: (root: TriggerRoot) => void
   playUnlocked: (event: SoundEvent, options?: PlayOptions) => void
@@ -115,9 +129,9 @@ export interface SoundTriggers {
  * @returns The page-level triggers.
  */
 export function createSoundTriggers(engine: TriggerEngine): SoundTriggers {
-  let unlocked = false
+  let isAudioUnlocked = false
   const unlock = (): void => {
-    unlocked = true
+    isAudioUnlocked = true
   }
   return {
     mount: (root) => {
@@ -130,13 +144,13 @@ export function createSoundTriggers(engine: TriggerEngine): SoundTriggers {
         if (sound) engine.play(sound)
       })
       root.addEventListener('pointerover', (event) => {
-        if (unlocked && entersControl(event)) engine.play('hover')
+        if (isAudioUnlocked && isControlEntry(event)) engine.play('hover')
       })
     },
     playUnlocked: (event, options) => {
-      if (unlocked) engine.play(event, options)
+      if (isAudioUnlocked) engine.play(event, options)
     },
-    isUnlocked: () => unlocked,
+    isUnlocked: () => isAudioUnlocked,
   }
 }
 

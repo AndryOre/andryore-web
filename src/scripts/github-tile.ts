@@ -8,7 +8,9 @@ import {
 
 type Fetcher = (url: string) => Promise<Response>
 
-/** The parts of an element the script writes, so tests can fake them. */
+/**
+The parts of an element the script writes, so tests can fake them.
+ */
 export interface TileElement {
   textContent: string | null
   dataset: Record<string, string | undefined>
@@ -16,18 +18,24 @@ export interface TileElement {
   replaceChildren: (...cells: TileCell[]) => void
 }
 
-/** One contribution cell, built with DOM APIs so Trusted Types stay satisfied. */
+/**
+One contribution cell, built with DOM APIs so Trusted Types stay satisfied.
+ */
 interface TileCell {
   dataset: Record<string, string | undefined>
 }
 
-/** The tile root: its configuration and the elements to refresh. */
+/**
+The tile root: its configuration and the elements to refresh.
+ */
 export interface GithubTileRoot {
   dataset: Record<string, string | undefined>
   querySelector: (selector: string) => TileElement | null
 }
 
-/** Options for {@link mountGithubTile}. */
+/**
+Options for {@link mountGithubTile}.
+ */
 export interface MountOptions {
   fetcher?: Fetcher
   now?: () => Date
