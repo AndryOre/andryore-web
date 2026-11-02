@@ -21,6 +21,9 @@ const finding = (file: string, line: number, rule: string): Finding => ({
   rule,
 })
 
+const directive = (file: string, line: number): Finding =>
+  finding(file, line, UNUSED_DIRECTIVE_RULE)
+
 describe('diffFindings', () => {
   test('splits findings into common, eslint-only and oxlint-only', () => {
     const eslint = [finding('a.ts', 1, 'no-console'), finding('a.ts', 2, 'x')]
@@ -52,6 +55,43 @@ describe('diffFindings', () => {
     expect(diff.common).toEqual([])
     expect(diff.eslintOnly).toHaveLength(1)
     expect(diff.oxlintOnly).toHaveLength(2)
+  })
+  describe('position-insensitive rules', () => {
+    test('match by file, rule and count regardless of line', () => {
+      const diff = diffFindings([directive('a.ts', 1)], [directive('a.ts', 3)])
+      expect(diff.common).toEqual([directive('a.ts', 1)])
+      expect(diff.eslintOnly).toEqual([])
+      expect(diff.oxlintOnly).toEqual([])
+    })
+
+    test('a missing finding still fails the gate', () => {
+      const diff = diffFindings([directive('a.ts', 1)], [])
+      expect(diff.eslintOnly).toEqual([directive('a.ts', 1)])
+      expect(resolveGate(diff.eslintOnly, []).exitCode).toBe(1)
+    })
+
+    test('a missing finding in another file still fails the gate', () => {
+      const diff = diffFindings([directive('a.ts', 1)], [directive('b.ts', 1)])
+      expect(resolveGate(diff.eslintOnly, []).exitCode).toBe(1)
+    })
+
+    test('a surplus ESLint finding beyond the Oxlint count fails the gate', () => {
+      const diff = diffFindings(
+        [directive('a.ts', 1), directive('a.ts', 5)],
+        [directive('a.ts', 3)],
+      )
+      expect(diff.common).toHaveLength(1)
+      expect(diff.eslintOnly).toHaveLength(1)
+      expect(resolveGate(diff.eslintOnly, []).exitCode).toBe(1)
+    })
+
+    test('line-sensitive rules still need the same line', () => {
+      const diff = diffFindings(
+        [finding('a.ts', 1, 'r')],
+        [finding('a.ts', 3, 'r')],
+      )
+      expect(diff.eslintOnly).toHaveLength(1)
+    })
   })
 })
 
