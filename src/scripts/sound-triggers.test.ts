@@ -3,7 +3,7 @@ import { describe, expect, test } from 'bun:test'
 import type { SoundEvent } from '../lib/sound-engine'
 import {
   createSoundTriggers,
-  entersControl,
+  isControlEntry,
   resolveClickSound,
   type TriggerElement,
   type TriggerEvent,
@@ -89,23 +89,23 @@ describe('resolveClickSound', () => {
   })
 })
 
-describe('entersControl', () => {
+describe('isControlEntry', () => {
   test('is true for a mouse arriving from outside', () => {
     const { target } = control()
-    expect(entersControl({ target, pointerType: 'mouse' })).toBe(true)
+    expect(isControlEntry({ target, pointerType: 'mouse' })).toBe(true)
   })
 
   test('is false for touch, for moves inside, and off-control', () => {
     const { target, inner } = control()
-    expect(entersControl({ target, pointerType: 'touch' })).toBe(false)
-    expect(entersControl({ target, relatedTarget: inner })).toBe(false)
+    expect(isControlEntry({ target, pointerType: 'touch' })).toBe(false)
+    expect(isControlEntry({ target, relatedTarget: inner })).toBe(false)
     expect(
-      entersControl({ target: control({ interactive: false }).target }),
+      isControlEntry({ target: control({ interactive: false }).target }),
     ).toBe(false)
   })
 
   test('is false for a control that opts out', () => {
-    expect(entersControl({ target: control({ sound: 'none' }).target })).toBe(
+    expect(isControlEntry({ target: control({ sound: 'none' }).target })).toBe(
       false,
     )
   })

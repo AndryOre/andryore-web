@@ -1,4 +1,6 @@
-/** Delay between consecutive items of a staggered reveal, in milliseconds. */
+/**
+ * Delay between consecutive items of a staggered reveal, in milliseconds.
+ */
 export const REVEAL_STAGGER_MS = 60
 
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'

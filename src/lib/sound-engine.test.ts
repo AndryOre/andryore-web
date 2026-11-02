@@ -82,7 +82,7 @@ function createFakeContext() {
 function setup(
   overrides: Partial<SoundEngineDependencies> = {},
   manifest: unknown = MANIFEST,
-  missing = false,
+  isMissing = false,
 ) {
   const fake = createFakeContext()
   const requested: string[] = []
@@ -97,7 +97,7 @@ function setup(
       requested.push(input)
       if (input.endsWith('manifest.json'))
         return Promise.resolve(
-          missing
+          isMissing
             ? new Response('nope', { status: 404 })
             : Response.json(manifest),
         )

@@ -23,8 +23,8 @@ function stubBrowser(options: { storage: boolean; dark: boolean }) {
       classList: {
         add: (name: string) => classes.add(name),
         remove: (name: string) => classes.delete(name),
-        toggle: (name: string, force: boolean) =>
-          force ? classes.add(name) : classes.delete(name),
+        toggle: (name: string, shouldForce: boolean) =>
+          shouldForce ? classes.add(name) : classes.delete(name),
       },
     },
     querySelectorAll: () => [],

@@ -6,7 +6,7 @@ import {
   readThemePreference,
   resolveTheme,
   THEME_STORAGE_KEY,
-  writeThemePreference,
+  didWriteThemePreference,
   type ThemeStorage,
 } from './theme'
 
@@ -95,21 +95,21 @@ describe('readThemePreference', () => {
   })
 })
 
-describe('writeThemePreference', () => {
+describe('didWriteThemePreference', () => {
   test('stores light and dark', () => {
     const { storage, data } = memoryStorage()
-    expect(writeThemePreference(storage, 'light')).toBe(true)
+    expect(didWriteThemePreference(storage, 'light')).toBe(true)
     expect(data.get(THEME_STORAGE_KEY)).toBe('light')
   })
 
   test('clears the key for auto', () => {
     const { storage, data } = memoryStorage({ [THEME_STORAGE_KEY]: 'dark' })
-    expect(writeThemePreference(storage, 'auto')).toBe(true)
+    expect(didWriteThemePreference(storage, 'auto')).toBe(true)
     expect(data.has(THEME_STORAGE_KEY)).toBe(false)
   })
 
   test('reports failure instead of throwing', () => {
-    expect(writeThemePreference(throwingStorage, 'dark')).toBe(false)
-    expect(writeThemePreference(undefined, 'dark')).toBe(false)
+    expect(didWriteThemePreference(throwingStorage, 'dark')).toBe(false)
+    expect(didWriteThemePreference(undefined, 'dark')).toBe(false)
   })
 })

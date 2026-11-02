@@ -63,25 +63,25 @@ describe('parseContributionResponse', () => {
   })
 
   test('rejects a body without a calendar', () => {
-    expect(parseContributionResponse({ errors: [{}] }, NOW)).toBeNull()
-    expect(parseContributionResponse(null, NOW)).toBeNull()
+    expect(parseContributionResponse({ errors: [{}] }, NOW)).toBeUndefined()
+    expect(parseContributionResponse(null, NOW)).toBeUndefined()
   })
 })
 
 describe('fetchContributionGrid', () => {
-  test('returns null without a token and never calls the API', async () => {
-    let called = false
+  test('returns undefined without a token and never calls the API', async () => {
+    let wasCalled = false
     const result = await fetchContributionGrid({
       token: undefined,
       login: 'AndryOre',
       now: NOW,
       fetchImpl: () => {
-        called = true
+        wasCalled = true
         return respond(apiBody)()
       },
     })
-    expect(result).toBeNull()
-    expect(called).toBe(false)
+    expect(result).toBeUndefined()
+    expect(wasCalled).toBe(false)
   })
 
   test('sends the token as a bearer header', async () => {
@@ -98,20 +98,20 @@ describe('fetchContributionGrid', () => {
     expect(auth).toBe('Bearer secret')
   })
 
-  test('returns null on an HTTP error, a bad body or a network failure', async () => {
+  test('returns undefined on an HTTP error, a bad body or a network failure', async () => {
     const base = { token: 'secret', login: 'AndryOre', now: NOW }
     expect(
       await fetchContributionGrid({ ...base, fetchImpl: respond({}, 502) }),
-    ).toBeNull()
+    ).toBeUndefined()
     expect(
       await fetchContributionGrid({ ...base, fetchImpl: respond({}) }),
-    ).toBeNull()
+    ).toBeUndefined()
     expect(
       await fetchContributionGrid({
         ...base,
         fetchImpl: () => Promise.reject(new Error('offline')),
       }),
-    ).toBeNull()
+    ).toBeUndefined()
   })
 })
 
@@ -156,8 +156,8 @@ describe('resolveGridSnapshot', () => {
         ...options,
         token: undefined,
         fetchImpl: respond(apiBody),
-        committed: null,
+        committed: undefined,
       }),
-    ).toBeNull()
+    ).toBeUndefined()
   })
 })

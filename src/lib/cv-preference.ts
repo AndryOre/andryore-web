@@ -1,11 +1,15 @@
 import { LOCALES, type Locale } from '../i18n/locales'
 
-/** Storage key of the remembered CV language. */
+/**
+Storage key of the remembered CV language.
+ */
 export const CV_LANGUAGE_STORAGE_KEY = 'andryore:cv-language'
 
-/** The part of a Web Storage the CV preference needs. */
+/**
+The part of a Web Storage the CV preference needs.
+ */
 export interface CvStorage {
-  getItem: (key: string) => string | null
+  getItem: (key: string) => string | null | undefined
   setItem: (key: string, value: string) => void
 }
 
@@ -76,7 +80,9 @@ export function browserCvStores(win: {
   return stores
 }
 
-/** What the CV menu reads from and writes to. */
+/**
+What the CV menu reads from and writes to.
+ */
 export interface CvChoiceStore {
   subscribe: (listener: () => void) => () => void
   read: (fallback: Locale) => Locale
@@ -103,7 +109,7 @@ export function createCvChoiceStore(win: {
   const listeners = new Set<() => void>()
   const memory = new Map<string, string>()
   const memoryStore: CvStorage = {
-    getItem: (key) => memory.get(key) ?? null,
+    getItem: (key) => memory.get(key),
     setItem: (key, value) => {
       memory.set(key, value)
     },

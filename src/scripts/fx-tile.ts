@@ -6,7 +6,9 @@ import {
   type FxStorage,
 } from '../lib/fx-store'
 
-/** The parts of the switch element the script touches, so tests can fake it. */
+/**
+The parts of the switch element the script touches, so tests can fake it.
+ */
 export interface FxSwitchElement {
   setAttribute: (name: string, value: string) => void
   addEventListener: (type: 'click', listener: () => void) => void
@@ -33,12 +35,16 @@ export function mountFxSwitch(
   })
 }
 
-/** The parts of the tile root the availability script touches. */
+/**
+The parts of the tile root the availability script touches.
+ */
 export interface FxTileElement {
-  toggleAttribute: (name: string, force: boolean) => boolean
+  toggleAttribute: (name: string, isForced: boolean) => boolean
 }
 
-/** The slice of the sound engine the FX tile reads. */
+/**
+The slice of the sound engine the FX tile reads.
+ */
 export interface FxAvailabilitySource {
   getAvailability: () => 'unknown' | 'available' | 'unavailable'
   subscribeAvailability: (onChange: () => void) => () => void
