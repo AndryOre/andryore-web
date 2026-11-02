@@ -34,7 +34,7 @@ export interface GithubTileRoot {
 }
 
 /**
-Options for {@link mountGithubTile}.
+Options for {@link didMountGithubTile}.
  */
 export interface MountOptions {
   fetcher?: Fetcher
@@ -69,7 +69,7 @@ const writeLabel = (root: GithubTileRoot, since: string, now: Date): void => {
  * @param options Optional fetch and clock overrides.
  * @returns True when the tile now shows live data.
  */
-export async function mountGithubTile(
+export async function didMountGithubTile(
   root: GithubTileRoot,
   options: MountOptions = {},
 ): Promise<boolean> {

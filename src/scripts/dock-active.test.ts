@@ -8,7 +8,7 @@ import {
 
 const KEYS = ['home', 'about', 'products', 'uses', 'findMe']
 
-const setup = (hash: string, withObserver = true) => {
+const setup = (hash: string, hasObserver = true) => {
   const page = { atEnd: false }
   const scrollListeners: (() => void)[] = []
   const current = new Map<string, boolean>()
@@ -31,7 +31,7 @@ const setup = (hash: string, withObserver = true) => {
     onScroll: (listener) => {
       scrollListeners.push(listener)
     },
-    createObserver: withObserver
+    createObserver: hasObserver
       ? (callback) => {
           reporters.push(callback)
           return {
@@ -46,8 +46,8 @@ const setup = (hash: string, withObserver = true) => {
   const see = (id: string, isIntersecting: boolean): void => {
     for (const report of reporters) report([{ target: { id }, isIntersecting }])
   }
-  const scrollTo = (atEnd: boolean): void => {
-    page.atEnd = atEnd
+  const scrollTo = (isAtEnd: boolean): void => {
+    page.atEnd = isAtEnd
     for (const listener of scrollListeners) listener()
   }
   return { marked, see, observed, scrollTo }

@@ -6,14 +6,14 @@ const DAYS_PER_WEEK = 7
  * @param current Index of the active cell.
  * @param key The pressed `KeyboardEvent.key`.
  * @param total Number of cells in the grid.
- * @returns The new index, or null when the key does not navigate.
+ * @returns The new index, or undefined when the key does not navigate.
  */
 export function nextCellIndex(
   current: number,
   key: string,
   total: number,
-): number | null {
-  if (total <= 0) return null
+): number | undefined {
+  if (total <= 0) return undefined
   const last = total - 1
   const target: Record<string, number> = {
     ArrowDown: current + 1,
@@ -24,5 +24,5 @@ export function nextCellIndex(
     End: last,
   }
   const index = target[key]
-  return index === undefined ? null : Math.min(last, Math.max(0, index))
+  return index === undefined ? undefined : Math.min(last, Math.max(0, index))
 }

@@ -554,7 +554,7 @@ const backHref = localePath(locale, '/#products')
 </BaseLayout>
 
 <script>
-  import { prefersReducedMotion } from '../lib/motion'
+  import { isMotionReduced } from '../lib/motion'
   import { startCountUp } from '../scripts/count-up'
   import { observeVisibility } from '../scripts/in-view'
 
@@ -570,7 +570,7 @@ const backHref = localePath(locale, '/#products')
       const total = Number(target.dataset.countTotal)
       if (!Number.isFinite(total)) return
       startCountUp(target, total, {
-        reducedMotion: prefersReducedMotion(globalThis),
+        reducedMotion: isMotionReduced(globalThis),
         locale: target.dataset.countLocale ?? 'en',
         requestFrame: (callback) => requestAnimationFrame(callback),
       })

@@ -4,7 +4,7 @@ import {
   LOCALE_SCROLL_KEY,
   parseLocaleScroll,
   pickAnchor,
-  restoreLocaleScroll,
+  didRestoreLocaleScroll,
   saveLocaleScroll,
 } from './locale-scroll'
 
@@ -94,7 +94,7 @@ describe('save and restore', () => {
       '/es/',
     )
     const win = fakeWindow(0)
-    const restored = restoreLocaleScroll(
+    const restored = didRestoreLocaleScroll(
       storage,
       win,
       fakeDocument({ '#products': { top: 1200, bottom: 1900 } }),
@@ -109,7 +109,7 @@ describe('save and restore', () => {
     const storage = fakeStorage()
     saveLocaleScroll(storage, fakeWindow(640), fakeDocument({}), '/es/')
     const win = fakeWindow(0)
-    restoreLocaleScroll(storage, win, fakeDocument({}), '/es/')
+    didRestoreLocaleScroll(storage, win, fakeDocument({}), '/es/')
     expect(win.calls).toEqual([{ top: 640, behavior: 'instant' }])
   })
 
@@ -117,7 +117,9 @@ describe('save and restore', () => {
     const storage = fakeStorage()
     saveLocaleScroll(storage, fakeWindow(640), fakeDocument({}), '/es/')
     const win = fakeWindow(0)
-    expect(restoreLocaleScroll(storage, win, fakeDocument({}), '/')).toBe(false)
+    expect(didRestoreLocaleScroll(storage, win, fakeDocument({}), '/')).toBe(
+      false,
+    )
     expect(win.calls).toEqual([])
     expect(storage.data.size).toBe(0)
   })
@@ -136,7 +138,7 @@ describe('save and restore', () => {
       saveLocaleScroll(broken, fakeWindow(1), fakeDocument({}), '/')
     }).not.toThrow()
     expect(
-      restoreLocaleScroll(broken, fakeWindow(0), fakeDocument({}), '/'),
+      didRestoreLocaleScroll(broken, fakeWindow(0), fakeDocument({}), '/'),
     ).toBe(false)
   })
 })

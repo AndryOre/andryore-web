@@ -137,7 +137,7 @@ export function saveLocaleScroll(
  * @param pathname Pathname of the page that just loaded.
  * @returns Whether the page was scrolled.
  */
-export function restoreLocaleScroll(
+export function didRestoreLocaleScroll(
   storage: ScrollStorage,
   win: ScrollWindow,
   scrollDocument: ScrollDocument,

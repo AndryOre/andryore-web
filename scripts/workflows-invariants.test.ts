@@ -46,7 +46,7 @@ function findUnpinnedUses(workflow: Workflow): string[] {
  * @param workflow The parsed workflow.
  * @returns True when permissions are explicit everywhere they apply.
  */
-function declaresExplicitPermissions(workflow: Workflow): boolean {
+function hasExplicitPermissions(workflow: Workflow): boolean {
   if (workflow.permissions !== undefined) return true
   const jobs = Object.values(workflow.jobs ?? {})
   return jobs.length > 0 && jobs.every((job) => job.permissions !== undefined)
@@ -97,11 +97,11 @@ function findCheckoutsPersistingCredentials(workflow: Workflow): string[] {
   return Object.entries(workflow.jobs ?? {})
     .filter(([, job]) => {
       const permissions = job.permissions as Record<string, unknown> | undefined
-      const mayPush = permissions?.contents === 'write'
+      const isMayPush = permissions?.contents === 'write'
       return (job.steps ?? []).some((step) => {
         if (!step.uses?.startsWith('actions/checkout@')) return false
         const persist = step.with?.['persist-credentials']
-        return !(persist === false || (persist === true && mayPush))
+        return !(persist === false || (persist === true && isMayPush))
       })
     })
     .map(([jobName]) => jobName)
@@ -175,7 +175,7 @@ function findMissingReleaseBehaviour(workflow: Workflow): string[] {
  * @param workflow The parsed CI workflow.
  * @returns True when the cache key hashes `eslint-rules/**`.
  */
-function eslintCacheKeysOnLocalRules(workflow: Workflow): boolean {
+function hasEslintCacheKeyOnLocalRules(workflow: Workflow): boolean {
   const cacheStep = collectSteps(workflow).find(
     (step) =>
       typeof step.with?.path === 'string' &&
@@ -271,7 +271,7 @@ jobs:
     steps:
       - run: echo hi
 `)
-    expect(declaresExplicitPermissions(workflow)).toBe(false)
+    expect(hasExplicitPermissions(workflow)).toBe(false)
   })
 
   test('accepts top-level permissions and per-job permissions', () => {
@@ -294,8 +294,8 @@ jobs:
     steps:
       - run: echo hi
 `)
-    expect(declaresExplicitPermissions(topLevel)).toBe(true)
-    expect(declaresExplicitPermissions(perJob)).toBe(true)
+    expect(hasExplicitPermissions(topLevel)).toBe(true)
+    expect(hasExplicitPermissions(perJob)).toBe(true)
   })
 
   test('flags per-job permissions that miss a job', () => {
@@ -313,7 +313,7 @@ jobs:
     steps:
       - run: echo hi
 `)
-    expect(declaresExplicitPermissions(workflow)).toBe(false)
+    expect(hasExplicitPermissions(workflow)).toBe(false)
   })
 })
 
@@ -468,12 +468,12 @@ jobs:
 
   test('flags an eslint cache key without the local rules', () => {
     expect(
-      eslintCacheKeysOnLocalRules(
+      hasEslintCacheKeyOnLocalRules(
         ciWithCacheKey("${{ hashFiles('bun.lock') }}"),
       ),
     ).toBe(false)
     expect(
-      eslintCacheKeysOnLocalRules(
+      hasEslintCacheKeyOnLocalRules(
         ciWithCacheKey("${{ hashFiles('eslint-rules/**') }}"),
       ),
     ).toBe(true)
@@ -516,7 +516,7 @@ describe('ci.yml gates', () => {
   const ci = readWorkflow('ci.yml')
 
   test('keys the eslint cache on eslint-rules/**', () => {
-    expect(eslintCacheKeysOnLocalRules(ci)).toBe(true)
+    expect(hasEslintCacheKeyOnLocalRules(ci)).toBe(true)
   })
 
   test('the CI passed aggregate needs the build job', () => {
@@ -561,7 +561,7 @@ describe.each(listWorkflowFiles())('%s', (fileName) => {
   })
 
   test('declares explicit permissions', () => {
-    expect(declaresExplicitPermissions(workflow)).toBe(true)
+    expect(hasExplicitPermissions(workflow)).toBe(true)
   })
 
   test('every job declares timeout-minutes', () => {

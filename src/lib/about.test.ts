@@ -27,7 +27,7 @@ describe('buildNumberStats', () => {
   test('leaves the contributions figure out without a snapshot', () => {
     const keys = buildNumberStats(
       about.en,
-      { ...sources, contributions: null },
+      { ...sources, contributions: undefined },
       'en',
     ).map((stat) => stat.key)
     expect(keys).toEqual(['independent', 'snug', 'installs'])
