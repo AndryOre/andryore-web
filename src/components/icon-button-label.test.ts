@@ -22,9 +22,11 @@ function isIconSize(attribute: ts.JsxAttributeLike): boolean {
     return false
   }
   const initializer = attribute.initializer
-  return initializer && ts.isStringLiteral(initializer)
-    ? ICON_SIZES.has(initializer.text)
-    : false
+  return (
+    initializer !== undefined &&
+    ts.isStringLiteral(initializer) &&
+    ICON_SIZES.has(initializer.text)
+  )
 }
 
 /**
