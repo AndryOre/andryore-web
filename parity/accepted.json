@@ -1,14 +1,1 @@
-[
-  {
-    "file": "src/lib/zv08c.ts",
-    "line": 1,
-    "rule": "unused-disable-directive",
-    "reason": "Oxlint reports the same unused directive at line 3 (the matching eslint-enable) instead of line 1. Same finding, different position; not configurable."
-  },
-  {
-    "file": "src/lib/zv09.ts",
-    "line": 8,
-    "rule": "unicorn/no-useless-template-literals",
-    "reason": "Needs type information, which Oxlint jsPlugins do not receive, and Oxlint has no native port. The line is still caught by @typescript-eslint/no-base-to-string and restrict-template-expressions. Revisit when Oxlint exposes type info to jsPlugins."
-  }
-]
+[]
