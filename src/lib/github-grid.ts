@@ -21,16 +21,22 @@ const LEVELS: Readonly<Record<string, GridLevel>> = {
   FOURTH_QUARTILE: 4,
 }
 
-/** One calendar day of the contribution grid. */
+/**
+One calendar day of the contribution grid.
+ */
 export interface GridDay {
   date: string
   count: number
   level: GridLevel
 }
 
-/** A year of contributions as captured at build time. */
+/**
+A year of contributions as captured at build time.
+ */
 export interface GridSnapshot {
-  /** ISO date (UTC) the data was fetched. */
+  /**
+  ISO date (UTC) the data was fetched.
+   */
   capturedAt: string
   total: number
   weeks: GridDay[][]
@@ -46,16 +52,16 @@ export interface FetchOptions {
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null
+  typeof value === 'object' && Boolean(value)
 
-const toDay = (raw: unknown): GridDay | null => {
-  if (!isRecord(raw)) return null
+const toDay = (raw: unknown): GridDay | undefined => {
+  if (!isRecord(raw)) return undefined
   const { date, contributionCount, contributionLevel } = raw
   const level = LEVELS[String(contributionLevel)]
   return typeof date !== 'string' ||
     typeof contributionCount !== 'number' ||
     level === undefined
-    ? null
+    ? undefined
     : { date, count: contributionCount, level }
 }
 
@@ -63,29 +69,29 @@ const toDay = (raw: unknown): GridDay | null => {
  * Turns a GitHub GraphQL response into a snapshot.
  * @param body The parsed JSON body of the response.
  * @param now The capture moment, stored as an ISO date.
- * @returns The snapshot, or null when the body has no usable calendar.
+ * @returns The snapshot, or undefined when the body has no usable calendar.
  */
 export function parseContributionResponse(
   body: unknown,
   now: Date,
-): GridSnapshot | null {
+): GridSnapshot | undefined {
   if (!isRecord(body) || !isRecord(body.data) || !isRecord(body.data.user)) {
-    return null
+    return undefined
   }
   const collection = body.data.user.contributionsCollection
   if (!isRecord(collection) || !isRecord(collection.contributionCalendar)) {
-    return null
+    return undefined
   }
   const { totalContributions, weeks } = collection.contributionCalendar
   if (typeof totalContributions !== 'number' || !Array.isArray(weeks)) {
-    return null
+    return undefined
   }
   const parsed = (weeks as unknown[]).map((week) =>
     isRecord(week) && Array.isArray(week.contributionDays)
       ? (week.contributionDays as unknown[]).map((day) => toDay(day))
-      : [null],
+      : [undefined],
   )
-  if (parsed.some((week) => week.includes(null))) return null
+  if (parsed.some((week) => week.includes(undefined))) return undefined
   return {
     capturedAt: now.toISOString().slice(0, 10),
     total: totalContributions,
@@ -95,14 +101,14 @@ export function parseContributionResponse(
 
 /**
  * Fetches the last year of contributions. It never throws: any failure,
- * including a missing token, resolves to null so the build keeps going.
+ * including a missing token, resolves to undefined so the build keeps going.
  * @param options Token, account, clock and fetch implementation.
- * @returns A fresh snapshot, or null.
+ * @returns A fresh snapshot, or undefined.
  */
 export async function fetchContributionGrid(
   options: FetchOptions,
-): Promise<GridSnapshot | null> {
-  if (!options.token) return null
+): Promise<GridSnapshot | undefined> {
+  if (!options.token) return undefined
   try {
     const response = await options.fetchImpl(GRAPHQL_ENDPOINT, {
       method: 'POST',
@@ -117,9 +123,9 @@ export async function fetchContributionGrid(
     })
     return response.ok
       ? parseContributionResponse(await response.json(), options.now)
-      : null
+      : undefined
   } catch {
-    return null
+    return undefined
   }
 }
 
@@ -127,10 +133,10 @@ export async function fetchContributionGrid(
  * Picks the snapshot the tile renders: fresh data when the fetch works,
  * otherwise the last committed snapshot, otherwise nothing (tile hidden).
  * @param options Fetch options plus the committed snapshot, if any.
- * @returns The snapshot to render, or null to hide the tile.
+ * @returns The snapshot to render, or undefined to hide the tile.
  */
 export async function resolveGridSnapshot(
-  options: FetchOptions & { committed: GridSnapshot | null },
-): Promise<GridSnapshot | null> {
+  options: FetchOptions & { committed: GridSnapshot | undefined },
+): Promise<GridSnapshot | undefined> {
   return (await fetchContributionGrid(options)) ?? options.committed
 }

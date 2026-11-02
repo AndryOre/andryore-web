@@ -1,19 +1,31 @@
-/** The Umami Cloud tracker script (ADR 0014). */
+/**
+The Umami Cloud tracker script (ADR 0014).
+ */
 export const UMAMI_SCRIPT_URL = 'https://cloud.umami.is/script.js'
 
-/** The Umami Cloud origin allowed in `script-src`. */
+/**
+The Umami Cloud origin allowed in `script-src`.
+ */
 export const UMAMI_SCRIPT_ORIGIN = 'https://cloud.umami.is'
 
-/** The Umami Cloud origin allowed in `connect-src`. */
+/**
+The Umami Cloud origin allowed in `connect-src`.
+ */
 export const UMAMI_GATEWAY_ORIGIN = 'https://gateway.umami.is'
 
-/** The public Umami website ID; it identifies the site and is not a secret. */
+/**
+The public Umami website ID; it identifies the site and is not a secret.
+ */
 export const UMAMI_WEBSITE_ID = 'fed60770-afb1-4d7f-8e7b-684698a02450'
 
-/** The only hostname the tracker counts, so previews and local builds are not. */
+/**
+The only hostname the tracker counts, so previews and local builds are not.
+ */
 export const ANALYTICS_DOMAIN = 'andryore.dev'
 
-/** The kebab-case names of the attribute-only events. */
+/**
+The kebab-case names of the attribute-only events.
+ */
 export const ANALYTICS_EVENTS = {
   dockNavigate: 'dock-navigate',
   languageSwitch: 'language-switch',

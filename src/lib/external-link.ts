@@ -29,10 +29,14 @@ export function tokensForHref(href: string): string | undefined {
   return isExternalHref(href) ? externalLinkTokens() : undefined
 }
 
-/** The origin of the Site, used to tell same-origin links from external ones. */
+/**
+The origin of the Site, used to tell same-origin links from external ones.
+ */
 const SITE_ORIGIN = 'https://andryore.dev'
 
-/** The `target` and `rel` attributes of an external link. */
+/**
+The `target` and `rel` attributes of an external link.
+ */
 export interface ExternalLinkAttributes {
   target: '_blank'
   rel: string

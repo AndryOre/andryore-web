@@ -1,6 +1,8 @@
 import { localePath, type Locale } from '../i18n/locales'
 
-/** The pages the dock links to, in display order. */
+/**
+The pages the dock links to, in display order.
+ */
 export const DOCK_PAGES = [
   { key: 'home', path: '/', section: '' },
   { key: 'about', path: '/about/', section: 'about' },
@@ -11,10 +13,14 @@ export const DOCK_PAGES = [
 
 export type DockPageKey = (typeof DOCK_PAGES)[number]['key']
 
-/** Largest scale a dock item reaches under the pointer. */
+/**
+Largest scale a dock item reaches under the pointer.
+ */
 export const MAGNIFICATION_MAX_SCALE = 1.15
 
-/** Distance from the pointer, in pixels, past which an item is not scaled. */
+/**
+Distance from the pointer, in pixels, past which an item is not scaled.
+ */
 export const MAGNIFICATION_RADIUS_PX = 72
 
 /**
@@ -27,7 +33,9 @@ export function activePageKey(path: string): DockPageKey | undefined {
   return DOCK_PAGES.find((page) => page.section === section)?.key
 }
 
-/** Ids of the home page sections the dock follows, in page order. */
+/**
+Ids of the home page sections the dock follows, in page order.
+ */
 export const HOME_SECTION_IDS: readonly string[] = DOCK_PAGES.filter((page) =>
   page.path.startsWith('/#'),
 ).map((page) => page.section)
