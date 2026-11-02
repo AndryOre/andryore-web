@@ -6,25 +6,33 @@ import {
 } from '../lib/stream-state'
 import type { StreamStatus } from '../lib/twitch-status'
 
-/** The same-origin path of the Live status endpoint (ADR 0004). */
+/**
+The same-origin path of the Live status endpoint (ADR 0004).
+ */
 export const STATUS_ENDPOINT = '/api/stream-status'
 
 type Fetcher = (url: string) => Promise<Response>
 
-/** The parts of an element the script writes, so tests can fake them. */
+/**
+The parts of an element the script writes, so tests can fake them.
+ */
 export interface StreamTileElement {
   hidden: boolean
   textContent?: string | null
   dataset?: Record<string, string | undefined>
 }
 
-/** The parts of the tile root the script touches, so tests can fake them. */
+/**
+The parts of the tile root the script touches, so tests can fake them.
+ */
 export interface StreamTileRoot {
   dataset: Record<string, string | undefined>
   querySelector: (selector: string) => StreamTileElement | null
 }
 
-/** Milliseconds between countdown refreshes. */
+/**
+Milliseconds between countdown refreshes.
+ */
 export const COUNTDOWN_INTERVAL_MS = 30_000
 
 const UNAVAILABLE: StreamStatus = { state: 'unavailable' }
@@ -90,7 +98,7 @@ const DAY_SELECTORS: readonly string[] = [
  */
 function markToday(root: StreamTileRoot, now: Date): void {
   const selector = DAY_SELECTORS[weekColumn(now)]
-  const day = selector ? root.querySelector(selector) : null
+  const day = selector ? root.querySelector(selector) : undefined
   if (day?.dataset) day.dataset.today = 'true'
 }
 

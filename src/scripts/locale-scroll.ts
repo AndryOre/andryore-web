@@ -1,6 +1,8 @@
 export const LOCALE_SCROLL_KEY = 'locale-scroll'
 
-/** Selectors of the page sections a language switch can anchor to. */
+/**
+Selectors of the page sections a language switch can anchor to.
+ */
 const LOCALE_SCROLL_ANCHORS: ReadonlySet<string> = new Set([
   '#products',
   '[data-slot="stack-scene"]',
@@ -61,7 +63,7 @@ export function pickAnchor(
  * @returns The entry, or undefined when it is missing or invalid.
  */
 export function parseLocaleScroll(
-  raw: string | null,
+  raw: string | null | undefined,
 ): LocaleScrollEntry | undefined {
   if (!raw) return undefined
   try {
@@ -141,9 +143,9 @@ export function restoreLocaleScroll(
   scrollDocument: ScrollDocument,
   pathname: string,
 ): boolean {
-  let raw: string | null = null
+  let raw: string | undefined
   try {
-    raw = storage.getItem(LOCALE_SCROLL_KEY)
+    raw = storage.getItem(LOCALE_SCROLL_KEY) ?? undefined
     storage.removeItem(LOCALE_SCROLL_KEY)
   } catch {
     return false

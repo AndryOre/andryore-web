@@ -1,7 +1,11 @@
-/** Delay between two deleted characters, in milliseconds. */
+/**
+Delay between two deleted characters, in milliseconds.
+ */
 export const DELETE_DELAY_MS = 28
 
-/** What the typing loop needs from the browser, injected for tests. */
+/**
+What the typing loop needs from the browser, injected for tests.
+ */
 interface TypingOptions<Handle> {
   reducedMotion: boolean
   schedule: (callback: () => void, delay: number) => Handle
@@ -16,19 +20,29 @@ function stopNothing(): void {
   return
 }
 
-/** Shortest delay between two typed letters of a rotating phrase, in milliseconds. */
+/**
+Shortest delay between two typed letters of a rotating phrase, in milliseconds.
+ */
 export const PHRASE_TYPE_MIN_MS = 55
 
-/** Longest delay between two typed letters of a rotating phrase, in milliseconds. */
+/**
+Longest delay between two typed letters of a rotating phrase, in milliseconds.
+ */
 export const PHRASE_TYPE_MAX_MS = 105
 
-/** How long a finished rotating phrase stays on screen, in milliseconds. */
+/**
+How long a finished rotating phrase stays on screen, in milliseconds.
+ */
 export const PHRASE_HOLD_MS = 1700
 
-/** How long the empty line waits before the next phrase, in milliseconds. */
+/**
+How long the empty line waits before the next phrase, in milliseconds.
+ */
 export const PHRASE_PAUSE_MS = 380
 
-/** Where the rotating loop is: phrase, visible characters and direction. */
+/**
+Where the rotating loop is: phrase, visible characters and direction.
+ */
 export interface PhraseState {
   index: number
   length: number
@@ -80,7 +94,9 @@ export function nextPhraseStep(
   }
 }
 
-/** What the rotating loop needs from the browser, injected for tests. */
+/**
+What the rotating loop needs from the browser, injected for tests.
+ */
 export interface PhraseTypingOptions<Handle> extends TypingOptions<Handle> {
   random: () => number
 }
