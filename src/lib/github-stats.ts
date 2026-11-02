@@ -1,22 +1,36 @@
 import type { LiveGridSnapshot } from './github-contributions'
 import type { GridDay, GridSnapshot } from './github-grid'
 
-/** The same-origin path of the contributions endpoint (ADR 0017). */
+/**
+The same-origin path of the contributions endpoint (ADR 0017).
+ */
 const CONTRIBUTIONS_ENDPOINT = '/api/github-contributions'
 
-/** Numbers derived from a snapshot; no data beyond the grid itself. */
+/**
+Numbers derived from a snapshot; no data beyond the grid itself.
+ */
 export interface GridStats {
-  /** Longest run of consecutive days with at least one contribution. */
+  /**
+  Longest run of consecutive days with at least one contribution.
+   */
   longestStreak: number
-  /** Run ending on the last day, or the day before it when that day is empty. */
+  /**
+  Run ending on the last day, or the day before it when that day is empty.
+   */
   currentStreak: number
-  /** The day with the most contributions (earliest wins a tie), or null. */
-  bestDay: { date: string; count: number } | null
-  /** Days with at least one contribution. */
+  /**
+  The day with the most contributions (earliest wins a tie), or undefined.
+   */
+  bestDay: { date: string; count: number } | undefined
+  /**
+  Days with at least one contribution.
+   */
   activeDays: number
 }
 
-/** The singular and plural word for "day" in one language. */
+/**
+The singular and plural word for "day" in one language.
+ */
 export interface DayUnits {
   one: string
   other: string
@@ -47,7 +61,7 @@ export function computeStats(snapshot: GridSnapshot): GridStats {
   let longestStreak = 0
   let run = 0
   let previous: number | undefined
-  let bestDay: GridStats['bestDay'] = null
+  let bestDay: GridStats['bestDay']
   let activeDays = 0
   const runEndingAt = new Map<number, number>()
   for (const day of days) {
@@ -121,12 +135,12 @@ export function formatRelative(
   locale: string,
 ): string {
   const formatter = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' })
-  const dateOnly = since.length === 10
+  const isDateOnly = since.length === 10
   const elapsed = Math.max(0, now.getTime() - Date.parse(since))
   const minutes = Math.floor(elapsed / 60_000)
   const hours = Math.floor(minutes / 60)
   const days = Math.floor(elapsed / DAY_MS)
-  if (dateOnly || hours >= 24) return formatter.format(-days, 'day')
+  if (isDateOnly || hours >= 24) return formatter.format(-days, 'day')
   return hours >= 1
     ? formatter.format(-hours, 'hour')
     : formatter.format(-minutes, 'minute')
@@ -150,7 +164,7 @@ export function updatedLabel(
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null
+  typeof value === 'object' && Boolean(value)
 
 const isDay = (value: unknown): value is GridDay =>
   isRecord(value) &&
@@ -181,19 +195,19 @@ type Fetcher = (url: string) => Promise<Response>
 /**
  * Asks the same-origin endpoint for the live grid.
  * @param fetcher The `fetch` to use; defaults to the platform one.
- * @returns The grid, or null on any failure so the caller keeps its snapshot.
+ * @returns The grid, or undefined on any failure so the caller keeps its snapshot.
  */
 export async function loadLiveSnapshot(
   fetcher: Fetcher = (url) =>
     fetch(url, { credentials: 'omit', signal: AbortSignal.timeout(4000) }),
-): Promise<LiveGridSnapshot | null> {
+): Promise<LiveGridSnapshot | undefined> {
   try {
     const response = await fetcher(CONTRIBUTIONS_ENDPOINT)
-    if (!response.ok) return null
+    if (!response.ok) return undefined
     const body: unknown = await response.json()
-    return isLiveSnapshot(body) ? body : null
+    return isLiveSnapshot(body) ? body : undefined
   } catch {
-    return null
+    return undefined
   }
 }
 
@@ -204,7 +218,9 @@ const escapeAttribute = (value: string): string =>
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
 
-/** Tooltip templates with `{count}` and `{date}` placeholders. */
+/**
+Tooltip templates with `{count}` and `{date}` placeholders.
+ */
 export interface TipTemplates {
   one: string
   other: string
@@ -241,7 +257,9 @@ export function formatContributionTip(
     .replace('{date}', () => date)
 }
 
-/** A month name placed at a 1-based week column of the grid. */
+/**
+A month name placed at a 1-based week column of the grid.
+ */
 export interface MonthLabel {
   label: string
   column: number
@@ -306,7 +324,9 @@ export function gridCellsHtml(
     .join('')
 }
 
-/** Display strings of the stats row. */
+/**
+Display strings of the stats row.
+ */
 export interface StatsView {
   longest: string
   longestUnit: string

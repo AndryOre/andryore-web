@@ -44,9 +44,9 @@ describe('magnifyItems', () => {
   })
 })
 
-const windowWith = (hover: boolean, reduced: boolean) => ({
+const windowWith = (canHover: boolean, isReduced: boolean) => ({
   matchMedia: (query: string) => ({
-    matches: query.includes('reduce') ? reduced : hover,
+    matches: query.includes('reduce') ? isReduced : canHover,
   }),
 })
 

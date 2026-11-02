@@ -1,16 +1,22 @@
 import type { Locale } from '../i18n/locales'
 
-/** One figure of the "In numbers" row. */
+/**
+One figure of the "In numbers" row.
+ */
 export interface NumberStat {
   key: 'independent' | 'snug' | 'installs' | 'contributions'
   label: string
   display: string
-  /** The value the count-up animates to; absent for a year. */
+  /**
+  The value the count-up animates to; absent for a year.
+   */
   count?: number
   suffix?: string
 }
 
-/** The About copy the figures are built from. */
+/**
+The About copy the figures are built from.
+ */
 export interface NumbersCopy {
   independentLabel: string
   independentValue: string
@@ -20,7 +26,9 @@ export interface NumbersCopy {
   contributionsLabel: string
 }
 
-/** The inputs that come from other data: JSON Flow's row and the GitHub grid. */
+/**
+The inputs that come from other data: JSON Flow's row and the GitHub grid.
+ */
 export interface NumbersSources {
   installs: { total: number }
   contributions: number | null

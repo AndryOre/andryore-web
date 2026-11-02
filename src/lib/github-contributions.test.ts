@@ -30,11 +30,11 @@ const apiBody = {
   },
 }
 
-const stub = (calls: { count: number }, ok = true) => {
+const stub = (calls: { count: number }, isOk = true) => {
   return () => {
     calls.count += 1
     return Promise.resolve(
-      ok ? Response.json(apiBody) : new Response('no', { status: 502 }),
+      isOk ? Response.json(apiBody) : new Response('no', { status: 502 }),
     )
   }
 }
@@ -51,13 +51,13 @@ describe('createContributionsReader', () => {
     expect(grid?.updatedAt).toBe('2026-10-18T10:00:00.000Z')
   })
 
-  test('returns null without calling GitHub when the token is missing', async () => {
+  test('returns undefined without calling GitHub when the token is missing', async () => {
     const calls = { count: 0 }
     const reader = createContributionsReader({
       token: undefined,
       fetch: stub(calls),
     })
-    expect(await reader.get()).toBeNull()
+    expect(await reader.get()).toBeUndefined()
     expect(calls.count).toBe(0)
   })
 
@@ -78,7 +78,7 @@ describe('createContributionsReader', () => {
     expect(calls.count).toBe(2)
   })
 
-  test('returns null on an upstream error and retries after the failure ttl', async () => {
+  test('returns undefined on an upstream error and retries after the failure ttl', async () => {
     const calls = { count: 0 }
     let clock = 0
     const reader = createContributionsReader({
@@ -86,7 +86,7 @@ describe('createContributionsReader', () => {
       fetch: stub(calls, false),
       now: () => clock,
     })
-    expect(await reader.get()).toBeNull()
+    expect(await reader.get()).toBeUndefined()
     await reader.get()
     expect(calls.count).toBe(1)
     clock = CONTRIBUTIONS_FAILURE_TTL_MS + 1
@@ -104,7 +104,7 @@ describe('createContributionsReader', () => {
 
 describe('contributionsResponse', () => {
   test('answers 503 when there is no grid', () => {
-    const response = contributionsResponse(null)
+    const response = contributionsResponse(undefined)
     expect(response.status).toBe(503)
     expect(response.headers.get('cache-control')).toBe('no-store')
   })
