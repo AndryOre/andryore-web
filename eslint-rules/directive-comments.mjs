@@ -7,33 +7,43 @@
 const ESLINT_DIRECTIVE_PATTERN =
   /^(eslint(?:-env|-enable|-disable(?:(?:-next)?-line)?)?|exported|globals?)(?:\s|$)/u
 
-/** Recognises Oxlint's own disable and enable directive keywords. */
+/**
+Recognises Oxlint's own disable and enable directive keywords.
+ */
 const OXLINT_DIRECTIVE_PATTERN =
   /^(oxlint-(?:enable|disable(?:(?:-next)?-line)?))(?:\s|$)/u
 
-/** The only `eslint-*` kinds ESLint honours in a `//` line comment. */
+/**
+The only `eslint-*` kinds ESLint honours in a `//` line comment.
+ */
 const ESLINT_LINE_COMMENT_KIND = /^eslint-disable-(?:next-)?line$/u
 
-/** The ` -- ` separator between a directive and its description. */
+/**
+The ` -- ` separator between a directive and its description.
+ */
 const DESCRIPTION_SEPARATOR = /\s-{2,}\s/u
 
-/** A line break inside a block comment. */
+/**
+A line break inside a block comment.
+ */
 const LINE_BREAK = /\r\n|[\n\r]/u
 
-/** What separates the rule ids a directive lists. */
+/**
+What separates the rule ids a directive lists.
+ */
 const RULE_ID_DELIMITER = /[\s,]+/u
 
 /**
  * Splits a comment's text at the first ` -- ` (two or more hyphens with
  * whitespace on both sides) into the directive and its description.
  * @param value The comment's text without its delimiters.
- * @returns The trimmed directive text, and the description or `null`.
+ * @returns The trimmed directive text, and the description or `undefined`.
  */
 function divideDirectiveComment(value) {
   const [text = '', ...rest] = value.split(DESCRIPTION_SEPARATOR)
   return {
     text: text.trim(),
-    description: rest.length > 0 ? (rest[0] ?? '').trim() : null,
+    description: rest.length > 0 ? (rest[0] ?? '').trim() : undefined,
   }
 }
 
@@ -43,22 +53,22 @@ function divideDirectiveComment(value) {
  * work in both comment types, as Oxlint honours them there.
  * @param comment An ESLint comment token.
  * @returns `{ kind, value, description, comment }`, where `value` is the text
- *   after the keyword, or `null` when the comment is not a directive.
+ *   after the keyword, or `undefined` when the comment is not a directive.
  */
 function parseDirectiveComment(comment) {
   const { text, description } = divideDirectiveComment(comment.value)
   const eslintMatch = ESLINT_DIRECTIVE_PATTERN.exec(text)
   const match = eslintMatch ?? OXLINT_DIRECTIVE_PATTERN.exec(text)
-  if (!match) return null
+  if (!match) return
   const kind = match[1] ?? ''
   const isIgnoredLineComment =
-    eslintMatch !== null &&
+    Boolean(eslintMatch) &&
     comment.type === 'Line' &&
     !ESLINT_LINE_COMMENT_KIND.test(kind)
   const isMultilineDisableLine =
     kind.endsWith('-disable-line') &&
     comment.loc.start.line !== comment.loc.end.line
-  if (isIgnoredLineComment || isMultilineDisableLine) return null
+  if (isIgnoredLineComment || isMultilineDisableLine) return
   return {
     kind,
     value: text.slice(kind.length).trim(),
@@ -76,7 +86,7 @@ function getDirectiveComments(sourceCode) {
   return sourceCode
     .getAllComments()
     .map((comment) => parseDirectiveComment(comment))
-    .filter((directive) => directive !== null)
+    .filter((directive) => directive !== undefined)
 }
 
 /**
@@ -84,12 +94,12 @@ function getDirectiveComments(sourceCode) {
  * `eslint-`/`oxlint-` prefix.
  * @param kind A directive keyword such as `eslint-disable-next-line`.
  * @returns `disable`, `enable`, `disable-line` or `disable-next-line`, or
- *   `null` for a kind that neither disables nor enables rules.
+ *   `undefined` for a kind that neither disables nor enables rules.
  */
 function disableKind(kind) {
   const match =
     /^(?:eslint|oxlint)-((?:disable|enable)(?:-next)?(?:-line)?)$/u.exec(kind)
-  return match ? (match[1] ?? null) : null
+  return match ? match[1] : undefined
 }
 
 /**
@@ -98,7 +108,7 @@ function disableKind(kind) {
  * is closed by itself, so a block enable never consumes it.
  * @param sourceCode The file's `SourceCode`.
  * @returns The block areas left open (`{ comment, ruleId }`), the enables that
- *   closed nothing (`{ comment, ruleId }`, `ruleId: null` for a bare one),
+ *   closed nothing (`{ comment, ruleId }`, `ruleId: undefined` for a bare one),
  *   and, per enable comment, how many disable comments it closed.
  */
 function replayDisabledAreas(sourceCode) {
@@ -107,7 +117,7 @@ function replayDisabledAreas(sourceCode) {
   const relatedDisableCounts = new Map()
 
   const disable = (comment, ruleIds, scope) => {
-    const targets = ruleIds ?? [null]
+    const targets = ruleIds ?? [undefined]
     for (const ruleId of targets) {
       areas.push({ comment, ruleId, scope, isOpen: true })
     }
@@ -115,13 +125,13 @@ function replayDisabledAreas(sourceCode) {
 
   const enable = (comment, ruleIds, scope) => {
     const related = new Set()
-    const targets = ruleIds ?? [null]
+    const targets = ruleIds ?? [undefined]
     for (const ruleId of targets) {
       const closed = areas.filter(
         (area) =>
           area.isOpen &&
           area.scope === scope &&
-          (ruleIds === null || area.ruleId === ruleId),
+          (ruleIds === undefined || area.ruleId === ruleId),
       )
       for (const area of closed) {
         area.isOpen = false
@@ -134,10 +144,10 @@ function replayDisabledAreas(sourceCode) {
 
   for (const directive of getDirectiveComments(sourceCode)) {
     const type = disableKind(directive.kind)
-    if (type === null) continue
+    if (type === undefined) continue
     const ruleIds = directive.value
       ? directive.value.split(RULE_ID_DELIMITER)
-      : null
+      : undefined
     if (type === 'disable') {
       disable(directive.comment, ruleIds, 'block')
     } else if (type === 'enable') {
@@ -158,12 +168,12 @@ function replayDisabledAreas(sourceCode) {
  * Locates a rule id inside a directive comment, so a report points at the
  * id itself.
  * @param comment The directive comment token.
- * @param ruleId The rule id to find, or `null` for the whole comment.
- * @returns The id's location, or the comment's when the id is `null` or
+ * @param ruleId The rule id to find, or `undefined` for the whole comment.
+ * @returns The id's location, or the comment's when the id is `undefined` or
  *   not found.
  */
 function ruleIdLocation(comment, ruleId) {
-  if (ruleId === null) return comment.loc
+  if (ruleId === undefined) return comment.loc
   const lines = comment.value.split(LINE_BREAK)
   const escaped = ruleId.replaceAll(/[$()*+.?[\\\]^{|}]/gu, String.raw`\$&`)
   const ruleIdPattern = new RegExp(
@@ -172,7 +182,7 @@ function ruleIdLocation(comment, ruleId) {
   )
   for (const [index, line] of lines.entries()) {
     const match = ruleIdPattern.exec(line)
-    if (match === null) continue
+    if (!match) continue
     const offset = match.index + (match[1] ?? '').length
     const column = index === 0 ? 2 + comment.loc.start.column + offset : offset
     const lineNumber = comment.loc.start.line + index
@@ -247,7 +257,7 @@ export const noUnlimitedDisable = createDirectiveRule(
     getDirectiveComments(sourceCode)
       .filter((directive) => {
         const type = disableKind(directive.kind)
-        return type !== null && type !== 'enable' && !directive.value
+        return type !== undefined && type !== 'enable' && !directive.value
       })
       .map((directive) => ({
         loc: directive.comment.loc,
@@ -273,7 +283,7 @@ export const noUnusedEnable = createDirectiveRule(
   (sourceCode) =>
     replayDisabledAreas(sourceCode).unusedEnables.map((item) => ({
       loc: ruleIdLocation(item.comment, item.ruleId),
-      messageId: item.ruleId === null ? 'unused' : 'unusedRule',
+      messageId: item.ruleId === undefined ? 'unused' : 'unusedRule',
       data: { ruleId: item.ruleId ?? '' },
     })),
 )
@@ -322,7 +332,7 @@ export const disableEnablePair = createDirectiveRule(
   (sourceCode) =>
     replayDisabledAreas(sourceCode).openAreas.map((area) => ({
       loc: ruleIdLocation(area.comment, area.ruleId),
-      messageId: area.ruleId === null ? 'missingPair' : 'missingRulePair',
+      messageId: area.ruleId === undefined ? 'missingPair' : 'missingRulePair',
       data: { ruleId: area.ruleId ?? '' },
     })),
 )

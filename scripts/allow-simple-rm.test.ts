@@ -44,7 +44,7 @@ const hookInput = (command: unknown): string =>
 describe('decideRmApproval', () => {
   it('allows a simple rm', () => {
     const output = decideRmApproval(hookInput('rm -f a.txt'))
-    expect(output).not.toBeNull()
+    expect(output).not.toBeUndefined()
     expect(JSON.parse(output ?? '')).toMatchObject({
       hookSpecificOutput: {
         hookEventName: 'PreToolUse',
@@ -54,12 +54,12 @@ describe('decideRmApproval', () => {
   })
 
   it('returns no decision for a compound command', () => {
-    expect(decideRmApproval(hookInput('rm a && ls'))).toBeNull()
+    expect(decideRmApproval(hookInput('rm a && ls'))).toBeUndefined()
   })
 
   it('returns no decision when the command is missing or not a string', () => {
-    expect(decideRmApproval(JSON.stringify({ tool_input: {} }))).toBeNull()
-    expect(decideRmApproval(hookInput(42))).toBeNull()
-    expect(decideRmApproval(JSON.stringify({}))).toBeNull()
+    expect(decideRmApproval(JSON.stringify({ tool_input: {} }))).toBeUndefined()
+    expect(decideRmApproval(hookInput(42))).toBeUndefined()
+    expect(decideRmApproval(JSON.stringify({}))).toBeUndefined()
   })
 })

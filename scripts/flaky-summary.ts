@@ -19,7 +19,9 @@ interface ReportSuite {
   suites?: ReportSuite[]
 }
 
-/** The slice of Playwright's JSON report this script reads. */
+/**
+The slice of Playwright's JSON report this script reads.
+ */
 export interface PlaywrightReport {
   suites?: ReportSuite[]
 }

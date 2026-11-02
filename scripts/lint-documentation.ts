@@ -83,7 +83,9 @@ export function buildLycheeCacheRelativePath(version: string): string {
   return path.join('lychee', version, 'lychee')
 }
 
-/** Injectable collaborators of {@link ensureLycheeBinary}. */
+/**
+Injectable collaborators of {@link ensureLycheeBinary}.
+ */
 export interface LycheeBinaryDependencies {
   resolveCacheRoot: () => string
   fetchArchive: (url: string) => Promise<Response>
@@ -212,7 +214,9 @@ function spawnInherited(
   })
 }
 
-/** A Markdown link whose target is a gitignored path. */
+/**
+A Markdown link whose target is a gitignored path.
+ */
 export interface IgnoredLink {
   file: string
   target: string
