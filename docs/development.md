@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- **Bun `1.4.2`**, pinned by `packageManager` and `engines` in `package.json`.
+- **Bun `1.4.4`**, pinned by `packageManager` and `engines` in `package.json`.
   This repository uses Bun only; never another package manager.
 - **Docker**, only for the visual, cross-browser and smoke tests (`test:visual`,
   `test:browsers`, `test:smoke`) and to run the production image.
