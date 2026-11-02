@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'react'
 
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utilities'
 
 /**
  * Joins adjacent buttons into one segmented control; the outer corners keep

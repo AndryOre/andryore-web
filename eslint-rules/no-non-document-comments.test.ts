@@ -1,7 +1,7 @@
 import { describe, it } from 'bun:test'
 import { RuleTester } from 'eslint'
 
-import rule from './no-non-doc-comments.mjs'
+import rule from './no-non-document-comments.mjs'
 
 RuleTester.describe = describe
 RuleTester.it = it

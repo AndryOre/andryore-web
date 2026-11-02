@@ -277,7 +277,7 @@ export function countableStat(
   return { total: Number(digits.replaceAll(/[.,]/g, '')), suffix }
 }
 
-export type ProductIconRef =
+export type ProductIconReference =
   | { kind: 'brand'; id: IconId }
   | { kind: 'glyph'; name: GlyphName }
 
@@ -287,7 +287,7 @@ export type ProductIconRef =
  * @param name The icon name as written in the product file.
  * @returns A tagged reference, or `undefined` when the name is in neither set.
  */
-export function classifyIcon(name: string): ProductIconRef | undefined {
+export function classifyIcon(name: string): ProductIconReference | undefined {
   const brandIds: readonly string[] = Object.keys(ICONS)
   if (brandIds.includes(name)) return { kind: 'brand', id: name as IconId }
   const glyphNames: readonly string[] = Object.keys(GLYPH_BODIES)

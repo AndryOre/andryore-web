@@ -28,7 +28,7 @@ import { getFxStorage, readFx, subscribeFx, writeFx } from '@/lib/fx-store'
 import { soundEngine, type SoundAvailability } from '@/lib/sound-engine'
 import { THEME_PREFERENCES, type ThemePreference } from '@/lib/theme'
 import { chooseTheme } from '@/lib/theme-store'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utilities'
 
 import {
   ThemeIcon,

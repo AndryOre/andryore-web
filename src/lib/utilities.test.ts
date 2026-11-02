@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 
-import { cn } from './utils'
+import { cn } from './utilities'
 
 describe('cn', () => {
   test('joins truthy classes and drops falsy ones', () => {
