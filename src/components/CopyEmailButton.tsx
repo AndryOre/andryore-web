@@ -68,7 +68,7 @@ export default function CopyEmailButton({
   targetId,
   copy,
 }: CopyEmailButtonProps): ReactElement {
-  const [outcome, setOutcome] = useState<CopyOutcome | null>(null)
+  const [outcome, setOutcome] = useState<CopyOutcome | undefined>()
 
   const handleClick = async (): Promise<void> => {
     const clipboard = globalThis.navigator.clipboard as Clipboard | undefined
@@ -80,7 +80,7 @@ export default function CopyEmailButton({
     })
     setOutcome(result)
     setTimeout(() => {
-      setOutcome(null)
+      setOutcome(undefined)
     }, RESET_DELAY_MS)
   }
 
@@ -88,9 +88,9 @@ export default function CopyEmailButton({
     copied: copy.copiedMessage,
     selected: copy.selectedMessage,
   }
-  const message = outcome === null ? '' : messageByOutcome[outcome]
+  const message = outcome === undefined ? '' : messageByOutcome[outcome]
 
-  const copied = outcome === 'copied'
+  const isCopied = outcome === 'copied'
 
   return (
     <span className="relative inline-flex items-center">
@@ -106,9 +106,9 @@ export default function CopyEmailButton({
           void handleClick()
         }}
       >
-        {copied ? <CheckIcon /> : <CopyIcon />}
+        {isCopied ? <CheckIcon /> : <CopyIcon />}
       </Button>
-      {copied && (
+      {isCopied && (
         <span
           data-particle-burst
           aria-hidden="true"

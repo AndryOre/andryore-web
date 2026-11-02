@@ -1,15 +1,23 @@
-/** Site languages: English at `/`, Spanish at `/es/`. */
+/**
+ * Site languages: English at `/`, Spanish at `/es/`.
+ */
 export const LOCALES = ['en', 'es'] as const
 
 export type Locale = (typeof LOCALES)[number]
 
-/** The language served at the root and used as `x-default`. */
+/**
+ * The language served at the root and used as `x-default`.
+ */
 export const DEFAULT_LOCALE: Locale = 'en'
 
-/** Production origin that canonical, hreflang and sitemap URLs hang from. */
+/**
+ * Production origin that canonical, hreflang and sitemap URLs hang from.
+ */
 const SITE_ORIGIN = 'https://andryore.dev'
 
-/** The `hreflang` code of each language. */
+/**
+ * The `hreflang` code of each language.
+ */
 const HREFLANG: Readonly<Record<Locale, string>> = {
   en: 'en',
   es: 'es',
