@@ -4,9 +4,9 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { set } from '@dotenvx/dotenvx'
 
-import { loadEncryptedEnvironment } from './load-encrypted-env'
+import { hasLoadedEncryptedEnvironment } from './load-encrypted-env'
 
-describe('loadEncryptedEnvironment', () => {
+describe('hasLoadedEncryptedEnvironment', () => {
   let directory: string
   beforeEach(() => {
     directory = mkdtempSync(path.join(tmpdir(), 'load-env-'))
@@ -19,7 +19,7 @@ describe('loadEncryptedEnvironment', () => {
     const envFile = path.join(directory, '.env')
     writeFileSync(envFile, 'GITHUB_TOKEN=plain\n')
     const env: Record<string, string> = {}
-    expect(loadEncryptedEnvironment({ envFile, env })).toBe(false)
+    expect(hasLoadedEncryptedEnvironment({ envFile, env })).toBe(false)
     expect(env.GITHUB_TOKEN).toBeUndefined()
   })
 
@@ -28,7 +28,7 @@ describe('loadEncryptedEnvironment', () => {
       DOTENV_PRIVATE_KEY: 'a'.repeat(64),
     }
     const envFile = path.join(directory, 'absent.env')
-    expect(loadEncryptedEnvironment({ envFile, env })).toBe(false)
+    expect(hasLoadedEncryptedEnvironment({ envFile, env })).toBe(false)
     expect(env.GITHUB_TOKEN).toBeUndefined()
   })
 
@@ -38,7 +38,7 @@ describe('loadEncryptedEnvironment', () => {
     const env: Record<string, string> = {
       DOTENV_PRIVATE_KEY: 'not-a-key',
     }
-    expect(() => loadEncryptedEnvironment({ envFile, env })).not.toThrow()
+    expect(() => hasLoadedEncryptedEnvironment({ envFile, env })).not.toThrow()
   })
 
   test('decrypts the file when key and file are present', async () => {
@@ -54,7 +54,7 @@ describe('loadEncryptedEnvironment', () => {
     const env: Record<string, string> = {
       DOTENV_PRIVATE_KEY: privateKey ?? '',
     }
-    expect(loadEncryptedEnvironment({ envFile, env })).toBe(true)
+    expect(hasLoadedEncryptedEnvironment({ envFile, env })).toBe(true)
     expect(env.GITHUB_TOKEN).toBe('secret-value')
   })
 })

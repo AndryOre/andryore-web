@@ -16,7 +16,9 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu'
 
-/** Labels and file names of the CV split button. */
+/**
+ * Labels and file names of the CV split button.
+ */
 interface CvSplitButtonCopy {
   cvLabel: string
   cvGroupLabel: string

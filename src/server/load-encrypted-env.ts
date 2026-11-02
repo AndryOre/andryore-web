@@ -1,7 +1,9 @@
 import { existsSync } from 'node:fs'
 import { config } from '@dotenvx/dotenvx'
 
-/** Where the runtime image keeps the encrypted env file. */
+/**
+ * Where the runtime image keeps the encrypted env file.
+ */
 const DEFAULT_ENV_FILE = '.env'
 
 interface LoadEncryptedEnvironmentOptions {
@@ -16,7 +18,7 @@ interface LoadEncryptedEnvironmentOptions {
  * @param options The env file path and the target environment.
  * @returns Whether any variable was loaded.
  */
-export function loadEncryptedEnvironment(
+export function hasLoadedEncryptedEnvironment(
   options: LoadEncryptedEnvironmentOptions = {},
 ): boolean {
   const envFile = options.envFile ?? DEFAULT_ENV_FILE

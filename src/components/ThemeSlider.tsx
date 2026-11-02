@@ -24,8 +24,8 @@ import { useThemePreference, type ThemeToggleCopy } from './ThemeToggle'
 
 const unsubscribeNothing = (): void => undefined
 const subscribeToNothing = (): (() => void) => unsubscribeNothing
-const readHydrated = (): boolean => true
-const readNotHydrated = (): boolean => false
+const isHydratedOnClient = (): boolean => true
+const isHydratedOnServer = (): boolean => false
 
 const RAY_PATH =
   'M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4'
@@ -157,10 +157,10 @@ export function chooseWithSound(
  */
 export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
   const preference = useThemePreference()
-  const hydrated = useSyncExternalStore(
+  const isHydrated = useSyncExternalStore(
     subscribeToNothing,
-    readHydrated,
-    readNotHydrated,
+    isHydratedOnClient,
+    isHydratedOnServer,
   )
   const barRef = useRef<HTMLDivElement>(null)
   const controlRef = useRef<HTMLDivElement>(null)
@@ -239,14 +239,14 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
         role="group"
         aria-label={copy.label}
         data-theme-tabs
-        data-ready={hydrated ? '' : undefined}
+        data-ready={isHydrated ? '' : undefined}
         className="theme-tabs relative bg-muted"
       >
         <span
           aria-hidden="true"
           data-theme-indicator
           className="theme-indicator absolute bg-foreground"
-          data-ready={hydrated ? '' : undefined}
+          data-ready={isHydrated ? '' : undefined}
           data-stop={preference}
         />
         {THEME_STOPS.map((stop) => (
@@ -282,7 +282,7 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
         aria-valuenow={index}
         aria-valuetext={copy[preference]}
         data-theme-slider
-        data-ready={hydrated ? '' : undefined}
+        data-ready={isHydrated ? '' : undefined}
         data-dragging={dragging}
         onKeyDown={onKeyDown}
         onPointerDown={onPointerDown}
