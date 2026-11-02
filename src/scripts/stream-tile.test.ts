@@ -15,7 +15,7 @@ const respond =
   () =>
     Promise.resolve(Response.json(body, { status }))
 
-const createRoot = (started: boolean) => {
+const createRoot = (hasStarted: boolean) => {
   const title = { hidden: false, textContent: '' }
   const next = { hidden: false, textContent: '' }
   const days = new Map<string, StreamTileElement>(
@@ -27,7 +27,7 @@ const createRoot = (started: boolean) => {
   const root: StreamTileRoot = {
     dataset: {
       state: 'coming-soon',
-      started: String(started),
+      started: String(hasStarted),
       locale: 'en',
       cdIn: 'in',
       cdDay: 'd',

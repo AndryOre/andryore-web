@@ -10,6 +10,18 @@ Revised: 2026-11-02, removed the four `unicorn` formatting overrides that
 replaced `eslint-config-prettier` for `.astro` files, and moved
 `.prettierignore` into the Oxfmt `ignorePatterns`.
 
+Revised: 2026-11-02, the parity gaps are closed by checked equivalences, so
+`parity/accepted.json` is empty. The four design-choice rules are on in both
+engines: `unicorn/single-line-block-comment-style`,
+`unicorn/consistent-boolean-name`, `unicorn/no-null` and
+`unicorn/name-replacements`. The name allow list keeps only `props`, `Props`,
+`ref` and `Ref`, which the Astro and React component contracts and the
+`@eslint-react` `useRef` naming rule require. `unicorn/no-null` is off for
+`**/*.{test,spec}.{ts,tsx,mjs}` and `e2e/**`, because tests assert against DOM,
+Web Storage, `JSON.parse` and Playwright results that return `null`, and pass
+raw `null` input on purpose. `no-asterisk-prefix-in-documentation-comments`
+stays off.
+
 ## Context
 
 Linting, formatting and type-checking took about 60 seconds on a cold run:

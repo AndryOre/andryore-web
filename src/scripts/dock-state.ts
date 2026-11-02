@@ -1,6 +1,6 @@
 import {
   getFxStorage,
-  readFx,
+  isFxEnabled,
   subscribeFx,
   type FxStorage,
 } from '../lib/fx-store'
@@ -25,7 +25,7 @@ export function mountDockSoundState(
 ): void {
   if (!element) return
   const paint = (): void => {
-    element.setAttribute('aria-checked', String(readFx(storage)))
+    element.setAttribute('aria-checked', String(isFxEnabled(storage)))
   }
   paint()
   subscribeFx(paint)

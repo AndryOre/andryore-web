@@ -47,7 +47,7 @@ export function getFxStorage(
  * @param storage The storage to read, if any.
  * @returns True only when the stored value is "on".
  */
-export function readFx(storage: FxStorage | undefined): boolean {
+export function isFxEnabled(storage: FxStorage | undefined): boolean {
   if (!storage || memory.unsaved) return memory.enabled
   try {
     return storage.getItem(FX_STORAGE_KEY) === 'on'

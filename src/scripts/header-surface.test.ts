@@ -7,8 +7,8 @@ const createHeader = () => {
   const attributes = new Set<string>()
   return {
     attributes,
-    toggleAttribute: (name: string, force?: boolean) => {
-      if (force) attributes.add(name)
+    toggleAttribute: (name: string, shouldForce?: boolean) => {
+      if (shouldForce) attributes.add(name)
       else attributes.delete(name)
       return attributes.has(name)
     },

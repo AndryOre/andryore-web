@@ -10,13 +10,19 @@ import localPlugin from './eslint-rules/index.mjs'
 
 const ASTRO_FILES = ['**/*.astro']
 
-/** The `<script>` blocks ESLint lints as virtual children of an `.astro` file. */
+/**
+ * The `<script>` blocks ESLint lints as virtual children of an `.astro` file.
+ */
 const ASTRO_SCRIPT_FILES = ['**/*.astro/*.{ts,js}']
 
-/** The TypeScript `<script>` blocks, the only ones the jsdoc rules reach. */
+/**
+ * The TypeScript `<script>` blocks, the only ones the jsdoc rules reach.
+ */
 const ASTRO_TS_SCRIPT_FILES = ['**/*.astro/*.ts']
 
-/** The plain JavaScript `<script>` blocks, which only get the shared rules. */
+/**
+ * The plain JavaScript `<script>` blocks, which only get the shared rules.
+ */
 const ASTRO_JS_SCRIPT_FILES = ['**/*.astro/*.js']
 
 const ASTRO_AND_SCRIPT_FILES = [...ASTRO_FILES, ...ASTRO_SCRIPT_FILES]
@@ -38,6 +44,21 @@ const jsdocRules = {
   ...jsdoc.configs['flat/recommended-typescript-error'].rules,
   'jsdoc/require-jsdoc': 'off',
   'jsdoc/informative-docs': 'error',
+}
+
+/**
+ * Names `unicorn/name-replacements` keeps, each required by an external API
+ * so renaming it would break the contract:
+ * - `props` and `Props`: the Astro and React component contract (`Astro.props`
+ *   and the `Props` interface Astro reads to type a component).
+ * - `ref` and `Ref`: `@eslint-react` `naming-convention-ref-name` requires every
+ *   `useRef` identifier to be `ref` or to end in `Ref`.
+ */
+const NAME_REPLACEMENT_ALLOW_LIST = {
+  props: true,
+  Props: true,
+  ref: true,
+  Ref: true,
 }
 
 /**
@@ -81,28 +102,14 @@ export default defineConfig([
   {
     files: ASTRO_AND_SCRIPT_FILES,
     rules: {
-      'unicorn/no-null': 'off',
       'unicorn/number-literal-case': [
         'error',
         { hexadecimalValue: 'lowercase' },
       ],
       'unicorn/name-replacements': [
         'error',
-        {
-          allowList: {
-            env: true,
-            utils: true,
-            props: true,
-            Props: true,
-            ref: true,
-            Ref: true,
-            doc: true,
-            docs: true,
-          },
-        },
+        { allowList: NAME_REPLACEMENT_ALLOW_LIST },
       ],
-      'unicorn/consistent-boolean-name': 'off',
-      'unicorn/single-line-block-comment-style': 'off',
       'unicorn/no-asterisk-prefix-in-documentation-comments': 'off',
       'unicorn/filename-case': [
         'error',

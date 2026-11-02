@@ -20,11 +20,11 @@ import {
   focusInitialItem,
   focusTrigger,
   magnifyItems,
-  moveInMenu,
+  didMoveInMenu,
   shouldMagnify,
   type DockMenuName,
 } from '@/lib/dock-dom'
-import { getFxStorage, readFx, subscribeFx, writeFx } from '@/lib/fx-store'
+import { getFxStorage, isFxEnabled, subscribeFx, writeFx } from '@/lib/fx-store'
 import { soundEngine, type SoundAvailability } from '@/lib/sound-engine'
 import { THEME_PREFERENCES, type ThemePreference } from '@/lib/theme'
 import { chooseTheme } from '@/lib/theme-store'
@@ -119,7 +119,7 @@ function PageIcon({ page }: { page: DockPageKey }) {
   )
 }
 
-const isSoundEnabledSnapshot = (): boolean => readFx(getFxStorage())
+const isSoundEnabledSnapshot = (): boolean => isFxEnabled(getFxStorage())
 const isSoundEnabledOnServer = (): boolean => false
 const getServerAvailability = (): SoundAvailability => 'unknown'
 
@@ -419,7 +419,7 @@ function useMenuBehaviour(
         focusTrigger(nav, openMenu)
         return
       }
-      if (moveInMenu(nav, openMenu, event.key, document.activeElement))
+      if (didMoveInMenu(nav, openMenu, event.key, document.activeElement))
         event.preventDefault()
     }
     const onOutside = (event: Event): void => {

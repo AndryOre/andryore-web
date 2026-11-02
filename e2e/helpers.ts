@@ -117,8 +117,8 @@ export async function findHorizontalOverflow(page: Page): Promise<string[]> {
       ) {
         const style = globalThis.getComputedStyle(ancestor)
         if (style.position === 'fixed') return false
-        const clips = ['hidden', 'clip'].includes(style.overflowX)
-        if (!clips) continue
+        const isClips = ['hidden', 'clip'].includes(style.overflowX)
+        if (!isClips) continue
         const bounds = ancestor.getBoundingClientRect()
         if (bounds.left >= -0.5 && bounds.right <= width + 0.5) return true
       }
@@ -172,7 +172,7 @@ const TOUCH_TARGET_LIMITS = {
 export async function findSmallTouchTargets(page: Page): Promise<string[]> {
   return page.evaluate((limits) => {
     const small: string[] = []
-    const compact =
+    const isCompact =
       globalThis.document.documentElement.clientWidth < limits.compactBelow
     const controls = globalThis.document.querySelectorAll<HTMLElement>(
       'a[href], button, [role="button"], summary',
@@ -184,7 +184,7 @@ export async function findSmallTouchTargets(page: Page): Promise<string[]> {
       if (inline && !control.closest('nav, footer')) continue
       if (control.closest('.sr-only, [hidden], [aria-hidden="true"]')) continue
       const minimum =
-        compact && control.closest('[data-dock-nav]')
+        isCompact && control.closest('[data-dock-nav]')
           ? limits.compactDock
           : limits.standard
       if (bounds.width < minimum || bounds.height < minimum) {
@@ -237,11 +237,11 @@ export async function findClippedText(page: Page): Promise<string[]> {
     )
     for (const element of candidates) {
       const style = globalThis.getComputedStyle(element)
-      const hides = style.overflowX === 'hidden' || style.overflowX === 'clip'
-      const visuallyHidden = element.clientWidth <= 1
+      const isHides = style.overflowX === 'hidden' || style.overflowX === 'clip'
+      const isVisuallyHidden = element.clientWidth <= 1
       if (
-        hides &&
-        !visuallyHidden &&
+        isHides &&
+        !isVisuallyHidden &&
         element.scrollWidth > element.clientWidth + 1
       ) {
         clipped.push(
@@ -284,12 +284,13 @@ export async function findUsesHeroIconProblems(page: Page): Promise<string[]> {
           box.bottom > text.top,
       )
       if (hitsText) problems.push(`icon ${String(index)} overlaps the text`)
-      const clipped =
+      const isClipped =
         box.left < cardBox.left ||
         box.right > cardBox.right ||
         box.top < cardBox.top ||
         box.bottom > cardBox.bottom
-      if (clipped) problems.push(`icon ${String(index)} is clipped by the card`)
+      if (isClipped)
+        problems.push(`icon ${String(index)} is clipped by the card`)
     }
     if (icons.length === 0) problems.push('no icons found')
     return problems

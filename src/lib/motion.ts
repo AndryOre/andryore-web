@@ -50,7 +50,7 @@ export function revealClass(index: number): (typeof REVEAL_CLASSES)[number] {
  * @param win Anything with a `matchMedia`, defaults to no preference.
  * @returns True when reduced motion is requested.
  */
-export function prefersReducedMotion(
+export function isMotionReduced(
   win?: Readonly<{ matchMedia: (query: string) => { matches: boolean } }>,
 ): boolean {
   return win?.matchMedia(REDUCED_MOTION_QUERY).matches ?? false

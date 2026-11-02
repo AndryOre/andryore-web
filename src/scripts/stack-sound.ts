@@ -1,4 +1,4 @@
-import { getFxStorage, readFx } from '../lib/fx-store'
+import { getFxStorage, isFxEnabled } from '../lib/fx-store'
 import type { PlayOptions, SoundEvent } from '../lib/sound-engine'
 import {
   createStackSoundMapper,
@@ -39,7 +39,7 @@ export interface StackSoundDependencies {
   isSoundOn: () => boolean
   isUnlocked: () => boolean
   isHidden: () => boolean
-  prefersReducedMotion: () => boolean
+  isMotionReduced: () => boolean
   supportsScrollTimeline: () => boolean
   isCompact: () => boolean
   viewportHeight: () => number
@@ -71,7 +71,7 @@ export function mountStackSound(
 
   const canPlay = (): boolean =>
     dependencies.supportsScrollTimeline() &&
-    !dependencies.prefersReducedMotion() &&
+    !dependencies.isMotionReduced() &&
     !dependencies.isHidden() &&
     dependencies.isSoundOn() &&
     dependencies.isUnlocked()
@@ -141,10 +141,10 @@ export function mountStackSound(
  */
 export function mountStackSoundInBrowser(scene: HTMLElement): () => void {
   return mountStackSound(scene, {
-    isSoundOn: () => readFx(getFxStorage()),
+    isSoundOn: () => isFxEnabled(getFxStorage()),
     isUnlocked: soundTriggers.isUnlocked,
     isHidden: () => document.hidden,
-    prefersReducedMotion: () =>
+    isMotionReduced: () =>
       globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches,
     supportsScrollTimeline: () => CSS.supports('animation-timeline: view()'),
     isCompact: () => globalThis.matchMedia('(max-width: 40rem)').matches,

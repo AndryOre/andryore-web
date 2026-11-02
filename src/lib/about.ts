@@ -31,7 +31,7 @@ The inputs that come from other data: JSON Flow's row and the GitHub grid.
  */
 export interface NumbersSources {
   installs: { total: number }
-  contributions: number | null
+  contributions: number | undefined
 }
 
 /**
@@ -69,7 +69,7 @@ export function buildNumberStats(
       count: sources.installs.total,
       suffix: '+',
     },
-    ...(sources.contributions === null
+    ...(sources.contributions === undefined
       ? []
       : [
           {

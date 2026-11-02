@@ -38,7 +38,7 @@ const stats = buildNumberStats(
   copy,
   {
     installs: { total: installs.metaTotal },
-    contributions: snapshot?.total ?? null,
+    contributions: snapshot?.total,
   },
   locale,
 )
@@ -278,12 +278,12 @@ const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
 </BaseLayout>
 
 <script>
-  import { prefersReducedMotion } from '../lib/motion'
+  import { isMotionReduced } from '../lib/motion'
   import { startCountUp } from '../scripts/count-up'
-  import { mountGithubTile } from '../scripts/github-tile'
+  import { didMountGithubTile } from '../scripts/github-tile'
   import { startPhraseTyping } from '../scripts/typing-headline'
 
-  const reducedMotion = prefersReducedMotion(globalThis)
+  const reducedMotion = isMotionReduced(globalThis)
 
   for (const root of document.querySelectorAll<HTMLElement>('[data-typing]')) {
     const target = root.querySelector<HTMLElement>('[data-typing-text]')
@@ -330,7 +330,7 @@ const headingClass = 'm-0 text-[22px] font-bold tracking-[-0.02em]'
       countUp(target)
       return target.dataset.countTotal
     })
-    void mountGithubTile(root).then(() => {
+    void didMountGithubTile(root).then(() => {
       for (const [index, target] of targets.entries()) {
         const total = Number(target.dataset.countTotal)
         if (

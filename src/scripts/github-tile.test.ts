@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 
 import {
-  mountGithubTile,
+  didMountGithubTile,
   type GithubTileRoot,
   type TileElement,
 } from './github-tile'
@@ -58,10 +58,10 @@ const live = {
   ],
 }
 
-describe('mountGithubTile', () => {
+describe('didMountGithubTile', () => {
   test('replaces total, grid, stats and label from the endpoint', async () => {
     const { root, text } = createRoot()
-    const shown = await mountGithubTile(root, {
+    const shown = await didMountGithubTile(root, {
       fetcher: () => Promise.resolve(Response.json(live)),
       now: () => NOW,
       createCell: () => ({ dataset: {} }),
@@ -83,7 +83,7 @@ describe('mountGithubTile', () => {
 
   test('writes the label in Spanish', async () => {
     const { root, text } = createRoot('es')
-    await mountGithubTile(root, {
+    await didMountGithubTile(root, {
       fetcher: () => Promise.resolve(Response.json(live)),
       now: () => NOW,
       createCell: () => ({ dataset: {} }),
@@ -95,7 +95,7 @@ describe('mountGithubTile', () => {
 
   test('keeps the snapshot and relabels it when the endpoint fails', async () => {
     const { root, text } = createRoot()
-    const shown = await mountGithubTile(root, {
+    const shown = await didMountGithubTile(root, {
       fetcher: () => Promise.resolve(new Response('x', { status: 503 })),
       now: () => NOW,
       createCell: () => ({ dataset: {} }),

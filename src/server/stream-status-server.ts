@@ -3,7 +3,7 @@ import {
   createContributionsReader,
 } from '../lib/github-contributions'
 import { createLiveStatus, statusResponse } from '../lib/twitch-status'
-import { hasLoadedEncryptedEnvironment } from './load-encrypted-env'
+import { hasLoadedEncryptedEnvironment } from './load-encrypted-environment'
 
 hasLoadedEncryptedEnvironment()
 

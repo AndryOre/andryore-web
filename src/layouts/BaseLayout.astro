@@ -211,7 +211,7 @@ const socialTags = [
   import { mountDockSoundState } from '../scripts/dock-state'
   import { watchHeaderSurface } from '../scripts/header-surface'
   import {
-    restoreLocaleScroll,
+    didRestoreLocaleScroll,
     saveLocaleScroll,
   } from '../scripts/locale-scroll'
   import { soundTriggers } from '../scripts/sound-triggers'
@@ -270,5 +270,10 @@ const socialTags = [
     }
   })
 
-  restoreLocaleScroll(sessionStorage, globalThis, document, location.pathname)
+  didRestoreLocaleScroll(
+    sessionStorage,
+    globalThis,
+    document,
+    location.pathname,
+  )
 </script>

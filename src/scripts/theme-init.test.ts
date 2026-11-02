@@ -44,8 +44,8 @@ function createFakePage(options: {
     documentElement: {
       dataset,
       classList: {
-        toggle: (name: string, force: boolean) =>
-          force ? classes.add(name) : classes.delete(name),
+        toggle: (name: string, shouldForce: boolean) =>
+          shouldForce ? classes.add(name) : classes.delete(name),
       },
     },
     querySelectorAll: () => metas,
@@ -85,8 +85,8 @@ function createFakePage(options: {
       windowListeners.get('storage')?.()
     },
     metaMedia: () => metas.map((meta) => meta.media),
-    changeSystem: (systemDark: boolean) => {
-      state.systemDark = systemDark
+    changeSystem: (isSystemDark: boolean) => {
+      state.systemDark = isSystemDark
       for (const listener of queryListeners) listener()
     },
     changeStored: (stored: string | null) => {
