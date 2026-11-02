@@ -83,6 +83,17 @@ The toolchain is explained in
 `build` script unless explicitly asked. Never print or decrypt env values while
 running any script.
 
+### Design-choice lint rules
+
+`unicorn/single-line-block-comment-style`, `unicorn/consistent-boolean-name`,
+`unicorn/no-null` and `unicorn/name-replacements` are on in both engines with
+identical values (`eslint-rules/oxlint-rules.mjs` and `eslint.config.mjs`).
+Booleans start with `is`, `has`, `should` and similar; absent values are
+`undefined`, not `null`. The name allow list keeps only `props`, `Props`, `ref`
+and `Ref`, each required by an external API. `unicorn/no-null` is off for
+`**/*.{test,spec}.{ts,tsx,mjs}` and `e2e/**` only. `bun run lint:parity` must
+report 0 unexplained and 0 accepted gaps; `parity/accepted.json` stays `[]`.
+
 ### Fidelity audit exceptions
 
 `audit:fidelity` does not report these accepted deviations (the list is
