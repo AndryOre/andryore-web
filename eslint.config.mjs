@@ -57,8 +57,7 @@ const jsdocRules = {
  * information is never available to them, so every type-checked rule is off.
  *
  * The `.astro` rule set is exactly: `astro/recommended`, `jsx-a11y`
- * recommended, `unicorn` recommended with this repo's overrides (including the
- * four formatting rules `eslint-config-prettier` used to switch off),
+ * recommended, `unicorn` recommended with this repo's overrides,
  * `local/no-non-doc-comments` and the `eslint-comments` rules. No rule here
  * needs type information, so the parser gets no `project`.
  */
@@ -83,10 +82,10 @@ export default defineConfig([
     files: ASTRO_AND_SCRIPT_FILES,
     rules: {
       'unicorn/no-null': 'off',
-      'unicorn/empty-brace-spaces': 'off',
-      'unicorn/no-nested-ternary': 'off',
-      'unicorn/number-literal-case': ['off', { hexadecimalValue: 'uppercase' }],
-      'unicorn/template-indent': 'off',
+      'unicorn/number-literal-case': [
+        'error',
+        { hexadecimalValue: 'lowercase' },
+      ],
       'unicorn/name-replacements': [
         'error',
         {
