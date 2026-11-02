@@ -1,10 +1,14 @@
-/** One text mismatch: a canvas string the rendered Site does not contain. */
+/**
+One text mismatch: a canvas string the rendered Site does not contain.
+ */
 export interface TextDeviation {
   readonly scene: string
   readonly text: string
 }
 
-/** One measured property compared with its expected value. */
+/**
+One measured property compared with its expected value.
+ */
 export interface MeasurementResult {
   readonly id: string
   readonly scene: string
@@ -12,7 +16,9 @@ export interface MeasurementResult {
   readonly actual: number | undefined
 }
 
-/** A named block of the report with the deviations it found. */
+/**
+A named block of the report with the deviations it found.
+ */
 export interface ReportSection {
   readonly title: string
   readonly lines: readonly string[]
@@ -174,13 +180,17 @@ export function describeOverflow(
   return `${state.route} ${state.language} ${state.theme} @${String(state.width)} ${scroll}: ${finding}`
 }
 
-/** A deviation the audit does not report because the owner accepted it. */
+/**
+A deviation the audit does not report because the owner accepted it.
+ */
 export interface DocumentedException {
   readonly id: string
   readonly reason: string
 }
 
-/** Every accepted deviation from the canvas, mirrored in docs/development.md. */
+/**
+Every accepted deviation from the canvas, mirrored in docs/development.md.
+ */
 export const DOCUMENTED_EXCEPTIONS: readonly DocumentedException[] = [
   {
     id: 'about-uses-home-link',

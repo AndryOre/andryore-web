@@ -10,7 +10,9 @@ export const LIGHTHOUSE_VERSION = '13.5.0'
 
 const STREAM_STATUS_PATH = '/api/stream-status'
 
-/** Lighthouse categories the gate scores, in report order. */
+/**
+Lighthouse categories the gate scores, in report order.
+ */
 export const CATEGORIES = [
   'performance',
   'accessibility',
@@ -20,13 +22,19 @@ export const CATEGORIES = [
 
 export type Category = (typeof CATEGORIES)[number]
 
-/** Minimum score, out of 100, every category must reach on every page. */
+/**
+Minimum score, out of 100, every category must reach on every page.
+ */
 export const SCORE_THRESHOLD = 90
 
-/** Lighthouse runs per page; the median of them is what is judged. */
+/**
+Lighthouse runs per page; the median of them is what is judged.
+ */
 export const RUNS_PER_PAGE = 5
 
-/** Pages audited: home and one product page, in English and Spanish. */
+/**
+Pages audited: home and one product page, in English and Spanish.
+ */
 export const AUDITED_PATHS: readonly string[] = [
   '/',
   '/es/',
@@ -34,11 +42,11 @@ export const AUDITED_PATHS: readonly string[] = [
   '/es/products/snug/',
 ]
 
-export type CategoryScores = Record<Category, number | null>
+export type CategoryScores = Record<Category, number | undefined>
 
 export interface RunResult {
   readonly scores: CategoryScores
-  readonly totalBytes: number | null
+  readonly totalBytes: number | undefined
 }
 
 export interface PageResult extends RunResult {
@@ -72,16 +80,16 @@ interface LighthouseJson {
 }
 
 /**
- * Extracts the four category scores (0 to 100, null when missing) and the
+ * Extracts the four category scores (0 to 100, undefined when missing) and the
  * total transfer weight from a Lighthouse JSON report.
  * @param json The raw JSON text printed by Lighthouse.
  * @returns The scores and the byte weight.
  */
 export function parseReport(json: string): RunResult {
   const report = JSON.parse(json) as LighthouseJson
-  const scoreOf = (category: Category): number | null => {
+  const scoreOf = (category: Category): number | undefined => {
     const raw = report.categories?.[category]?.score
-    return typeof raw === 'number' ? Math.round(raw * 100) : null
+    return typeof raw === 'number' ? Math.round(raw * 100) : undefined
   }
   const bytes = report.audits?.['total-byte-weight']?.numericValue
   return {
@@ -91,20 +99,20 @@ export function parseReport(json: string): RunResult {
       'best-practices': scoreOf('best-practices'),
       seo: scoreOf('seo'),
     },
-    totalBytes: typeof bytes === 'number' ? bytes : null,
+    totalBytes: typeof bytes === 'number' ? bytes : undefined,
   }
 }
 
 /**
- * Collapses the runs of one page into median scores. A category that is null
- * in any run stays null, so the gate fails instead of hiding a broken run.
+ * Collapses the runs of one page into median scores. A category that is undefined
+ * in any run stays undefined, so the gate fails instead of hiding a broken run.
  * @param runs The parsed runs of one page.
  * @returns The per-category median scores and the median weight.
  */
 export function summarizeRuns(runs: readonly RunResult[]): RunResult {
-  const scoreFor = (category: Category): number | null => {
+  const scoreFor = (category: Category): number | undefined => {
     const values = runs.map((run) => run.scores[category])
-    return values.includes(null) ? null : median(values as number[])
+    return values.includes(undefined) ? undefined : median(values as number[])
   }
   const bytes = runs.flatMap((run) => run.totalBytes ?? [])
   return {
@@ -114,12 +122,12 @@ export function summarizeRuns(runs: readonly RunResult[]): RunResult {
       'best-practices': scoreFor('best-practices'),
       seo: scoreFor('seo'),
     },
-    totalBytes: bytes.length > 0 ? median(bytes) : null,
+    totalBytes: bytes.length > 0 ? median(bytes) : undefined,
   }
 }
 
 /**
- * Lists every category that is null or below the threshold. Weight never
+ * Lists every category that is undefined or below the threshold. Weight never
  * produces a failure.
  * @param results The per-page results.
  * @returns One human-readable line per failure.
@@ -129,7 +137,7 @@ export function findFailures(results: readonly PageResult[]): string[] {
   for (const page of results) {
     for (const category of CATEGORIES) {
       const score = page.scores[category]
-      if (score === null) {
+      if (score === undefined) {
         failures.push(`${page.path} ${category}: no score`)
       } else if (score < SCORE_THRESHOLD) {
         const line = `${page.path} ${category}: ${String(score)}`
@@ -150,7 +158,7 @@ export function formatTable(results: readonly PageResult[]): string {
   const rows = results.map((page) => [
     page.path,
     ...CATEGORIES.map((category) => String(page.scores[category] ?? 'null')),
-    page.totalBytes === null
+    page.totalBytes === undefined
       ? 'n/a'
       : `${(page.totalBytes / 1024).toFixed(1)} KiB`,
   ])
@@ -235,21 +243,21 @@ export async function auditPages(
  * Resolves a request path to a file inside the built directory.
  * @param distributionDirectory The build output directory.
  * @param pathname The URL pathname.
- * @returns The file path, or null when nothing matches or it escapes `dist`.
+ * @returns The file path, or undefined when nothing matches or it escapes `dist`.
  */
 export function resolveStaticFile(
   distributionDirectory: string,
   pathname: string,
-): string | null {
+): string | undefined {
   const relative = decodeURIComponent(pathname).replace(/^\/+/, '')
   const root = path.resolve(distributionDirectory)
   const candidate = path.resolve(root, relative)
   const fromRoot = path.relative(root, candidate)
-  if (fromRoot.startsWith('..') || path.isAbsolute(fromRoot)) return null
+  if (fromRoot.startsWith('..') || path.isAbsolute(fromRoot)) return undefined
   const file = pathname.endsWith('/')
     ? path.join(candidate, 'index.html')
     : candidate
-  return existsSync(file) ? file : null
+  return existsSync(file) ? file : undefined
 }
 
 const GZIP_MIN_LENGTH = 256
@@ -281,11 +289,11 @@ export async function respondWithFile(
   acceptEncoding = '',
 ): Promise<Response> {
   const source = Bun.file(file)
-  const compressible =
+  const isCompressible =
     GZIP_EXTENSIONS.has(path.extname(file)) &&
     /\bgzip\b/.test(acceptEncoding) &&
     source.size >= GZIP_MIN_LENGTH
-  if (!compressible) return new Response(source)
+  if (!isCompressible) return new Response(source)
   const body = Bun.gzipSync(new Uint8Array(await source.arrayBuffer()))
   return new Response(body, {
     headers: {

@@ -26,19 +26,19 @@ export function isSimpleRm(command: string): boolean {
 }
 
 /**
- * The PreToolUse hook output that approves a command, or null to defer to the
+ * The PreToolUse hook output that approves a command, or undefined to defer to the
  * normal permission prompt.
  * @param hookInput - The JSON the hook receives on stdin.
- * @returns The JSON to print, or null when the command must prompt.
+ * @returns The JSON to print, or undefined when the command must prompt.
  */
-export function decideRmApproval(hookInput: string): string | null {
+export function decideRmApproval(hookInput: string): string | undefined {
   const parsed: unknown = JSON.parse(hookInput)
   const command =
     typeof parsed === 'object' && parsed !== null && 'tool_input' in parsed
       ? (parsed.tool_input as { command?: unknown }).command
       : undefined
   if (typeof command !== 'string' || !isSimpleRm(command)) {
-    return null
+    return undefined
   }
   return JSON.stringify({
     hookSpecificOutput: {
@@ -52,7 +52,7 @@ export function decideRmApproval(hookInput: string): string | null {
 
 if (import.meta.main) {
   const output = decideRmApproval(await Bun.stdin.text())
-  if (output !== null) {
+  if (output !== undefined) {
     process.stdout.write(`${output}\n`)
   }
 }

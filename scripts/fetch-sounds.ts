@@ -14,7 +14,9 @@ interface ContentEntry {
   url: string
 }
 
-/** What the fetch step needs, replaceable in tests. */
+/**
+What the fetch step needs, replaceable in tests.
+ */
 export interface FetchSoundsOptions {
   repo: string
   ref: string
@@ -23,7 +25,9 @@ export interface FetchSoundsOptions {
   fetch?: (input: string, init: RequestInit) => Promise<Response>
 }
 
-/** The process pieces `main` reads, replaceable in tests. */
+/**
+The process pieces `main` reads, replaceable in tests.
+ */
 export interface MainEnvironment {
   env: Readonly<Record<string, string | undefined>>
   secretPath?: string

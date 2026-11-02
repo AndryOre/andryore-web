@@ -10,7 +10,9 @@ const INLINE_SCRIPT = /<script\b([^>]*)>([\s\S]*?)<\/script[^>]*>/gi
 const INLINE_STYLE = /<style\b([^>]*)>([\s\S]*?)<\/style[^>]*>/gi
 const EXECUTABLE_SCRIPT_TYPES = new Set(['', 'module', 'text/javascript'])
 
-/** The `sha256` sources of a page or a built site. */
+/**
+The `sha256` sources of a page or a built site.
+ */
 export interface PolicyHashes {
   script: string[]
   style: string[]
