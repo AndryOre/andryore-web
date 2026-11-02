@@ -1,6 +1,8 @@
 import type { ThemePreference } from './theme'
 
-/** The slider stops from top to bottom, brightest first. */
+/**
+ * The slider stops from top to bottom, brightest first.
+ */
 export const THEME_STOPS: readonly ThemePreference[] = ['light', 'auto', 'dark']
 
 const STOP_LEVELS: Readonly<Record<ThemePreference, number>> = {

@@ -1,15 +1,21 @@
-/** The three choices of the theme control. */
+/**
+ * The three choices of the theme control.
+ */
 export const THEME_PREFERENCES = ['auto', 'light', 'dark'] as const
 
 export type ThemePreference = (typeof THEME_PREFERENCES)[number]
 export type ResolvedTheme = 'light' | 'dark'
 
-/** The localStorage key shared with the inline pre-paint script. */
+/**
+ * The localStorage key shared with the inline pre-paint script.
+ */
 export const THEME_STORAGE_KEY = 'theme'
 
 export const DARK_SCHEME_QUERY = '(prefers-color-scheme: dark)'
 
-/** The slice of `Storage` the theme code needs. */
+/**
+ * The slice of `Storage` the theme code needs.
+ */
 export interface ThemeStorage {
   getItem: (key: string) => string | null
   setItem: (key: string, value: string) => void
@@ -44,14 +50,14 @@ export function parseThemePreference(raw: unknown): ThemePreference {
 /**
  * Resolves a preference to the theme that should be painted.
  * @param preference The stored choice.
- * @param systemPrefersDark Whether the system asks for a dark scheme.
+ * @param isSystemDark Whether the system asks for a dark scheme.
  * @returns `light` or `dark`.
  */
 export function resolveTheme(
   preference: ThemePreference,
-  systemPrefersDark: boolean,
+  isSystemDark: boolean,
 ): ResolvedTheme {
-  if (preference === 'auto') return systemPrefersDark ? 'dark' : 'light'
+  if (preference === 'auto') return isSystemDark ? 'dark' : 'light'
   return preference
 }
 
@@ -78,7 +84,7 @@ export function readThemePreference(
  * @param preference The choice to store.
  * @returns False when the write was not possible.
  */
-export function writeThemePreference(
+export function didWriteThemePreference(
   storage: ThemeStorage | undefined,
   preference: ThemePreference,
 ): boolean {
@@ -99,7 +105,7 @@ interface ThemeColorMeta {
 
 interface ThemeDocument {
   documentElement: {
-    classList: { toggle: (name: string, force: boolean) => unknown }
+    classList: { toggle: (name: string, shouldForce: boolean) => unknown }
   }
   querySelectorAll: (selector: string) => Iterable<ThemeColorMeta>
 }
