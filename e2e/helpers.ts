@@ -261,9 +261,11 @@ export async function findClippedText(page: Page): Promise<string[]> {
  */
 export async function findUsesHeroIconProblems(page: Page): Promise<string[]> {
   return page.evaluate(() => {
-    const doc = globalThis.document
-    const card = doc.querySelector('section[aria-labelledby="uses-heading"]')
-    const heading = doc.querySelector('#uses-heading')
+    const pageDocument = globalThis.document
+    const card = pageDocument.querySelector(
+      'section[aria-labelledby="uses-heading"]',
+    )
+    const heading = pageDocument.querySelector('#uses-heading')
     const intro = heading?.nextElementSibling
     if (!card || !heading || !intro) return ['uses hero is missing']
     const cardBox = card.getBoundingClientRect()

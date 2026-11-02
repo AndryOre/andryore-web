@@ -32,7 +32,7 @@ import {
   resolveLycheeArch,
   runDocumentationLint,
   type LycheeBinaryDependencies,
-} from './lint-docs'
+} from './lint-documentation'
 import { readWorkflow, readWorkflowText } from './workflow-files'
 
 const WORKFLOW_FILE = 'lint-docs.yml'

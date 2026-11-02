@@ -5,7 +5,7 @@ import {
   noUnusedEnable,
   requireDescription,
 } from './directive-comments.mjs'
-import rule from './no-non-doc-comments.mjs'
+import rule from './no-non-document-comments.mjs'
 
 /**
  * This repo's local lint plugin, registered under the `local` namespace

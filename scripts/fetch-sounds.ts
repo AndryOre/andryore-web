@@ -131,9 +131,11 @@ export async function main(environment: MainEnvironment): Promise<number> {
     error('fetch-sounds: SOUNDS_REPO is required when a token is provided')
     return 1
   }
-  const requestedRef = environment.env.SOUNDS_REF?.trim()
+  const requestedReference = environment.env.SOUNDS_REF?.trim()
   const ref =
-    requestedRef === undefined || requestedRef === '' ? 'main' : requestedRef
+    requestedReference === undefined || requestedReference === ''
+      ? 'main'
+      : requestedReference
   try {
     const written = await fetchSounds({
       repo: repository,
