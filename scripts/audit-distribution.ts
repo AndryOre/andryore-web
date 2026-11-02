@@ -1,7 +1,9 @@
 import { readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
-/** Origins the built Site may load from besides itself (ADR 0009, ADR 0014). */
+/**
+Origins the built Site may load from besides itself (ADR 0009, ADR 0014).
+ */
 export const ALLOWED_ORIGINS: readonly string[] = [
   'https://andryore.dev',
   'https://cloud.umami.is',
@@ -65,10 +67,10 @@ export function auditHtml(html: string): string[] {
       const href = attributes.get('href') ?? ''
       if (!isForeign(href)) continue
       const linkTypes = tokensOf(attributes.get('rel'))
-      const lacksProtection = !(
+      const isUnprotected = !(
         linkTypes.includes('noopener') && linkTypes.includes('noreferrer')
       )
-      if (lacksProtection) {
+      if (isUnprotected) {
         problems.push(`external link without noopener noreferrer: ${href}`)
       }
       if (attributes.get('target')?.toLowerCase() !== '_blank') {
