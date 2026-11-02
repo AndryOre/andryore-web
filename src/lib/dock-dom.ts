@@ -1,5 +1,5 @@
 import { magnificationScale } from './dock'
-import { prefersReducedMotion } from './motion'
+import { isMotionReduced } from './motion'
 
 const FINE_POINTER_QUERY = '(hover: hover) and (pointer: fine)'
 
@@ -46,7 +46,7 @@ export function shouldMagnify(win: MediaWindow, pointerType: string): boolean {
   return (
     pointerType === 'mouse' &&
     win.matchMedia(FINE_POINTER_QUERY).matches &&
-    !prefersReducedMotion(win)
+    !isMotionReduced(win)
   )
 }
 
@@ -126,7 +126,7 @@ export function focusInitialItem(root: MenuRoot, name: DockMenuName): void {
  * @param active The currently focused element.
  * @returns True when the key moved focus and should not scroll the page.
  */
-export function moveInMenu(
+export function didMoveInMenu(
   root: MenuRoot,
   name: DockMenuName,
   key: string,

@@ -39,7 +39,7 @@ function isEnabled(value: unknown): boolean {
   return normalizeValue(value)[0] !== 0
 }
 
-function matchesAny(file: string, globs: readonly string[]): boolean {
+function isMatchingAny(file: string, globs: readonly string[]): boolean {
   return globs.some((glob) => new Bun.Glob(glob).match(file))
 }
 
@@ -52,7 +52,7 @@ function matchesAny(file: string, globs: readonly string[]): boolean {
 function resolveOxlintRules(file: string): Map<string, unknown[]> {
   const resolved: Record<string, unknown> = { ...OXLINT_BASE_RULES }
   for (const override of OXLINT_OVERRIDES) {
-    if (matchesAny(file, override.files))
+    if (isMatchingAny(file, override.files))
       Object.assign(resolved, override.rules)
   }
   return new Map(
@@ -262,6 +262,42 @@ describe('the Oxlint config', () => {
     expect(OXLINT_IGNORE_PATTERNS).toContain('**/*.astro')
     expect(OXLINT_IGNORE_PATTERNS).toContain('parity/fixtures/**')
     expect(OXLINT_IGNORE_PATTERNS).toContain('.forge/**')
+  })
+})
+
+function hasNoNull(file: string): boolean {
+  return resolveOxlintRules(file).has('unicorn-js/no-null')
+}
+
+describe('design-choice rules', () => {
+  test('enables the four rules in Oxlint with the API-mandated names only', () => {
+    expect(OXLINT_BASE_RULES['unicorn-js/no-null']).toBe('error')
+    expect(OXLINT_BASE_RULES['unicorn-js/consistent-boolean-name']).toBe(
+      'error',
+    )
+    expect(
+      OXLINT_BASE_RULES['unicorn-js/single-line-block-comment-style'],
+    ).toBe('error')
+    expect(OXLINT_BASE_RULES['unicorn-js/name-replacements']).toEqual([
+      'error',
+      { allowList: { props: true, Props: true, ref: true, Ref: true } },
+    ])
+  })
+
+  test('keeps the asterisk-prefix rule off', () => {
+    expect(
+      OXLINT_BASE_RULES[
+        'unicorn-js/no-asterisk-prefix-in-documentation-comments'
+      ],
+    ).toBeUndefined()
+  })
+
+  test('turns no-null off for tests and end-to-end specs only', () => {
+    expect(hasNoNull('src/lib/motion.ts')).toBe(true)
+    expect(hasNoNull('src/lib/motion.test.ts')).toBe(false)
+    expect(hasNoNull('scripts/check.test.mjs')).toBe(false)
+    expect(hasNoNull('e2e/helpers.ts')).toBe(false)
+    expect(hasNoNull('e2e/home.spec.ts')).toBe(false)
   })
 })
 

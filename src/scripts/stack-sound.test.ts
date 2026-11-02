@@ -20,7 +20,7 @@ function createHarness(overrides: Partial<StackSoundDependencies> = {}) {
   const state = { top: topFor(0), now: 0, near: undefined as unknown }
   let scrollListener: (() => void) | undefined
   let observerCallback: ((isNear: boolean) => void) | undefined
-  let disconnected = false
+  let isDisconnected = false
   let listenerOptionsRemoved = 0
   const scene: StackSoundScene = {
     getBoundingClientRect: () => ({ top: state.top, height: HEIGHT }),
@@ -29,7 +29,7 @@ function createHarness(overrides: Partial<StackSoundDependencies> = {}) {
     isSoundOn: () => true,
     isUnlocked: () => true,
     isHidden: () => false,
-    prefersReducedMotion: () => false,
+    isMotionReduced: () => false,
     supportsScrollTimeline: () => true,
     isCompact: () => false,
     viewportHeight: () => VIEWPORT,
@@ -54,7 +54,7 @@ function createHarness(overrides: Partial<StackSoundDependencies> = {}) {
           state.near = true
         },
         disconnect: () => {
-          disconnected = true
+          isDisconnected = true
         },
       }
     },
@@ -77,7 +77,7 @@ function createHarness(overrides: Partial<StackSoundDependencies> = {}) {
     nearViewport: (isNear: boolean) => observerCallback?.(isNear),
     isListening: () => scrollListener !== undefined,
     fireScroll: () => scrollListener?.(),
-    wasDisconnected: () => disconnected,
+    wasDisconnected: () => isDisconnected,
     removals: () => listenerOptionsRemoved,
     state,
   }
@@ -162,7 +162,7 @@ describe('mountStackSound', () => {
     ['sound is off', { isSoundOn: () => false }],
     ['the audio is locked', { isUnlocked: () => false }],
     ['the tab is hidden', { isHidden: () => true }],
-    ['motion is reduced', { prefersReducedMotion: () => true }],
+    ['motion is reduced', { isMotionReduced: () => true }],
   ]
   for (const [name, override] of gates) {
     test(`plays nothing when ${name}`, () => {
@@ -184,11 +184,11 @@ describe('mountStackSound', () => {
   })
 
   test('does not pop for a gate that opens after the scene settled', () => {
-    let soundOn = false
-    const harness = mounted({ isSoundOn: () => soundOn })
+    let isSoundOn = false
+    const harness = mounted({ isSoundOn: () => isSoundOn })
     harness.scrollTo(0.5)
     harness.scrollTo(0.8)
-    soundOn = true
+    isSoundOn = true
     harness.scrollTo(0.85)
     expect(
       harness.played.filter((entry) => entry.event === 'stackSettle'),

@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 
 import {
   FX_STORAGE_KEY,
-  readFx,
+  isFxEnabled,
   subscribeFx,
   writeFx,
   type FxStorage,
@@ -70,30 +70,30 @@ describe('subscribeFx', () => {
 
 describe('fx store', () => {
   test('defaults to off', () => {
-    expect(readFx(fakeStorage())).toBe(false)
+    expect(isFxEnabled(fakeStorage())).toBe(false)
   })
 
   test('round-trips through storage under ao-fx2', () => {
     const storage = fakeStorage()
     writeFx(storage, true)
     expect(storage.values.get(FX_STORAGE_KEY)).toBe('on')
-    expect(readFx(storage)).toBe(true)
+    expect(isFxEnabled(storage)).toBe(true)
     writeFx(storage, false)
-    expect(readFx(storage)).toBe(false)
+    expect(isFxEnabled(storage)).toBe(false)
   })
 
   test('ignores unknown stored values', () => {
     const storage = fakeStorage()
     storage.setItem(FX_STORAGE_KEY, 'maybe')
-    expect(readFx(storage)).toBe(false)
+    expect(isFxEnabled(storage)).toBe(false)
   })
 
   test('falls back to memory when storage throws', () => {
     writeFx(brokenStorage, true)
-    expect(readFx(brokenStorage)).toBe(true)
-    expect(readFx(undefined)).toBe(true)
+    expect(isFxEnabled(brokenStorage)).toBe(true)
+    expect(isFxEnabled(undefined)).toBe(true)
     writeFx(undefined, false)
-    expect(readFx(undefined)).toBe(false)
+    expect(isFxEnabled(undefined)).toBe(false)
   })
 
   test('keeps the new choice when only the write fails', () => {
@@ -104,9 +104,9 @@ describe('fx store', () => {
       },
     }
     writeFx(readOnly, true)
-    expect(readFx(readOnly)).toBe(true)
+    expect(isFxEnabled(readOnly)).toBe(true)
     writeFx(fakeStorage(), false)
-    expect(readFx(readOnly)).toBe(false)
+    expect(isFxEnabled(readOnly)).toBe(false)
   })
 })
 

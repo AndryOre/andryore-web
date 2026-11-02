@@ -24,7 +24,7 @@ describe('nextCellIndex', () => {
   })
 
   test('returns null for other keys and empty grids', () => {
-    expect(nextCellIndex(1, 'a', 100)).toBeNull()
-    expect(nextCellIndex(0, 'Home', 0)).toBeNull()
+    expect(nextCellIndex(1, 'a', 100)).toBeUndefined()
+    expect(nextCellIndex(0, 'Home', 0)).toBeUndefined()
   })
 })

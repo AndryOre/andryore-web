@@ -85,9 +85,9 @@ const createTile = () => {
   return {
     flags,
     element: {
-      toggleAttribute: (name: string, force: boolean) => {
-        flags.set(name, force)
-        return force
+      toggleAttribute: (name: string, shouldForce: boolean) => {
+        flags.set(name, shouldForce)
+        return shouldForce
       },
     },
   }

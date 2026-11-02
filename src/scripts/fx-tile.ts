@@ -1,6 +1,6 @@
 import {
   getFxStorage,
-  readFx,
+  isFxEnabled,
   subscribeFx,
   writeFx,
   type FxStorage,
@@ -26,12 +26,12 @@ export function mountFxSwitch(
   storage: FxStorage | undefined = getFxStorage(),
 ): void {
   const paint = (): void => {
-    element.setAttribute('aria-checked', String(readFx(storage)))
+    element.setAttribute('aria-checked', String(isFxEnabled(storage)))
   }
   paint()
   subscribeFx(paint)
   element.addEventListener('click', () => {
-    writeFx(storage, !readFx(storage))
+    writeFx(storage, !isFxEnabled(storage))
   })
 }
 

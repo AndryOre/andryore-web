@@ -18,11 +18,11 @@ for (const route of ROUTES) {
       const offenders: string[] = []
       for (const element of globalThis.document.querySelectorAll('*')) {
         const style = globalThis.getComputedStyle(element)
-        const animates = style.animationName !== 'none'
+        const isAnimates = style.animationName !== 'none'
         const transitions = style.transitionDuration
           .split(',')
           .some((duration) => duration.trim() !== '0s')
-        if (animates || transitions) {
+        if (isAnimates || transitions) {
           offenders.push(
             `${element.tagName.toLowerCase()}.${element.className}`,
           )

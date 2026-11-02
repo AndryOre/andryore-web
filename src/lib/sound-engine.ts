@@ -1,4 +1,4 @@
-import { getFxStorage, readFx } from './fx-store'
+import { getFxStorage, isFxEnabled } from './fx-store'
 
 /**
  * The audio files of the Glass set, served from `/sounds/<name>.mp3`.
@@ -260,7 +260,7 @@ const browserDependencies: SoundEngineDependencies = {
   fetch: (input) => globalThis.fetch(input),
   now: () => performance.now(),
   isHidden: () => document.hidden,
-  isEnabled: () => readFx(getFxStorage()),
+  isEnabled: () => isFxEnabled(getFxStorage()),
   supportsHover: () =>
     globalThis.matchMedia('(hover: hover) and (pointer: fine)').matches,
 }

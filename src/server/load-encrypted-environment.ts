@@ -21,13 +21,14 @@ interface LoadEncryptedEnvironmentOptions {
 export function hasLoadedEncryptedEnvironment(
   options: LoadEncryptedEnvironmentOptions = {},
 ): boolean {
-  const envFile = options.envFile ?? DEFAULT_ENV_FILE
-  const env = options.env ?? (process.env as Record<string, string>)
-  if (!env.DOTENV_PRIVATE_KEY || !existsSync(envFile)) return false
+  const environmentFile = options.envFile ?? DEFAULT_ENV_FILE
+  const environment = options.env ?? (process.env as Record<string, string>)
+  if (!environment.DOTENV_PRIVATE_KEY || !existsSync(environmentFile))
+    return false
   try {
     const result = config({
-      path: envFile,
-      processEnv: env,
+      path: environmentFile,
+      processEnv: environment,
       quiet: true,
       ignore: ['MISSING_ENV_FILE'],
     })

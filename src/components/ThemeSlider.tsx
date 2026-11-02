@@ -174,7 +174,7 @@ export default function ThemeSlider({ copy }: { copy: ThemeToggleCopy }) {
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>): void => {
     const next = stopAfterKey(index, event.key)
-    if (next === null) return
+    if (next === undefined) return
     event.preventDefault()
     chooseWithSound(THEME_STOPS[next], preference)
   }

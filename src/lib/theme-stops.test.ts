@@ -43,7 +43,7 @@ describe('theme stops', () => {
   test('Home and End jump, other keys do nothing', () => {
     expect(stopAfterKey(1, 'Home')).toBe(0)
     expect(stopAfterKey(1, 'End')).toBe(2)
-    expect(stopAfterKey(1, 'a')).toBeNull()
+    expect(stopAfterKey(1, 'a')).toBeUndefined()
   })
 
   test('a press maps to the third it lands in', () => {

@@ -170,9 +170,9 @@ const stats = [
 
 <script>
   import { nextCellIndex } from '../lib/github-grid-nav'
-  import { prefersReducedMotion } from '../lib/motion'
+  import { isMotionReduced } from '../lib/motion'
   import { startCountUp } from '../scripts/count-up'
-  import { mountGithubTile } from '../scripts/github-tile'
+  import { didMountGithubTile } from '../scripts/github-tile'
 
   function wireGridTips(root: HTMLElement): void {
     const grid = root.querySelector<HTMLElement>('[data-gh-grid]')
@@ -215,14 +215,14 @@ const stats = [
     '[data-github-grid]',
   )) {
     wireGridTips(root)
-    void mountGithubTile(root).then(() => {
+    void didMountGithubTile(root).then(() => {
       for (const target of root.querySelectorAll<HTMLElement>(
         '[data-count-total]',
       )) {
         const total = Number(target.dataset.countTotal)
         if (!Number.isFinite(total)) continue
         startCountUp(target, total, {
-          reducedMotion: prefersReducedMotion(globalThis),
+          reducedMotion: isMotionReduced(globalThis),
           locale: target.dataset.countLocale ?? 'en',
           requestFrame: (callback) => requestAnimationFrame(callback),
         })
