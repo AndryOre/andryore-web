@@ -35,8 +35,8 @@ function runGit(arguments_: string[]): GitResult {
  * @returns The merge-base commit SHA.
  */
 export function resolveCommitlintBase(git: GitRunner = runGit): string {
-  for (const mainRef of ['origin/main', 'main']) {
-    const result = git(['merge-base', mainRef, 'HEAD'])
+  for (const mainReference of ['origin/main', 'main']) {
+    const result = git(['merge-base', mainReference, 'HEAD'])
     if (result.ok) return result.output
   }
   throw new Error(

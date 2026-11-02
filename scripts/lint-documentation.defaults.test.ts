@@ -9,7 +9,10 @@ import {
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 
-import { ensureLycheeBinary, runDocumentationLint } from './lint-docs.ts'
+import {
+  ensureLycheeBinary,
+  runDocumentationLint,
+} from './lint-documentation.ts'
 
 function writeExecutable(file: string, body: string): void {
   writeFileSync(file, `#!/bin/sh\n${body}\n`)

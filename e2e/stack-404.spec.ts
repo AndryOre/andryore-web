@@ -98,19 +98,19 @@ for (const route of ['/does-not-exist/', '/es/404/']) {
     ])
       await expect(page.locator(selector)).toHaveCSS('z-index', '2')
     const covered = await page.evaluate(() => {
-      const doc = globalThis.document
+      const pageDocument = globalThis.document
       return [
-        ...doc.querySelectorAll('h1'),
-        ...doc.querySelectorAll('p'),
-        ...doc.querySelectorAll('.nf-button'),
-        ...doc
+        ...pageDocument.querySelectorAll('h1'),
+        ...pageDocument.querySelectorAll('p'),
+        ...pageDocument.querySelectorAll('.nf-button'),
+        ...pageDocument
           .querySelectorAll('.nf-code')
           .values()
           .flatMap((code) => code.querySelectorAll(':scope > span')),
       ]
         .map((element) => {
           const rect = element.getBoundingClientRect()
-          const top = doc.elementFromPoint(
+          const top = pageDocument.elementFromPoint(
             rect.left + rect.width / 2,
             rect.top + rect.height / 2,
           )
@@ -161,9 +161,9 @@ for (const viewport of SHORT_VIEWPORTS) {
     await page.goto('/')
     await settlePage(page)
     const layout = await page.evaluate(() => {
-      const doc = globalThis.document
+      const pageDocument = globalThis.document
       const rectOf = (selector: string) =>
-        doc.querySelector(selector)?.getBoundingClientRect()
+        pageDocument.querySelector(selector)?.getBoundingClientRect()
       const dock = rectOf('[data-dock-nav]')
       const chips = ['.floaty-clock', '[data-availability]']
         .map((selector) => rectOf(selector))
@@ -228,10 +228,12 @@ for (const width of STACK_PHONE_WIDTHS) {
         )
       }, offset)
       const found = await page.evaluate(() => {
-        const doc = globalThis.document
-        const title = doc.querySelector('.stack-title')?.getBoundingClientRect()
+        const pageDocument = globalThis.document
+        const title = pageDocument
+          .querySelector('.stack-title')
+          ?.getBoundingClientRect()
         return title
-          ? [...doc.querySelectorAll('.stack-tile-scatter')]
+          ? [...pageDocument.querySelectorAll('.stack-tile-scatter')]
               .map((tile) => tile.getBoundingClientRect())
               .filter(
                 (box) =>

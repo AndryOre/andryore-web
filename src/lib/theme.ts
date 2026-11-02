@@ -109,15 +109,15 @@ interface ThemeDocument {
  * Each meta carries `data-theme-color`; only the one matching the theme keeps
  * a media that matches, so the browser chrome follows the choice, not the
  * system.
- * @param doc The document to update.
+ * @param themeDocument The document to update.
  * @param theme The theme to paint.
  */
 export function applyResolvedTheme(
-  doc: ThemeDocument,
+  themeDocument: ThemeDocument,
   theme: ResolvedTheme,
 ): void {
-  doc.documentElement.classList.toggle('dark', theme === 'dark')
-  for (const meta of doc.querySelectorAll(
+  themeDocument.documentElement.classList.toggle('dark', theme === 'dark')
+  for (const meta of themeDocument.querySelectorAll(
     'meta[name="theme-color"][data-theme-color]',
   )) {
     meta.media = meta.dataset.themeColor === theme ? 'all' : 'not all'

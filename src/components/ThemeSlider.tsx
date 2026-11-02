@@ -18,7 +18,7 @@ import {
 } from '@/lib/theme-drag'
 import { stopAfterKey, THEME_STOPS } from '@/lib/theme-stops'
 import { chooseTheme } from '@/lib/theme-store'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utilities'
 
 import { useThemePreference, type ThemeToggleCopy } from './ThemeToggle'
 
