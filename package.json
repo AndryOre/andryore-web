@@ -55,7 +55,7 @@
     "eslint-plugin-jsdoc": "^65.4.2",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-unicorn": "^77",
+    "eslint-plugin-unicorn": "^79",
     "husky": "^9.1.7",
     "knip": "^6.44.1",
     "lint-staged": "^17.6.0",

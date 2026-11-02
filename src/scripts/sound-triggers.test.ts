@@ -33,9 +33,8 @@ const control = (options: FakeOptions = {}) => {
   return { target, inner }
 }
 
-type Listener = (event: TriggerEvent) => void
-
 const createHarness = () => {
+  type Listener = (event: TriggerEvent) => void
   const played: SoundEvent[] = []
   let loaded = 0
   const listeners = new Map<string, Listener>()
@@ -50,7 +49,7 @@ const createHarness = () => {
     },
     loadAvailability: () => {
       loaded += 1
-      return Promise.resolve(true)
+      return Promise.resolve()
     },
   })
   triggers.mount(root)

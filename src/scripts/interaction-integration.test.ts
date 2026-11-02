@@ -8,12 +8,11 @@ interface Directive {
   entrypoint: string | URL
 }
 
-type Setup = (options: {
-  addClientDirective: (directive: Directive) => void
-}) => void
-
 describe('interactionIntegration', () => {
   test('registers the interaction client directive', () => {
+    type Setup = (options: {
+      addClientDirective: (directive: Directive) => void
+    }) => void
     const registered: Directive[] = []
     const integration = interactionIntegration()
     const setup = integration.hooks['astro:config:setup'] as Setup
