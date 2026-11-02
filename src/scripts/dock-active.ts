@@ -5,14 +5,18 @@ import {
   type DockPageKey,
 } from '../lib/dock'
 
-/** The parts of a dock link the home scroll spy touches. */
+/**
+The parts of a dock link the home scroll spy touches.
+ */
 export interface DockAnchor {
   dataset: { dockPage?: string }
   setAttribute: (name: string, value: string) => void
   removeAttribute: (name: string) => void
 }
 
-/** A home section reported by the observer. */
+/**
+A home section reported by the observer.
+ */
 export interface SectionEntry {
   target: { id: string }
   isIntersecting: boolean

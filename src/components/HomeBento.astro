@@ -365,7 +365,7 @@ const builtWith = productUi[locale].builtWithHeading
 </div>
 
 <script>
-  import { prefersReducedMotion } from '../lib/motion'
+  import { isMotionReduced } from '../lib/motion'
   import { startCountUp } from '../scripts/count-up'
   import { observeVisibility } from '../scripts/in-view'
 
@@ -384,7 +384,7 @@ const builtWith = productUi[locale].builtWithHeading
       const total = Number(target.dataset.countInstalls)
       if (!Number.isFinite(total)) return
       startCountUp(target, total, {
-        reducedMotion: prefersReducedMotion(globalThis),
+        reducedMotion: isMotionReduced(globalThis),
         locale: target.dataset.countLocale ?? 'en',
         requestFrame: (callback) => requestAnimationFrame(callback),
       })

@@ -1,6 +1,8 @@
 import type { ThemePreference } from './theme'
 
-/** The slider stops from top to bottom, brightest first. */
+/**
+ * The slider stops from top to bottom, brightest first.
+ */
 export const THEME_STOPS: readonly ThemePreference[] = ['light', 'auto', 'dark']
 
 const STOP_LEVELS: Readonly<Record<ThemePreference, number>> = {
@@ -32,16 +34,16 @@ export function stopStrength(stop: ThemePreference): number {
  * right towards Light, as on the canvas brightness bar.
  * @param index The current stop index.
  * @param key The pressed key.
- * @returns The new index, or null when the key does not move the slider.
+ * @returns The new index, or undefined when the key does not move the slider.
  */
-export function stopAfterKey(index: number, key: string): number | null {
+export function stopAfterKey(index: number, key: string): number | undefined {
   const last = THEME_STOPS.length - 1
   if (key === 'ArrowDown' || key === 'ArrowLeft') {
     return Math.min(last, index + 1)
   }
   if (key === 'ArrowUp' || key === 'ArrowRight') return Math.max(0, index - 1)
   if (key === 'Home') return 0
-  return key === 'End' ? last : null
+  return key === 'End' ? last : undefined
 }
 
 /**

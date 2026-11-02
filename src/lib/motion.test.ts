@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 
 import {
-  prefersReducedMotion,
+  isMotionReduced,
   REVEAL_STAGGER_MS,
   revealClass,
   revealDelay,
@@ -35,20 +35,18 @@ describe('revealClass', () => {
   })
 })
 
-describe('prefersReducedMotion', () => {
+describe('isMotionReduced', () => {
   test('is true when the media query matches', () => {
-    expect(prefersReducedMotion({ matchMedia: matchesReducedMotion })).toBe(
-      true,
-    )
+    expect(isMotionReduced({ matchMedia: matchesReducedMotion })).toBe(true)
   })
 
   test('is false when it does not match', () => {
-    expect(
-      prefersReducedMotion({ matchMedia: () => ({ matches: false }) }),
-    ).toBe(false)
+    expect(isMotionReduced({ matchMedia: () => ({ matches: false }) })).toBe(
+      false,
+    )
   })
 
   test('is false without a window', () => {
-    expect(prefersReducedMotion()).toBe(false)
+    expect(isMotionReduced()).toBe(false)
   })
 })

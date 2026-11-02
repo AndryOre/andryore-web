@@ -32,7 +32,7 @@ const brand = icon.kind === 'brand' ? resolveIcon(icon.id) : undefined
 const lightUrl = brand ? brandUrls[brand.light] : undefined
 const darkUrl = brand ? brandUrls[brand.dark] : undefined
 const tintedSource = brand ? brandSources[brand.light] : undefined
-const splitMarks = lightUrl !== darkUrl
+const hasSplitMarks = lightUrl !== darkUrl
 const tintedHtml =
   tint && tintedSource ? tintSvg(tintedSource, size) : undefined
 const brandMarks =
@@ -59,11 +59,11 @@ const glyphHtml =
       alt=""
       width={size}
       height={size}
-      class:list={[splitMarks && 'dark:hidden']}
+      class:list={[hasSplitMarks && 'dark:hidden']}
       loading="lazy"
       decoding="async"
     />
-    {splitMarks && (
+    {hasSplitMarks && (
       <img
         src={brandMarks.darkUrl}
         alt=""

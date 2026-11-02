@@ -2,10 +2,14 @@ import uses from '../content/uses.json'
 import type { Locale } from '../i18n/locales'
 import type { IconId } from './icons'
 
-/** Pixel size of the three tile boxes at the canvas scale. */
+/**
+ * Pixel size of the three tile boxes at the canvas scale.
+ */
 export type TileSize = 96 | 84 | 72 | 60 | 56 | 48 | 44
 
-/** One decorative tile of a scattered field. */
+/**
+ * One decorative tile of a scattered field.
+ */
 export interface StackTile {
   id: GlowIconId
   size: TileSize
@@ -13,7 +17,9 @@ export interface StackTile {
   placement: string
 }
 
-/** One tile of the 404 panel. */
+/**
+ * One tile of the 404 panel.
+ */
 export interface NotFoundTile {
   id: GlowIconId
   size: TileSize
@@ -21,7 +27,9 @@ export interface NotFoundTile {
   delay: number
 }
 
-/** One tile of the end card. */
+/**
+ * One tile of the end card.
+ */
 export interface EndCardTile {
   id: GlowIconId
   tilt: string
@@ -60,7 +68,9 @@ export const GLOW_CLASSES = {
   bitwarden: '[--g:#175ddc]',
 } as const satisfies Partial<Record<IconId, string>>
 
-/** Icons that have a glow class. */
+/**
+ * Icons that have a glow class.
+ */
 export type GlowIconId = keyof typeof GLOW_CLASSES
 
 /**
@@ -246,7 +256,9 @@ export const STACK_TILES: readonly StackTile[] = [
   },
 ]
 
-/** The five tiles of the end card, each with its tilt. */
+/**
+ * The five tiles of the end card, each with its tilt.
+ */
 export const END_CARD_TILES: readonly EndCardTile[] = [
   { id: 'typescript', tilt: '-rotate-[7deg]' },
   { id: 'astro', tilt: 'rotate-[4deg]' },
@@ -336,7 +348,9 @@ export const NOT_FOUND_TILES: readonly NotFoundTile[] = [
   },
 ]
 
-/** Every bob delay the 404 tiles use, in seconds. */
+/**
+ * Every bob delay the 404 tiles use, in seconds.
+ */
 export const NOT_FOUND_DELAYS: readonly number[] = [
   ...new Set(NOT_FOUND_TILES.map((tile) => tile.delay)),
 ].toSorted((a, b) => a - b)

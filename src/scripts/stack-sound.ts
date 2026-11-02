@@ -1,4 +1,4 @@
-import { getFxStorage, readFx } from '../lib/fx-store'
+import { getFxStorage, isFxEnabled } from '../lib/fx-store'
 import type { PlayOptions, SoundEvent } from '../lib/sound-engine'
 import {
   createStackSoundMapper,
@@ -7,29 +7,39 @@ import {
 } from '../lib/stack-sound'
 import { soundTriggers } from './sound-triggers'
 
-/** The tile count at and below the 40rem breakpoint. */
+/**
+The tile count at and below the 40rem breakpoint.
+ */
 const COMPACT_TILE_COUNT = 12
 
-/** The tile count above the 40rem breakpoint. */
+/**
+The tile count above the 40rem breakpoint.
+ */
 const FULL_TILE_COUNT = 24
 
-/** The view the script reads: where the scene is and how tall the screen is. */
+/**
+The view the script reads: where the scene is and how tall the screen is.
+ */
 export interface StackSoundScene {
   getBoundingClientRect: () => { top: number; height: number }
 }
 
-/** A running observer the script can stop. */
+/**
+A running observer the script can stop.
+ */
 interface StackSoundObserver {
   observe: (target: StackSoundScene) => void
   disconnect: () => void
 }
 
-/** The browser pieces the script needs, replaceable in tests. */
+/**
+The browser pieces the script needs, replaceable in tests.
+ */
 export interface StackSoundDependencies {
   isSoundOn: () => boolean
   isUnlocked: () => boolean
   isHidden: () => boolean
-  prefersReducedMotion: () => boolean
+  isMotionReduced: () => boolean
   supportsScrollTimeline: () => boolean
   isCompact: () => boolean
   viewportHeight: () => number
@@ -56,12 +66,12 @@ export function mountStackSound(
   dependencies: StackSoundDependencies,
 ): () => void {
   const mapper = createStackSoundMapper()
-  let framePending = false
-  let attached = false
+  let isFramePending = false
+  let isAttached = false
 
   const canPlay = (): boolean =>
     dependencies.supportsScrollTimeline() &&
-    !dependencies.prefersReducedMotion() &&
+    !dependencies.isMotionReduced() &&
     !dependencies.isHidden() &&
     dependencies.isSoundOn() &&
     dependencies.isUnlocked()
@@ -88,26 +98,26 @@ export function mountStackSound(
   }
 
   const measure = (): void => {
-    framePending = false
+    isFramePending = false
     playCue(readCue())
   }
 
   const onScroll = (): void => {
-    if (framePending) return
-    framePending = true
+    if (isFramePending) return
+    isFramePending = true
     dependencies.requestFrame(measure)
   }
 
   const attach = (): void => {
-    if (attached) return
-    attached = true
+    if (isAttached) return
+    isAttached = true
     measure()
     dependencies.addScrollListener(onScroll)
   }
 
   const detach = (): void => {
-    if (!attached) return
-    attached = false
+    if (!isAttached) return
+    isAttached = false
     dependencies.removeScrollListener(onScroll)
   }
 
@@ -131,10 +141,10 @@ export function mountStackSound(
  */
 export function mountStackSoundInBrowser(scene: HTMLElement): () => void {
   return mountStackSound(scene, {
-    isSoundOn: () => readFx(getFxStorage()),
+    isSoundOn: () => isFxEnabled(getFxStorage()),
     isUnlocked: soundTriggers.isUnlocked,
     isHidden: () => document.hidden,
-    prefersReducedMotion: () =>
+    isMotionReduced: () =>
       globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches,
     supportsScrollTimeline: () => CSS.supports('animation-timeline: view()'),
     isCompact: () => globalThis.matchMedia('(max-width: 40rem)').matches,

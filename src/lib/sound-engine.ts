@@ -1,6 +1,8 @@
-import { getFxStorage, readFx } from './fx-store'
+import { getFxStorage, isFxEnabled } from './fx-store'
 
-/** The audio files of the Glass set, served from `/sounds/<name>.mp3`. */
+/**
+ * The audio files of the Glass set, served from `/sounds/<name>.mp3`.
+ */
 export const SOUND_FILES = [
   'click',
   'sel2',
@@ -17,14 +19,18 @@ export const SOUND_FILES = [
  */
 export type SoundFile = (typeof SOUND_FILES)[number]
 
-/** How an interface event is played: which file, how loud, how fast. */
+/**
+ * How an interface event is played: which file, how loud, how fast.
+ */
 interface SoundDefinition {
   file: SoundFile
   gain: number
   rate: number
 }
 
-/** The interface events mapped to the Glass set, as in the canvas. */
+/**
+ * The interface events mapped to the Glass set, as in the canvas.
+ */
 const SOUND_PACK = {
   hover: { file: 'click', gain: 0.16, rate: 1.25 },
   click: { file: 'click', gain: 1, rate: 1 },
@@ -44,7 +50,9 @@ const SOUND_PACK = {
  */
 export type SoundEvent = keyof typeof SOUND_PACK
 
-/** What the build step writes next to the audio files. */
+/**
+ * What the build step writes next to the audio files.
+ */
 export interface SoundManifest {
   sounds: readonly SoundFile[]
 }
@@ -55,7 +63,9 @@ export interface SoundManifest {
  */
 export type SoundAvailability = 'unknown' | 'available' | 'unavailable'
 
-/** The browser pieces the engine needs, replaceable in tests. */
+/**
+ * The browser pieces the engine needs, replaceable in tests.
+ */
 export interface SoundEngineDependencies {
   createContext: () => AudioContext | undefined
   fetch: (input: string) => Promise<Response>
@@ -65,12 +75,16 @@ export interface SoundEngineDependencies {
   supportsHover: () => boolean
 }
 
-/** Per-call overrides of how an event plays. */
+/**
+ * Per-call overrides of how an event plays.
+ */
 export interface PlayOptions {
   rate?: number
 }
 
-/** The public surface of the sound engine. */
+/**
+ * The public surface of the sound engine.
+ */
 export interface SoundEngine {
   getAvailability: () => SoundAvailability
   isAvailable: () => boolean
@@ -115,7 +129,7 @@ export function createSoundEngine(
   const buffers = new Map<SoundFile, Promise<AudioBuffer>>()
   const listeners = new Set<() => void>()
 
-  const settle = (next: SoundAvailability): boolean => {
+  const didSettle = (next: SoundAvailability): boolean => {
     availability = next
     listeners.forEach((listener) => {
       listener()
@@ -123,19 +137,19 @@ export function createSoundEngine(
     return next === 'available'
   }
 
-  const fetchAvailability = async (): Promise<boolean> => {
+  const isAvailableAfterFetch = async (): Promise<boolean> => {
     try {
       const response = await dependencies.fetch(MANIFEST_URL)
-      if (!response.ok) return settle('unavailable')
+      if (!response.ok) return didSettle('unavailable')
       const manifest: unknown = await response.json()
-      return settle(isSoundManifest(manifest) ? 'available' : 'unavailable')
+      return didSettle(isSoundManifest(manifest) ? 'available' : 'unavailable')
     } catch {
-      return settle('unavailable')
+      return didSettle('unavailable')
     }
   }
 
   const loadAvailability = (): Promise<boolean> => {
-    loading ??= fetchAvailability()
+    loading ??= isAvailableAfterFetch()
     return loading
   }
 
@@ -246,7 +260,7 @@ const browserDependencies: SoundEngineDependencies = {
   fetch: (input) => globalThis.fetch(input),
   now: () => performance.now(),
   isHidden: () => document.hidden,
-  isEnabled: () => readFx(getFxStorage()),
+  isEnabled: () => isFxEnabled(getFxStorage()),
   supportsHover: () =>
     globalThis.matchMedia('(hover: hover) and (pointer: fine)').matches,
 }

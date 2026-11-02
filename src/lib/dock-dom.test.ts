@@ -5,7 +5,7 @@ import {
   focusInitialItem,
   focusTrigger,
   magnifyItems,
-  moveInMenu,
+  didMoveInMenu,
   nextMenuIndex,
   shouldMagnify,
 } from './dock-dom'
@@ -44,9 +44,9 @@ describe('magnifyItems', () => {
   })
 })
 
-const windowWith = (hover: boolean, reduced: boolean) => ({
+const windowWith = (canHover: boolean, isReduced: boolean) => ({
   matchMedia: (query: string) => ({
-    matches: query.includes('reduce') ? reduced : hover,
+    matches: query.includes('reduce') ? isReduced : canHover,
   }),
 })
 
@@ -130,14 +130,14 @@ describe('menu focus', () => {
     expect(first.state.focused).toBe(1)
   })
 
-  test('moveInMenu moves focus and reports whether it handled the key', () => {
+  test('didMoveInMenu moves focus and reports whether it handled the key', () => {
     const one = fakeFocusable()
     const two = fakeFocusable()
     const root = fakeRoot({
       '[data-dock-menu="theme"] [role^="menuitem"]': [one, two],
     })
-    expect(moveInMenu(root, 'theme', 'ArrowDown', one)).toBe(true)
+    expect(didMoveInMenu(root, 'theme', 'ArrowDown', one)).toBe(true)
     expect(two.state.focused).toBe(1)
-    expect(moveInMenu(root, 'theme', 'x', one)).toBe(false)
+    expect(didMoveInMenu(root, 'theme', 'x', one)).toBe(false)
   })
 })

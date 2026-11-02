@@ -12,13 +12,17 @@ export function buildCommitlintCommand(base: string, head: string): string[] {
   return ['bunx', 'commitlint', '--from', base, '--to', head, '--verbose']
 }
 
-/** Result of a git invocation. */
+/**
+Result of a git invocation.
+ */
 export interface GitResult {
   ok: boolean
   output: string
 }
 
-/** Runs git with the given arguments. */
+/**
+Runs git with the given arguments.
+ */
 export type GitRunner = (arguments_: string[]) => GitResult
 
 function runGit(arguments_: string[]): GitResult {
@@ -35,8 +39,8 @@ function runGit(arguments_: string[]): GitResult {
  * @returns The merge-base commit SHA.
  */
 export function resolveCommitlintBase(git: GitRunner = runGit): string {
-  for (const mainRef of ['origin/main', 'main']) {
-    const result = git(['merge-base', mainRef, 'HEAD'])
+  for (const mainReference of ['origin/main', 'main']) {
+    const result = git(['merge-base', mainReference, 'HEAD'])
     if (result.ok) return result.output
   }
   throw new Error(
@@ -48,7 +52,9 @@ function exitCodeOf(code: number | null): number {
   return typeof code === 'number' ? code : 1
 }
 
-/** Injectable collaborators of {@link runLintCommits}. */
+/**
+Injectable collaborators of {@link runLintCommits}.
+ */
 export interface LintCommitsDependencies {
   git: GitRunner
   spawnCommand: (command: string, commandArguments: string[]) => Promise<number>

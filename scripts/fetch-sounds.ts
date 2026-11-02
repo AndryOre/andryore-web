@@ -14,7 +14,9 @@ interface ContentEntry {
   url: string
 }
 
-/** What the fetch step needs, replaceable in tests. */
+/**
+What the fetch step needs, replaceable in tests.
+ */
 export interface FetchSoundsOptions {
   repo: string
   ref: string
@@ -23,7 +25,9 @@ export interface FetchSoundsOptions {
   fetch?: (input: string, init: RequestInit) => Promise<Response>
 }
 
-/** The process pieces `main` reads, replaceable in tests. */
+/**
+The process pieces `main` reads, replaceable in tests.
+ */
 export interface MainEnvironment {
   env: Readonly<Record<string, string | undefined>>
   secretPath?: string
@@ -131,9 +135,11 @@ export async function main(environment: MainEnvironment): Promise<number> {
     error('fetch-sounds: SOUNDS_REPO is required when a token is provided')
     return 1
   }
-  const requestedRef = environment.env.SOUNDS_REF?.trim()
+  const requestedReference = environment.env.SOUNDS_REF?.trim()
   const ref =
-    requestedRef === undefined || requestedRef === '' ? 'main' : requestedRef
+    requestedReference === undefined || requestedReference === ''
+      ? 'main'
+      : requestedReference
   try {
     const written = await fetchSounds({
       repo: repository,

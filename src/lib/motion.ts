@@ -1,4 +1,6 @@
-/** Delay between consecutive items of a staggered reveal, in milliseconds. */
+/**
+ * Delay between consecutive items of a staggered reveal, in milliseconds.
+ */
 export const REVEAL_STAGGER_MS = 60
 
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
@@ -48,7 +50,7 @@ export function revealClass(index: number): (typeof REVEAL_CLASSES)[number] {
  * @param win Anything with a `matchMedia`, defaults to no preference.
  * @returns True when reduced motion is requested.
  */
-export function prefersReducedMotion(
+export function isMotionReduced(
   win?: Readonly<{ matchMedia: (query: string) => { matches: boolean } }>,
 ): boolean {
   return win?.matchMedia(REDUCED_MOTION_QUERY).matches ?? false

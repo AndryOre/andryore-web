@@ -29,7 +29,7 @@ export interface ObserveVisibilityOptions {
  */
 export function observeVisibility<Target extends object>(
   targets: readonly Target[],
-  onChange: (target: Target, visible: boolean) => void,
+  onChange: (target: Target, isVisible: boolean) => void,
   options: ObserveVisibilityOptions,
 ): void {
   const { createObserver, once = false } = options

@@ -4,7 +4,9 @@ import { localePath, type Locale } from '../i18n/locales'
 import { GLYPH_BODIES, type GlyphName } from './glyphs'
 import { ICONS, type IconId } from './icons'
 
-/** Lifecycle states a product pill can show. */
+/**
+ * Lifecycle states a product pill can show.
+ */
 const PRODUCT_STATES = ['live', 'beta', 'contribution'] as const
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
@@ -203,7 +205,9 @@ export function productPath(locale: Locale, key: string): string {
   return localePath(locale, `/products/${key}/`)
 }
 
-/** The kinds of call to action a product header can carry. */
+/**
+ * The kinds of call to action a product header can carry.
+ */
 export type HeaderLinkId =
   | 'website'
   | 'source'
@@ -216,7 +220,9 @@ export interface HeaderLink {
   href: string
 }
 
-/** The links a product can carry, as the schema defines them. */
+/**
+ * The links a product can carry, as the schema defines them.
+ */
 export interface ProductLinkSet {
   npm?: string | undefined
   chromeWebStore?: string | undefined
@@ -277,7 +283,7 @@ export function countableStat(
   return { total: Number(digits.replaceAll(/[.,]/g, '')), suffix }
 }
 
-export type ProductIconRef =
+export type ProductIconReference =
   | { kind: 'brand'; id: IconId }
   | { kind: 'glyph'; name: GlyphName }
 
@@ -287,7 +293,7 @@ export type ProductIconRef =
  * @param name The icon name as written in the product file.
  * @returns A tagged reference, or `undefined` when the name is in neither set.
  */
-export function classifyIcon(name: string): ProductIconRef | undefined {
+export function classifyIcon(name: string): ProductIconReference | undefined {
   const brandIds: readonly string[] = Object.keys(ICONS)
   if (brandIds.includes(name)) return { kind: 'brand', id: name as IconId }
   const glyphNames: readonly string[] = Object.keys(GLYPH_BODIES)
@@ -385,7 +391,9 @@ export function productMetaLabel(year: string, version?: string): string {
   return [year, version].filter(Boolean).join(' · ')
 }
 
-/** One stack entry of a product card meta row. */
+/**
+ * One stack entry of a product card meta row.
+ */
 export interface StackMetaItem {
   readonly label: string
   readonly iconId?: IconId

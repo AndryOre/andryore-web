@@ -1,11 +1,13 @@
 import {
   getFxStorage,
-  readFx,
+  isFxEnabled,
   subscribeFx,
   type FxStorage,
 } from '../lib/fx-store'
 
-/** The parts of the dock Sound switch the pre-hydration paint touches. */
+/**
+The parts of the dock Sound switch the pre-hydration paint touches.
+ */
 export interface DockSoundElement {
   setAttribute: (name: string, value: string) => void
 }
@@ -23,7 +25,7 @@ export function mountDockSoundState(
 ): void {
   if (!element) return
   const paint = (): void => {
-    element.setAttribute('aria-checked', String(readFx(storage)))
+    element.setAttribute('aria-checked', String(isFxEnabled(storage)))
   }
   paint()
   subscribeFx(paint)

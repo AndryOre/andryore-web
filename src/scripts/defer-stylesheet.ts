@@ -1,4 +1,6 @@
-/** Marks an element that carries the URL of a stylesheet to load later. */
+/**
+Marks an element that carries the URL of a stylesheet to load later.
+ */
 export const DEFERRED_STYLESHEET_SELECTOR = '[data-defer-stylesheet]'
 
 export interface StylesheetLink {

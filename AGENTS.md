@@ -148,6 +148,12 @@ never disable the rule file-wide or project-wide:
   tools that use its JS API. ESLint (`.astro` only) uses
   `--cache --cache-strategy content`, so a stale cache is never a reason to
   delete files: run `bun run lint` again.
+- Four `unicorn` design-choice rules are on, in Oxlint and in ESLint with the
+  same values: `single-line-block-comment-style`, `consistent-boolean-name`,
+  `no-null` and `name-replacements`. Do not rename `props`, `Props`, `ref` or
+  `Ref`; `no-null` is off only in tests and `e2e/**`
+  ([ADR 0023](docs/adr/0023-oxc-toolchain-and-typescript-7-1.md)). Fix a finding
+  by renaming or returning `undefined`, never by disabling the rule.
 - Bun is pinned to `1.4.2` (`packageManager` and `engines`).
 - Oxfmt wraps prose always; run `bun run fix` instead of reflowing by hand.
 - Actions are SHA-pinned and workflows are linted; edit them with care:

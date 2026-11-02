@@ -1,4 +1,6 @@
-/** Length of the one-time counter animation, in milliseconds. */
+/**
+Length of the one-time counter animation, in milliseconds.
+ */
 export const COUNT_UP_DURATION_MS = 900
 
 interface TextTarget {

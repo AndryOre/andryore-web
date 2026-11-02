@@ -1,13 +1,19 @@
-/** The localStorage key of the Sound preference. */
+/**
+The localStorage key of the Sound preference.
+ */
 export const FX_STORAGE_KEY = 'ao-fx2'
 
-/** The slice of `Storage` the Sound preference needs. */
+/**
+The slice of `Storage` the Sound preference needs.
+ */
 export interface FxStorage {
   getItem: (key: string) => string | null
   setItem: (key: string, value: string) => void
 }
 
-/** The event dispatched on the window whenever the Sound choice changes. */
+/**
+The event dispatched on the window whenever the Sound choice changes.
+ */
 const FX_CHANGE_EVENT = 'ao-fx-change'
 
 const noop = (): void => {
@@ -41,7 +47,7 @@ export function getFxStorage(
  * @param storage The storage to read, if any.
  * @returns True only when the stored value is "on".
  */
-export function readFx(storage: FxStorage | undefined): boolean {
+export function isFxEnabled(storage: FxStorage | undefined): boolean {
   if (!storage || memory.unsaved) return memory.enabled
   try {
     return storage.getItem(FX_STORAGE_KEY) === 'on'
@@ -53,30 +59,30 @@ export function readFx(storage: FxStorage | undefined): boolean {
 /**
  * Mirrors the Sound choice on `<html data-fx>`, which the dock reads before it
  * hydrates. The inline theme script sets it on load.
- * @param enabled Whether Sound is on.
+ * @param isEnabled Whether Sound is on.
  */
-function paintFxRoot(enabled: boolean): void {
+function paintFxRoot(isEnabled: boolean): void {
   if (typeof document === 'undefined') return
-  document.documentElement.dataset.fx = enabled ? 'on' : 'off'
+  document.documentElement.dataset.fx = isEnabled ? 'on' : 'off'
 }
 
 /**
  * Stores the Sound choice, keeping it in memory when storage fails.
  * @param storage The storage to write, if any.
- * @param enabled Whether Sound is on.
+ * @param isEnabled Whether Sound is on.
  */
 export function writeFx(
   storage: FxStorage | undefined,
-  enabled: boolean,
+  isEnabled: boolean,
 ): void {
-  memory.enabled = enabled
+  memory.enabled = isEnabled
   try {
-    storage?.setItem(FX_STORAGE_KEY, enabled ? 'on' : 'off')
+    storage?.setItem(FX_STORAGE_KEY, isEnabled ? 'on' : 'off')
     memory.unsaved = false
   } catch {
     memory.unsaved = true
   } finally {
-    paintFxRoot(enabled)
+    paintFxRoot(isEnabled)
     if (typeof globalThis.dispatchEvent === 'function')
       globalThis.dispatchEvent(new Event(FX_CHANGE_EVENT))
   }

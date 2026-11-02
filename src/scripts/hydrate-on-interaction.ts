@@ -1,6 +1,8 @@
 import type { ClientDirective } from 'astro'
 
-/** Events that count as the first interaction with an island. */
+/**
+Events that count as the first interaction with an island.
+ */
 export const INTERACTION_EVENTS = [
   'pointerover',
   'pointerdown',
@@ -8,7 +10,9 @@ export const INTERACTION_EVENTS = [
   'touchstart',
 ] as const
 
-/** The fields of a `pointerdown` needed to replay it after hydration. */
+/**
+The fields of a `pointerdown` needed to replay it after hydration.
+ */
 export interface PointerDownRecord {
   target: EventTarget | null
   init: PointerEventInit
@@ -17,9 +21,10 @@ export interface PointerDownRecord {
 type Hydrate = () => Promise<void>
 
 const isClickable = (
-  target: EventTarget | null,
+  target: EventTarget | null | undefined,
 ): target is EventTarget & { click: () => void; isConnected: boolean } =>
   target !== null &&
+  target !== undefined &&
   'click' in target &&
   typeof target.click === 'function' &&
   'isConnected' in target
@@ -71,11 +76,15 @@ export async function hydrateOnInteraction(
   root: EventTarget,
   load: () => Promise<Hydrate>,
 ): Promise<void> {
-  const earlyClick: { target: EventTarget | null } = { target: null }
-  const recordClick = (event: Event): void => {
-    earlyClick.target = event.target
+  const earlyClick: { target: EventTarget | undefined } = {
+    target: undefined,
   }
-  const earlyPress: { record: PointerDownRecord | null } = { record: null }
+  const recordClick = (event: Event): void => {
+    earlyClick.target = event.target ?? undefined
+  }
+  const earlyPress: { record: PointerDownRecord | undefined } = {
+    record: undefined,
+  }
   const recordPress = (event: Event): void => {
     earlyPress.record ??= recordPointerDown(event)
   }

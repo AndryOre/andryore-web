@@ -26,6 +26,7 @@ import {
   type Finding,
   type FindingsDiff,
 } from './diff'
+import { resolveEquivalences } from './equivalences'
 
 const REPO_ROOT = path.resolve(import.meta.dirname, '..')
 const PARITY_DIR = import.meta.dirname
@@ -423,9 +424,14 @@ function reportSection(
     ? section.eslintFindings
     : section.eslintFindings.filter((item) => !typeAwareRules.has(item.rule))
   const diff: FindingsDiff = diffFindings(comparable, section.oxlintFindings)
-  const gate = resolveGate(diff.eslintOnly, accepted)
+  const equivalence = resolveEquivalences(
+    diff.eslintOnly,
+    section.oxlintFindings,
+  )
+  const gate = resolveGate(equivalence.remaining, accepted)
   printList('Common', diff.common)
   printList('Oxlint-only', diff.oxlintOnly)
+  printList('ESLint-only, covered by equivalence', equivalence.covered)
   printList('ESLint-only, accepted', gate.explained)
   printList('ESLint-only, UNEXPLAINED', gate.unexplained)
   for (const entry of gate.stale) {
@@ -435,7 +441,7 @@ function reportSection(
   }
   return {
     exitCode: problemExit === 1 || gate.exitCode === 1 ? 1 : 0,
-    payload: { diff, gate, problems: section.problems },
+    payload: { diff, equivalence, gate, problems: section.problems },
   }
 }
 

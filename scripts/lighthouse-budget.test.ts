@@ -111,7 +111,7 @@ describe('parseReport', () => {
   })
 
   test('keeps a null score null', () => {
-    expect(parseReport(report(null)).scores.seo).toBeNull()
+    expect(parseReport(report(null)).scores.seo).toBeUndefined()
   })
 })
 
@@ -123,7 +123,7 @@ describe('summarizeRuns', () => {
 
   test('a null in any run makes the category null', () => {
     const runs = [parseReport(report(0.99)), parseReport(report(null))]
-    expect(summarizeRuns(runs).scores.accessibility).toBeNull()
+    expect(summarizeRuns(runs).scores.accessibility).toBeUndefined()
   })
 })
 
@@ -138,7 +138,7 @@ describe('findFailures', () => {
     const failures = findFailures([
       {
         path: '/es/',
-        scores: { ...PASSING, seo: 89, performance: null },
+        scores: { ...PASSING, seo: 89, performance: undefined },
         totalBytes: 1,
       },
     ])
@@ -208,8 +208,8 @@ describe('resolveStaticFile', () => {
     expect(resolveStaticFile(directory, '/')).toBe(
       path.join(directory, 'index.html'),
     )
-    expect(resolveStaticFile(directory, '/missing/')).toBeNull()
-    expect(resolveStaticFile(directory, '/../etc/passwd')).toBeNull()
+    expect(resolveStaticFile(directory, '/missing/')).toBeUndefined()
+    expect(resolveStaticFile(directory, '/../etc/passwd')).toBeUndefined()
   })
 
   test('blocks a sibling directory that shares the dist prefix', () => {
@@ -221,7 +221,7 @@ describe('resolveStaticFile', () => {
     writeFileSync(path.join(sibling, 'secret.txt'), 'secret')
     expect(
       resolveStaticFile(distribution, '/..%2Fdist-other/secret.txt'),
-    ).toBeNull()
+    ).toBeUndefined()
   })
 })
 

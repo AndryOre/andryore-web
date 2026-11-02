@@ -1,6 +1,8 @@
 export const LOCALE_SCROLL_KEY = 'locale-scroll'
 
-/** Selectors of the page sections a language switch can anchor to. */
+/**
+Selectors of the page sections a language switch can anchor to.
+ */
 const LOCALE_SCROLL_ANCHORS: ReadonlySet<string> = new Set([
   '#products',
   '[data-slot="stack-scene"]',
@@ -61,7 +63,7 @@ export function pickAnchor(
  * @returns The entry, or undefined when it is missing or invalid.
  */
 export function parseLocaleScroll(
-  raw: string | null,
+  raw: string | null | undefined,
 ): LocaleScrollEntry | undefined {
   if (!raw) return undefined
   try {
@@ -100,18 +102,18 @@ export function parseLocaleScroll(
  * Records where the reader is before a language switch navigates away.
  * @param storage Session storage.
  * @param win The window, for the scroll position.
- * @param doc The document, to measure the anchor sections.
+ * @param scrollDocument The document, to measure the anchor sections.
  * @param to Pathname of the other-language page being opened.
  */
 export function saveLocaleScroll(
   storage: ScrollStorage,
   win: ScrollWindow,
-  doc: ScrollDocument,
+  scrollDocument: ScrollDocument,
   to: string,
 ): void {
   const boxes: AnchorBox[] = []
   for (const selector of LOCALE_SCROLL_ANCHORS) {
-    const rect = doc.querySelector(selector)?.getBoundingClientRect()
+    const rect = scrollDocument.querySelector(selector)?.getBoundingClientRect()
     if (rect) boxes.push({ selector, top: rect.top, bottom: rect.bottom })
   }
   const entry: LocaleScrollEntry = {
@@ -131,19 +133,19 @@ export function saveLocaleScroll(
  * navigated to. The entry is always consumed.
  * @param storage Session storage.
  * @param win The window to scroll.
- * @param doc The document, to find the anchor section.
+ * @param scrollDocument The document, to find the anchor section.
  * @param pathname Pathname of the page that just loaded.
  * @returns Whether the page was scrolled.
  */
-export function restoreLocaleScroll(
+export function didRestoreLocaleScroll(
   storage: ScrollStorage,
   win: ScrollWindow,
-  doc: ScrollDocument,
+  scrollDocument: ScrollDocument,
   pathname: string,
 ): boolean {
-  let raw: string | null = null
+  let raw: string | undefined
   try {
-    raw = storage.getItem(LOCALE_SCROLL_KEY)
+    raw = storage.getItem(LOCALE_SCROLL_KEY) ?? undefined
     storage.removeItem(LOCALE_SCROLL_KEY)
   } catch {
     return false
@@ -151,7 +153,9 @@ export function restoreLocaleScroll(
   const entry = parseLocaleScroll(raw)
   if (entry?.to !== pathname) return false
   const rect = entry.anchor
-    ? doc.querySelector(entry.anchor.selector)?.getBoundingClientRect()
+    ? scrollDocument
+        .querySelector(entry.anchor.selector)
+        ?.getBoundingClientRect()
     : undefined
   const top = rect
     ? rect.top + win.scrollY + (entry.anchor?.offset ?? 0)

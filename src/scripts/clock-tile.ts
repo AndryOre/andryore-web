@@ -1,6 +1,8 @@
 import { formatClock, greetingPeriod, type GreetingPeriod } from '../lib/clock'
 
-/** How often the clock tile refreshes, in milliseconds. */
+/**
+How often the clock tile refreshes, in milliseconds.
+ */
 export const CLOCK_INTERVAL_MS = 30_000
 
 interface TextTarget {

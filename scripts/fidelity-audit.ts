@@ -352,7 +352,7 @@ function collectTexts(query: TextQuery): string[] {
   const root = globalThis.document.querySelector(query.scope)
   if (!root) return []
   const found: string[] = []
-  const skip = (element: Element | null): boolean =>
+  const shouldSkip = (element: Element | null): boolean =>
     element !== null &&
     (['SCRIPT', 'STYLE', 'NOSCRIPT'].includes(element.tagName) ||
       (query.exclude !== '' && element.closest(query.exclude) !== null))
@@ -362,10 +362,10 @@ function collectTexts(query: TextQuery): string[] {
   )
   for (let node = walker.nextNode(); node; node = walker.nextNode()) {
     const text = node.textContent?.trim() ?? ''
-    if (text !== '' && !skip(node.parentElement)) found.push(text)
+    if (text !== '' && !shouldSkip(node.parentElement)) found.push(text)
   }
   for (const element of root.querySelectorAll('[aria-label],[alt]')) {
-    if (skip(element)) continue
+    if (shouldSkip(element)) continue
     for (const name of ['aria-label', 'alt']) {
       const value = element.getAttribute(name)?.trim()
       if (value) found.push(value)
@@ -891,14 +891,20 @@ async function auditLayout(
             language,
             theme,
           })
-          for (const scrolled of [false, true]) {
-            if (scrolled) {
+          for (const isScrolled of [false, true]) {
+            if (isScrolled) {
               await page.evaluate(() => {
                 globalThis.scrollTo(0, 400)
               })
               await page.waitForTimeout(150)
             }
-            const state = { route, language, theme, width, scrolled }
+            const state = {
+              route,
+              language,
+              theme,
+              width,
+              scrolled: isScrolled,
+            }
             const findings = await findHorizontalOverflow(page)
             overflow.push(
               ...findings.map((finding) => describeOverflow(state, finding)),

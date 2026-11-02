@@ -50,8 +50,8 @@ describe('nextPhraseStep', () => {
   })
 })
 
-const options = (reducedMotion: boolean, queue: (() => void)[]) => ({
-  reducedMotion,
+const options = (isReducedMotion: boolean, queue: (() => void)[]) => ({
+  reducedMotion: isReducedMotion,
   random: () => 0,
   schedule: (callback: () => void) => {
     queue.push(callback)

@@ -170,17 +170,17 @@ const stats = [
 
 <script>
   import { nextCellIndex } from '../lib/github-grid-nav'
-  import { prefersReducedMotion } from '../lib/motion'
+  import { isMotionReduced } from '../lib/motion'
   import { startCountUp } from '../scripts/count-up'
-  import { mountGithubTile } from '../scripts/github-tile'
+  import { didMountGithubTile } from '../scripts/github-tile'
 
   function wireGridTips(root: HTMLElement): void {
     const grid = root.querySelector<HTMLElement>('[data-gh-grid]')
     if (!grid) return
     grid.tabIndex = 0
-    let active: HTMLElement | null = null
+    let active: HTMLElement | undefined
     const cells = () => [...grid.querySelectorAll<HTMLElement>('i')]
-    const show = (cell: HTMLElement | null): void => {
+    const show = (cell?: HTMLElement): void => {
       if (active === cell) return
       active?.removeAttribute('data-active')
       active = cell
@@ -189,25 +189,25 @@ const stats = [
     grid.addEventListener('pointerdown', (event) => {
       if (event.pointerType === 'mouse') return
       const cell = (event.target as Element).closest<HTMLElement>('i')
-      show(cell && grid.contains(cell) ? cell : null)
+      show(cell && grid.contains(cell) ? cell : undefined)
     })
     document.addEventListener('pointerdown', (event) => {
-      if (!grid.contains(event.target as Node)) show(null)
+      if (!grid.contains(event.target as Node)) show()
     })
     grid.addEventListener('focus', () => {
       if (!grid.matches(':focus-visible')) return
-      show(active ?? cells()[0] ?? null)
+      show(active ?? cells()[0])
     })
     grid.addEventListener('blur', () => {
-      show(null)
+      show()
     })
     grid.addEventListener('keydown', (event) => {
       const all = cells()
       const current = active ? all.indexOf(active) : 0
       const next = nextCellIndex(current, event.key, all.length)
-      if (next === null) return
+      if (typeof next !== 'number') return
       event.preventDefault()
-      show(all[next] ?? null)
+      show(all[next])
     })
   }
 
@@ -215,14 +215,14 @@ const stats = [
     '[data-github-grid]',
   )) {
     wireGridTips(root)
-    void mountGithubTile(root).then(() => {
+    void didMountGithubTile(root).then(() => {
       for (const target of root.querySelectorAll<HTMLElement>(
         '[data-count-total]',
       )) {
         const total = Number(target.dataset.countTotal)
         if (!Number.isFinite(total)) continue
         startCountUp(target, total, {
-          reducedMotion: prefersReducedMotion(globalThis),
+          reducedMotion: isMotionReduced(globalThis),
           locale: target.dataset.countLocale ?? 'en',
           requestFrame: (callback) => requestAnimationFrame(callback),
         })

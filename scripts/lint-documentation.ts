@@ -23,7 +23,7 @@ export const LYCHEE_VERSION = 'v0.24.2'
 
 /**
  * The `lycheeverse/lychee-action` version pinned in
- * `.github/workflows/lint-docs.yml`. `scripts/lint-docs.test.ts` asserts the
+ * `.github/workflows/lint-docs.yml`. `scripts/lint-documentation.test.ts` asserts the
  * workflow still pins it, so bumping the action fails the test until
  * {@link LYCHEE_VERSION} is re-checked against the new action default.
  */
@@ -83,7 +83,9 @@ export function buildLycheeCacheRelativePath(version: string): string {
   return path.join('lychee', version, 'lychee')
 }
 
-/** Injectable collaborators of {@link ensureLycheeBinary}. */
+/**
+Injectable collaborators of {@link ensureLycheeBinary}.
+ */
 export interface LycheeBinaryDependencies {
   resolveCacheRoot: () => string
   fetchArchive: (url: string) => Promise<Response>
@@ -212,7 +214,9 @@ function spawnInherited(
   })
 }
 
-/** A Markdown link whose target is a gitignored path. */
+/**
+A Markdown link whose target is a gitignored path.
+ */
 export interface IgnoredLink {
   file: string
   target: string

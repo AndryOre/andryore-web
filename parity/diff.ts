@@ -47,8 +47,64 @@ function uniqueSorted(findings: readonly Finding[]): Finding[] {
 }
 
 /**
- * Splits two finding sets by exact `(file, line, rule)` identity. Duplicates
- * collapse and every list comes back sorted, so output is deterministic.
+ * Pseudo rule id for "unused disable directive" reports: ESLint emits them
+ * without a rule id, Oxlint with an empty code, and both are enforced
+ * (`reportUnusedDisableDirectives`).
+ */
+export const UNUSED_DIRECTIVE_RULE = 'unused-disable-directive'
+
+/**
+ * Rules whose findings match by file, rule and count instead of line.
+ *
+ * Both engines report an unused disable directive, but anchor it differently:
+ * ESLint at the directive, Oxlint at the closing `eslint-enable`. The finding
+ * is the same and the position is not configurable, so the line is ignored
+ * and only the per-file count has to agree.
+ */
+const POSITION_INSENSITIVE_RULES: ReadonlySet<string> = new Set([
+  UNUSED_DIRECTIVE_RULE,
+])
+
+const isPositionInsensitive = (finding: Finding): boolean =>
+  POSITION_INSENSITIVE_RULES.has(finding.rule)
+
+const fileRuleKey = (finding: Finding): string =>
+  `${finding.file}\0${finding.rule}`
+
+function groupByFileRule(findings: readonly Finding[]): Map<string, Finding[]> {
+  const groups = new Map<string, Finding[]>()
+  for (const item of findings.toSorted(compareFindings)) {
+    const group = groups.get(fileRuleKey(item)) ?? []
+    group.push(item)
+    groups.set(fileRuleKey(item), group)
+  }
+  return groups
+}
+
+function diffPositionInsensitive(
+  eslint: readonly Finding[],
+  oxlint: readonly Finding[],
+): FindingsDiff {
+  const eslintGroups = groupByFileRule(eslint)
+  const oxlintGroups = groupByFileRule(oxlint)
+  const keys = new Set([...eslintGroups.keys(), ...oxlintGroups.keys()])
+  const diff: FindingsDiff = { common: [], eslintOnly: [], oxlintOnly: [] }
+  for (const key of keys) {
+    const eslintGroup = eslintGroups.get(key) ?? []
+    const oxlintGroup = oxlintGroups.get(key) ?? []
+    const paired = Math.min(eslintGroup.length, oxlintGroup.length)
+    diff.common.push(...eslintGroup.slice(0, paired))
+    diff.eslintOnly.push(...eslintGroup.slice(paired))
+    diff.oxlintOnly.push(...oxlintGroup.slice(paired))
+  }
+  return diff
+}
+
+/**
+ * Splits two finding sets by `(file, line, rule)` identity, except for the
+ * `POSITION_INSENSITIVE_RULES`, which match by `(file, rule)` and count.
+ * Duplicates of line-sensitive findings collapse and every list comes back
+ * sorted, so output is deterministic.
  * @param eslint - Findings reported by ESLint.
  * @param oxlint - Findings reported by Oxlint, in ESLint rule ids.
  * @returns The findings split into common, ESLint-only and Oxlint-only.
@@ -57,17 +113,32 @@ export function diffFindings(
   eslint: readonly Finding[],
   oxlint: readonly Finding[],
 ): FindingsDiff {
-  const eslintUnique = uniqueSorted(eslint)
-  const oxlintUnique = uniqueSorted(oxlint)
+  const eslintUnique = uniqueSorted(
+    eslint.filter((item) => !isPositionInsensitive(item)),
+  )
+  const oxlintUnique = uniqueSorted(
+    oxlint.filter((item) => !isPositionInsensitive(item)),
+  )
   const eslintKeys = new Set(eslintUnique.map((item) => findingKey(item)))
   const oxlintKeys = new Set(oxlintUnique.map((item) => findingKey(item)))
+  const loose = diffPositionInsensitive(
+    eslint.filter((item) => isPositionInsensitive(item)),
+    oxlint.filter((item) => isPositionInsensitive(item)),
+  )
+  const merge = (strict: Finding[], extra: Finding[]): Finding[] =>
+    [...strict, ...extra].toSorted(compareFindings)
   return {
-    common: eslintUnique.filter((item) => oxlintKeys.has(findingKey(item))),
-    eslintOnly: eslintUnique.filter(
-      (item) => !oxlintKeys.has(findingKey(item)),
+    common: merge(
+      eslintUnique.filter((item) => oxlintKeys.has(findingKey(item))),
+      loose.common,
     ),
-    oxlintOnly: oxlintUnique.filter(
-      (item) => !eslintKeys.has(findingKey(item)),
+    eslintOnly: merge(
+      eslintUnique.filter((item) => !oxlintKeys.has(findingKey(item))),
+      loose.eslintOnly,
+    ),
+    oxlintOnly: merge(
+      oxlintUnique.filter((item) => !eslintKeys.has(findingKey(item))),
+      loose.oxlintOnly,
     ),
   }
 }
@@ -189,13 +260,6 @@ export function normalizeOxlintRule(code: string): string {
     : (OXLINT_PLUGIN_PREFIX[plugin] ?? `${plugin}/`)
   return `${prefix}${rule}`
 }
-
-/**
- * Pseudo rule id for "unused disable directive" reports: ESLint emits them
- * without a rule id, Oxlint with an empty code, and both are enforced
- * (`reportUnusedDisableDirectives`).
- */
-export const UNUSED_DIRECTIVE_RULE = 'unused-disable-directive'
 
 const UNUSED_DIRECTIVE_MESSAGE =
   /^Unused (?:eslint|oxlint)-(?:disable|enable) directive/

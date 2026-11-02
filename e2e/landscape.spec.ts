@@ -41,12 +41,12 @@ for (const route of ROUTES) {
           for (const target of targets) {
             const box = target.getBoundingClientRect()
             if (box.width === 0 || box.height === 0) continue
-            const overlaps =
+            const isOverlaps =
               box.left < dockBox.right &&
               box.right > dockBox.left &&
               box.top < dockBox.bottom &&
               box.bottom > dockBox.top
-            if (!overlaps) continue
+            if (!isOverlaps) continue
             const hit = globalThis.document.elementFromPoint(
               Math.min(
                 Math.max(box.left + box.width / 2, 0),

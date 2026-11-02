@@ -84,8 +84,8 @@ const hasFormatsCard =
   formatGroups.length > 0 ||
   data.skinTones ||
   data.platformNote !== undefined
-const showFrame = isContribution && data.website !== undefined
-const showWebsiteTile = !isContribution && data.website !== undefined
+const shouldShowFrame = isContribution && data.website !== undefined
+const shouldShowWebsiteTile = !isContribution && data.website !== undefined
 const backHref = localePath(locale, '/#products')
 ---
 
@@ -159,7 +159,7 @@ const backHref = localePath(locale, '/#products')
       aria-label={ui.heroLabel}
       data-product-hero
     >
-      {showFrame && (
+      {shouldShowFrame && (
         <div
           class="flex items-center gap-3 border-b border-border bg-muted px-4 py-2"
           aria-hidden="true"
@@ -429,7 +429,7 @@ const backHref = localePath(locale, '/#products')
         {data.stack.map((item) => {
           const iconId = stackIconId(item)
           const href = stackHref(item)
-          const darkGlyph = !stackBadgeClass(item).includes('text-white')
+          const isDarkGlyph = !stackBadgeClass(item).includes('text-white')
           const badgeClass = [
             'group inline-flex h-[34px] items-center gap-2 rounded-md pr-3 pl-2.5 font-mono text-xs font-bold tracking-[0.06em] uppercase no-underline',
             stackBadgeClass(item),
@@ -441,7 +441,7 @@ const backHref = localePath(locale, '/#products')
                   name={iconId}
                   size={16}
                   class:list={[
-                    darkGlyph
+                    isDarkGlyph
                       ? '[&_img]:brightness-0'
                       : '[&_img]:brightness-0 [&_img]:invert',
                   ]}
@@ -499,7 +499,7 @@ const backHref = localePath(locale, '/#products')
       </section>
     )}
 
-    {showWebsiteTile && data.website && (
+    {shouldShowWebsiteTile && data.website && (
       <section class:list={['reveal', revealClass(7), sectionClass]}>
         <h2 class={headingClass}>{ui.websiteHeading}</h2>
         <a
@@ -554,7 +554,7 @@ const backHref = localePath(locale, '/#products')
 </BaseLayout>
 
 <script>
-  import { prefersReducedMotion } from '../lib/motion'
+  import { isMotionReduced } from '../lib/motion'
   import { startCountUp } from '../scripts/count-up'
   import { observeVisibility } from '../scripts/in-view'
 
@@ -570,7 +570,7 @@ const backHref = localePath(locale, '/#products')
       const total = Number(target.dataset.countTotal)
       if (!Number.isFinite(total)) return
       startCountUp(target, total, {
-        reducedMotion: prefersReducedMotion(globalThis),
+        reducedMotion: isMotionReduced(globalThis),
         locale: target.dataset.countLocale ?? 'en',
         requestFrame: (callback) => requestAnimationFrame(callback),
       })

@@ -234,6 +234,21 @@ function mergeRules(configs) {
 }
 
 /**
+ * Names `unicorn/name-replacements` keeps, each required by an external API
+ * so renaming it would break the contract:
+ * - `props` and `Props`: the Astro and React component contract (`Astro.props`
+ *   and the `Props` interface Astro reads to type a component).
+ * - `ref` and `Ref`: `@eslint-react` `naming-convention-ref-name` requires every
+ *   `useRef` identifier to be `ref` or to end in `Ref`.
+ */
+const NAME_REPLACEMENT_ALLOW_LIST = {
+  props: true,
+  Props: true,
+  ref: true,
+  Ref: true,
+}
+
+/**
  * Rules `eslint.config.mjs` applies to every file it lints: jsx-a11y and
  * unicorn `recommended` with the repo's overrides, and the rules of the
  * global `astro/recommended` block (the other `astro` blocks only match
@@ -242,25 +257,11 @@ function mergeRules(configs) {
 const GLOBAL_RULES = {
   ...jsxA11y.flatConfigs.recommended.rules,
   ...unicorn.configs.recommended.rules,
-  'unicorn/no-null': 'off',
   'unicorn/number-literal-case': ['error', { hexadecimalValue: 'lowercase' }],
   'unicorn/name-replacements': [
     'error',
-    {
-      allowList: {
-        env: true,
-        utils: true,
-        props: true,
-        Props: true,
-        ref: true,
-        Ref: true,
-        doc: true,
-        docs: true,
-      },
-    },
+    { allowList: NAME_REPLACEMENT_ALLOW_LIST },
   ],
-  'unicorn/consistent-boolean-name': 'off',
-  'unicorn/single-line-block-comment-style': 'off',
   'unicorn/no-asterisk-prefix-in-documentation-comments': 'off',
   'unicorn/filename-case': [
     'error',
@@ -269,7 +270,9 @@ const GLOBAL_RULES = {
   ...mergeRules(astro.configs.recommended.filter((config) => !config.files)),
 }
 
-/** typescript-eslint's `strictTypeChecked` + `stylisticTypeChecked` plus the repo's TypeScript overrides. */
+/**
+ * typescript-eslint's `strictTypeChecked` + `stylisticTypeChecked` plus the repo's TypeScript overrides.
+ */
 const TYPESCRIPT_RULES = {
   ...mergeRules(tseslint.configs.strictTypeChecked),
   ...mergeRules(tseslint.configs.stylisticTypeChecked),
@@ -283,7 +286,9 @@ const TYPESCRIPT_RULES = {
   '@typescript-eslint/no-deprecated': 'warn',
 }
 
-/** `eslint-plugin-jsdoc`'s TypeScript recommended rules as `eslint.config.mjs` tunes them, plus `eslint-comments` and the local rule. */
+/**
+ * `eslint-plugin-jsdoc`'s TypeScript recommended rules as `eslint.config.mjs` tunes them, plus `eslint-comments` and the local rule.
+ */
 const DOCUMENTED_SOURCE_RULES = {
   ...jsdoc.configs['flat/recommended-typescript-error'].rules,
   'jsdoc/require-jsdoc': 'off',
@@ -293,10 +298,14 @@ const DOCUMENTED_SOURCE_RULES = {
   'local/no-non-doc-comments': 'error',
 }
 
-/** `typescript-eslint/disable-type-checked`'s rules. */
+/**
+ * `typescript-eslint/disable-type-checked`'s rules.
+ */
 const DISABLE_TYPE_CHECKED_RULES = tseslint.configs.disableTypeChecked.rules
 
-/** Files that hold React islands and the shadcn/ui components they use. */
+/**
+ * Files that hold React islands and the shadcn/ui components they use.
+ */
 const ISLAND_FILES = ['src/**/*.tsx']
 
 /**
@@ -308,7 +317,9 @@ const ISLAND_RULES = {
   ...reactHooks.configs.flat.recommended.rules,
 }
 
-/** The six `@shadcn/lint` rules, with the single-source `no-restyle` contracts. */
+/**
+ * The six `@shadcn/lint` rules, with the single-source `no-restyle` contracts.
+ */
 const SHADCN_RULES = {
   'shadcn/no-restyle': [
     'error',
@@ -320,6 +331,13 @@ const SHADCN_RULES = {
   'shadcn/no-unknown-classes': 'error',
   'shadcn/require-static-classes': 'error',
 }
+
+/**
+ * Files where `unicorn/no-null` is off: tests and end-to-end specs assert
+ * against platform and library contracts that return `null` (DOM queries, Web
+ * Storage, `JSON.parse`, Playwright), and pass raw `null` input on purpose.
+ */
+const NULL_ALLOWED_FILES = ['**/*.{test,spec}.{ts,tsx,mjs}', 'e2e/**']
 
 /**
  * Every path-scoped, non-`.astro` block of `eslint.config.mjs`, in the same
@@ -338,6 +356,7 @@ export const ESLINT_PATH_BLOCKS = [
       'no-restricted-syntax': ['error', ...UNAWAITED_ASYNC_MATCHER_SELECTORS],
     },
   },
+  { files: NULL_ALLOWED_FILES, rules: { 'unicorn/no-null': 'off' } },
   { files: ['**/*.{ts,tsx,mjs}'], rules: DOCUMENTED_SOURCE_RULES },
   { files: ['**/*.{js,mjs,cjs}'], rules: DISABLE_TYPE_CHECKED_RULES },
   {
@@ -353,7 +372,9 @@ export const ESLINT_PATH_BLOCKS = [
   { files: ['parity/.corpus/**'], rules: DISABLE_TYPE_CHECKED_RULES },
 ]
 
-/** Every ESLint rule id that the global rules or some path block enables. */
+/**
+ * Every ESLint rule id that the global rules or some path block enables.
+ */
 const ENABLED_RULE_IDS = new Set(
   [GLOBAL_RULES, ...ESLINT_PATH_BLOCKS.map((block) => block.rules)].flatMap(
     (rules) =>
@@ -363,7 +384,9 @@ const ENABLED_RULE_IDS = new Set(
   ),
 )
 
-/** Rules Oxlint applies to every file, in Oxlint ids. */
+/**
+ * Rules Oxlint applies to every file, in Oxlint ids.
+ */
 export const OXLINT_BASE_RULES = toOxlintRules(GLOBAL_RULES)
 
 /**

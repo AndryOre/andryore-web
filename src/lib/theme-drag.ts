@@ -7,10 +7,14 @@ import {
   THEME_STOPS,
 } from './theme-stops'
 
-/** The way the brightness bar runs: vertically or from left to right. */
+/**
+ * The way the brightness bar runs: vertically or from left to right.
+ */
 export type ThemeOrientation = 'vertical' | 'horizontal'
 
-/** The box of the brightness bar that a pointer position is measured in. */
+/**
+ * The box of the brightness bar that a pointer position is measured in.
+ */
 interface BarBox {
   top: number
   height: number
@@ -38,7 +42,7 @@ const browserMatchMedia = (query: string): { matches: boolean } | undefined =>
  * @param match Answers a media query; defaults to the browser's `matchMedia`.
  * @returns True when `prefers-reduced-motion: reduce` matches.
  */
-export function prefersReducedMotion(match = browserMatchMedia): boolean {
+export function isReducedMotionPreferred(match = browserMatchMedia): boolean {
   return match('(prefers-reduced-motion: reduce)')?.matches ?? false
 }
 
@@ -74,20 +78,20 @@ function ratioAt(
  * @param position The pointer's position along the bar's axis in the viewport.
  * @param level Receives the level that was written.
  * @param level.current The last written level.
- * @param reducedMotion Whether to clamp instead of rubber-band.
+ * @param isReducedMotion Whether to clamp instead of rubber-band.
  * @param orientation The way the bar runs.
  */
 export function followPointer(
   bar: DragBar | null,
   position: number,
   level: { current: number },
-  reducedMotion: boolean = prefersReducedMotion(),
+  isReducedMotion: boolean = isReducedMotionPreferred(),
   orientation: ThemeOrientation = 'vertical',
 ): void {
   const ratio = ratioAt(bar, position, orientation)
   if (!bar || ratio === undefined) return
   const banded = levelFromRatio(ratio)
-  const next = reducedMotion ? Math.min(100, Math.max(0, banded)) : banded
+  const next = isReducedMotion ? Math.min(100, Math.max(0, banded)) : banded
   level.current = next
   bar.style.setProperty('--drag-level', String(next))
   bar.style.setProperty('--drag-squeeze', String(squeezeForLevel(next)))

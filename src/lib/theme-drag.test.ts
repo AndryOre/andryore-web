@@ -3,7 +3,7 @@ import { describe, expect, test } from 'bun:test'
 import {
   followPointer,
   pickAtPointer,
-  prefersReducedMotion,
+  isReducedMotionPreferred,
   releaseDrag,
   type DragBar,
 } from './theme-drag'
@@ -103,10 +103,10 @@ describe('pickAtPointer', () => {
   })
 })
 
-describe('prefersReducedMotion', () => {
+describe('isReducedMotionPreferred', () => {
   test('is false where the browser has no matchMedia', () => {
-    expect(prefersReducedMotion()).toBe(false)
-    expect(prefersReducedMotion(() => ({ matches: false }))).toBe(false)
+    expect(isReducedMotionPreferred()).toBe(false)
+    expect(isReducedMotionPreferred(() => ({ matches: false }))).toBe(false)
   })
 
   test('reads the reduce query', () => {
@@ -115,7 +115,7 @@ describe('prefersReducedMotion', () => {
       queries.push(query)
       return { matches: true }
     }
-    expect(prefersReducedMotion(match)).toBe(true)
+    expect(isReducedMotionPreferred(match)).toBe(true)
     expect(queries).toEqual(['(prefers-reduced-motion: reduce)'])
   })
 })

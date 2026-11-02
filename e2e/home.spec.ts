@@ -44,10 +44,10 @@ test.describe('home under reduced motion', () => {
         )
         for (const element of blocks) {
           const style = globalThis.getComputedStyle(element)
-          const moved =
+          const isMoved =
             style.transform !== 'none' ||
             (style.translate !== 'none' && style.translate !== '0px')
-          if (moved || style.opacity !== '1') {
+          if (isMoved || style.opacity !== '1') {
             offenders.push(
               `${element.tagName.toLowerCase()}.${element.className}`,
             )

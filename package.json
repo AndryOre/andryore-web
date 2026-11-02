@@ -24,7 +24,7 @@
     "lint:parity": "bun parity/run.ts --oxlint node_modules/.bin/oxlint --type-aware",
     "typecheck": "astro sync && node_modules/typescript7/bin/tsc --noEmit --runExternalCode",
     "knip": "knip",
-    "lint:docs": "bun scripts/lint-docs.ts",
+    "lint:docs": "bun scripts/lint-documentation.ts",
     "lint:lighthouse": "bun scripts/lighthouse-budget.ts",
     "i18n:status": "bun scripts/i18n-status.ts",
     "check": "bun run format:check && bun run lint && bun run typecheck && bun run knip",

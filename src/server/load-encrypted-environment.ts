@@ -1,7 +1,9 @@
 import { existsSync } from 'node:fs'
 import { config } from '@dotenvx/dotenvx'
 
-/** Where the runtime image keeps the encrypted env file. */
+/**
+ * Where the runtime image keeps the encrypted env file.
+ */
 const DEFAULT_ENV_FILE = '.env'
 
 interface LoadEncryptedEnvironmentOptions {
@@ -16,16 +18,17 @@ interface LoadEncryptedEnvironmentOptions {
  * @param options The env file path and the target environment.
  * @returns Whether any variable was loaded.
  */
-export function loadEncryptedEnvironment(
+export function hasLoadedEncryptedEnvironment(
   options: LoadEncryptedEnvironmentOptions = {},
 ): boolean {
-  const envFile = options.envFile ?? DEFAULT_ENV_FILE
-  const env = options.env ?? (process.env as Record<string, string>)
-  if (!env.DOTENV_PRIVATE_KEY || !existsSync(envFile)) return false
+  const environmentFile = options.envFile ?? DEFAULT_ENV_FILE
+  const environment = options.env ?? (process.env as Record<string, string>)
+  if (!environment.DOTENV_PRIVATE_KEY || !existsSync(environmentFile))
+    return false
   try {
     const result = config({
-      path: envFile,
-      processEnv: env,
+      path: environmentFile,
+      processEnv: environment,
       quiet: true,
       ignore: ['MISSING_ENV_FILE'],
     })
