@@ -154,7 +154,7 @@ never disable the rule file-wide or project-wide:
   `Ref`; `no-null` is off only in tests and `e2e/**`
   ([ADR 0023](docs/adr/0023-oxc-toolchain-and-typescript-7-1.md)). Fix a finding
   by renaming or returning `undefined`, never by disabling the rule.
-- Bun is pinned to `1.4.2` (`packageManager` and `engines`).
+- Bun is pinned to `1.4.4` (`packageManager` and `engines`).
 - Oxfmt wraps prose always; run `bun run fix` instead of reflowing by hand.
 - Actions are SHA-pinned and workflows are linted; edit them with care:
   [`docs/development.md#ci`](docs/development.md#ci).

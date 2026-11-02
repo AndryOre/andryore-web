@@ -88,7 +88,7 @@ export interface PlayOptions {
 export interface SoundEngine {
   getAvailability: () => SoundAvailability
   isAvailable: () => boolean
-  loadAvailability: () => Promise<boolean>
+  loadAvailability: () => Promise<void>
   subscribeAvailability: (onChange: () => void) => () => void
   play: (event: SoundEvent, options?: PlayOptions) => void
 }
@@ -148,9 +148,9 @@ export function createSoundEngine(
     }
   }
 
-  const loadAvailability = (): Promise<boolean> => {
+  const loadAvailability = async (): Promise<void> => {
     loading ??= isAvailableAfterFetch()
-    return loading
+    await loading
   }
 
   const ensureContext = (): AudioContext | undefined => {

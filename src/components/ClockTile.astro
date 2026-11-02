@@ -31,7 +31,7 @@ const copy = tiles[locale].clock
   const read = (root: HTMLElement): ClockParts | undefined => {
     const local = root.querySelector('[data-clock-local]')
     const utc = root.querySelector('[data-clock-utc]')
-    return !local || !utc ? undefined : { local, utc }
+    return local && utc ? { local, utc } : undefined
   }
 
   for (const root of document.querySelectorAll<HTMLElement>('[data-clock]')) {

@@ -42,7 +42,7 @@ product and contribution, plus the tools and setup he uses day to day:
 
 ## Quick start
 
-You need [Bun](https://bun.sh) `1.4.2`; see
+You need [Bun](https://bun.sh) `1.4.4`; see
 [prerequisites](docs/development.md#prerequisites).
 
 ```sh

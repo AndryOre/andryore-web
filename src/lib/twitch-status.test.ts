@@ -18,9 +18,13 @@ const json = (body: unknown, status = 200): Response =>
 const stubTwitch = (streams: unknown[], calls: Call[] = []): FetchLike => {
   return (url, init) => {
     calls.push({ url: String(url), init })
-    return String(url).includes('id.twitch.tv')
-      ? Promise.resolve(json({ access_token: 'token-123', expires_in: 3600 }))
-      : Promise.resolve(json({ data: streams }))
+    return Promise.resolve(
+      json(
+        String(url).includes('id.twitch.tv')
+          ? { access_token: 'token-123', expires_in: 3600 }
+          : { data: streams },
+      ),
+    )
   }
 }
 

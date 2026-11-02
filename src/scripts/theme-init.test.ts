@@ -16,8 +16,6 @@ import {
   THEME_INIT_SCRIPT_HASH,
 } from './theme-init'
 
-type Listener = () => void
-
 const THROWS = '<throws>'
 
 function createFakePage(options: {
@@ -25,6 +23,7 @@ function createFakePage(options: {
   systemDark: boolean
   storedFx?: string | null
 }) {
+  type Listener = () => void
   const requestedKeys: string[] = []
   const classes = new Set<string>()
   const dataset: Record<string, string> = {}
