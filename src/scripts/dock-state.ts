@@ -5,7 +5,9 @@ import {
   type FxStorage,
 } from '../lib/fx-store'
 
-/** The parts of the dock Sound switch the pre-hydration paint touches. */
+/**
+The parts of the dock Sound switch the pre-hydration paint touches.
+ */
 export interface DockSoundElement {
   setAttribute: (name: string, value: string) => void
 }

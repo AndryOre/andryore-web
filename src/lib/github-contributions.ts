@@ -4,22 +4,34 @@ import {
   type GridSnapshot,
 } from './github-grid'
 
-/** The GitHub account whose contributions the tile shows. */
+/**
+The GitHub account whose contributions the tile shows.
+ */
 export const GITHUB_LOGIN = 'AndryOre'
 
-/** How long a good answer is reused, in milliseconds (ADR 0017). */
+/**
+How long a good answer is reused, in milliseconds (ADR 0017).
+ */
 export const CONTRIBUTIONS_CACHE_TTL_MS = 3_600_000
 
-/** How long a failure is remembered, so GitHub is not hammered while down. */
+/**
+How long a failure is remembered, so GitHub is not hammered while down.
+ */
 export const CONTRIBUTIONS_FAILURE_TTL_MS = 60_000
 
-/** The endpoint payload: the grid plus the exact moment it was fetched. */
+/**
+The endpoint payload: the grid plus the exact moment it was fetched.
+ */
 export interface LiveGridSnapshot extends GridSnapshot {
-  /** Full ISO timestamp of the upstream fetch. */
+  /**
+  Full ISO timestamp of the upstream fetch.
+   */
   updatedAt: string
 }
 
-/** Options for {@link createContributionsReader}. */
+/**
+Options for {@link createContributionsReader}.
+ */
 export interface ContributionsReaderOptions {
   token: string | undefined
   login?: string
@@ -27,14 +39,16 @@ export interface ContributionsReaderOptions {
   now?: () => number
 }
 
-/** Reads the cached grid, refreshing it from GitHub at most once an hour. */
+/**
+Reads the cached grid, refreshing it from GitHub at most once an hour.
+ */
 export interface ContributionsReader {
-  get: () => Promise<LiveGridSnapshot | null>
+  get: () => Promise<LiveGridSnapshot | undefined>
 }
 
 /**
  * Creates the server-side contribution grid reader. A missing token or any
- * upstream failure resolves to null; it never rejects and never exposes the
+ * upstream failure resolves to undefined; it never rejects and never exposes the
  * token.
  * @param options Token, optional account, fetch and clock overrides.
  * @returns A reader whose good answers are cached for one hour.
@@ -44,10 +58,12 @@ export function createContributionsReader(
 ): ContributionsReader {
   const request = options.fetch ?? ((url, init) => fetch(url, init))
   const now = options.now ?? Date.now
-  let cached: { value: LiveGridSnapshot | null; expiresAt: number } | undefined
-  let pending: Promise<LiveGridSnapshot | null> | undefined
+  let cached:
+    | { value: LiveGridSnapshot | undefined; expiresAt: number }
+    | undefined
+  let pending: Promise<LiveGridSnapshot | undefined> | undefined
 
-  const refresh = async (): Promise<LiveGridSnapshot | null> => {
+  const refresh = async (): Promise<LiveGridSnapshot | undefined> => {
     const moment = new Date(now())
     const snapshot = await fetchContributionGrid({
       token: options.token,
@@ -57,7 +73,7 @@ export function createContributionsReader(
     })
     const value = snapshot
       ? { ...snapshot, updatedAt: moment.toISOString() }
-      : null
+      : undefined
     const ttl = value
       ? CONTRIBUTIONS_CACHE_TTL_MS
       : CONTRIBUTIONS_FAILURE_TTL_MS
@@ -67,7 +83,7 @@ export function createContributionsReader(
 
   return {
     get: async () => {
-      if (!options.token) return null
+      if (!options.token) return
       if (cached && cached.expiresAt > now()) return cached.value
       pending ??= refresh()
       try {
@@ -81,11 +97,11 @@ export function createContributionsReader(
 
 /**
  * Wraps the reader's answer as the endpoint's JSON response.
- * @param snapshot The grid, or null when it is unavailable.
+ * @param snapshot The grid, or undefined when it is unavailable.
  * @returns 200 with the grid, or 503 so the tile keeps its build snapshot.
  */
 export function contributionsResponse(
-  snapshot: LiveGridSnapshot | null,
+  snapshot: LiveGridSnapshot | undefined,
 ): Response {
   return snapshot
     ? Response.json(snapshot, {

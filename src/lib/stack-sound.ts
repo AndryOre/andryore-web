@@ -1,19 +1,31 @@
-/** Scene progress at which the tiles have finished converging. */
+/**
+ * Scene progress at which the tiles have finished converging.
+ */
 const CONVERGE_END = 0.64
 
-/** Scene progress at which the closing card has faded in and the pop plays. */
+/**
+ * Scene progress at which the closing card has faded in and the pop plays.
+ */
 const SETTLE_AT = 0.72
 
-/** Scene progress below which the settle pop arms again. */
+/**
+ * Scene progress below which the settle pop arms again.
+ */
 const SETTLE_REARM_BELOW = 0.6
 
-/** The lowest tick playback rate, at the first tile. */
+/**
+ * The lowest tick playback rate, at the first tile.
+ */
 const TICK_RATE_MIN = 0.9
 
-/** The highest tick playback rate, at the last tile. */
+/**
+ * The highest tick playback rate, at the last tile.
+ */
 const TICK_RATE_MAX = 1.4
 
-/** The shortest time between two ticks, in milliseconds. */
+/**
+ * The shortest time between two ticks, in milliseconds.
+ */
 const TICK_GAP_MS = 45
 
 const clampUnit = (value: number): number => Math.min(1, Math.max(0, value))
@@ -57,13 +69,17 @@ export function tickRate(index: number, tileCount: number): number {
   return TICK_RATE_MIN + (TICK_RATE_MAX - TICK_RATE_MIN) * fraction
 }
 
-/** What the scene asks to play for one progress update. */
+/**
+ * What the scene asks to play for one progress update.
+ */
 export interface StackSoundCue {
   tickRate?: number
   settle?: true
 }
 
-/** The stateful mapper from progress updates to sound cues. */
+/**
+ * The stateful mapper from progress updates to sound cues.
+ */
 export interface StackSoundMapper {
   update: (progress: number, tileCount: number, nowMs: number) => StackSoundCue
 }
@@ -79,23 +95,23 @@ export function createStackSoundMapper(): StackSoundMapper {
   let lastIndex: number | undefined
   let lastCount = 0
   let lastTickAt = -Infinity
-  let armed = true
+  let isArmed = true
   return {
     update: (progress, tileCount, nowMs) => {
       const index = tickIndex(progress, tileCount)
       const cue: StackSoundCue = {}
       if (lastIndex === undefined || tileCount !== lastCount) {
-        armed = progress < SETTLE_AT
+        isArmed = progress < SETTLE_AT
       } else {
         if (index !== lastIndex && nowMs - lastTickAt >= TICK_GAP_MS) {
           lastTickAt = nowMs
           cue.tickRate = tickRate(index, tileCount)
         }
-        if (armed && progress >= SETTLE_AT) {
-          armed = false
+        if (isArmed && progress >= SETTLE_AT) {
+          isArmed = false
           cue.settle = true
-        } else if (!armed && progress < SETTLE_REARM_BELOW) {
-          armed = true
+        } else if (!isArmed && progress < SETTLE_REARM_BELOW) {
+          isArmed = true
         }
       }
       lastIndex = index

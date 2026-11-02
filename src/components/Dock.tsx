@@ -119,14 +119,14 @@ function PageIcon({ page }: { page: DockPageKey }) {
   )
 }
 
-const getSoundSnapshot = (): boolean => readFx(getFxStorage())
-const getServerSoundSnapshot = (): boolean => false
+const isSoundEnabledSnapshot = (): boolean => readFx(getFxStorage())
+const isSoundEnabledOnServer = (): boolean => false
 const getServerAvailability = (): SoundAvailability => 'unknown'
 
 const unsubscribeNothing = (): void => undefined
 const subscribeToNothing = (): (() => void) => unsubscribeNothing
-const readHydrated = (): boolean => true
-const readNotHydrated = (): boolean => false
+const isHydratedOnClient = (): boolean => true
+const isHydratedOnServer = (): boolean => false
 
 function SoundIcon() {
   return (
@@ -384,10 +384,10 @@ export function ThemeMenu({
   )
 }
 
-const menuItemClass = (selected: boolean): string =>
+const menuItemClass = (isSelected: boolean): string =>
   cn(
     'px-3 py-2 text-left text-sm no-underline outline-none focus-visible:ring-2 focus-visible:ring-ring',
-    selected
+    isSelected
       ? 'bg-muted text-foreground'
       : 'text-muted-foreground hover:text-foreground',
   )
@@ -405,7 +405,7 @@ const onPointerLeave = (event: PointerEvent<HTMLElement>): void => {
 }
 
 function useMenuBehaviour(
-  nav: HTMLElement | null,
+  nav: HTMLElement | undefined,
   openMenu: DockMenuName | undefined,
   close: () => void,
 ): void {
@@ -449,23 +449,26 @@ function useMenuBehaviour(
  * @returns The navigation landmark holding the pages and both menus.
  */
 export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
-  const [nav, setNav] = useState<HTMLElement | null>(null)
+  const [nav, setNav] = useState<HTMLElement | undefined>()
+  const attachNav = useCallback((element: HTMLElement | null) => {
+    setNav(element ?? undefined)
+  }, [])
   const [openMenu, setOpenMenu] = useState<DockMenuName | undefined>()
   const preference = useThemePreference()
-  const soundEnabled = useSyncExternalStore(
+  const isSoundEnabled = useSyncExternalStore(
     subscribeFx,
-    getSoundSnapshot,
-    getServerSoundSnapshot,
+    isSoundEnabledSnapshot,
+    isSoundEnabledOnServer,
   )
   const soundAvailability = useSyncExternalStore(
     soundEngine.subscribeAvailability,
     soundEngine.getAvailability,
     getServerAvailability,
   )
-  const hydrated = useSyncExternalStore(
+  const isHydrated = useSyncExternalStore(
     subscribeToNothing,
-    readHydrated,
-    readNotHydrated,
+    isHydratedOnClient,
+    isHydratedOnServer,
   )
   const activeKey = activePageKey(path)
 
@@ -487,16 +490,16 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
 
   return (
     <nav
-      ref={setNav}
+      ref={attachNav}
       aria-label={copy.label}
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
       data-dock-nav
-      data-ready={hydrated ? '' : undefined}
+      data-ready={isHydrated ? '' : undefined}
       className="pointer-events-auto relative inline-flex items-center gap-0 rounded-pill border border-border bg-card/92 p-0.5 backdrop-blur-lg min-[360px]:p-1 sm:gap-1 sm:p-2"
     >
       {DOCK_PAGES.map((page) => {
-        const active = activeKey === page.key
+        const isActive = activeKey === page.key
         return (
           <DockItem
             key={page.key}
@@ -506,7 +509,7 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
             <a
               href={pageHref(locale, page.path)}
               aria-label={copy.pages[page.key]}
-              aria-current={active ? 'page' : undefined}
+              aria-current={isActive ? 'page' : undefined}
               data-dock-page={page.key}
               suppressHydrationWarning
               {...analyticsAttributes(ANALYTICS_EVENTS.dockNavigate, {
@@ -590,10 +593,10 @@ export default function Dock({ copy, themeCopy, locale, path }: DockProps) {
 
       <SoundSwitch
         copy={copy.sound}
-        enabled={soundEnabled}
+        enabled={isSoundEnabled}
         availability={soundAvailability}
         onToggle={() => {
-          writeFx(getFxStorage(), !soundEnabled)
+          writeFx(getFxStorage(), !isSoundEnabled)
         }}
       />
     </nav>

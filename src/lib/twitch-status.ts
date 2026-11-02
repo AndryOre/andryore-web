@@ -1,26 +1,36 @@
-/** The Twitch channel the Live status reports on. */
+/**
+ * The Twitch channel the Live status reports on.
+ */
 const CHANNEL_LOGIN = 'andryoredev'
 
-/** How long an answer is reused, in milliseconds (ADR 0004). */
+/**
+ * How long an answer is reused, in milliseconds (ADR 0004).
+ */
 export const CACHE_TTL_MS = 60_000
 
 const TOKEN_URL = 'https://id.twitch.tv/oauth2/token'
 const STREAMS_URL = 'https://api.twitch.tv/helix/streams'
 const TOKEN_SAFETY_MS = 60_000
 
-/** The small payload the endpoint returns and the tile renders. */
+/**
+ * The small payload the endpoint returns and the tile renders.
+ */
 export type StreamStatus =
   | { state: 'live'; title: string }
   | { state: 'offline' }
   | { state: 'unavailable' }
 
-/** The subset of `fetch` the service needs, so tests can stub Twitch. */
+/**
+ * The subset of `fetch` the service needs, so tests can stub Twitch.
+ */
 export type FetchLike = (
   url: string | URL,
   init?: RequestInit,
 ) => Promise<Response>
 
-/** Options for {@link createLiveStatus}. */
+/**
+ * Options for {@link createLiveStatus}.
+ */
 export interface LiveStatusOptions {
   clientId: string | undefined
   clientSecret: string | undefined
@@ -28,7 +38,9 @@ export interface LiveStatusOptions {
   now?: () => number
 }
 
-/** Reads the cached Live status, refreshing it from Twitch at most once a minute. */
+/**
+ * Reads the cached Live status, refreshing it from Twitch at most once a minute.
+ */
 export interface LiveStatus {
   get: () => Promise<StreamStatus>
 }

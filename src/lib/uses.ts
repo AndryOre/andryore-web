@@ -1,14 +1,18 @@
 import type { GlyphName } from './glyphs'
 import { ICONS, type IconId } from './icons'
 
-/** One Tools or Tech badge. */
+/**
+ * One Tools or Tech badge.
+ */
 export interface UsesBadge {
   name: string
   icon: IconId
   url?: string
 }
 
-/** A decorative icon of the floating field and where it sits. */
+/**
+ * A decorative icon of the floating field and where it sits.
+ */
 export interface FieldIcon {
   id: IconId
   placement: string
@@ -61,7 +65,9 @@ export const FIELD_ICONS: readonly FieldIcon[] = [
   },
 ]
 
-/** The Lucide glyphs of the Setup rows, in row order. */
+/**
+ * The Lucide glyphs of the Setup rows, in row order.
+ */
 export const SETUP_GLYPHS: readonly GlyphName[] = [
   'laptop',
   'mic',
@@ -72,13 +78,17 @@ export const SETUP_GLYPHS: readonly GlyphName[] = [
   'headphones',
 ]
 
-/** A real colour token shown as a swatch of the This site Color tile. */
+/**
+ * A real colour token shown as a swatch of the This site Color tile.
+ */
 export interface SwatchToken {
   token: string
   bg: string
 }
 
-/** The six tokens of the Color tile; the classes follow the active theme. */
+/**
+ * The six tokens of the Color tile; the classes follow the active theme.
+ */
 export const SWATCH_TOKENS: readonly SwatchToken[] = [
   { token: 'background', bg: 'bg-background' },
   { token: 'card', bg: 'bg-card' },
@@ -151,7 +161,9 @@ export const ALT_BADGES: ReadonlySet<IconId> = new Set<IconId>([
   'remotion',
 ])
 
-/** The classes and brand colour of one badge. */
+/**
+ * The classes and brand colour of one badge.
+ */
 export interface BadgeStyle {
   hex: string
   bg: string

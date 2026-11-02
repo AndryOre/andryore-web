@@ -1,12 +1,18 @@
 import type { StreamStatus } from './twitch-status'
 
-/** The four things the stream tile can show. */
+/**
+ * The four things the stream tile can show.
+ */
 export type StreamView = 'coming-soon' | 'scheduled' | 'live' | 'unavailable'
 
-/** UTC weekdays of the planned sessions: Tuesday and Thursday. */
+/**
+ * UTC weekdays of the planned sessions: Tuesday and Thursday.
+ */
 export const SESSION_WEEKDAYS: readonly number[] = [2, 4]
 
-/** UTC hour at which every planned session starts. */
+/**
+ * UTC hour at which every planned session starts.
+ */
 const SESSION_HOUR_UTC = 19
 
 const MINUTE_MS = 60_000
@@ -18,15 +24,15 @@ const DAY_MS = 24 * HOUR_MS
  * channel always shows live; before streams have started, anything else is
  * the coming-soon slate.
  * @param status The answer of the status endpoint.
- * @param streamsStarted The content flag set once streams are running.
+ * @param haveStreamsStarted The content flag set once streams are running.
  * @returns The view to show.
  */
 export function selectStreamView(
   status: StreamStatus,
-  streamsStarted: boolean,
+  haveStreamsStarted: boolean,
 ): StreamView {
   if (status.state === 'live') return 'live'
-  if (!streamsStarted) return 'coming-soon'
+  if (!haveStreamsStarted) return 'coming-soon'
   return status.state === 'offline' ? 'scheduled' : 'unavailable'
 }
 
@@ -94,7 +100,9 @@ export function formatCountdown(
     : formatter.format(Math.ceil(remaining / MINUTE_MS), 'minute')
 }
 
-/** Unit words and lead word of the compact countdown, from the content file. */
+/**
+ * Unit words and lead word of the compact countdown, from the content file.
+ */
 export interface CountdownUnits {
   prefix: string
   day: string
@@ -137,11 +145,17 @@ export function weekColumn(now: Date): number {
   return (now.getUTCDay() + 6) % 7
 }
 
-/** One column of the week row. */
+/**
+ * One column of the week row.
+ */
 export interface WeekDay {
-  /** True for a planned session day. */
+  /**
+   * True for a planned session day.
+   */
   session: boolean
-  /** True for the current UTC day. */
+  /**
+   * True for the current UTC day.
+   */
   today: boolean
 }
 

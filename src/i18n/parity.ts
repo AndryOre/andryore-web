@@ -41,12 +41,12 @@ function routeOfPageFile(file: string): string | undefined {
 export function pageRoutesFromFiles(
   files: readonly string[],
 ): Record<Locale, string[]> {
-  const routesOf = (spanish: boolean): string[] =>
+  const routesOf = (isSpanish: boolean): string[] =>
     files
-      .filter((file) => file.startsWith('es/') === spanish)
+      .filter((file) => file.startsWith('es/') === isSpanish)
       .flatMap(
         (file) =>
-          routeOfPageFile(spanish ? file.slice('es/'.length) : file) ?? [],
+          routeOfPageFile(isSpanish ? file.slice('es/'.length) : file) ?? [],
       )
       .toSorted(compareText)
   return { en: routesOf(false), es: routesOf(true) }

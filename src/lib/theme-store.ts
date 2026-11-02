@@ -4,7 +4,7 @@ import {
   getThemeStorage,
   readThemePreference,
   resolveTheme,
-  writeThemePreference,
+  didWriteThemePreference,
   type ThemePreference,
 } from './theme'
 
@@ -16,7 +16,9 @@ const FADE_CLASS = 'theme-fade'
 export const FADE_DURATION_MS = 320
 
 const listeners = new Set<() => void>()
-const memory: { preference: ThemePreference | null } = { preference: null }
+const memory: { preference: ThemePreference | undefined } = {
+  preference: undefined,
+}
 
 /**
  * Subscribes to preference changes made by any island or another tab.
@@ -72,7 +74,7 @@ export const chooseTheme = (preference: ThemePreference): void => {
   setTimeout(() => {
     root.classList.remove(FADE_CLASS)
   }, FADE_DURATION_MS)
-  const stored = writeThemePreference(getThemeStorage(), preference)
-  memory.preference = stored ? null : preference
+  const wasStored = didWriteThemePreference(getThemeStorage(), preference)
+  memory.preference = wasStored ? undefined : preference
   for (const listener of listeners) listener()
 }

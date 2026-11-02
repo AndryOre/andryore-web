@@ -26,7 +26,7 @@ describe('computeStats', () => {
     expect(computeStats(grid([]))).toEqual({
       longestStreak: 0,
       currentStreak: 0,
-      bestDay: null,
+      bestDay: undefined,
       activeDays: 0,
     })
   })
@@ -160,18 +160,18 @@ describe('loadLiveSnapshot', () => {
     ).toEqual(live as never)
   })
 
-  test('returns null on a 503, a bad body or a network error', async () => {
+  test('returns undefined on a 503, a bad body or a network error', async () => {
     expect(
       await loadLiveSnapshot(() =>
         Promise.resolve(new Response('x', { status: 503 })),
       ),
-    ).toBeNull()
+    ).toBeUndefined()
     expect(
       await loadLiveSnapshot(() => Promise.resolve(Response.json({ a: 1 }))),
-    ).toBeNull()
+    ).toBeUndefined()
     expect(
       await loadLiveSnapshot(() => Promise.reject(new Error('down'))),
-    ).toBeNull()
+    ).toBeUndefined()
   })
 })
 
