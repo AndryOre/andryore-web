@@ -19,7 +19,7 @@ product.
 ## Decision
 
 - **These paths stay on disk and are gitignored:** `docs/web/`, `docs/design/`,
-  and under `docs/brand/`: `CONTEXT.md`, `research.md`, `research-notes/`,
+  and under `docs/brand/`: `GLOSSARY.md`, `research.md`, `research-notes/`,
   `process.md`, `brief.md`, `competitors.md`, `copy.md`, `voice.md`,
   `naming.md`, `apply-spec.md`, `explorations/`, `social/` and
   `brandbook/index.html`.
@@ -29,7 +29,7 @@ product.
 - **Public docs never link to private paths.** `bun run lint:docs` skips
   gitignored files as link targets, so such a link fails locally.
 - **Brand-strategy vocabulary lives in `docs/brand/CONTEXT.md`**, which is
-  private; the root `CONTEXT.md` keeps the Site terms.
+  private; the root `GLOSSARY.md` keeps the Site terms.
 
 ### Rejected alternatives
 
