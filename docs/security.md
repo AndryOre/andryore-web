@@ -3,7 +3,7 @@
 This document is the Site's assurance case: what it loads, what it sends, how
 the policy is built and delivered, and where the defenses fall short today. It
 is written for visitors, reviewers and security researchers. Terms such as the
-Site follow [`CONTEXT.md`](../CONTEXT.md).
+Site follow [`GLOSSARY.md`](../GLOSSARY.md).
 
 To report a vulnerability, see [`.github/SECURITY.md`](../.github/SECURITY.md).
 This document is about the design, not the reporting process. For the shape of
