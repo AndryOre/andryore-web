@@ -4,7 +4,7 @@ This document describes the shape of the codebase, not its API. It is allowed to
 go stale in the details as the code moves, so treat it as a map and not as a
 contract. It names files and symbols instead of linking to them, because links
 rot and names mostly don't. Terms such as the Site follow
-[`CONTEXT.md`](../CONTEXT.md). For the security side see
+[`GLOSSARY.md`](../GLOSSARY.md). For the security side see
 [`security.md`](security.md).
 
 ## Bird's-eye view

@@ -6,25 +6,25 @@ documentation, and how it relates to the rest of the `docs/` tree.
 ## Two different kinds of ground
 
 The `docs/` tree is **published** ground: finished reference material, written
-and maintained by hand. Don't restructure it or fold `CONTEXT.md` into it.
+and maintained by hand. Don't restructure it or fold `GLOSSARY.md` into it.
 
-`CONTEXT.md` and `docs/adr/` are the **live** ground that domain-modeling
+`GLOSSARY.md` and `docs/adr/` are the **live** ground that domain-modeling
 maintains as `/forge` runs features through this repo: its ubiquitous language
 and the architectural decisions made along the way. Add a term or a decision
 only when it actually crystallizes in a session, never speculatively.
 
 ## Before exploring, read these
 
-- **`CONTEXT.md`** at the repo root.
+- **`GLOSSARY.md`** at the repo root.
 - **`docs/adr/`**: read ADRs that touch the area you're about to work in.
 
 ## File structure
 
-Single-context repo: one root `CONTEXT.md` and one `docs/adr/`.
+Single-context repo: one root `GLOSSARY.md` and one `docs/adr/`.
 
 ```
 /
-├── CONTEXT.md
+├── GLOSSARY.md
 └── docs/adr/
     ├── 0001-....md
     └── 0002-....md
@@ -33,7 +33,7 @@ Single-context repo: one root `CONTEXT.md` and one `docs/adr/`.
 ## Use the glossary's vocabulary
 
 When your output names a domain concept (an issue title, a ticket, a test name),
-use the term as defined in `CONTEXT.md`. Don't drift to synonyms the glossary
+use the term as defined in `GLOSSARY.md`. Don't drift to synonyms the glossary
 explicitly avoids.
 
 If the concept you need isn't in the glossary yet, that's a signal: either

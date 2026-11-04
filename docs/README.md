@@ -53,4 +53,4 @@ up) or **Explanation** (the why behind a choice).
   parallel worktree pipeline.
 
 The root [`AGENTS.md`](../AGENTS.md) holds the rules every coding agent follows,
-and [`CONTEXT.md`](../CONTEXT.md) the domain vocabulary.
+and [`GLOSSARY.md`](../GLOSSARY.md) the domain vocabulary.
