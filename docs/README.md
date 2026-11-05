@@ -49,8 +49,8 @@ up) or **Explanation** (the why behind a choice).
   documentation.
 - [Issue tracker](./agents/issue-tracker.md): Reference. The Linear conventions.
 - [Triage labels](./agents/triage-labels.md): Reference. The label vocabulary.
-- [`/forge`](./agents/forge.md): Reference. The repo-specific rules for the
+- [`/forge`](./agents/emet.md): Reference. The repo-specific rules for the
   parallel worktree pipeline.
 
 The root [`AGENTS.md`](../AGENTS.md) holds the rules every coding agent follows,
-and [`CONTEXT.md`](../CONTEXT.md) the domain vocabulary.
+and [`GLOSSARY.md`](../GLOSSARY.md) the domain vocabulary.

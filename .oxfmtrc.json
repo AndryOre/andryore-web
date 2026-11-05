@@ -59,7 +59,7 @@
     ".claude",
     ".agents",
     ".forge",
-    "CONTEXT.md",
+    "GLOSSARY.md",
     "parity/fixtures",
     "parity/.corpus",
     "parity/.out"

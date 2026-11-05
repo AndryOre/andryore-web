@@ -47,7 +47,7 @@ the `mcp__linear-server__*` MCP tools — there is no CLI equivalent to
 `onPrMerge: automatic` — team AO's Linear↔GitHub integration is configured
 (`On PR or commit open → In Review`, `On PR or commit merge → Done`), same as
 `snug` and `streamboss`. If that integration ever gets disconnected for this
-repo, switch both to `coordinator` here and in `forge.config.json`'s
+repo, switch both to `coordinator` here and in `emet.config.json`'s
 `tracker.transitions` so the coordinator writes them explicitly.
 
 Also verify **Settings → My Account → Preferences → Behavior → "On move to

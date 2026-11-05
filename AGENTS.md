@@ -19,7 +19,7 @@ knip) and the documentation:
 - [`scripts`](scripts): repo scripts (commit lint, docs link check) and their
   tests.
 
-The domain vocabulary is in [`CONTEXT.md`](CONTEXT.md). Skills live in
+The domain vocabulary is in [`GLOSSARY.md`](GLOSSARY.md). Skills live in
 `.claude/skills` (25 of them, including `playwright-component-testing`,
 `product-marketing` and `typescript-advanced-types`) and are pinned in
 `skills-lock.json`. A map of the docs tree is in
