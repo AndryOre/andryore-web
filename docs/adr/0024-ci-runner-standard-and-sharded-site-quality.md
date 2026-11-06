@@ -6,6 +6,9 @@ Accepted
 
 Date: 2026-11-06
 
+Revised: 2026-11-06, Site quality builds the Site once in a `build` job that
+shares `dist`, and also runs nightly on a `schedule`
+
 ## Context
 
 PR CI took too long, and Site quality was the slowest part. The baseline, from
@@ -54,9 +57,9 @@ Every other job keeps a literal `ubuntu-latest`:
 - `ci.yml:build`: the production build stays on the same GitHub-hosted image
   that Site quality and Lighthouse build on, so a difference between runners
   cannot hide a broken build.
-- `site-quality.yml`, all jobs: they run Docker, the Playwright browsers and the
-  pinned Playwright image, and they are the heaviest minutes. Sharding speeds
-  them up instead.
+- `site-quality.yml`, all jobs, `build` included: they run Docker, the
+  Playwright browsers and the pinned Playwright image, and they are the heaviest
+  minutes. Sharding speeds them up instead.
 - `lighthouse.yml`: scores depend on the runner; moving it would shift the
   budget baseline.
 - `codeql.yml` and `scorecard.yml`: security analysis, never routed by the
@@ -111,6 +114,14 @@ The speed-up comes from Site quality on `ubuntu-latest`:
 - The old `visual` job is split in two parallel jobs with the same fork guard:
   `visual` (`Visual snapshots`, `bun run test:visual`) and `browsers`
   (`Layout in WebKit and Firefox`, `bun run test:browsers`).
+- One `build` job (`Build the Site`) runs `bun run build` and uploads `dist` as
+  the `site-dist` artifact, with hidden files so `.well-known` is kept. The
+  `e2e` shards, `visual` and `browsers` declare `needs: build` and download
+  `site-dist` into `dist` instead of building. `smoke` and `csp` keep their own
+  Docker builds, because they test the nginx image itself.
+- A nightly `schedule` trigger runs every Site quality job on the default
+  branch, so a regression outside the `pull_request` path filters is caught
+  within a day.
 
 Rejected options:
 
@@ -125,8 +136,11 @@ Rejected options:
 
 - Site quality time is bounded by the slowest shard instead of the 506 s single
   run, and the snapshots no longer wait for WebKit and Firefox.
-- Each shard builds the Site and installs Chromium, so Site quality uses more
-  runner minutes in total; on a public repository they are free.
+- The Site is built once per run instead of once per job; each shard still
+  installs Chromium, so Site quality uses more runner minutes in total than one
+  job would, and on a public repository they are free.
+- The `e2e`, `visual` and `browsers` jobs start only after `build`, which adds
+  its time to their critical path in exchange for not building six times.
 - A test that depends on its order within a file breaks under `fullyParallel`;
   new specs must stay independent.
 - The required checks keep their names: `CI passed`, `Validate PR title` and
