@@ -44,17 +44,19 @@ export async function preparePage(
     [THEME_STORAGE_KEY, theme] as const,
   )
   await page.addInitScript((frozenMilliseconds) => {
-    const RealDate = Date
-    class FrozenDate extends RealDate {
-      static override now(): number {
-        return frozenMilliseconds
-      }
-
-      constructor(...arguments_: unknown[]) {
-        if (arguments_.length === 0) super(frozenMilliseconds)
-        else super(...(arguments_ as [number]))
-      }
-    }
+    const FrozenDate = new Proxy(Date, {
+      construct(target, constructorArguments) {
+        const forwarded: unknown[] = constructorArguments
+        return forwarded.length === 0
+          ? new target(frozenMilliseconds)
+          : new target(...(forwarded as [number]))
+      },
+      get(target, property) {
+        if (property === 'now') return () => frozenMilliseconds
+        const value: unknown = Reflect.get(target, property)
+        return value
+      },
+    })
     Object.defineProperty(globalThis, 'Date', { value: FrozenDate })
   }, FROZEN_NOW.getTime())
 }
