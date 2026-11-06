@@ -217,6 +217,110 @@ function findUnmatchedRequiredContexts(
     .filter((context) => !jobNames.includes(context))
 }
 
+/**
+ * The light jobs that may move to the runner in `vars.BLACKSMITH_RUNNER`, as
+ * `<file>:<job>` ([ADR 0024](../docs/adr/0024-ci-runner-standard-and-sharded-site-quality.md)).
+ */
+const ROUTED_JOBS = [
+  'ci.yml:quality',
+  'ci.yml:test',
+  'ci.yml:commitlint',
+  'ci.yml:ci-passed',
+  'lint-pr.yml:validate-title',
+  'lint-docs.yml:check-links',
+  'labels.yml:sync',
+  'lint-workflows.yml:lint',
+] as const
+
+const ROUTED_RUNNER =
+  "${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}"
+const DEFAULT_RUNNER = 'ubuntu-latest'
+const SELF_HOSTED_RUNNER_PATTERN = /vps-|self-hosted/
+
+/**
+ * The job fields the runner and matrix checks read.
+ */
+interface RunnerJob {
+  readonly 'runs-on'?: unknown
+  readonly strategy?: {
+    readonly 'fail-fast'?: unknown
+    readonly matrix?: Record<string, unknown>
+  }
+}
+
+/**
+ * Lists every job of a workflow as a `<file>:<job>` key with its job.
+ * @param fileName The workflow file name.
+ * @param workflow The parsed workflow.
+ * @returns Pairs of `<file>:<job>` and the job it names.
+ */
+function keyedJobs(
+  fileName: string,
+  workflow: Workflow,
+): [string, RunnerJob][] {
+  return Object.entries(workflow.jobs ?? {}).map(([jobName, job]) => [
+    `${fileName}:${jobName}`,
+    job as RunnerJob,
+  ])
+}
+
+/**
+ * Finds jobs whose `runs-on` breaks the routing: a routed job must use exactly
+ * the routed expression, every other job a literal `ubuntu-latest`.
+ * @param fileName The workflow file name.
+ * @param workflow The parsed workflow.
+ * @param routedJobs The `<file>:<job>` keys that are routed.
+ * @returns The offending `<file>:<job>` keys.
+ */
+function findRoutingViolations(
+  fileName: string,
+  workflow: Workflow,
+  routedJobs: readonly string[],
+): string[] {
+  return keyedJobs(fileName, workflow)
+    .filter(([key, job]) => {
+      const expected = routedJobs.includes(key) ? ROUTED_RUNNER : DEFAULT_RUNNER
+      return job['runs-on'] !== expected
+    })
+    .map(([key]) => key)
+}
+
+/**
+ * Finds jobs outside the routed list that read `vars.BLACKSMITH_RUNNER`
+ * anywhere.
+ * @param fileName The workflow file name.
+ * @param workflow The parsed workflow.
+ * @param routedJobs The `<file>:<job>` keys that are routed.
+ * @returns The offending `<file>:<job>` keys.
+ */
+function findUnroutedRunnerReaders(
+  fileName: string,
+  workflow: Workflow,
+  routedJobs: readonly string[],
+): string[] {
+  return keyedJobs(fileName, workflow)
+    .filter(
+      ([key, job]) =>
+        !routedJobs.includes(key) &&
+        JSON.stringify(job).includes('vars.BLACKSMITH_RUNNER'),
+    )
+    .map(([key]) => key)
+}
+
+/**
+ * Finds jobs whose `runs-on` names a VPS or a self-hosted runner.
+ * @param fileName The workflow file name.
+ * @param workflow The parsed workflow.
+ * @returns The offending `<file>:<job>` keys.
+ */
+function findSelfHostedRunners(fileName: string, workflow: Workflow): string[] {
+  return keyedJobs(fileName, workflow)
+    .filter(([, job]) =>
+      SELF_HOSTED_RUNNER_PATTERN.test(JSON.stringify(job['runs-on'] ?? '')),
+    )
+    .map(([key]) => key)
+}
+
 const PINNED_SHA = 'a'.repeat(40)
 
 describe('invariant detectors', () => {
@@ -493,6 +597,146 @@ jobs:
     })
     expect(findUnmatchedRequiredContexts(ruleset, ['A', 'B'])).toEqual([])
     expect(findUnmatchedRequiredContexts(ruleset, ['A'])).toEqual(['B'])
+  })
+})
+
+/**
+ * Builds a one-job workflow with the given `runs-on` value.
+ * @param runsOn The raw YAML for `runs-on`.
+ * @param extra Extra raw YAML lines for the job.
+ * @returns The parsed workflow.
+ */
+function workflowRunningOn(runsOn: string, extra = ''): Workflow {
+  return parseWorkflow(
+    `on: push\njobs:\n  build:\n    runs-on: ${runsOn}\n    timeout-minutes: 5\n${extra}`,
+  )
+}
+
+describe('runner routing detectors', () => {
+  const routed = ['x.yml:build']
+
+  test('accepts the routed expression on a routed job', () => {
+    const workflow = workflowRunningOn(`"${ROUTED_RUNNER}"`)
+    expect(findRoutingViolations('x.yml', workflow, routed)).toEqual([])
+    expect(findUnroutedRunnerReaders('x.yml', workflow, routed)).toEqual([])
+  })
+
+  test('flags a routed job on a literal runner or a looser expression', () => {
+    const literal = workflowRunningOn('ubuntu-latest')
+    const withoutForkGuard = workflowRunningOn(
+      '"${{ vars.BLACKSMITH_RUNNER || \'ubuntu-latest\' }}"',
+    )
+    expect(findRoutingViolations('x.yml', literal, routed)).toEqual([
+      'x.yml:build',
+    ])
+    expect(findRoutingViolations('x.yml', withoutForkGuard, routed)).toEqual([
+      'x.yml:build',
+    ])
+  })
+
+  test('flags an unrouted job that is not on a literal ubuntu-latest', () => {
+    const expression = workflowRunningOn(`"${ROUTED_RUNNER}"`)
+    const otherImage = workflowRunningOn('ubuntu-24.04')
+    expect(findRoutingViolations('x.yml', expression, [])).toEqual([
+      'x.yml:build',
+    ])
+    expect(findRoutingViolations('x.yml', otherImage, [])).toEqual([
+      'x.yml:build',
+    ])
+    expect(
+      findRoutingViolations('x.yml', workflowRunningOn('ubuntu-latest'), []),
+    ).toEqual([])
+  })
+
+  test('flags an unrouted job that reads the variable anywhere', () => {
+    const readsInEnvironment = workflowRunningOn(
+      'ubuntu-latest',
+      '    env:\n      RUNNER: ${{ vars.BLACKSMITH_RUNNER }}\n',
+    )
+    expect(findUnroutedRunnerReaders('x.yml', readsInEnvironment, [])).toEqual([
+      'x.yml:build',
+    ])
+    expect(
+      findUnroutedRunnerReaders('x.yml', readsInEnvironment, routed),
+    ).toEqual([])
+  })
+
+  test('flags a VPS or self-hosted runner', () => {
+    expect(
+      findSelfHostedRunners('x.yml', workflowRunningOn('[self-hosted, linux]')),
+    ).toEqual(['x.yml:build'])
+    expect(
+      findSelfHostedRunners('x.yml', workflowRunningOn('vps-netcup')),
+    ).toEqual(['x.yml:build'])
+    expect(
+      findSelfHostedRunners('x.yml', workflowRunningOn('ubuntu-latest')),
+    ).toEqual([])
+  })
+})
+
+describe('runner routing', () => {
+  const allJobKeys = new Set(
+    listWorkflowFiles().flatMap((fileName) =>
+      keyedJobs(fileName, readWorkflow(fileName)).map(([key]) => key),
+    ),
+  )
+
+  test('every routed job exists', () => {
+    expect(ROUTED_JOBS.filter((key) => !allJobKeys.has(key))).toEqual([])
+  })
+
+  test.each(listWorkflowFiles())(
+    '%s routes only the listed jobs, with the exact expression',
+    (fileName) => {
+      const workflow = readWorkflow(fileName)
+      expect(findRoutingViolations(fileName, workflow, ROUTED_JOBS)).toEqual([])
+      expect(
+        findUnroutedRunnerReaders(fileName, workflow, ROUTED_JOBS),
+      ).toEqual([])
+      expect(findSelfHostedRunners(fileName, workflow)).toEqual([])
+    },
+  )
+})
+
+describe('site-quality.yml sharding', () => {
+  const jobs = readWorkflow('site-quality.yml').jobs ?? {}
+
+  test('runs e2e as four shards that do not cancel each other', () => {
+    const strategy = (jobs.e2e as RunnerJob | undefined)?.strategy
+    expect(strategy?.['fail-fast']).toBe(false)
+    expect(strategy?.matrix?.shard).toEqual([1, 2, 3, 4])
+    expect(jobs.e2e?.name).toBe('Accessibility and layout (Playwright)')
+  })
+
+  test('passes the shard through env and uploads a report per shard', () => {
+    const steps = jobs.e2e?.steps ?? []
+    const runStep = steps.find((step) => step.name === 'Run e2e')
+    expect(runStep?.env?.SHARD).toBe('${{ matrix.shard }}/4')
+    expect(runStep?.run).toContain('--shard="$SHARD"')
+    const upload = steps.find((step) =>
+      step.uses?.startsWith('actions/upload-artifact@'),
+    )
+    expect(upload?.with?.name).toBe('e2e-report-${{ matrix.shard }}')
+  })
+
+  test('splits the snapshots and the WebKit and Firefox specs into two jobs', () => {
+    const runs = (jobName: string) =>
+      (jobs[jobName]?.steps ?? []).map((step) => step.run)
+    expect(runs('visual')).toContain('bun run test:visual')
+    expect(runs('visual')).not.toContain('bun run test:browsers')
+    expect(runs('browsers')).toContain('bun run test:browsers')
+    expect(runs('browsers')).not.toContain('bun run test:visual')
+    expect(jobs.browsers?.if).toBeDefined()
+    expect(jobs.browsers?.if).toBe(jobs.visual?.if)
+    expect(jobs.browsers?.needs).toBeUndefined()
+  })
+
+  test('the Playwright config runs tests within a file in parallel', () => {
+    const config = readFileSync(
+      new URL('../playwright.config.ts', import.meta.url),
+      'utf8',
+    )
+    expect(config).toMatch(/^\s*fullyParallel: true,$/m)
   })
 })
 
