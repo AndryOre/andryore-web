@@ -737,7 +737,53 @@ describe('site-quality.yml sharding', () => {
     expect(runs('browsers')).not.toContain('bun run test:visual')
     expect(jobs.browsers?.if).toBeDefined()
     expect(jobs.browsers?.if).toBe(jobs.visual?.if)
-    expect(jobs.browsers?.needs).toBeUndefined()
+    expect(jobs.browsers?.needs).toBe('build')
+  })
+
+  test('builds the Site in exactly one job, which uploads dist as site-dist', () => {
+    const buildingJobs = Object.entries(jobs)
+      .filter(([, job]) =>
+        (job.steps ?? []).some((step) => step.run === 'bun run build'),
+      )
+      .map(([jobName]) => jobName)
+    expect(buildingJobs).toEqual(['build'])
+    const upload = (jobs.build?.steps ?? []).find((step) =>
+      step.uses?.startsWith('actions/upload-artifact@'),
+    )
+    expect(upload?.with?.name).toBe('site-dist')
+    expect(upload?.with?.path).toBe('dist')
+    expect(upload?.with?.['include-hidden-files']).toBe(true)
+    expect(upload?.if).toBeUndefined()
+  })
+
+  test.each(['e2e', 'visual', 'browsers'])(
+    '%s needs build and downloads site-dist into dist',
+    (jobName) => {
+      const job = jobs[jobName]
+      expect(job?.needs).toBe('build')
+      const download = (job?.steps ?? []).find((step) =>
+        step.uses?.startsWith('actions/download-artifact@'),
+      )
+      expect(download?.with?.name).toBe('site-dist')
+      expect(download?.with?.path).toBe('dist')
+    },
+  )
+
+  test('smoke and csp keep their own Docker builds and do not need build', () => {
+    expect(jobs.smoke?.needs).toBeUndefined()
+    expect(jobs.csp?.needs).toBeUndefined()
+  })
+
+  test('runs nightly on a schedule as well as on pull requests', () => {
+    const workflow = readWorkflow('site-quality.yml')
+    const triggers = triggerNames(workflow)
+    expect(triggers).toContain('pull_request')
+    expect(triggers).toContain('workflow_dispatch')
+    expect(triggers).toContain('schedule')
+    const schedule = (workflow.on as { schedule?: { cron?: string }[] })
+      .schedule
+    expect(schedule?.length).toBe(1)
+    expect(schedule?.[0]?.cron).toMatch(/^\d+ \d+ \* \* \*$/)
   })
 
   test('the Playwright config runs tests within a file in parallel', () => {
