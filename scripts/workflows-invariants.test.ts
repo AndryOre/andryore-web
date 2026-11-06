@@ -772,6 +772,14 @@ describe('ci.yml gates', () => {
     expect(hasEslintCacheKeyOnLocalRules(ci)).toBe(true)
   })
 
+  test('commitlint clones the full history blobless', () => {
+    const checkout = (ci.jobs?.commitlint?.steps ?? []).find((step) =>
+      step.uses?.startsWith('actions/checkout@'),
+    )
+    expect(checkout?.with?.['fetch-depth']).toBe(0)
+    expect(checkout?.with?.filter).toBe('blob:none')
+  })
+
   test('the CI passed aggregate needs the build job', () => {
     expect(ci.jobs?.['ci-passed']?.needs).toContain('build')
     expect(ci.jobs?.build?.name).toBe('Build')
