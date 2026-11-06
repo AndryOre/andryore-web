@@ -17,7 +17,9 @@ permissions:
 jobs:
   quality:
     name: Quality (format, lint, typecheck, knip)
-    runs-on: ubuntu-latest
+    runs-on:
+      ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+      vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -50,7 +52,9 @@ jobs:
 
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on:
+      ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+      vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -100,7 +104,9 @@ jobs:
 
   commitlint:
     name: Commitlint
-    runs-on: ubuntu-latest
+    runs-on:
+      ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+      vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 5
     if: github.event_name == 'pull_request'
     steps:
@@ -130,7 +136,9 @@ jobs:
 
   ci-passed:
     name: CI passed
-    runs-on: ubuntu-latest
+    runs-on:
+      ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+      vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 5
     needs: [quality, test, build, commitlint]
     if: always()

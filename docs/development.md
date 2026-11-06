@@ -182,11 +182,18 @@ agents.
   0009). The only allowed origins are the two Umami hosts (ADR 0014).
 
 `.github/workflows/site-quality.yml` runs the same commands on PRs that touch
-the Site. The visual job skips fork PRs because it mounts the repository into a
-container. The flaky-test summary (`scripts/flaky-summary.ts`) writes to the job
-summary and never fails the build. Conventions for specs: use `test.fixme` with
-a `BUG:` note instead of deleting a failing test, assert something meaningful,
-and never call `waitForTimeout`.
+the Site, all on `ubuntu-latest`
+([ADR 0024](adr/0024-ci-runner-standard-and-sharded-site-quality.md)). The e2e
+job (`chromium` and `mobile-*`) runs as four parallel shards (`--shard=N/4`,
+with `fullyParallel: true` in `playwright.config.ts`), and each shard uploads
+its own `e2e-report-N` artifact on failure. Keep every test independent of the
+order within its file. The snapshots (`visual`) and the WebKit and Firefox
+layout specs (`browsers`) run as two parallel jobs; both skip fork PRs because
+they mount the repository into a container. The flaky-test summary
+(`scripts/flaky-summary.ts`) writes to the job summary and never fails the
+build. Conventions for specs: use `test.fixme` with a `BUG:` note instead of
+deleting a failing test, assert something meaningful, and never call
+`waitForTimeout`.
 
 ## Git hooks
 
@@ -305,8 +312,8 @@ Other workflows:
 
 - `lighthouse.yml`: the Lighthouse budget on PRs
   ([Lighthouse budget](#lighthouse-budget)).
-- `site-quality.yml`: e2e, mobile, visual, browser and smoke checks on PRs that
-  touch the Site ([Browser checks](#browser-checks)).
+- `site-quality.yml`: e2e (four shards), mobile, visual, browser and smoke
+  checks on PRs that touch the Site ([Browser checks](#browser-checks)).
 - `release.yml`: creates the GitHub Release when a `v*` tag is pushed
   ([Releasing](#releasing)).
 - `lint-pr.yml` (PR title), `lint-docs.yml` (offline link and anchor check with
@@ -325,6 +332,21 @@ All third-party actions are pinned to a commit SHA, and
 opt in with `true`), no `pull_request_target`, and no expression interpolated
 inside a `run` script. `scripts/workflow-files.ts` parses the workflow files for
 those tests.
+
+### Runners
+
+The light jobs follow the andryorelabs CI runner standard
+([ADR 0024](adr/0024-ci-runner-standard-and-sharded-site-quality.md)): Quality,
+Test, Commitlint and CI passed in `ci.yml`, and the jobs of `lint-pr.yml`,
+`lint-docs.yml`, `labels.yml` and `lint-workflows.yml` use
+`${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}`.
+Every other job, Build and Site quality included, stays on a literal
+`ubuntu-latest`. The `BLACKSMITH_RUNNER` repository variable is unset, so every
+job runs on `ubuntu-latest`, and fork PRs always do. Only the owner turns it on,
+with `gh variable set BLACKSMITH_RUNNER --body blacksmith-2vcpu-ubuntu-2404`,
+and rolls it back with `gh variable delete BLACKSMITH_RUNNER`.
+`scripts/workflows-invariants.test.ts` keeps the list of routed jobs and fails
+when a job leaves it, uses another expression, or names a self-hosted runner.
 
 ## Lighthouse budget
 
