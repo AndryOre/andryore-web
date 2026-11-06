@@ -57,9 +57,11 @@ Every other job keeps a literal `ubuntu-latest`:
 - `ci.yml:build`: the production build stays on the same GitHub-hosted image
   that Site quality and Lighthouse build on, so a difference between runners
   cannot hide a broken build.
-- `site-quality.yml`, all jobs, `build` included: they run Docker, the
-  Playwright browsers and the pinned Playwright image, and they are the heaviest
-  minutes. Sharding speeds them up instead.
+- `site-quality.yml`, all jobs: they run Docker, the Playwright browsers and the
+  pinned Playwright image, and they are the heaviest minutes. Sharding speeds
+  them up instead. Its `build` job runs none of those; it stays on the same
+  GitHub-hosted image as `ci.yml:build` and Lighthouse so a difference between
+  runners cannot hide a broken build.
 - `lighthouse.yml`: scores depend on the runner; moving it would shift the
   budget baseline.
 - `codeql.yml` and `scorecard.yml`: security analysis, never routed by the
