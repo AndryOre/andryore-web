@@ -6,8 +6,14 @@ import type { Theme } from './routes'
 const THEME_STORAGE_KEY = 'theme'
 
 /**
+ * The instant every page sees as now: a Wednesday, so the stream tile's
+ * countdown and today marker render the same on any day.
+ */
+const FROZEN_NOW = new Date('2026-01-14T12:00:00Z')
+
+/**
  * Pins the theme before any page script runs, sets the motion preference
- * (reduced by default) and
+ * (reduced by default), freezes `Date` (timers keep running) at {@link FROZEN_NOW} and
  * answers the runtime endpoints that only the production server serves. The
  * contributions answer is not a valid snapshot, so the tile keeps its build
  * data without a network error. The Umami script is answered locally so a
@@ -37,6 +43,22 @@ export async function preparePage(
     },
     [THEME_STORAGE_KEY, theme] as const,
   )
+  await page.addInitScript((frozenMilliseconds) => {
+    const FrozenDate = new Proxy(Date, {
+      construct(target, constructorArguments) {
+        const forwarded: unknown[] = constructorArguments
+        return forwarded.length === 0
+          ? new target(frozenMilliseconds)
+          : new target(...(forwarded as [number]))
+      },
+      get(target, property) {
+        if (property === 'now') return () => frozenMilliseconds
+        const value: unknown = Reflect.get(target, property)
+        return value
+      },
+    })
+    Object.defineProperty(globalThis, 'Date', { value: FrozenDate })
+  }, FROZEN_NOW.getTime())
 }
 
 /**

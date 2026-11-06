@@ -1,5 +1,14 @@
 import { describe, expect, test } from 'bun:test'
-import { readFileSync } from 'node:fs'
+import { spawnSync } from 'node:child_process'
+import {
+  chmodSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
 
 import {
   listWorkflowFiles,
@@ -728,7 +737,53 @@ describe('site-quality.yml sharding', () => {
     expect(runs('browsers')).not.toContain('bun run test:visual')
     expect(jobs.browsers?.if).toBeDefined()
     expect(jobs.browsers?.if).toBe(jobs.visual?.if)
-    expect(jobs.browsers?.needs).toBeUndefined()
+    expect(jobs.browsers?.needs).toBe('build')
+  })
+
+  test('builds the Site in exactly one job, which uploads dist as site-dist', () => {
+    const buildingJobs = Object.entries(jobs)
+      .filter(([, job]) =>
+        (job.steps ?? []).some((step) => step.run === 'bun run build'),
+      )
+      .map(([jobName]) => jobName)
+    expect(buildingJobs).toEqual(['build'])
+    const upload = (jobs.build?.steps ?? []).find((step) =>
+      step.uses?.startsWith('actions/upload-artifact@'),
+    )
+    expect(upload?.with?.name).toBe('site-dist')
+    expect(upload?.with?.path).toBe('dist')
+    expect(upload?.with?.['include-hidden-files']).toBe(true)
+    expect(upload?.if).toBeUndefined()
+  })
+
+  test.each(['e2e', 'visual', 'browsers'])(
+    '%s needs build and downloads site-dist into dist',
+    (jobName) => {
+      const job = jobs[jobName]
+      expect(job?.needs).toBe('build')
+      const download = (job?.steps ?? []).find((step) =>
+        step.uses?.startsWith('actions/download-artifact@'),
+      )
+      expect(download?.with?.name).toBe('site-dist')
+      expect(download?.with?.path).toBe('dist')
+    },
+  )
+
+  test('smoke and csp keep their own Docker builds and do not need build', () => {
+    expect(jobs.smoke?.needs).toBeUndefined()
+    expect(jobs.csp?.needs).toBeUndefined()
+  })
+
+  test('runs nightly on a schedule as well as on pull requests', () => {
+    const workflow = readWorkflow('site-quality.yml')
+    const triggers = triggerNames(workflow)
+    expect(triggers).toContain('pull_request')
+    expect(triggers).toContain('workflow_dispatch')
+    expect(triggers).toContain('schedule')
+    const schedule = (workflow.on as { schedule?: { cron?: string }[] })
+      .schedule
+    expect(schedule?.length).toBe(1)
+    expect(schedule?.[0]?.cron).toMatch(/^\d+ \d+ \* \* \*$/)
   })
 
   test('the Playwright config runs tests within a file in parallel', () => {
@@ -761,6 +816,14 @@ describe('ci.yml gates', () => {
 
   test('keys the eslint cache on eslint-rules/**', () => {
     expect(hasEslintCacheKeyOnLocalRules(ci)).toBe(true)
+  })
+
+  test('commitlint clones the full history blobless', () => {
+    const checkout = (ci.jobs?.commitlint?.steps ?? []).find((step) =>
+      step.uses?.startsWith('actions/checkout@'),
+    )
+    expect(checkout?.with?.['fetch-depth']).toBe(0)
+    expect(checkout?.with?.filter).toBe('blob:none')
   })
 
   test('the CI passed aggregate needs the build job', () => {
@@ -826,5 +889,89 @@ describe.each(listWorkflowFiles())('%s', (fileName) => {
 
   test('top-level permissions are contents: read or stricter', () => {
     expect(hasReadOnlyTopLevelPermissions(workflow)).toBe(true)
+  })
+})
+
+const ZERO_SHA = '0'.repeat(40)
+const SOME_SHA = 'a'.repeat(40)
+
+/**
+ * Runs `.husky/pre-push` with a stub `bun` first on `PATH`, so the hook's
+ * typecheck is observable without running tsc.
+ * @param pushLines The ref lines git writes to the hook's stdin.
+ * @param typecheckExitCode The exit code the stub returns for the typecheck.
+ * @returns The hook's exit code and the commands the stub received.
+ */
+function runPrePush(
+  pushLines: string[],
+  typecheckExitCode: number,
+): { status: number | null; bunCalls: string[] } {
+  const stubDirectory = mkdtempSync(path.join(tmpdir(), 'pre-push-'))
+  const callLog = path.join(stubDirectory, 'calls.log')
+  try {
+    const stub = path.join(stubDirectory, 'bun')
+    writeFileSync(
+      stub,
+      `#!/bin/sh\necho "$*" >> "${callLog}"\nexit ${String(typecheckExitCode)}\n`,
+    )
+    chmodSync(stub, 0o755)
+    writeFileSync(callLog, '')
+    const result = spawnSync(
+      'sh',
+      [new URL('../.husky/pre-push', import.meta.url).pathname],
+      {
+        input: pushLines.map((line) => `${line}\n`).join(''),
+        env: {
+          ...process.env,
+          PATH: `${stubDirectory}:${process.env.PATH ?? ''}`,
+        },
+        encoding: 'utf8',
+      },
+    )
+    const bunCalls = readFileSync(callLog, 'utf8').split('\n').filter(Boolean)
+    return { status: result.status, bunCalls }
+  } finally {
+    rmSync(stubDirectory, { recursive: true, force: true })
+  }
+}
+
+describe('.husky/pre-push', () => {
+  const branchPush = `refs/heads/feat/x ${SOME_SHA} refs/heads/feat/x ${ZERO_SHA}`
+
+  test('typechecks once and allows a clean tree', () => {
+    const result = runPrePush([branchPush, branchPush], 0)
+    expect(result.status).toBe(0)
+    expect(result.bunCalls).toEqual(['run typecheck'])
+  })
+
+  test('rejects the push when the typecheck fails', () => {
+    expect(runPrePush([branchPush], 2).status).not.toBe(0)
+  })
+
+  test('rejects an invalid branch name before typechecking', () => {
+    const result = runPrePush(
+      [`refs/heads/bad ${SOME_SHA} refs/heads/bad ${ZERO_SHA}`],
+      0,
+    )
+    expect(result.status).toBe(1)
+    expect(result.bunCalls).toEqual([])
+  })
+
+  test('skips the typecheck for a deletion-only push', () => {
+    const result = runPrePush(
+      [`(delete) ${ZERO_SHA} refs/heads/feat/x ${SOME_SHA}`],
+      2,
+    )
+    expect(result.status).toBe(0)
+    expect(result.bunCalls).toEqual([])
+  })
+
+  test('skips the typecheck for a tag-only push', () => {
+    const result = runPrePush(
+      [`refs/tags/v1.0.0 ${SOME_SHA} refs/tags/v1.0.0 ${ZERO_SHA}`],
+      2,
+    )
+    expect(result.status).toBe(0)
+    expect(result.bunCalls).toEqual([])
   })
 })
