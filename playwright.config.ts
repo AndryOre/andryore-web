@@ -9,6 +9,7 @@ const EXTERNAL_BASE_URL = process.env.E2E_BASE_URL
 export default defineConfig({
   testDir: './e2e',
   testIgnore: /visual\.spec\.ts/,
+  fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI
