@@ -205,7 +205,10 @@ Hooks live in `.husky/`:
 - **`commit-msg`** runs `commitlint` with `@commitlint/config-conventional`. It
   enforces the Conventional Commits shape and type list, not the emoji.
 - **`pre-push`** rejects a push whose branch name does not match `<type>/<slug>`
-  (or `main`, `develop`, `renovate/*`).
+  (or `main`, `develop`, `renovate/*`). When the names pass, it runs
+  `bun run typecheck` once and blocks the push on a type error. A push that only
+  deletes branches or only pushes tags skips the typecheck. Put it in a hook
+  rather than a line in AGENTS.md, because agents skip steps.
 
 ## Branch naming
 
